@@ -46,7 +46,7 @@ java {
 }
 
 jar {
-	from("LICENSE.txt") { rename { "${it}_${project.name}" } }
+	from("LICENSE") { rename { "${it}_${project.name}" } }
 }
 
 publishing {

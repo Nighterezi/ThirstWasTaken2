@@ -18,5 +18,9 @@
   "thirst.ponder.sand_filter.header": "Purifying Water with a Sand Filter",
   "thirst.ponder.sand_filter.text_1": "A Sand Filter purifies by one step water pumped through it",
   "thirst.ponder.sand_filter.text_2": "Dirty Water needs to be pumped in from the top...",
-  "thirst.ponder.sand_filter.text_3": "and Purified Water can be pumped out from the bottom"
+  "thirst.ponder.sand_filter.text_3": "and Purified Water can be pumped out from the bottom",
+  "command.thirstwastaken.query": "現在の渇き値: %1$s、潤い値: %2$s",
+  "command.thirstwastaken.set": "渇き値を %1$s、潤い値を %2$s に設定しました",
+  "command.thirstwastaken.enable": "%1$s 人のプレイヤーの渇きシステムを有効にしました",
+  "command.thirstwastaken.disable": "%1$s 人のプレイヤーの渇きシステムを無効にしました"
 }

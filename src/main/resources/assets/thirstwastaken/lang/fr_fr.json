@@ -18,5 +18,9 @@
   "thirst.ponder.sand_filter.header": "Purifier de l'eau avec un Filtre à sable",
   "thirst.ponder.sand_filter.text_1": "Un Filtre à sable effectue une étape de purification quand de l'eau y est pompée à travers",
   "thirst.ponder.sand_filter.text_2": "L'eau sale doit être pompée dans le filtre par dessus...",
-  "thirst.ponder.sand_filter.text_3": "et l'eau purifiée peut être pompée par le dessous"
+  "thirst.ponder.sand_filter.text_3": "et l'eau purifiée peut être pompée par le dessous",
+  "command.thirstwastaken.query": "Soif actuelle : %1$s, hydratation actuelle : %2$s",
+  "command.thirstwastaken.set": "Soif réglée sur %1$s et hydratation sur %2$s",
+  "command.thirstwastaken.enable": "Soif activée pour %1$s joueur(s)",
+  "command.thirstwastaken.disable": "Soif désactivée pour %1$s joueur(s)"
 }

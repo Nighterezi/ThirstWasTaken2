@@ -16,7 +16,7 @@
     "sources": "https://github.com/Nighterezi/ThirstWasTakenFabric",
     "issues": "https://github.com/Nighterezi/ThirstWasTakenFabric/issues"
   },
-  "license": "LGPL-2.1-only",
+  "license": "MIT",
   "icon": "assets/thirstwastaken/icon.png",
   "environment": "*",
   "entrypoints": {
