@@ -1,0 +1,29 @@
+/* The teal of the HUD droplet, reused as the site accent. */
+:root {
+  --vp-c-brand-1: #1f88a8;
+  --vp-c-brand-2: #2ba0b5;
+  --vp-c-brand-3: #37bac4;
+  --vp-c-brand-soft: rgba(55, 186, 196, 0.14);
+
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(120deg, #46cecc, #1f88a8);
+}
+
+.dark {
+  --vp-c-brand-1: #55dbcd;
+  --vp-c-brand-2: #37bac4;
+  --vp-c-brand-3: #2ba0b5;
+}
+
+/* The logo is pixel art, so it must never be smoothed. */
+.VPImage,
+.vp-doc img[src$='logo.png'],
+.vp-doc img[src$='water-purity.png'] {
+  image-rendering: pixelated;
+}
+
+/* Config keys and command names read better slightly tighter than prose. */
+.vp-doc h3 > code {
+  font-size: 0.95em;
+  padding: 2px 8px;
+}

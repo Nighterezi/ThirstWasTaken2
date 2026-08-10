@@ -21,8 +21,16 @@ public final class ThirstHud {
     private static final RandomSource RANDOM = RandomSource.create();
 
     private static final int ICON_SIZE = 9;
-    private static final int ICONS_TEXTURE_WIDTH = 25;
+    private static final int ICONS_TEXTURE_WIDTH = 41;
     private static final int ICONS_TEXTURE_HEIGHT = 9;
+    /**
+     * Fill frames on the sheet, driest first. Frames share their transparent edge columns, so the
+     * stride is 8 rather than {@link #ICON_SIZE}.
+     */
+    private static final int U_EMPTY = 0;
+    private static final int[] FILL_FRAMES = {8, 16, 24, 32};
+    /** Units of thirst each entry of {@link #FILL_FRAMES} needs; one droplet holds two. */
+    private static final float[] FILL_THRESHOLDS = {0.5F, 1.0F, 1.5F, 2.0F};
     private static final int OVERLAY_TEXTURE_SIZE = 256;
     private static final int BAR_WIDTH = 81;
     /** The exhaustion strip is a hard-edged dither pattern, so it needs the original's 75% alpha. */
@@ -58,23 +66,40 @@ public final class ThirstHud {
         boolean shake = quenched <= 0;
         int shakePeriod = thirst * 3 + 1;
 
+        float level = thirst - drainedFraction(config, data);
+
         for (int i = 0; i < 10; i++) {
-            int index = i * 2 + 1;
             int x = right - i * 8 - ICON_SIZE;
             int y = top;
             if (shake && player.tickCount % shakePeriod == 0) y += RANDOM.nextInt(3) - 1;
 
-            icon(graphics, x, y, 0);
-            if (index < thirst) {
-                icon(graphics, x, y, 16);
-            } else if (index == thirst) {
-                icon(graphics, x, y, 8);
+            icon(graphics, x, y, U_EMPTY);
+            int fill = fillFrame(level - i * 2);
+            if (fill >= 0) {
+                icon(graphics, x, y, fill);
             }
 
             if (config.showQuenchedOverlay) {
                 renderQuenched(graphics, x, y, quenched / 2.0F - i);
             }
         }
+    }
+
+    /**
+     * How much of the next thirst point has already been eaten by exhaustion, as a 0..1 fraction.
+     * Exhaustion only reaches thirst once quenched is gone, so a quenched player never drains.
+     */
+    private static float drainedFraction(ThirstConfig config, ThirstData data) {
+        if (!config.smoothThirstDrain || data.quenched() > 0) return 0.0F;
+        return Math.min(Math.max(data.exhaustion(), 0.0F), MAX_EXHAUSTION) / MAX_EXHAUSTION;
+    }
+
+    /** Texture u of the wettest frame this droplet has earned, or -1 when it is dry. */
+    private static int fillFrame(float units) {
+        for (int i = FILL_FRAMES.length - 1; i >= 0; i--) {
+            if (units >= FILL_THRESHOLDS[i]) return FILL_FRAMES[i];
+        }
+        return -1;
     }
 
     private static void icon(GuiGraphicsExtractor graphics, int x, int y, int u) {

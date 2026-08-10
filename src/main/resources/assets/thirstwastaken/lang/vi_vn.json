@@ -74,6 +74,8 @@
   "thirstwastaken.config.show_exhaustion_underlay.tooltip": "Vẽ dải chấm kiểu AppleSkin phía sau thanh khát nước.",
   "thirstwastaken.config.show_quenched_overlay": "Lớp phủ đã khát",
   "thirstwastaken.config.show_quenched_overlay.tooltip": "Vẽ viền sáng thể hiện mức đã khát lên trên các giọt nước.",
+  "thirstwastaken.config.smooth_thirst_drain": "Giọt nước vơi mượt",
+  "thirstwastaken.config.smooth_thirst_drain.tooltip": "Giọt nước đang cạn sẽ vơi theo từng phần tư thay vì nhảy thẳng từ đầy xuống một nửa.",
   "thirstwastaken.config.thirst_bar_x_offset": "Lệch ngang thanh",
   "thirstwastaken.config.thirst_bar_x_offset.tooltip": "Độ lệch ngang của thanh khát nước, tính bằng pixel.",
   "thirstwastaken.config.thirst_bar_y_offset": "Lệch dọc thanh",

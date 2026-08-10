@@ -55,6 +55,12 @@ public final class ThirstConfig {
     public boolean showExhaustionUnderlay = false;
     /** Draws the lighter quenched (saturation-style) overlay on top of the droplets. */
     public boolean showQuenchedOverlay = true;
+    /**
+     * Lets the droplet that is currently emptying step through the quarter and three-quarter frames
+     * as exhaustion builds, instead of jumping straight from full to half to empty. Not in the
+     * original mod, whose sheet only had the three frames.
+     */
+    public boolean smoothThirstDrain = true;
 
     // ---- water purity -----------------------------------------------------
     public int mountainsY = 100;

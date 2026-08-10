@@ -91,6 +91,8 @@ public final class ThirstConfigScreen extends OptionsSubScreen {
                         value -> config.showExhaustionUnderlay = value),
                 toggle("show_quenched_overlay", config.showQuenchedOverlay,
                         value -> config.showQuenchedOverlay = value),
+                toggle("smooth_thirst_drain", config.smoothThirstDrain,
+                        value -> config.smoothThirstDrain = value),
                 slider("thirst_bar_x_offset", config.thirstBarXOffset, -200, 200,
                         value -> config.thirstBarXOffset = value),
                 slider("thirst_bar_y_offset", config.thirstBarYOffset, -200, 200,

@@ -24,6 +24,8 @@ What made it into the Minecraft 26.2 Fabric version of [Thirst Was Taken](https:
 - A config screen in Mod Menu for every setting, no file editing needed.
 - Settings are stored in `config/thirstwastaken.json` if you prefer to edit them by hand.
 - The thirst bar can be moved around the screen.
+- Redrawn droplets. Empty droplets now use the same dark shade as the empty hunger icons instead of a lighter grey, so the bar reads the same way the food bar does.
+- Droplets empty in quarters. The original only had full, half and empty; the sheet now has five levels, and the droplet you are currently drinking away steps through all of them. Turn it off under `Smooth Droplet Drain` for the old three-step look.
 - The dotted exhaustion strip behind the bar and the quenched outline on the droplets can each be turned off. The dotted strip is off by default.
 - Optional setting requiring both hands to be empty before drinking by hand.
 - Support for other food mods works by item name, so none of them are required to be installed.

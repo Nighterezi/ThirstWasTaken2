@@ -75,6 +75,8 @@
   "thirstwastaken.config.show_exhaustion_underlay.tooltip": "Draws the dotted AppleSkin-style exhaustion strip behind the thirst bar.",
   "thirstwastaken.config.show_quenched_overlay": "Quenched Overlay",
   "thirstwastaken.config.show_quenched_overlay.tooltip": "Draws the lighter quenched outline on top of the thirst droplets.",
+  "thirstwastaken.config.smooth_thirst_drain": "Smooth Droplet Drain",
+  "thirstwastaken.config.smooth_thirst_drain.tooltip": "Empties the draining droplet in quarters instead of jumping straight from full to half.",
   "thirstwastaken.config.thirst_bar_x_offset": "Bar X Offset",
   "thirstwastaken.config.thirst_bar_x_offset.tooltip": "Horizontal offset of the thirst bar, in pixels.",
   "thirstwastaken.config.thirst_bar_y_offset": "Bar Y Offset",

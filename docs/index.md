@@ -1,0 +1,54 @@
+---
+layout: home
+
+hero:
+  name: Thirst Was Taken
+  tagline: Hunger was never the whole story. Now the water you find has to be worth drinking.
+  image:
+    src: /logo.png
+    alt: Thirst Was Taken logo
+  actions:
+    - theme: brand
+      text: Get Started
+      link: /docs/
+    - theme: alt
+      text: Download the JAR
+      link: https://github.com/Nighterezi/ThirstWasTakenFabric/actions/workflows/build.yml
+      target: _blank
+      rel: external
+    - theme: alt
+      text: Configuration
+      link: /docs/configuration
+    - theme: alt
+      text: Features
+      link: /features/
+
+features:
+  - title: A Bar Below Hunger
+    details: Ten droplets that drain as you run, fight and build.
+    link: /features/thirst-and-quenched
+  - title: The Desert Costs More
+    details: Hot biomes and the Nether dry you out faster.
+    link: /features/thirst-and-quenched
+  - title: Water Has Quality
+    details: Four grades, from dirty puddle to purified.
+    link: /features/water-purity
+  - title: Boil It Clean
+    details: A furnace or a campfire turns bad water good.
+    link: /features/water-purity
+  - title: Many Ways To Drink
+    details: Bottles, bowls, the rain, or your bare hands.
+    link: /features/drinking
+  - title: Yours To Tune
+    details: Every number is a slider in Mod Menu.
+    link: /docs/configuration
+---
+
+## Four kinds of water
+
+Every container remembers where its water came from. The tooltip tells you before you swallow it.
+
+![Item tooltips reading Dirty, Slightly Dirty, Acceptable and Purified](/water-purity.png)
+
+Dirty water still hydrates you. It might also cost you ten seconds of poison, so it is a trade you
+make on purpose.
