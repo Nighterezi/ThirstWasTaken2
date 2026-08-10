@@ -66,11 +66,11 @@ Mặc định `false`. Khi bật, uống bằng tay còn đòi hỏi tay còn l�
 
 ### handDrinkingHydration
 
-Mặc định `3`. Độ khát hồi lại cho mỗi lần uống trực tiếp từ nguồn nước.
+Mặc định `1`. Độ khát hồi lại cho mỗi lần uống trực tiếp từ nguồn nước.
 
 ### handDrinkingQuenched
 
-Mặc định `2`. Mức đã khát hồi lại cho chính lần uống đó.
+Mặc định `1`. Mức đã khát hồi lại cho chính lần uống đó.
 
 ### extraHydrationConvertsToQuenched
 

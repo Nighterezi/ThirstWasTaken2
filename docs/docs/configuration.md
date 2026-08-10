@@ -66,11 +66,11 @@ Default `false`. When on, drinking by hand also asks for the other hand to be em
 
 ### handDrinkingHydration
 
-Default `3`. Thirst restored by one drink from a water source.
+Default `1`. Thirst restored by one drink from a water source.
 
 ### handDrinkingQuenched
 
-Default `2`. Reserve restored by that same drink.
+Default `1`. Reserve restored by that same drink.
 
 ### extraHydrationConvertsToQuenched
 

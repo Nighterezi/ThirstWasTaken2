@@ -3,6 +3,7 @@ package com.thirstwastaken.mixin;
 import com.thirstwastaken.api.ThirstApi;
 import com.thirstwastaken.data.ThirstManager;
 import com.thirstwastaken.purity.WaterPurity;
+import com.thirstwastaken.tooltip.ThirstTooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -21,8 +22,6 @@ import java.util.function.Consumer;
 
 @Mixin(ItemStack.class)
 abstract class ItemStackMixin {
-    private static final int HYDRATION_TOOLTIP_COLOR = 0x55AAFF;
-
     @Inject(method = "finishUsingItem", at = @At("HEAD"))
     private void thirst$onFinishUsing(Level level, LivingEntity entity, CallbackInfoReturnable<ItemStack> cir) {
         if (level.isClientSide() || !(entity instanceof Player player)) return;
@@ -38,8 +37,8 @@ abstract class ItemStackMixin {
         }
         int[] hydration = ThirstApi.hydration(stack);
         if (hydration != null) {
-            tooltip.accept(Component.translatable("thirstwastaken.tooltip.hydration",
-                    hydration[0], hydration[1]).withColor(HYDRATION_TOOLTIP_COLOR));
+            Component droplets = ThirstTooltip.hydration(hydration[0], hydration[1]);
+            if (droplets != null) tooltip.accept(droplets);
         }
     }
 }

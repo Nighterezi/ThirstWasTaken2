@@ -39,8 +39,8 @@ public final class ThirstConfig {
     public boolean canDrinkRain = true;
     public boolean canDrinkByHand = false;
     public boolean drinkByHandNeedsBothHandsEmpty = false;
-    public int handDrinkingHydration = 3;
-    public int handDrinkingQuenched = 2;
+    public int handDrinkingHydration = 1;
+    public int handDrinkingQuenched = 1;
     public boolean extraHydrationConvertsToQuenched = true;
     public boolean dehydrationHaltsHealthRegen = true;
 

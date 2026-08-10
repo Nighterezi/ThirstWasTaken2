@@ -17,6 +17,7 @@ src/main/java/com/thirstwastaken/      common (client + server)
   purity/ThirstComponents.java         thirstwastaken:water_purity data component
   purity/WaterPurity.java              purity lookup/apply, sickness table, container detection
   purity/WaterInteractions.java        bowl filling, cauldron purity transfer
+  tooltip/ThirstTooltip.java           droplet row for the item tooltip (thirstwastaken:droplets font)
   compat/LootIntegration.java          structure chests + Piglin barter water
   compat/createfly/                    optional Create Fly Sand Filter
   mixin/                               vanilla hooks
@@ -31,6 +32,7 @@ src/main/resources/
   fabric.mod.json                      entrypoints (main, client, modmenu)
   thirstwastaken.mixins.json           mixin registry
   assets/thirstwastaken/               textures, models, lang (9 locales)
+  assets/thirstwastaken/font/          droplets.json: tooltip droplet glyphs (U+E000..U+E007)
   data/thirstwastaken/                 recipes, damage type, sand filter loot table
   data/minecraft/tags/                 bypasses_armor, mineable/pickaxe additions
 ```
@@ -109,7 +111,7 @@ Brewin' and Chewin' / Collector's Reap support stays dependency-free.
 |---|---|---|
 | `PlayerMixin` | `Player#causeFoodExhaustion`, `#canSprint` | mirror exhaustion, block sprinting at thirst <= 6 |
 | `FoodDataMixin` | `FoodData#tick` (both `heal` call sites) | dehydration halts natural regen and refunds the food cost |
-| `ItemStackMixin` | `#finishUsingItem`, `#addDetailsToTooltip` | grant hydration, render purity/hydration tooltips |
+| `ItemStackMixin` | `#finishUsingItem`, `#addDetailsToTooltip` | grant hydration, render purity line + droplet row |
 | `BottleItemMixin` | `BottleItem#use` | stamp purity on a bottle filled from a water block |
 | `BucketItemMixin` | `BucketItem#use` | stamp purity on a bucket filled from a water block |
 | `LayeredCauldronBlockMixin` | `#createBlockStateDefinition` | add the `purity` blockstate property |

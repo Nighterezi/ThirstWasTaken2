@@ -14,7 +14,8 @@ What made it into the Minecraft 26.2 Fabric version of [Thirst Was Taken](https:
 - Four levels of water purity. Dirty water can make you nauseous or poison you.
 - Purify water in a furnace or on a campfire, in bottles, bowls and buckets.
 - Cauldrons remember how clean the water poured into them was.
-- Clay bowl, terracotta bowl and terracotta water bowl.
+- Clay bowl, terracotta bowl and terracotta water bowl. The clay bowl must be smelted before it can scoop water; hold the resulting terracotta bowl and use it on any water block, including flowing water.
+- A dedicated **Thirst Was Taken** creative inventory tab collects every item from the mod. The Sand Filter joins it when Create Fly is installed.
 - Water bottles appear in dungeon, mineshaft, shipwreck, nether bridge and bastion chests, and in Piglin barters.
 - `/thirst` commands to check, set, or turn thirst off for a player.
 - Full translations, including Vietnamese.
@@ -28,6 +29,7 @@ What made it into the Minecraft 26.2 Fabric version of [Thirst Was Taken](https:
 - Droplets empty in quarters. The original only had full, half and empty; the sheet now has five levels, and the droplet you are currently drinking away steps through all of them. Turn it off under `Smooth Droplet Drain` for the old three-step look.
 - The dotted exhaustion strip behind the bar and the quenched outline on the droplets can each be turned off. The dotted strip is off by default.
 - Optional setting requiring both hands to be empty before drinking by hand.
+- Hand drinking restores 1 thirst and 1 quenched by default, reduced from 3 and 2 so free water does not fill both bars too quickly. Both values remain configurable.
 - Support for other food mods works by item name, so none of them are required to be installed.
 - The Create Sand Filter is back, for Create Fly.
 
