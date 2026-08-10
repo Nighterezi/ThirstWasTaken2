@@ -22,5 +22,6 @@
   "command.thirstwastaken.query": "현재 갈증: %1$s, 해갈: %2$s",
   "command.thirstwastaken.set": "갈증을 %1$s, 해갈을 %2$s(으)로 설정했습니다",
   "command.thirstwastaken.enable": "플레이어 %1$s명의 갈증 시스템을 활성화했습니다",
-  "command.thirstwastaken.disable": "플레이어 %1$s명의 갈증 시스템을 비활성화했습니다"
+  "command.thirstwastaken.disable": "플레이어 %1$s명의 갈증 시스템을 비활성화했습니다",
+  "thirstwastaken.tooltip.hydration": "수분: +%1$s, 해갈: +%2$s"
 }

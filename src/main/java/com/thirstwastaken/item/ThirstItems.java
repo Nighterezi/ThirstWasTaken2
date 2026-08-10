@@ -6,10 +6,12 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.Consumables;
-import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
+import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 
 import java.util.function.Function;
 
@@ -20,6 +22,8 @@ public final class ThirstItems {
             new Item.Properties().stacksTo(64).usingConvertsTo(TERRACOTTA_BOWL)
                     .component(ThirstComponents.WATER_PURITY, 0)
                     .component(net.minecraft.core.component.DataComponents.CONSUMABLE, Consumables.DEFAULT_DRINK));
+    public static final ResourceKey<CreativeModeTab> CREATIVE_TAB_KEY = ResourceKey.create(
+            Registries.CREATIVE_MODE_TAB, ThirstWasTaken.id("thirstwastaken"));
 
     private ThirstItems() { }
 
@@ -30,10 +34,15 @@ public final class ThirstItems {
     }
 
     public static void register() {
-        CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.INGREDIENTS).register(entries -> {
-            entries.accept(CLAY_BOWL);
-            entries.accept(TERRACOTTA_BOWL);
-            entries.accept(TERRACOTTA_WATER_BOWL);
-        });
+        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, CREATIVE_TAB_KEY,
+                FabricCreativeModeTab.builder()
+                        .title(Component.translatable("itemGroup.thirstwastaken"))
+                        .icon(() -> new ItemStack(TERRACOTTA_WATER_BOWL))
+                        .displayItems((parameters, entries) -> {
+                            entries.accept(CLAY_BOWL);
+                            entries.accept(TERRACOTTA_BOWL);
+                            entries.accept(TERRACOTTA_WATER_BOWL);
+                        })
+                        .build());
     }
 }

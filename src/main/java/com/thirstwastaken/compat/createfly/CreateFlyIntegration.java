@@ -1,6 +1,7 @@
 package com.thirstwastaken.compat.createfly;
 
 import com.thirstwastaken.ThirstWasTaken;
+import com.thirstwastaken.item.ThirstItems;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
@@ -8,7 +9,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -66,7 +66,7 @@ public final class CreateFlyIntegration {
         sandFilterEntity = Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, ThirstWasTaken.id("sand_filter"),
                 new BlockEntityType<>(SandFilterBlockEntity::new, Set.of(sandFilter)));
 
-        CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS)
+        CreativeModeTabEvents.modifyOutputEvent(ThirstItems.CREATIVE_TAB_KEY)
                 .register(entries -> entries.accept(sandFilterItem));
         ThirstWasTaken.LOGGER.info("Enabled Create Fly Sand Filter integration");
     }

@@ -36,7 +36,9 @@ dependencies {
 	compileOnly "maven.modrinth:create-fly:26.2-rc-2-6.0.9-1"
 	// Optional config-screen entry point; the mod works without Mod Menu installed.
 	clientCompileOnly "maven.modrinth:modmenu:${project.modmenu_version}"
-	runtimeOnly "maven.modrinth:create-fly:26.2-rc-2-6.0.9-1"
+	// Temporarily disabled for runClient while the Create Fly integration is being tested.
+	// clientRuntimeOnly "maven.modrinth:create-fly:26.2-rc-2-6.0.9-1"
+	clientRuntimeOnly "maven.modrinth:modmenu:${project.modmenu_version}"
 }
 
 processResources {

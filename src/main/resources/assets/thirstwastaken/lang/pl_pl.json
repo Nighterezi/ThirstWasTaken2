@@ -22,5 +22,6 @@
   "command.thirstwastaken.query": "Aktualne pragnienie: %1$s, nawodnienie: %2$s",
   "command.thirstwastaken.set": "Ustawiono pragnienie na %1$s i nawodnienie na %2$s",
   "command.thirstwastaken.enable": "Włączono pragnienie dla %1$s graczy",
-  "command.thirstwastaken.disable": "Wyłączono pragnienie dla %1$s graczy"
+  "command.thirstwastaken.disable": "Wyłączono pragnienie dla %1$s graczy",
+  "thirstwastaken.tooltip.hydration": "Nawodnienie: +%1$s, Ugaszenie: +%2$s"
 }

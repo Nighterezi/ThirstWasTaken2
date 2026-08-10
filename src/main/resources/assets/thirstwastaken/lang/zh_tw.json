@@ -22,5 +22,6 @@
   "command.thirstwastaken.query": "當前口渴值: %1$s, 當前解渴值: %2$s",
   "command.thirstwastaken.set": "設置口渴值为 %1$s,解渴值为 %2$s",
   "command.thirstwastaken.enable": "已為 %1$s 名玩家啟用口渴",
-  "command.thirstwastaken.disable": "已為 %1$s 名玩家停用口渴"
+  "command.thirstwastaken.disable": "已為 %1$s 名玩家停用口渴",
+  "thirstwastaken.tooltip.hydration": "水分: +%1$s, 解渴: +%2$s"
 }

@@ -10,6 +10,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Difficulty;
@@ -138,7 +139,14 @@ public final class ThirstManager {
         if (WaterPurity.applyEffects(player, sample)) {
             drink(player, config.handDrinkingHydration, config.handDrinkingQuenched);
         }
-        player.playSound(SoundEvents.GENERIC_DRINK.value(), 1.0F, 1.0F);
+        // Player#playSound routes through Level#playSound with itself as the excluded listener, so a
+        // server-side call is heard by everyone *except* the drinker. Vanilla gets away with it
+        // because consumption effects also run client-side; hand drinking is server-only, so the
+        // sound has to be broadcast with no exclusion. Volume and pitch match
+        // LivingEntity#triggerItemUseEffects, i.e. the potion drinking sound.
+        level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                SoundEvents.GENERIC_DRINK.value(), SoundSource.PLAYERS,
+                0.5F, level.getRandom().nextFloat() * 0.1F + 0.9F);
         return InteractionResult.SUCCESS_SERVER;
     }
 

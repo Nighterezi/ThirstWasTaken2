@@ -22,5 +22,6 @@
   "command.thirstwastaken.query": "Текущая жажда: %1$s, утоление: %2$s",
   "command.thirstwastaken.set": "Жажда установлена на %1$s, утоление на %2$s",
   "command.thirstwastaken.enable": "Жажда включена для %1$s игроков",
-  "command.thirstwastaken.disable": "Жажда отключена для %1$s игроков"
+  "command.thirstwastaken.disable": "Жажда отключена для %1$s игроков",
+  "thirstwastaken.tooltip.hydration": "Гидратация: +%1$s, Утоление: +%2$s"
 }

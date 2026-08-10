@@ -22,6 +22,7 @@
   "command.thirstwastaken.set": "Đã đặt mức khát thành %1$s và mức giải khát thành %2$s",
   "command.thirstwastaken.enable": "Đã bật hệ thống khát cho %1$s người chơi",
   "command.thirstwastaken.disable": "Đã tắt hệ thống khát cho %1$s người chơi",
+  "thirstwastaken.tooltip.hydration": "Cấp nước: +%1$s, Giải khát: +%2$s",
   "thirstwastaken.config.title": "Thirst Was Taken",
   "thirstwastaken.config.category.depletion": "Tiêu hao khát nước",
   "thirstwastaken.config.category.drinking": "Uống nước",

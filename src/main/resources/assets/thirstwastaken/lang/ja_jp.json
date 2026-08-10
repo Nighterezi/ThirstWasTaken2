@@ -22,5 +22,6 @@
   "command.thirstwastaken.query": "現在の渇き値: %1$s、潤い値: %2$s",
   "command.thirstwastaken.set": "渇き値を %1$s、潤い値を %2$s に設定しました",
   "command.thirstwastaken.enable": "%1$s 人のプレイヤーの渇きシステムを有効にしました",
-  "command.thirstwastaken.disable": "%1$s 人のプレイヤーの渇きシステムを無効にしました"
+  "command.thirstwastaken.disable": "%1$s 人のプレイヤーの渇きシステムを無効にしました",
+  "thirstwastaken.tooltip.hydration": "水分: +%1$s、潤い: +%2$s"
 }

@@ -22,5 +22,6 @@
   "command.thirstwastaken.query": "Soif actuelle : %1$s, hydratation actuelle : %2$s",
   "command.thirstwastaken.set": "Soif réglée sur %1$s et hydratation sur %2$s",
   "command.thirstwastaken.enable": "Soif activée pour %1$s joueur(s)",
-  "command.thirstwastaken.disable": "Soif désactivée pour %1$s joueur(s)"
+  "command.thirstwastaken.disable": "Soif désactivée pour %1$s joueur(s)",
+  "thirstwastaken.tooltip.hydration": "Hydratation : +%1$s, Désaltération : +%2$s"
 }
