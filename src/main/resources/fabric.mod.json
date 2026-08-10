@@ -21,7 +21,8 @@
   "environment": "*",
   "entrypoints": {
     "main": ["com.thirstwastaken.ThirstWasTaken"],
-    "client": ["com.thirstwastaken.client.ThirstWasTakenClient"]
+    "client": ["com.thirstwastaken.client.ThirstWasTakenClient"],
+    "modmenu": ["com.thirstwastaken.client.compat.ModMenuIntegration"]
   },
   "mixins": [
     "thirstwastaken.mixins.json"
@@ -33,6 +34,7 @@
     "fabric-api": "*"
   },
   "suggests": {
+    "modmenu": "*",
     "create": "*",
     "farmersdelight": "*",
     "appleskin": "*",

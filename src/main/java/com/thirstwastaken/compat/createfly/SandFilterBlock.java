@@ -21,7 +21,8 @@ public final class SandFilterBlock extends Block implements EntityBlock {
     @Override
     @SuppressWarnings("unchecked")
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        if (type != CreateFlyIntegration.SAND_FILTER_ENTITY) return null;
+        // Create's SmartBlockEntity ticks its behaviours on both sides, so never skip the client.
+        if (type != CreateFlyIntegration.sandFilterEntity()) return null;
         return (world, pos, currentState, blockEntity) -> ((SandFilterBlockEntity) blockEntity).tickFilter();
     }
 }

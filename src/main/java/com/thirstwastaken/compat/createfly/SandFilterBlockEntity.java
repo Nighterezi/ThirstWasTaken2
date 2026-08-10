@@ -1,6 +1,7 @@
 package com.thirstwastaken.compat.createfly;
 
 import com.thirstwastaken.purity.ThirstComponents;
+import com.thirstwastaken.purity.WaterPurity;
 import com.zurrtum.create.api.behaviour.BlockEntityBehaviour;
 import com.zurrtum.create.foundation.blockEntity.SmartBlockEntity;
 import com.zurrtum.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
@@ -11,14 +12,16 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 
+/** Purifies water by one step as it is pumped from the input tank into the output tank. */
 public final class SandFilterBlockEntity extends SmartBlockEntity {
     private static final int CAPACITY = 1000;
     private static final int TRANSFER_PER_TICK = 10;
+
     private SmartFluidTankBehaviour input;
     private SmartFluidTankBehaviour output;
 
     public SandFilterBlockEntity(BlockPos pos, BlockState state) {
-        super(CreateFlyIntegration.SAND_FILTER_ENTITY, pos, state);
+        super(CreateFlyIntegration.sandFilterEntity(), pos, state);
     }
 
     @Override
@@ -34,11 +37,17 @@ public final class SandFilterBlockEntity extends SmartBlockEntity {
     public void tickFilter() {
         super.tick();
         if (level == null || level.isClientSide() || input == null || output == null) return;
+
         FluidStack source = input.getPrimaryHandler().getFluid();
-        if (source.isEmpty() || !source.isIn(FluidTags.WATER) || source.getAmount() < TRANSFER_PER_TICK) return;
+        if (source.isEmpty() || source.getAmount() < TRANSFER_PER_TICK || !source.isIn(FluidTags.WATER)) return;
+
+        Integer purity = source.get(ThirstComponents.WATER_PURITY);
+        // Already-clean water still flows through; it simply cannot get any cleaner.
+        int purified = Math.min(WaterPurity.MAX, (purity == null ? WaterPurity.MIN : purity) + 1);
+
         FluidStack filtered = source.copyWithAmount(TRANSFER_PER_TICK);
-        Integer purity = filtered.get(ThirstComponents.WATER_PURITY);
-        filtered.set(ThirstComponents.WATER_PURITY, Math.min(3, (purity == null ? 0 : purity) + 1));
+        filtered.set(ThirstComponents.WATER_PURITY, purified);
+
         int inserted = output.getCapability().insert(filtered);
         if (inserted > 0) input.getCapability().extract(source.copyWithAmount(inserted));
     }

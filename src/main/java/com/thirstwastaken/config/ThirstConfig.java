@@ -14,26 +14,49 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
-/** Loader-independent replacement for the original Forge config specs. */
+/**
+ * Loader-independent replacement for the original Forge config specs.
+ *
+ * <p>The instance is swapped wholesale on {@link #load()}; {@link #generation()} increments on every
+ * swap so derived caches (compiled patterns, per-item lookups) can invalidate themselves cheaply.
+ */
 public final class ThirstConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Path PATH = FabricLoader.getInstance().getConfigDir().resolve("thirstwastaken.json");
-    private static ThirstConfig INSTANCE;
+    private static volatile ThirstConfig INSTANCE;
+    private static volatile int generation;
 
+    // ---- thirst depletion -------------------------------------------------
     public double thirstDepletionModifier = 1.2;
     public boolean thirstDepletionInPeaceful = false;
     public double netherThirstDepletionModifier = 3.0;
     public int fireResistanceDehydrationPercent = 50;
+    /** Mirrors the original DEPLETES_WHEN_NAUSEA: nausea adds extra exhaustion while active. */
     public boolean depletesWhenNauseous = true;
     public boolean preventSprintingWhenThirsty = true;
     public boolean canDrinkRain = true;
     public boolean canDrinkByHand = false;
+    public boolean drinkByHandNeedsBothHandsEmpty = false;
     public int handDrinkingHydration = 3;
     public int handDrinkingQuenched = 2;
     public boolean extraHydrationConvertsToQuenched = true;
     public boolean dehydrationHaltsHealthRegen = true;
 
+    // ---- HUD --------------------------------------------------------------
+    public int thirstBarXOffset = 0;
+    public int thirstBarYOffset = 0;
+    /**
+     * Draws the dithered "exhaustion" strip behind the thirst bar. The original only drew it when
+     * AppleSkin was installed and its own SHOW_FOOD_EXHAUSTION_UNDERLAY option was enabled, so it is
+     * off by default here.
+     */
+    public boolean showExhaustionUnderlay = false;
+    /** Draws the lighter quenched (saturation-style) overlay on top of the droplets. */
+    public boolean showQuenchedOverlay = true;
+
+    // ---- water purity -----------------------------------------------------
     public int mountainsY = 100;
     public int cavesY = 48;
     public int runningWaterPurification = 1;
@@ -42,21 +65,35 @@ public final class ThirstConfig {
     public int[] nauseaChance = {100, 50, 5, 0};
     public int[] poisonChance = {30, 10, 0, 0};
 
+    // ---- item values ------------------------------------------------------
     public boolean enableKeywordMatching = false;
     public String keywordBlacklist = "dried|candied|leaf|leaves|gummy|crate|jam|sauce|bucket|seed|cookie|pie|bush|sapling|bean|curry|cake|candy";
     public String drinkKeywords = "drink|juice|tea|soda|coffee|wine|beer|cider|yogurt|milkshake|smoothie";
     public String soupKeywords = "soup|stew|porridge";
     public String fruitKeywords = "fruit|berry|berries|grape|orange|peach|pear|coconut|lemon|melon|cherry|apple";
+    public int[] keywordDrinkValue = {10, 14};
+    public int[] keywordSoupValue = {4, 5};
+    public int[] keywordFruitValue = {2, 3};
     public Set<String> itemBlacklist = new LinkedHashSet<>();
     public Map<String, int[]> drinks = defaultDrinks();
     public Map<String, int[]> foods = defaultFoods();
 
+    private transient Pattern keywordBlacklistPattern;
+    private transient Pattern drinkKeywordPattern;
+    private transient Pattern soupKeywordPattern;
+    private transient Pattern fruitKeywordPattern;
+
     public static ThirstConfig get() {
-        if (INSTANCE == null) load();
-        return INSTANCE;
+        ThirstConfig config = INSTANCE;
+        return config != null ? config : load();
     }
 
-    public static void load() {
+    /** Bumped whenever {@link #load()} replaces the active instance. */
+    public static int generation() {
+        return generation;
+    }
+
+    public static synchronized ThirstConfig load() {
         ThirstConfig loaded = null;
         if (Files.isRegularFile(PATH)) {
             try (Reader reader = Files.newBufferedReader(PATH)) {
@@ -65,17 +102,40 @@ public final class ThirstConfig {
                 ThirstWasTaken.LOGGER.error("Could not read {}", PATH, exception);
             }
         }
-        INSTANCE = loaded == null ? new ThirstConfig() : loaded;
-        INSTANCE.sanitize();
+        ThirstConfig config = loaded == null ? new ThirstConfig() : loaded;
+        config.sanitize();
+        INSTANCE = config;
+        generation++;
+        save();
+        return config;
+    }
+
+    public static synchronized void save() {
+        ThirstConfig config = INSTANCE;
+        if (config == null) return;
         try {
             Files.createDirectories(PATH.getParent());
             try (Writer writer = Files.newBufferedWriter(PATH)) {
-                GSON.toJson(INSTANCE, writer);
+                GSON.toJson(config, writer);
             }
         } catch (IOException exception) {
             ThirstWasTaken.LOGGER.error("Could not write {}", PATH, exception);
         }
     }
+
+    /** Re-validates and persists after an in-place edit (used by the config screen). */
+    public static synchronized void commit() {
+        ThirstConfig config = INSTANCE;
+        if (config == null) return;
+        config.sanitize();
+        generation++;
+        save();
+    }
+
+    public Pattern keywordBlacklistPattern() { return keywordBlacklistPattern; }
+    public Pattern drinkKeywordPattern() { return drinkKeywordPattern; }
+    public Pattern soupKeywordPattern() { return soupKeywordPattern; }
+    public Pattern fruitKeywordPattern() { return fruitKeywordPattern; }
 
     private void sanitize() {
         if (drinks == null) drinks = defaultDrinks();
@@ -83,11 +143,42 @@ public final class ThirstConfig {
         if (itemBlacklist == null) itemBlacklist = new LinkedHashSet<>();
         if (nauseaChance == null || nauseaChance.length != 4) nauseaChance = new int[]{100, 50, 5, 0};
         if (poisonChance == null || poisonChance.length != 4) poisonChance = new int[]{30, 10, 0, 0};
+        if (keywordDrinkValue == null || keywordDrinkValue.length != 2) keywordDrinkValue = new int[]{10, 14};
+        if (keywordSoupValue == null || keywordSoupValue.length != 2) keywordSoupValue = new int[]{4, 5};
+        if (keywordFruitValue == null || keywordFruitValue.length != 2) keywordFruitValue = new int[]{2, 3};
+        for (int i = 0; i < 4; i++) {
+            nauseaChance[i] = clamp(nauseaChance[i], 0, 100);
+            poisonChance[i] = clamp(poisonChance[i], 0, 100);
+        }
         defaultPurity = clamp(defaultPurity, 0, 3);
         fireResistanceDehydrationPercent = clamp(fireResistanceDehydrationPercent, 0, 100);
+        runningWaterPurification = clamp(runningWaterPurification, 0, 3);
+        handDrinkingHydration = clamp(handDrinkingHydration, 0, 20);
+        handDrinkingQuenched = clamp(handDrinkingQuenched, 0, 20);
+        thirstBarXOffset = clamp(thirstBarXOffset, -200, 200);
+        thirstBarYOffset = clamp(thirstBarYOffset, -200, 200);
+        thirstDepletionModifier = clamp(thirstDepletionModifier, 0.0, 10.0);
+        netherThirstDepletionModifier = clamp(netherThirstDepletionModifier, 0.0, 10.0);
+
+        keywordBlacklistPattern = compile(keywordBlacklist);
+        drinkKeywordPattern = compile(drinkKeywords);
+        soupKeywordPattern = compile(soupKeywords);
+        fruitKeywordPattern = compile(fruitKeywords);
+    }
+
+    private static Pattern compile(String pattern) {
+        if (pattern == null || pattern.isBlank()) return null;
+        try {
+            return Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
+        } catch (Exception exception) {
+            ThirstWasTaken.LOGGER.error("Invalid keyword pattern '{}', ignoring it", pattern, exception);
+            return null;
+        }
     }
 
     private static int clamp(int value, int min, int max) { return Math.max(min, Math.min(max, value)); }
+
+    private static double clamp(double value, double min, double max) { return Math.max(min, Math.min(max, value)); }
 
     private static Map<String, int[]> defaultDrinks() {
         Map<String, int[]> values = new LinkedHashMap<>();

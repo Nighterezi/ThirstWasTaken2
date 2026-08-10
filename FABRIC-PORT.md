@@ -1,71 +1,54 @@
 # Fabric port status
 
-This document tracks the Minecraft 26.2 Fabric port of the original [Thirst Was Taken](https://github.com/ghen-git/Thirst-Mod) mod.
+What made it into the Minecraft 26.2 Fabric version of [Thirst Was Taken](https://github.com/ghen-git/Thirst-Mod), and what has not yet.
 
-## Ported systems
+## What works
 
-| System | Status | Notes |
-|---|---|---|
-| Player thirst data | Complete | Persistent and synchronized with the owning client |
-| Thirst exhaustion | Complete | Mirrors vanilla food exhaustion with a Nether multiplier |
-| Quenched hydration | Complete | Absorbs exhaustion before the main thirst level drops |
-| Dehydration damage | Complete | Uses the vanilla starvation damage source |
-| Thirst HUD | Complete | Uses the Fabric HUD API and the Minecraft 26.2 render pipeline |
-| Sprint restriction | Complete | Prevents sprinting at critically low thirst |
-| Drink consumption | Complete | Supports potions, drinks, watery foods, and the water bowl |
-| Water source drinking | Complete | Shift-right-click water with an empty hand |
-| Rain drinking | Complete | Look upward while standing in rain |
-| Commands | Complete | Includes level controls and per-player enable state |
-| Custom bowls | Complete | Clay bowl, terracotta bowl, and terracotta water bowl |
-| Languages | Complete | All original translations plus Vietnamese |
-| Water purity | Complete | Four synchronized item-component levels, natural source purity, cauldron transfer, tooltips and sickness |
-| Purification | Complete | Component-aware furnace and campfire recipes for bottles, bowls and buckets |
-| Environmental modifiers | Complete | Biome temperature/humidity, Nether, Fire Resistance and Fire Protection modifiers |
-| Natural regeneration | Complete | Dehydration can halt vanilla natural health regeneration |
-| Config and item API | Complete | Editable JSON settings plus registry-ID hydration mappings and keyword fallback |
-| Loot and bartering | Complete | Water loot in original structure tables and optional Piglin barters |
-| Hydration overlays | Complete | Quenched/exhaustion HUD overlays and hydration/purity tooltips |
-| Farmer's Delight | Complete | Supports the 26.2 Refabricated counterpart by stable registry IDs |
-| Create | Complete | Optional Create Fly 26.2 Sand Filter with component-preserving fluid purification |
+- Thirst and quenched bars that drain as you play, faster when you sprint, fight or take damage.
+- Hotter, drier biomes and the Nether dry you out quicker; Fire Resistance and Fire Protection slow it down.
+- Riding a mount does not make you thirsty.
+- Running out of water hurts you, and stops you from sprinting and from healing naturally.
+- On Peaceful, thirst slowly refills instead of draining.
+- Drink from potions, modded drinks, watery foods and the water bowl.
+- Drink straight from a water source by sneaking with an empty hand, or from the rain by looking up.
+- Four levels of water purity. Dirty water can make you nauseous or poison you.
+- Purify water in a furnace or on a campfire, in bottles, bowls and buckets.
+- Cauldrons remember how clean the water poured into them was.
+- Clay bowl, terracotta bowl and terracotta water bowl.
+- Water bottles appear in dungeon, mineshaft, shipwreck, nether bridge and bastion chests, and in Piglin barters.
+- `/thirst` commands to check, set, or turn thirst off for a player.
+- Full translations, including Vietnamese.
 
-## Changes made for Fabric
+## New in the Fabric version
 
-- Replaced Forge capabilities with Fabric Data Attachments.
-- Replaced Forge event subscribers with Fabric lifecycle and interaction events.
-- Replaced Forge GUI overlays with the Fabric HUD Element API.
-- Updated item registration and consumable components for Minecraft 26.2.
-- Updated item model and recipe resource paths for Minecraft 26.2.
-- Split common and client code into separate source sets.
-- Changed the Java package to `com.thirstwastaken`.
-- Changed the mod ID and resource namespace to `thirstwastaken`.
-- Added Vietnamese and completed command translations for every bundled language.
-- Added GitHub Actions builds and Dependabot updates.
-- Added dedicated server startup validation.
-- Replaced item NBT purity with a persistent, network-synchronized data component.
-- Replaced Forge configs with `config/thirstwastaken.json`.
-- Replaced Forge global loot modifiers with Fabric loot table events.
-- Uses optional registry-ID integrations so supported food mods never become hard dependencies.
+- A config screen in Mod Menu for every setting, no file editing needed.
+- Settings are stored in `config/thirstwastaken.json` if you prefer to edit them by hand.
+- The thirst bar can be moved around the screen.
+- The dotted exhaustion strip behind the bar and the quenched outline on the droplets can each be turned off. The dotted strip is off by default.
+- Optional setting requiring both hands to be empty before drinking by hand.
+- Support for other food mods works by item name, so none of them are required to be installed.
+- The Create Sand Filter is back, for Create Fly.
 
-## Integrations held for a compatible 26.2 release
+## Not available yet
 
-- Cold Sweat: no Fabric build exists; its project explicitly does not provide a Fabric port.
-- Farmer's Respite: no Fabric 26.2 build exists. Its item IDs remain preconfigured for a future compatible port.
-- Brewin' and Chewin': the Fabric/Fly ports currently stop before 26.2. Its item IDs remain preconfigured.
-- Tough As Nails: Fabric currently stops at 26.1.2. Its drinks and purity mappings remain preconfigured.
-- Supplementaries/Botania compatibility mixins: their old Forge fluid hooks have no matching 26.2 API in scope.
-- Jade: Jade itself supports Fabric 26.2, but the old integration only inspected Forge/Create fluid NBT. Create Fly now carries purity as a synchronized component and the Sand Filter works without Jade; a dedicated Jade display provider can be added later without affecting gameplay.
+These need mods that have no Minecraft 26.2 Fabric release yet. Their items are already configured, so they will start working as soon as those mods update.
 
-## Original water purity reference
+- Cold Sweat
+- Farmer's Respite
+- Brewin' and Chewin'
+- Tough As Nails
+- Supplementaries and Botania
 
-The original Forge mod uses four water purity levels. This image is retained as a reference for the future purity port.
+Missing from the original mod:
 
-<p align="center">
-  <img src=".github/assets/water-purity-original.png" alt="The four water purity levels from the original mod" width="275">
-</p>
+- The Sand Filter has no Ponder scene.
+- Jade does not show water purity.
 
-## Verification
+## Good to know
 
-- `./gradlew build` succeeds with Java 25.
-- The dedicated Fabric server reaches the ready state on Minecraft 26.2.
-- The dedicated server also reaches the ready state with Create Fly 6.0.9-1 and loads its conditional Sand Filter recipe.
-- GitHub Actions builds and uploads the release JAR.
+- Everything except the HUD options is decided by the server. Changing them on a client that is joined to someone else's server will not affect that server.
+- The Sand Filter only exists while Create Fly is installed. Removing Create from a world that already has one placed will leave a missing block behind.
+
+---
+
+Developers: see [CODEMAP.md](CODEMAP.md) and [CLAUDE.md](CLAUDE.md).
