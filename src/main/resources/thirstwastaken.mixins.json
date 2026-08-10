@@ -3,6 +3,10 @@
   "package": "com.thirstwastaken.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
+    "BottleItemMixin",
+    "BucketItemMixin",
+    "FoodDataMixin",
+    "LayeredCauldronBlockMixin",
     "ItemStackMixin",
     "PlayerMixin"
   ],

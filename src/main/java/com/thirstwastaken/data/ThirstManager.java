@@ -1,6 +1,9 @@
 package com.thirstwastaken.data;
 
 import com.thirstwastaken.item.ThirstItems;
+import com.thirstwastaken.api.ThirstApi;
+import com.thirstwastaken.config.ThirstConfig;
+import com.thirstwastaken.purity.WaterPurity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,8 +16,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
-
-import java.util.Locale;
 
 public final class ThirstManager {
     private ThirstManager() { }
@@ -29,7 +30,17 @@ public final class ThirstManager {
 
     public static void addExhaustion(Player player, float amount) {
         if (!player.level().isClientSide() && !player.getAbilities().invulnerable) {
-            float modifier = player.level().dimension() == Level.NETHER ? 3.0F : 1.2F;
+            ThirstConfig config = ThirstConfig.get();
+            float modifier = (float) (player.level().dimension() == Level.NETHER
+                    ? config.netherThirstDepletionModifier : biomeModifier(player) * config.thirstDepletionModifier);
+            if (player.hasEffect(net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE))
+                modifier *= config.fireResistanceDehydrationPercent / 100.0F;
+            if (player instanceof ServerPlayer serverPlayer) {
+                float protection = net.minecraft.world.item.enchantment.EnchantmentHelper.getDamageProtection(
+                        serverPlayer.level(), serverPlayer, serverPlayer.damageSources().onFire());
+                modifier *= Math.max(0.25F, 1.0F - protection * 0.0234375F);
+            }
+            if (!config.depletesWhenNauseous && player.hasEffect(net.minecraft.world.effect.MobEffects.NAUSEA)) return;
             set(player, get(player).addExhaustion(amount * modifier));
         }
     }
@@ -39,18 +50,8 @@ public final class ThirstManager {
     }
 
     public static void drinkItem(Player player, ItemStack stack) {
-        if (stack.is(ThirstItems.TERRACOTTA_WATER_BOWL)) {
-            drink(player, 4, 5);
-            return;
-        }
-
-        String id = stack.getItem().builtInRegistryHolder().key().identifier().toString().toLowerCase(Locale.ROOT);
-        if (stack.getUseAnimation() == ItemUseAnimation.DRINK) {
-            drink(player, id.equals("minecraft:potion") ? 6 : 10, id.equals("minecraft:potion") ? 8 : 14);
-        } else if (id.matches(".*(melon|apple|berries|berry|carrot|beetroot|soup|stew).*")) {
-            int hydration = id.contains("melon") || id.contains("soup") ? 4 : 2;
-            drink(player, hydration, hydration + 1);
-        }
+        int[] value = ThirstApi.hydration(stack);
+        if (value != null && WaterPurity.applyEffects(player, stack)) drink(player, value[0], value[1]);
     }
 
     public static void tick(MinecraftServer server) {
@@ -61,10 +62,11 @@ public final class ThirstManager {
         ThirstData data = get(player);
         if (!data.enabled() || player.getAbilities().invulnerable) return;
 
-        boolean peaceful = player.level().getDifficulty() == Difficulty.PEACEFUL;
+        boolean peaceful = player.level().getDifficulty() == Difficulty.PEACEFUL
+                && !ThirstConfig.get().thirstDepletionInPeaceful;
         ThirstData updated = data.consumeExhaustion(peaceful);
 
-        if (player.tickCount % 11 == 0 && player.getXRot() <= -80.0F
+        if (ThirstConfig.get().canDrinkRain && player.tickCount % 11 == 0 && player.getXRot() <= -80.0F
                 && player.level().isRainingAt(player.blockPosition().above())) {
             updated = updated.drink(1, 1);
         }
@@ -80,7 +82,7 @@ public final class ThirstManager {
     }
 
     public static InteractionResult drinkByHand(Player player, Level level, InteractionHand hand, BlockHitResult hit) {
-        if (level.isClientSide() || !player.isCrouching() || !player.getItemInHand(hand).isEmpty()
+        if (!ThirstConfig.get().canDrinkByHand || level.isClientSide() || !player.isCrouching() || !player.getItemInHand(hand).isEmpty()
                 || player.getAbilities().invulnerable || get(player).thirst() >= ThirstData.MAX) {
             return InteractionResult.PASS;
         }
@@ -88,8 +90,19 @@ public final class ThirstManager {
         BlockPos pos = hit.getBlockPos();
         if (!level.getFluidState(pos).is(FluidTags.WATER)) return InteractionResult.PASS;
 
-        drink(player, 3, 2);
+        if (WaterPurity.applyEffects(player, WaterPurity.set(new ItemStack(ThirstItems.TERRACOTTA_WATER_BOWL), WaterPurity.at(level, pos))))
+            drink(player, ThirstConfig.get().handDrinkingHydration, ThirstConfig.get().handDrinkingQuenched);
         player.playSound(net.minecraft.sounds.SoundEvents.GENERIC_DRINK.value(), 1.0F, 1.0F);
         return InteractionResult.SUCCESS_SERVER;
+    }
+
+    private static float biomeModifier(Player player) {
+        var biome = player.level().getBiome(player.blockPosition()).value();
+        float humidity = biome.getPrecipitationAt(player.blockPosition(), 63)
+                == net.minecraft.world.level.biome.Biome.Precipitation.NONE ? 0.65F : 1.25F;
+        float temperature = biome.getBaseTemperature() + 0.2F;
+        temperature = temperature <= 0 ? (float) Math.exp(temperature) : temperature > 1 ? temperature / 2 : temperature;
+        float result = temperature / humidity;
+        return result < 1 ? 1 - ((1 - result) * 0.5F) : result;
     }
 }

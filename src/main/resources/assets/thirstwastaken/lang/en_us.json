@@ -22,5 +22,6 @@
   "command.thirstwastaken.query": "Current Thirst: %1$s, Current Quenched: %2$s",
   "command.thirstwastaken.set": "set thirst to %1$s, set quenched to %2$s",
   "command.thirstwastaken.enable": "Enabled thirst for %1$s player(s)",
-  "command.thirstwastaken.disable": "Disabled thirst for %1$s player(s)"
+  "command.thirstwastaken.disable": "Disabled thirst for %1$s player(s)",
+  "thirstwastaken.tooltip.hydration": "Hydration: +%1$s, Quenched: +%2$s"
 }

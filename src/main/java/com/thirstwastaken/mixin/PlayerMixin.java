@@ -1,6 +1,7 @@
 package com.thirstwastaken.mixin;
 
 import com.thirstwastaken.data.ThirstManager;
+import com.thirstwastaken.config.ThirstConfig;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,7 +19,8 @@ abstract class PlayerMixin {
     @Inject(method = "canSprint", at = @At("RETURN"), cancellable = true)
     private void thirst$preventSprintingWhenDehydrated(CallbackInfoReturnable<Boolean> cir) {
         Player player = (Player) (Object) this;
-        if (cir.getReturnValue() && ThirstManager.get(player).enabled() && ThirstManager.get(player).thirst() <= 6) {
+        if (cir.getReturnValue() && ThirstConfig.get().preventSprintingWhenThirsty
+                && ThirstManager.get(player).enabled() && ThirstManager.get(player).thirst() <= 6) {
             cir.setReturnValue(false);
         }
     }

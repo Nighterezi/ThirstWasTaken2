@@ -15,6 +15,15 @@ public final class ThirstCommands {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("thirst")
                 .requires(source -> Commands.LEVEL_GAMEMASTERS.check(source.permissions()))
+                .then(Commands.literal("query")
+                        .then(Commands.argument("player", EntityArgument.player())
+                                .executes(context -> {
+                                    var player = EntityArgument.getPlayer(context, "player");
+                                    var data = ThirstManager.get(player);
+                                    context.getSource().sendSuccess(() -> Component.translatable(
+                                            "command.thirstwastaken.query", data.thirst(), data.quenched()), false);
+                                    return data.thirst();
+                                })))
                 .then(Commands.literal("set")
                         .then(Commands.argument("players", EntityArgument.players())
                                 .then(Commands.argument("thirst", IntegerArgumentType.integer(0, 20))

@@ -18,6 +18,15 @@ This document tracks the Minecraft 26.2 Fabric port of the original [Thirst Was 
 | Commands | Complete | Includes level controls and per-player enable state |
 | Custom bowls | Complete | Clay bowl, terracotta bowl, and terracotta water bowl |
 | Languages | Complete | All original translations plus Vietnamese |
+| Water purity | Complete | Four synchronized item-component levels, natural source purity, cauldron transfer, tooltips and sickness |
+| Purification | Complete | Component-aware furnace and campfire recipes for bottles, bowls and buckets |
+| Environmental modifiers | Complete | Biome temperature/humidity, Nether, Fire Resistance and Fire Protection modifiers |
+| Natural regeneration | Complete | Dehydration can halt vanilla natural health regeneration |
+| Config and item API | Complete | Editable JSON settings plus registry-ID hydration mappings and keyword fallback |
+| Loot and bartering | Complete | Water loot in original structure tables and optional Piglin barters |
+| Hydration overlays | Complete | Quenched/exhaustion HUD overlays and hydration/purity tooltips |
+| Farmer's Delight | Complete | Supports the 26.2 Refabricated counterpart by stable registry IDs |
+| Create | Complete | Optional Create Fly 26.2 Sand Filter with component-preserving fluid purification |
 
 ## Changes made for Fabric
 
@@ -32,20 +41,19 @@ This document tracks the Minecraft 26.2 Fabric port of the original [Thirst Was 
 - Added Vietnamese and completed command translations for every bundled language.
 - Added GitHub Actions builds and Dependabot updates.
 - Added dedicated server startup validation.
+- Replaced item NBT purity with a persistent, network-synchronized data component.
+- Replaced Forge configs with `config/thirstwastaken.json`.
+- Replaced Forge global loot modifiers with Fabric loot table events.
+- Uses optional registry-ID integrations so supported food mods never become hard dependencies.
 
-## Not yet ported
+## Integrations held for a compatible 26.2 release
 
-- Four-level water purity data and sickness effects
-- Campfire and furnace water purification
-- Biome temperature and humidity modifiers
-- Fire protection and fire resistance dehydration modifiers
-- Cold Sweat integration
-- Farmer's Delight, Farmer's Respite, and Brewin' and Chewin' integration
-- Create integration and the Sand Filter
-- AppleSkin overlays and hydration tooltips
-- Jade and Tough As Nails integration
-- Structure chest loot and Piglin water trades
-- Compatibility mixins for the other mods supported by the original Forge release
+- Cold Sweat: no Fabric build exists; its project explicitly does not provide a Fabric port.
+- Farmer's Respite: no Fabric 26.2 build exists. Its item IDs remain preconfigured for a future compatible port.
+- Brewin' and Chewin': the Fabric/Fly ports currently stop before 26.2. Its item IDs remain preconfigured.
+- Tough As Nails: Fabric currently stops at 26.1.2. Its drinks and purity mappings remain preconfigured.
+- Supplementaries/Botania compatibility mixins: their old Forge fluid hooks have no matching 26.2 API in scope.
+- Jade: Jade itself supports Fabric 26.2, but the old integration only inspected Forge/Create fluid NBT. Create Fly now carries purity as a synchronized component and the Sand Filter works without Jade; a dedicated Jade display provider can be added later without affecting gameplay.
 
 ## Original water purity reference
 
@@ -59,4 +67,5 @@ The original Forge mod uses four water purity levels. This image is retained as 
 
 - `./gradlew build` succeeds with Java 25.
 - The dedicated Fabric server reaches the ready state on Minecraft 26.2.
+- The dedicated server also reaches the ready state with Create Fly 6.0.9-1 and loads its conditional Sand Filter recipe.
 - GitHub Actions builds and uploads the release JAR.

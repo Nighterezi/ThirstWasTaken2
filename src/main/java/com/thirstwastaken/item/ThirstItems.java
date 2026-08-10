@@ -1,6 +1,7 @@
 package com.thirstwastaken.item;
 
 import com.thirstwastaken.ThirstWasTaken;
+import com.thirstwastaken.purity.ThirstComponents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -17,6 +18,7 @@ public final class ThirstItems {
     public static final Item TERRACOTTA_BOWL = register("terracotta_bowl", Item::new, new Item.Properties().stacksTo(64));
     public static final Item TERRACOTTA_WATER_BOWL = register("terracotta_water_bowl", Item::new,
             new Item.Properties().stacksTo(64).usingConvertsTo(TERRACOTTA_BOWL)
+                    .component(ThirstComponents.WATER_PURITY, 0)
                     .component(net.minecraft.core.component.DataComponents.CONSUMABLE, Consumables.DEFAULT_DRINK));
 
     private ThirstItems() { }

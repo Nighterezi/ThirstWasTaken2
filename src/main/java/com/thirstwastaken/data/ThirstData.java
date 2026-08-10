@@ -1,5 +1,7 @@
 package com.thirstwastaken.data;
 
+import com.thirstwastaken.config.ThirstConfig;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.thirstwastaken.ThirstWasTaken;
@@ -44,7 +46,8 @@ public record ThirstData(int thirst, int quenched, float exhaustion, boolean ena
     }
 
     public ThirstData drink(int hydration, int quenchness) {
-        int overflow = Math.max(thirst + hydration - MAX, 0);
+        int overflow = ThirstConfig.get().extraHydrationConvertsToQuenched
+                ? Math.max(thirst + hydration - MAX, 0) : 0;
         int newThirst = Math.min(MAX, thirst + hydration);
         int newQuenched = Math.min(newThirst, quenched + quenchness + overflow);
         return new ThirstData(newThirst, newQuenched, exhaustion, enabled);
