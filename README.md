@@ -31,14 +31,6 @@ Thirst Was Taken adds a survival thirst system designed to fit naturally into mo
 - Administrator commands for setting or enabling thirst
 - Client language detection with 9 bundled translations
 
-## Screenshot
-
-The original mod defines four water purity levels. The image below comes from the original Forge project and is included as a visual reference. Water purity and the original compatibility integrations are not yet part of this Fabric 26.2 port.
-
-<p align="center">
-  <img src=".github/assets/water-purity-original.png" alt="The four water purity levels from the original mod" width="275">
-</p>
-
 ## Install
 
 Install the following on both the client and server:
@@ -77,29 +69,11 @@ Translation files are located in `src/main/resources/assets/thirstwastaken/lang/
 
 ## Build
 
-Windows:
-
-```bat
-scripts\build.bat
-```
-
-Linux or macOS:
-
 ```bash
-./scripts/build.sh
-```
-
-PowerShell:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/build.ps1
+./gradlew build
 ```
 
 The ready-to-use JAR is created in `build/libs/`.
-
-## Port status
-
-This release ports the core thirst loop to Fabric 26.2. Forge-specific systems from the original project, including water purity, Create, Cold Sweat, Farmer's Delight, AppleSkin, structure loot, and the Sand Filter, still require separate 26.2 implementations.
 
 ## Credits
 
