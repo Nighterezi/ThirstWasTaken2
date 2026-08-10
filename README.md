@@ -19,8 +19,6 @@
 
 > [View the Fabric port status, implemented changes, and remaining work](FABRIC-PORT.md).
 
-> [Read the player and server documentation](docs/).
-
 Thirst Was Taken adds a survival thirst system designed to fit naturally into modpacks. Movement and other exhausting activities consume hydration, drinks and watery foods restore it, and severe dehydration can slow or damage the player.
 
 ## Highlights
@@ -35,6 +33,32 @@ Thirst Was Taken adds a survival thirst system designed to fit naturally into mo
 - Administrator commands for setting or enabling thirst
 - Client language detection with 9 bundled translations
 
+## Screenshots
+
+Thirst sits above the hunger bar and drains as you play. The reserve behind it is drawn as a lighter
+outline on the droplets.
+
+![The thirst bar above the hunger bar, part drained](docs/public/screenshots/thirst-bar.png)
+
+Anything that restores thirst shows it as droplets instead of numbers. The water inside each droplet
+is the hydration, the outline around it is the quenched, so one row carries both values.
+
+| Item tooltip | The four grades of water |
+|---|---|
+| ![The tooltip of a water bottle](docs/public/screenshots/item-tooltip.png) | ![Tooltips reading Dirty, Slightly Dirty, Acceptable and Purified](docs/public/screenshots/water-purity.png) |
+
+Look straight up in the rain to drink, or run the bar to empty and find out what dehydration costs.
+
+| Drinking the rain | Running on empty |
+|---|---|
+| ![Rain falling over a forest](docs/public/screenshots/drinking-in-rain.png) | ![An empty thirst bar and two and a half hearts](docs/public/screenshots/dehydration.png) |
+
+Every setting has a widget in Mod Menu, and the mod's items have their own creative tab.
+
+| Settings | Creative tab |
+|---|---|
+| ![The config screen](docs/public/screenshots/config-1.png) | ![The Thirst was Taken creative tab](docs/public/screenshots/creative-tab.png) |
+
 ## Install
 
 Install the following on both the client and server:
@@ -48,10 +72,11 @@ Download the JAR from a successful [GitHub Actions build](https://github.com/Nig
 
 ## Commands
 
-| Command | Action |
-|---|---|
+| Command                                     | Action |
+|---------------------------------------------|---|
+| `/thirst query <player>`                    | Show current thirst and quenched levels |
 | `/thirst set <players> <thirst> <quenched>` | Set thirst and quenched levels |
-| `/thirst enable <players> <true|false>` | Enable or disable thirst ticking |
+| `/thirst enable <players> <true/false>`     | Enable or disable thirst ticking |
 
 These commands require game master permission.
 
@@ -86,7 +111,8 @@ The ready-to-use JAR is created in `build/libs/`.
 - Fabric port: [Nighter](https://github.com/Nighterezi)
 - Fabric port source: [Nighterezi/ThirstWasTakenFabric](https://github.com/Nighterezi/ThirstWasTakenFabric)
 
-The banner, icon, translations, and water purity reference image originate from the original project.
+The banner, icon and translations originate from the original project. The screenshots were taken in
+this port.
 
 ## License
 

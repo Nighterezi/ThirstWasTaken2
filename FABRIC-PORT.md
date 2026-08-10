@@ -18,7 +18,7 @@ What made it into the Minecraft 26.2 Fabric version of [Thirst Was Taken](https:
 - A dedicated **Thirst Was Taken** creative inventory tab collects every item from the mod. The Sand Filter joins it when Create Fly is installed.
 - Water bottles appear in dungeon, mineshaft, shipwreck, nether bridge and bastion chests, and in Piglin barters.
 - `/thirst` commands to check, set, or turn thirst off for a player.
-- Full translations, including Vietnamese.
+- Nine languages, all covering the config screen as well as the in-game text.
 
 ## New in the Fabric version
 
@@ -30,6 +30,7 @@ What made it into the Minecraft 26.2 Fabric version of [Thirst Was Taken](https:
 - The dotted exhaustion strip behind the bar and the quenched outline on the droplets can each be turned off. The dotted strip is off by default.
 - Optional setting requiring both hands to be empty before drinking by hand.
 - Hand drinking restores 1 thirst and 1 quenched by default, reduced from 3 and 2 so free water does not fill both bars too quickly. Both values remain configurable.
+- Item tooltips show droplets instead of a line of numbers. The original printed `Hydration: +6, Quenched: +8`; the port draws the same droplets the bar uses, with the water level inside each droplet and the quenched outline around it, so one row of droplets carries both values. A drink worth 6 hydration and 8 quenched reads as three filled droplets followed by one outline-only droplet.
 - Support for other food mods works by item name, so none of them are required to be installed.
 - The Create Sand Filter is back, for Create Fly.
 

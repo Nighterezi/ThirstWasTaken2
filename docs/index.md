@@ -48,7 +48,7 @@ features:
 
 Every container remembers where its water came from. The tooltip tells you before you swallow it.
 
-![Item tooltips reading Dirty, Slightly Dirty, Acceptable and Purified](/water-purity.png)
+![Item tooltips reading Dirty, Slightly Dirty, Acceptable and Purified](/screenshots/water-purity.png)
 
 Dirty water still hydrates you. It might also cost you ten seconds of poison, so it is a trade you
 make on purpose.

@@ -1,5 +1,7 @@
 # Thirst and Quenched
 
+![The thirst bar above the hunger bar, part drained](/screenshots/thirst-bar.png)
+
 ## The two numbers
 
 Thirst runs from 0 to 20 and is drawn as ten droplets, so one droplet is two points. New players
@@ -47,6 +49,8 @@ saturation healing only fires an eighth as often. Health you did not regain does
 food, so a dehydrated player does not quietly starve as well.
 
 ## Hitting zero
+
+![An empty thirst bar with health down to two and a half hearts](/screenshots/dehydration.png)
 
 An empty bar costs half a heart every two seconds. The damage ignores armour, and the death message
 reads `died from dehydration`.

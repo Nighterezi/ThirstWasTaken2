@@ -48,7 +48,7 @@ features:
 
 Mỗi vật chứa đều nhớ nguồn nước của nó. Dòng mô tả sẽ cho bạn biết trước khi bạn uống.
 
-![Mô tả vật phẩm hiển thị Bẩn, Hơi bẩn, Có thể uống và Đã tinh lọc](/water-purity.png)
+![Mô tả vật phẩm hiển thị Bẩn, Hơi bẩn, Có thể uống và Đã tinh lọc](/screenshots/water-purity.png)
 
 Nước bẩn vẫn giải khát. Nó cũng có thể lấy của bạn mười giây trúng độc, nên đó là một cái giá bạn
 chấp nhận trả.

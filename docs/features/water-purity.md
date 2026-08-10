@@ -2,7 +2,7 @@
 
 Every container of water carries one of four grades, shown in its tooltip.
 
-![Item tooltips reading Dirty, Slightly Dirty, Acceptable and Purified](/water-purity.png)
+![Item tooltips reading Dirty, Slightly Dirty, Acceptable and Purified](/screenshots/water-purity.png)
 
 ## Where the grade comes from
 

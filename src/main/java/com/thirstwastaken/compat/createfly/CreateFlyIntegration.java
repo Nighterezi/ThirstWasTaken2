@@ -57,11 +57,11 @@ public final class CreateFlyIntegration {
 
         ResourceKey<Block> blockKey = ResourceKey.create(Registries.BLOCK, ThirstWasTaken.id("sand_filter"));
         sandFilter = Registry.register(BuiltInRegistries.BLOCK, blockKey, new SandFilterBlock(
-                BlockBehaviour.Properties.of().strength(3.0F).requiresCorrectToolForDrops().setId(blockKey)));
+                BlockBehaviour.Properties.of().strength(3.0F).requiresCorrectToolForDrops().noOcclusion().setId(blockKey)));
 
         ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, ThirstWasTaken.id("sand_filter"));
         sandFilterItem = Registry.register(BuiltInRegistries.ITEM, itemKey,
-                new BlockItem(sandFilter, new Item.Properties().setId(itemKey)));
+                new BlockItem(sandFilter, new Item.Properties().setId(itemKey).useBlockDescriptionPrefix()));
 
         sandFilterEntity = Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, ThirstWasTaken.id("sand_filter"),
                 new BlockEntityType<>(SandFilterBlockEntity::new, Set.of(sandFilter)));

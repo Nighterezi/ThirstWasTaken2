@@ -2,8 +2,15 @@
 
 ## Thứ gì đáng uống
 
-Mọi vật phẩm hồi độ khát đều ghi rõ trong dòng mô tả, dưới dạng `Hydration` và `Quenched`. Đây là các
-giá trị mod đặt sẵn cho vật phẩm gốc và vật phẩm của chính nó:
+Mọi vật phẩm hồi độ khát đều ghi rõ trong dòng mô tả, bằng một hàng giọt nước thay vì con số.
+
+![Dòng mô tả của chai nước, hiện bốn giọt nước](/screenshots/item-tooltip.png)
+
+Cách đọc giống hệt thanh khát trên màn hình. Mỗi giọt đáng hai điểm, phần nước bên trong giọt là độ
+khát, còn viền quanh giọt là mức đã khát. Hàng dài bằng giá trị lớn hơn trong hai giá trị đó, nên chai
+nước ở trên cho 6 độ khát, tức ba giọt có nước, và 8 đã khát, tức bốn giọt có viền.
+
+Đây là các giá trị mod đặt sẵn cho vật phẩm gốc và vật phẩm của chính nó:
 
 | Vật phẩm | Độ khát | Đã khát |
 |---|---|---|
@@ -24,6 +31,10 @@ chỉ nằm im cho tới khi vật phẩm tồn tại. Với những thứ khác
 
 ## Các loại bát
 
+Mọi thứ mod thêm vào đều nằm trong mục sáng tạo riêng của nó.
+
+![Mục sáng tạo Thirst was Taken, chứa bát đất sét, bát đất nung và bát đất nung đựng nước](/screenshots/creative-tab.png)
+
 Mod thêm một loại bát chịu được việc đựng nước.
 
 1. Ba cục đất sét xếp theo hình cái bát, đúng công thức bát gỗ, cho ra bốn **bát đất sét**.
@@ -43,6 +54,8 @@ Hai cách uống mà không cần cầm gì trong tay.
 
 **Nước mưa.** Nhìn thẳng lên trời khi trời đang mưa lên người bạn, nước sẽ vào từ từ, mỗi lần một ít.
 Cách này bật sẵn.
+
+![Mưa đổ xuống khu rừng, thanh khát đã vơi một phần](/screenshots/drinking-in-rain.png)
 
 **Ngồi xuống và dùng tay không lên mặt nước.** Tắt sẵn. Bật nó bằng
 [canDrinkByHand](/vi/docs/configuration#candrinkbyhand). Nó đáng giá kém hơn một bát nước đầy một chút,

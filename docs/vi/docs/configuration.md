@@ -8,6 +8,12 @@ outline: [2, 3]
 game tại **Mods > Thirst Was Taken > Config**, và màn hình đó tự lưu khi bạn đóng lại. Nút cuối cùng
 mở thẳng file, dành cho vài mục quá dài để nhét vừa một thanh trượt.
 
+![Thirst Was Taken trong danh sách Mod Menu](/screenshots/mod-menu.png)
+
+| Tiêu hao và uống nước | Nhiễm bệnh, giao diện và giá trị vật phẩm |
+|---|---|
+| ![Phần trên của màn hình cấu hình](/screenshots/config-1.png) | ![Phần dưới của màn hình cấu hình](/screenshots/config-2.png) |
+
 ::: tip
 Chỉ mục Giao diện được đọc từ file của chính bạn. Phần còn lại lấy từ máy đang chạy thế giới, nên với
 máy chủ riêng thì đó là file của máy chủ. Sửa file bằng tay thì lần khởi động sau mới có hiệu lực.

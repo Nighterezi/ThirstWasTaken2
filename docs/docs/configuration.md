@@ -8,6 +8,12 @@ outline: [2, 3]
 game from **Mods > Thirst Was Taken > Config**, and the screen saves when you close it. Its last
 button opens the file itself, for the few settings that are too long to fit on a slider.
 
+![Thirst Was Taken listed in Mod Menu](/screenshots/mod-menu.png)
+
+| Depletion and drinking | Sickness, HUD and item values |
+|---|---|
+| ![The top of the config screen](/screenshots/config-1.png) | ![The bottom of the config screen](/screenshots/config-2.png) |
+
 ::: tip
 Only the HUD section is read from your own copy. Everything else comes from the copy on the machine
 running the world, so on a dedicated server that is the server's file. Editing the file by hand

@@ -2,7 +2,7 @@
 
 Mỗi vật chứa nước đều mang một trong bốn mức, hiện ngay trong dòng mô tả.
 
-![Mô tả vật phẩm hiển thị Bẩn, Hơi bẩn, Có thể uống và Đã tinh lọc](/water-purity.png)
+![Mô tả vật phẩm hiển thị Bẩn, Hơi bẩn, Có thể uống và Đã tinh lọc](/screenshots/water-purity.png)
 
 ## Mức sạch đến từ đâu
 

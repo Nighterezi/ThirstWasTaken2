@@ -2,8 +2,16 @@
 
 ## What is worth drinking
 
-Every item that restores thirst says so in its tooltip, as `Hydration` and `Quenched`. These are the
-values the mod ships with for vanilla and its own items:
+Every item that restores thirst says so in its tooltip, as a row of droplets rather than numbers.
+
+![The tooltip of a water bottle, showing four droplets](/screenshots/item-tooltip.png)
+
+Read it the same way you read the bar. Each droplet is worth two points, the water inside it is the
+hydration, and the outline around it is the quenched. The row is as long as the larger of the two, so
+the bottle above gives 6 hydration, three droplets of water, and 8 quenched, four droplets of
+outline.
+
+These are the values the mod ships with for vanilla and its own items:
 
 | Item | Hydration | Quenched |
 |---|---|---|
@@ -24,6 +32,10 @@ sit unused until the item exists. For anything else, see
 
 ## Bowls
 
+Everything the mod adds lives in its own creative tab.
+
+![The Thirst was Taken creative tab, holding the clay bowl, terracotta bowl and terracotta water bowl](/screenshots/creative-tab.png)
+
 The mod adds a bowl that survives being filled with water.
 
 1. Three clay balls in a bowl shape, the same pattern as a wooden bowl, give four **clay bowls**.
@@ -43,6 +55,8 @@ Two ways to drink with nothing in your hands.
 
 **Rain.** Look straight up while it is raining on you and you slowly take on water, a small amount
 at a time. This is on by default.
+
+![Rain falling over a forest, with the thirst bar part drained](/screenshots/drinking-in-rain.png)
 
 **Sneak and use an empty hand on water.** Off by default. Turn it on with
 [canDrinkByHand](/docs/configuration#candrinkbyhand). It is worth a little less than a full bowl,

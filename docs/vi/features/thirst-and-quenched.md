@@ -1,5 +1,7 @@
 # Khát và Đã khát
 
+![Thanh khát nằm trên thanh đói, đã vơi một phần](/screenshots/thirst-bar.png)
+
 ## Hai con số
 
 Độ khát chạy từ 0 đến 20 và được vẽ thành mười giọt nước, nên một giọt bằng hai điểm. Người chơi mới
@@ -47,6 +49,8 @@ theo độ no chỉ kích hoạt với tần suất bằng một phần tám. L�
 ăn, nên người chơi đang khát không âm thầm chết đói theo.
 
 ## Khi cạn sạch
+
+![Thanh khát rỗng, máu chỉ còn hai trái tim rưỡi](/screenshots/dehydration.png)
 
 Thanh rỗng lấy của bạn nửa trái tim mỗi hai giây. Sát thương này bỏ qua giáp, và dòng thông báo khi
 chết ghi là `đã chết vì mất nước`.
