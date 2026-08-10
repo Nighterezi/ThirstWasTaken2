@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "thirstwastaken",
+  "version": "${version}",
+  "name": "Thirst Was Taken",
+  "description": "A survival thirst, hydration and water-drinking system ported to Fabric.",
+  "authors": [
+    "ghen (original author)",
+    "Nighter (Fabric port)"
+  ],
+  "contributors": [
+    "Thirst Was Taken contributors"
+  ],
+  "contact": {
+    "homepage": "https://github.com/Nighterezi/ThirstWasTakenFabric",
+    "sources": "https://github.com/Nighterezi/ThirstWasTakenFabric",
+    "issues": "https://github.com/Nighterezi/ThirstWasTakenFabric/issues"
+  },
+  "license": "LGPL-2.1-only",
+  "icon": "assets/thirstwastaken/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["com.thirstwastaken.ThirstWasTaken"],
+    "client": ["com.thirstwastaken.client.ThirstWasTakenClient"]
+  },
+  "mixins": [
+    "thirstwastaken.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

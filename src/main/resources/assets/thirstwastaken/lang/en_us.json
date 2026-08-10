@@ -1,0 +1,26 @@
+{
+  "death.attack.dehydrate": "%1$s died from dehydration",
+  "death.attack.dehydrate.player": "%1$s died from dehydration while fighting %2$s",
+  "item.thirstwastaken.wooden_water_bowl": "Wooden Water Bowl",
+  "item.thirstwastaken.terracotta_water_bowl": "Terracotta Water Bowl",
+  "item.thirstwastaken.terracotta_bowl": "Terracotta Bowl",
+  "item.thirstwastaken.clay_bowl": "Clay Bowl",
+  "thirst.container.kettle.no_water": "No Water",
+  "thirst.container.kettle.has_single_water": "Contains 1 glass of %s water",
+  "thirst.container.kettle.has_many_water": "Contains %1$s glasses of %2$s water",
+  "itemGroup.thirstwastaken": "Thirst was Taken",
+  "thirst.purity.dirty": "Dirty",
+  "thirst.purity.slightly_dirty": "Slightly Dirty",
+  "thirst.purity.acceptable": "Acceptable",
+  "thirst.purity.purified": "Purified",
+  "block.thirstwastaken.sand_filter": "Sand Filter",
+
+  "thirst.ponder.sand_filter.header": "Purifying Water with a Sand Filter",
+  "thirst.ponder.sand_filter.text_1": "A Sand Filter purifies by one step water pumped through it",
+  "thirst.ponder.sand_filter.text_2": "Dirty Water needs to be pumped in from the top...",
+  "thirst.ponder.sand_filter.text_3": "and Purified Water can be pumped out from the bottom",
+  "command.thirstwastaken.query": "Current Thirst: %1$s, Current Quenched: %2$s",
+  "command.thirstwastaken.set": "set thirst to %1$s, set quenched to %2$s",
+  "command.thirstwastaken.enable": "Enabled thirst for %1$s player(s)",
+  "command.thirstwastaken.disable": "Disabled thirst for %1$s player(s)"
+}

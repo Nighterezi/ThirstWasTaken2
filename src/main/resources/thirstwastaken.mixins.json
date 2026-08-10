@@ -1,0 +1,10 @@
+{
+  "required": true,
+  "package": "com.thirstwastaken.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "ItemStackMixin",
+    "PlayerMixin"
+  ],
+  "injectors": { "defaultRequire": 1 }
+}

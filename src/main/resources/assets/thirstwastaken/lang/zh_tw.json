@@ -1,0 +1,26 @@
+{
+  "death.attack.dehydrate": "%1$s脫水而死",
+  "death.attack.dehydrate.player": "%1$s在與%2$s戰鬥時脫水而死",
+  "item.thirstwastaken.wooden_water_bowl": "裝水的木碗",
+  "item.thirstwastaken.terracotta_water_bowl": "裝水的陶碗",
+  "item.thirstwastaken.terracotta_bowl": "陶碗",
+  "item.thirstwastaken.clay_bowl": "黏土碗",
+  "thirst.container.kettle.no_water": "沒有水",
+  "thirst.container.kettle.has_single_water": "含有一杯%s的水",
+  "thirst.container.kettle.has_many_water": "含有%1$s杯%2$s的水",
+  "itemGroup.thirstwastaken": "Thirst",
+  "thirst.purity.dirty": "骯髒",
+  "thirst.purity.slightly_dirty": "有點髒",
+  "thirst.purity.acceptable": "可接受的",
+  "thirst.purity.purified": "純淨",
+  "block.thirstwastaken.sand_filter": "砂濾器",
+
+  "thirst.ponder.sand_filter.header": "用砂濾器淨化水",
+  "thirst.ponder.sand_filter.text_1": "砂濾器會淨化鄰近泵入的水",
+  "thirst.ponder.sand_filter.text_2": "髒水需要從上方泵入...",
+  "thirst.ponder.sand_filter.text_3": "淨化後的水會從底部泵出",
+  "command.thirstwastaken.query": "當前口渴值: %1$s, 當前解渴值: %2$s",
+  "command.thirstwastaken.set": "設置口渴值为 %1$s,解渴值为 %2$s",
+  "command.thirstwastaken.enable": "已為 %1$s 名玩家啟用口渴",
+  "command.thirstwastaken.disable": "已為 %1$s 名玩家停用口渴"
+}
