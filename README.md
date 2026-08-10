@@ -17,6 +17,8 @@
 
 > A Fabric port of the original [Thirst Was Taken](https://modrinth.com/mod/thirst-was-taken) by ghen.
 
+> [View the Fabric port status, implemented changes, and remaining work](FABRIC-PORT.md).
+
 Thirst Was Taken adds a survival thirst system designed to fit naturally into modpacks. Movement and other exhausting activities consume hydration, drinks and watery foods restore it, and severe dehydration can slow or damage the player.
 
 ## Highlights
