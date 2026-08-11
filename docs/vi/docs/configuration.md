@@ -4,11 +4,11 @@ outline: [2, 3]
 
 # Cấu hình
 
-`config/thirstwastaken.json` được tạo ở lần chạy đầu tiên. Nếu có Mod Menu, bạn sửa được ngay trong
-game tại **Mods > Thirst Was Taken > Config**, và màn hình đó tự lưu khi bạn đóng lại. Nút cuối cùng
+`config/thirstwastaken2.json` được tạo ở lần chạy đầu tiên. Nếu có Mod Menu, bạn sửa được ngay trong
+game tại **Mods > ThirstWasTaken2 > Config**, và màn hình đó tự lưu khi bạn đóng lại. Nút cuối cùng
 mở thẳng file, dành cho vài mục quá dài để nhét vừa một thanh trượt.
 
-![Thirst Was Taken trong danh sách Mod Menu](/screenshots/mod-menu.png)
+![ThirstWasTaken2 trong danh sách Mod Menu](/screenshots/mod-menu.png)
 
 | Tiêu hao và uống nước | Nhiễm bệnh, giao diện và giá trị vật phẩm |
 |---|---|
@@ -144,7 +144,7 @@ nước đứng trước:
 ```json
 "drinks": {
   "minecraft:potion": [6, 8],
-  "thirstwastaken:terracotta_water_bowl": [4, 5]
+  "thirstwastaken2:terracotta_water_bowl": [4, 5]
 }
 ```
 

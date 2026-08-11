@@ -1,1 +1,0 @@
-{"type":"minecraft:smelting","category":"misc","cookingtime":200,"experience":0.35,"ingredient":{"fabric:type":"fabric:components","base":"minecraft:water_bucket","components":{"thirstwastaken:water_purity":1}},"result":{"id":"minecraft:water_bucket","components":{"thirstwastaken:water_purity":3}}}

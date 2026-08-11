@@ -2,18 +2,18 @@
 layout: home
 
 hero:
-  name: Thirst Was Taken
+  name: ThirstWasTaken2
   tagline: Đói chưa phải là tất cả. Giờ thì nước bạn tìm được cũng phải đáng để uống.
   image:
     src: /logo.png
-    alt: Logo Thirst Was Taken
+    alt: Logo ThirstWasTaken2
   actions:
     - theme: brand
       text: Bắt đầu
       link: /vi/docs/
     - theme: alt
       text: Tải file JAR
-      link: https://github.com/Nighterezi/ThirstWasTakenFabric/actions/workflows/build.yml
+      link: https://github.com/Nighterezi/ThirstWasTaken2/actions/workflows/build.yml
       target: _blank
       rel: external
     - theme: alt

@@ -1,31 +1,31 @@
 {
   "schemaVersion": 1,
-  "id": "thirstwastaken",
+  "id": "thirstwastaken2",
   "version": "${version}",
-  "name": "Thirst Was Taken",
-  "description": "A survival thirst, hydration and water-drinking system ported to Fabric.",
+  "name": "ThirstWasTaken2",
+  "description": "A survival thirst and hydration system, with water that is not always clean.",
   "authors": [
     "ghen (original author)",
-    "Nighter (Fabric port)"
+    "Nighter (fork)"
   ],
   "contributors": [
     "Thirst Was Taken contributors"
   ],
   "contact": {
-    "homepage": "https://github.com/Nighterezi/ThirstWasTakenFabric",
-    "sources": "https://github.com/Nighterezi/ThirstWasTakenFabric",
-    "issues": "https://github.com/Nighterezi/ThirstWasTakenFabric/issues"
+    "homepage": "https://github.com/Nighterezi/ThirstWasTaken2",
+    "sources": "https://github.com/Nighterezi/ThirstWasTaken2",
+    "issues": "https://github.com/Nighterezi/ThirstWasTaken2/issues"
   },
   "license": "MIT",
-  "icon": "assets/thirstwastaken/icon.png",
+  "icon": "assets/thirstwastaken2/icon.png",
   "environment": "*",
   "entrypoints": {
-    "main": ["com.thirstwastaken.ThirstWasTaken"],
-    "client": ["com.thirstwastaken.client.ThirstWasTakenClient"],
-    "modmenu": ["com.thirstwastaken.client.compat.ModMenuIntegration"]
+    "main": ["com.thirstwastaken2.ThirstWasTaken2"],
+    "client": ["com.thirstwastaken2.client.ThirstWasTaken2Client"],
+    "modmenu": ["com.thirstwastaken2.client.compat.ModMenuIntegration"]
   },
   "mixins": [
-    "thirstwastaken.mixins.json"
+    "thirstwastaken2.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.19.3",
@@ -35,7 +35,6 @@
   },
   "suggests": {
     "modmenu": "*",
-    "create": "*",
     "farmersdelight": "*",
     "appleskin": "*",
     "jade": "*"

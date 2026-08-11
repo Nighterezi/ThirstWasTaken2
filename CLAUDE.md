@@ -4,15 +4,19 @@ Guidance for working in this repository.
 
 ## What this is
 
-A Fabric port of [Thirst Was Taken](https://github.com/ghen-git/Thirst-Mod) (originally Forge,
-Minecraft 1.19.2) to **Minecraft 26.2 / Fabric Loader 0.19.3 / Java 25**.
+A Fabric fork of [Thirst Was Taken](https://github.com/ghen-git/Thirst-Mod) (originally Forge,
+Minecraft 1.19.2) on **Minecraft 26.2 / Fabric Loader 0.19.3 / Java 25**. It started as a port and
+has since diverged, so upstream is a reference, not a spec.
 
-- Mod id and resource namespace: `thirstwastaken`
-- Java package: `com.thirstwastaken`
+- Mod id and resource namespace: `thirstwastaken2`
+- Java package: `com.thirstwastaken2`
 - Upstream reference source is expected at `../Thirst-Mod` when comparing behaviour.
+- The Create Fly integration is **broken and documented as unsupported**. The code is still present
+  and still gated behind `CreateFlyIntegration.isAvailable()`; the docs say it is off. Re-enabling it
+  means fixing the integration and reverting those doc notes together.
 
 See [CODEMAP.md](CODEMAP.md) for the file-by-file architecture and
-[FABRIC-PORT.md](FABRIC-PORT.md) for the port status matrix.
+[FORK-STATUS.md](FORK-STATUS.md) for what the fork carries, adds and still lacks.
 
 ## Build and run
 
@@ -30,7 +34,7 @@ See [CODEMAP.md](CODEMAP.md) for the file-by-file architecture and
 
 `runServer` is the fastest smoke test: it applies every mixin, loads the datapack registries and the
 conditional Create recipe, then idles. A clean run prints
-`Thirst Was Taken Fabric initialized for Minecraft 26.2` and no exceptions.
+`ThirstWasTaken2 initialized for Minecraft 26.2` and no exceptions.
 
 Gradle needs network access on the first run for `maven.modrinth` artifacts (Create Fly, Mod Menu).
 Once cached, `--offline` works — except that `clientCompileOnly` on Mod Menu must already be cached.
@@ -39,8 +43,8 @@ Once cached, `--offline` works — except that `clientCompileOnly` on Mod Menu m
 
 - **Source sets are split** (`loom.splitEnvironmentSourceSets()`). Anything that touches
   `net.minecraft.client` belongs in `src/client/java`, never in `src/main/java`.
-- **Mixins live in `com.thirstwastaken.mixin`**, are package-private, `abstract`, and prefix every
-  injected member with `thirst$`. New mixins must be listed in `thirstwastaken.mixins.json`.
+- **Mixins live in `com.thirstwastaken2.mixin`**, are package-private, `abstract`, and prefix every
+  injected member with `thirst$`. New mixins must be listed in `thirstwastaken2.mixins.json`.
 - **Config is a plain POJO** serialized by Gson (`ThirstConfig`). Adding a field means: add it to the
   POJO, clamp it in `sanitize()`, and — if it is user-facing — add a widget in `ThirstConfigScreen`
   plus `en_us`/`vi_vn` keys.
@@ -61,7 +65,7 @@ Once cached, `--offline` works — except that `clientCompileOnly` on Mod Menu m
   - `DimensionType#ultraWarm` → `EnvironmentAttributes.WATER_EVAPORATES`
   - `Biome#getDownfall` → no public equivalent; the port approximates with
     `Biome#hasPrecipitation()` (see `ThirstManager.climateModifier`)
-  - Item NBT (`"Purity"` tag) → the `thirstwastaken:water_purity` data component
+  - Item NBT (`"Purity"` tag) → the `thirstwastaken2:water_purity` data component
   - Forge global loot modifiers → `LootTableEvents.MODIFY`
   - Forge GUI overlays → Fabric `HudElementRegistry`
 - When behaviour differs from the original mod on purpose, say so in a comment at the divergence.

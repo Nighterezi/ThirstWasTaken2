@@ -2,18 +2,18 @@
 layout: home
 
 hero:
-  name: Thirst Was Taken
+  name: ThirstWasTaken2
   tagline: Hunger was never the whole story. Now the water you find has to be worth drinking.
   image:
     src: /logo.png
-    alt: Thirst Was Taken logo
+    alt: ThirstWasTaken2 logo
   actions:
     - theme: brand
       text: Get Started
       link: /docs/
     - theme: alt
       text: Download the JAR
-      link: https://github.com/Nighterezi/ThirstWasTakenFabric/actions/workflows/build.yml
+      link: https://github.com/Nighterezi/ThirstWasTaken2/actions/workflows/build.yml
       target: _blank
       rel: external
     - theme: alt

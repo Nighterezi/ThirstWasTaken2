@@ -59,6 +59,11 @@ Lò nung mất mười giây, lửa trại mất ba mươi giây. Nước bẩn 
 
 ### Bộ lọc cát
 
+::: warning Chưa dùng được
+Bộ lọc cát đang lỗi và phần tích hợp Create Fly đã bị tắt, nên bản này chưa lọc nước hàng loạt được.
+Phần mô tả bên dưới là những gì nó sẽ làm khi hỗ trợ quay lại.
+:::
+
 Khi có Create Fly, bạn chế tạo được Bộ lọc cát từ sáu thỏi đồng thau, hai song sắt và một khối cát.
 Bơm nước qua nó thì nước ra sạch hơn một mức. Đây là cách duy nhất để lọc nước với số lượng lớn, và
 cũng là phần duy nhất của mod cần một mod khác mới tồn tại.

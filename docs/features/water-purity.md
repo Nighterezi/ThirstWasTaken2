@@ -58,6 +58,11 @@ A furnace takes ten seconds, a campfire thirty. Dirty water needs two passes to 
 
 ### Sand filter
 
+::: warning Not available yet
+The Sand Filter is broken and its Create Fly integration is turned off, so bulk purification is not
+possible on this release. The description below is what it will do when support returns.
+:::
+
 With Create Fly installed, a Sand Filter can be crafted from six brass ingots, two iron bars and one
 sand. Pump water through it and it comes out one grade cleaner. It is the only way to purify water
 in bulk, and the only part of the mod that needs another mod to exist.

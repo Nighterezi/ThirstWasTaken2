@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "fabric:load_conditions": [{"condition": "fabric:all_mods_loaded", "values": ["create"]}],
+  "key": {"B": "create:brass_ingot", "P": "minecraft:iron_bars", "S": "minecraft:sand"},
+  "pattern": ["BBB", "PSP", "BBB"],
+  "result": {"id": "thirstwastaken2:sand_filter"}
+}

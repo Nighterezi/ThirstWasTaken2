@@ -33,7 +33,7 @@ chỉ nằm im cho tới khi vật phẩm tồn tại. Với những thứ khác
 
 Mọi thứ mod thêm vào đều nằm trong mục sáng tạo riêng của nó.
 
-![Mục sáng tạo Thirst was Taken, chứa bát đất sét, bát đất nung và bát đất nung đựng nước](/screenshots/creative-tab.png)
+![Mục sáng tạo ThirstWasTaken2, chứa bát đất sét, bát đất nung và bát đất nung đựng nước](/screenshots/creative-tab.png)
 
 Mod thêm một loại bát chịu được việc đựng nước.
 

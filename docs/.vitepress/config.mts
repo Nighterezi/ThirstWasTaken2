@@ -1,6 +1,6 @@
 import { defineConfig } from 'vitepress'
 
-const REPO = 'https://github.com/Nighterezi/ThirstWasTakenFabric'
+const REPO = 'https://github.com/Nighterezi/ThirstWasTaken2'
 const BASE = process.env.VITEPRESS_BASE || '/'
 
 const enManualSidebar = [
@@ -65,7 +65,7 @@ const viFeaturesSidebar = [
 
 export default defineConfig({
   base: BASE,
-  title: 'Thirst Was Taken',
+  title: 'ThirstWasTaken2',
   description: 'A survival thirst system for Minecraft 26.2 on Fabric, with water that is not always clean.',
   cleanUrls: true,
   lastUpdated: true,

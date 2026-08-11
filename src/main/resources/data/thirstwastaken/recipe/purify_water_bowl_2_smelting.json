@@ -1,1 +1,0 @@
-{"type":"minecraft:smelting","category":"misc","cookingtime":200,"experience":0.35,"ingredient":{"fabric:type":"fabric:components","base":"thirstwastaken:terracotta_water_bowl","components":{"thirstwastaken:water_purity":2}},"result":{"id":"thirstwastaken:terracotta_water_bowl","components":{"thirstwastaken:water_purity":3}}}

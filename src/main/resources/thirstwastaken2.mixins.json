@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "com.thirstwastaken2.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "BottleItemMixin",
+    "BucketItemMixin",
+    "FoodDataMixin",
+    "LayeredCauldronBlockMixin",
+    "ItemStackMixin",
+    "PlayerMixin"
+  ],
+  "injectors": { "defaultRequire": 1 }
+}

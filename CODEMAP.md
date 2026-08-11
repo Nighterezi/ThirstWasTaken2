@@ -1,39 +1,39 @@
 # Code map
 
-How Thirst Was Taken (Fabric 26.2) is put together, and where to change what.
+How ThirstWasTaken2 (Fabric 26.2) is put together, and where to change what.
 
 ## Layout
 
 ```
-src/main/java/com/thirstwastaken/      common (client + server)
-  ThirstWasTaken.java                  ModInitializer: wiring and event registration
+src/main/java/com/thirstwastaken2/      common (client + server)
+  ThirstWasTaken2.java                  ModInitializer: wiring and event registration
   api/ThirstApi.java                   item -> {hydration, quenched}, memoised per Item
   command/ThirstCommands.java          /thirst query|set|enable
-  config/ThirstConfig.java             config/thirstwastaken.json, compiled patterns, generation counter
-  damage/ThirstDamageTypes.java        thirstwastaken:dehydrate damage source
+  config/ThirstConfig.java             config/thirstwastaken2.json, compiled patterns, generation counter
+  damage/ThirstDamageTypes.java        thirstwastaken2:dehydrate damage source
   data/ThirstData.java                 immutable player state + attachment type
   data/ThirstManager.java              tick loop, exhaustion maths, drink-by-hand
   item/ThirstItems.java                clay bowl, terracotta bowl, terracotta water bowl
-  purity/ThirstComponents.java         thirstwastaken:water_purity data component
+  purity/ThirstComponents.java         thirstwastaken2:water_purity data component
   purity/WaterPurity.java              purity lookup/apply, sickness table, container detection
   purity/WaterInteractions.java        bowl filling, cauldron purity transfer
-  tooltip/ThirstTooltip.java           droplet row for the item tooltip (thirstwastaken:droplets font)
+  tooltip/ThirstTooltip.java           droplet row for the item tooltip (thirstwastaken2:droplets font)
   compat/LootIntegration.java          structure chests + Piglin barter water
   compat/createfly/                    optional Create Fly Sand Filter
   mixin/                               vanilla hooks
 
-src/client/java/com/thirstwastaken/client/
-  ThirstWasTakenClient.java            HUD element registration
+src/client/java/com/thirstwastaken2/client/
+  ThirstWasTaken2Client.java            HUD element registration
   ThirstHud.java                       thirst bar rendering
   config/ThirstConfigScreen.java       vanilla-styled options screen
   compat/ModMenuIntegration.java       modmenu entrypoint
 
 src/main/resources/
   fabric.mod.json                      entrypoints (main, client, modmenu)
-  thirstwastaken.mixins.json           mixin registry
-  assets/thirstwastaken/               textures, models, lang (9 locales)
-  assets/thirstwastaken/font/          droplets.json: tooltip droplet glyphs (U+E000..U+E007)
-  data/thirstwastaken/                 recipes, damage type, sand filter loot table
+  thirstwastaken2.mixins.json           mixin registry
+  assets/thirstwastaken2/               textures, models, lang (9 locales)
+  assets/thirstwastaken2/font/          droplets.json: tooltip droplet glyphs (U+E000..U+E007)
+  data/thirstwastaken2/                 recipes, damage type, sand filter loot table
   data/minecraft/tags/                 bypasses_armor, mineable/pickaxe additions
 ```
 
@@ -41,7 +41,7 @@ src/main/resources/
 
 ```mermaid
 flowchart TD
-    Init[ThirstWasTaken.onInitialize] --> Cfg[ThirstConfig.load]
+    Init[ThirstWasTaken2.onInitialize] --> Cfg[ThirstConfig.load]
     Init --> Attach[ThirstData.register]
     Init --> Events
 
@@ -85,7 +85,7 @@ Drain chain, mirroring vanilla hunger:
    where water evaporates), Fire Resistance, Fire Protection.
 3. Once exhaustion passes 4, one point of `quenched` is spent; when quenched is empty, one point of
    `thirst` goes instead (unless Peaceful and depletion in Peaceful is off).
-4. At 0 thirst, 1 damage every 40 ticks via `thirstwastaken:dehydrate`.
+4. At 0 thirst, 1 damage every 40 ticks via `thirstwastaken2:dehydrate`.
 
 ## Water purity
 
@@ -93,7 +93,7 @@ Purity is an integer 0-3 (dirty, slightly dirty, acceptable, purified).
 
 | Carrier | Storage |
 |---|---|
-| Items | `thirstwastaken:water_purity` data component |
+| Items | `thirstwastaken2:water_purity` data component |
 | Cauldrons | `purity` blockstate property, offset by 1 so 0 means "unset" |
 | Create Fly fluids | the same data component on `FluidStack` |
 | Anything else | `ThirstConfig.defaultPurity` |
@@ -118,7 +118,7 @@ Brewin' and Chewin' / Collector's Reap support stays dependency-free.
 
 ## HUD
 
-`ThirstWasTakenClient` attaches `thirst_bar` after `VanillaHudElements.FOOD_BAR` and reserves 10px
+`ThirstWasTaken2Client` attaches `thirst_bar` after `VanillaHudElements.FOOD_BAR` and reserves 10px
 of right-stack height. `ThirstHud.render` draws, in order:
 
 1. the exhaustion dither strip from `appleskin_icons.png` at v=18 — **off by default**
@@ -134,7 +134,7 @@ of right-stack height. `ThirstHud.render` draws, in order:
 
 ## Config
 
-`config/thirstwastaken.json` is a Gson dump of `ThirstConfig`. `ThirstConfig.generation()` increments
+`config/thirstwastaken2.json` is a Gson dump of `ThirstConfig`. `ThirstConfig.generation()` increments
 on every load or commit; `ThirstApi` watches it to drop its per-item cache.
 
 The Mod Menu screen (`ThirstConfigScreen`) writes straight into the live instance through

@@ -1,1 +1,0 @@
-{"type":"minecraft:campfire_cooking","category":"misc","cookingtime":600,"experience":0.35,"ingredient":{"fabric:type":"fabric:components","base":"minecraft:water_bucket","components":{"thirstwastaken:water_purity":0}},"result":{"id":"minecraft:water_bucket","components":{"thirstwastaken:water_purity":2}}}

@@ -33,8 +33,9 @@ Id của nó chưa nằm trong danh sách. Thêm vào `drinks` trong file cấu 
 
 ## Có bắt buộc cài Create không?
 
-Không. Không phần nào ở đây cần mod khác. Create Fly chỉ thêm Bộ lọc cát, còn Mod Menu chỉ thêm nút
-mở màn hình cấu hình.
+Không, và hiện tại nó cũng không có tác dụng gì. Phần tích hợp Create Fly đang lỗi và đã bị tắt, nên
+chưa chế tạo được Bộ lọc cát cho tới một bản sau. Mod Menu chỉ thêm nút mở màn hình cấu hình, ngoài
+ra không phần nào ở đây cần mod khác.
 
 ## Mod có chạy ở độ khó Hòa bình không?
 
@@ -43,5 +44,6 @@ mở màn hình cấu hình.
 
 ## Còn các tính năng khác của mod gốc thì sao?
 
-Bản port chưa hoàn tất. [FABRIC-PORT.md](https://github.com/Nighterezi/ThirstWasTakenFabric/blob/main/FABRIC-PORT.md)
-theo dõi phần nào đã xong, phần nào đang chờ mod khác cập nhật, và phần nào còn thiếu.
+Fork này chưa hoàn tất. [FORK-STATUS.md](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/FORK-STATUS.md)
+theo dõi phần nào được giữ lại, phần nào fork tự thêm, phần nào đang chờ mod khác cập nhật, và phần
+nào còn thiếu.

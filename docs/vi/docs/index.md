@@ -1,6 +1,6 @@
 # Tổng quan
 
-Thirst Was Taken thêm cho mỗi người chơi một thanh sinh tồn thứ hai. Nó nằm dưới thanh đói và vơi đi
+ThirstWasTaken2 thêm cho mỗi người chơi một thanh sinh tồn thứ hai. Nó nằm dưới thanh đói và vơi đi
 vì đúng những lý do làm bạn đói, nên chạy băng qua thảo nguyên tốn nhiều hơn là đi loanh quanh trong
 ruộng.
 
@@ -8,8 +8,10 @@ Phần thú vị nằm ở chuyện đổ đầy lại. Chai nước, bát nư�
 nước lấy từ thế giới còn mang theo một mức chất lượng. Nước xấu có thể làm bạn phát bệnh, và đun lên
 thì nó trở nên an toàn.
 
-Trang này nói về bản port Fabric cho Minecraft 26.2. Mod gốc là
-[Thirst Was Taken của ghen](https://modrinth.com/mod/thirst-was-taken).
+ThirstWasTaken2 là một bản fork của
+[Thirst Was Taken của ghen](https://modrinth.com/mod/thirst-was-taken), được dựng lại cho Fabric trên
+Minecraft 26.2 và mở rộng thêm bởi [Nighter](https://github.com/Nighterezi). Banner, icon và bản dịch
+đến từ dự án gốc. [Fork này thay đổi những gì](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/FORK-STATUS.md).
 
 ## Bạn nhận được gì
 

@@ -4,11 +4,11 @@ outline: [2, 3]
 
 # Configuration
 
-`config/thirstwastaken.json` is written on first launch. With Mod Menu installed you can edit it in
-game from **Mods > Thirst Was Taken > Config**, and the screen saves when you close it. Its last
+`config/thirstwastaken2.json` is written on first launch. With Mod Menu installed you can edit it in
+game from **Mods > ThirstWasTaken2 > Config**, and the screen saves when you close it. Its last
 button opens the file itself, for the few settings that are too long to fit on a slider.
 
-![Thirst Was Taken listed in Mod Menu](/screenshots/mod-menu.png)
+![ThirstWasTaken2 listed in Mod Menu](/screenshots/mod-menu.png)
 
 | Depletion and drinking | Sickness, HUD and item values |
 |---|---|
@@ -144,7 +144,7 @@ first:
 ```json
 "drinks": {
   "minecraft:potion": [6, 8],
-  "thirstwastaken:terracotta_water_bowl": [4, 5]
+  "thirstwastaken2:terracotta_water_bowl": [4, 5]
 }
 ```
 

@@ -33,8 +33,9 @@ Its id is not in the lists. Add it to `drinks` in the config file, or switch on
 
 ## Is Create required?
 
-No. Nothing here needs another mod. Create Fly only adds the Sand Filter, and Mod Menu only adds the
-settings button.
+No, and it does nothing right now. The Create Fly integration is broken and turned off, so the Sand
+Filter cannot be crafted until a later release. Mod Menu only adds the settings button, and nothing
+else here needs another mod.
 
 ## Does it work on Peaceful?
 
@@ -43,5 +44,6 @@ Thirst refills by itself there unless you turn
 
 ## What about the original mod's other features?
 
-The port is not finished. [FABRIC-PORT.md](https://github.com/Nighterezi/ThirstWasTakenFabric/blob/main/FABRIC-PORT.md)
-tracks what is done, what is waiting on other mods to update, and what is missing.
+The fork is not finished. [FORK-STATUS.md](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/FORK-STATUS.md)
+tracks what carried over, what this fork adds, what is waiting on other mods to update, and what is
+missing.

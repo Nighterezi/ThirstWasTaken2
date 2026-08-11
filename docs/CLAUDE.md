@@ -17,7 +17,7 @@ npm run docs:build    # must pass before you call a docs change done
 | `features/` | What the mod does and why, in prose. No config key listings. |
 | `.vitepress/config.mts` | Nav and both sidebars. |
 | `.vitepress/theme/` | Default theme plus `custom.css` for the brand colour. |
-| `public/` | `logo.png` for the site, `logo-icon.png` for release pages, `screenshots/`. |
+| `public/` | `logo.png` for the site, `logo-icon.png` for release pages, `banner.png` for wide headers, `screenshots/`. |
 
 `docs/` answers "how do I set this up". `features/` answers "what is this like to play". A page that
 starts listing config keys belongs in `docs/`.
@@ -40,7 +40,7 @@ values, sickness chances, purity by location) live on the `features/` page that 
 
 Vietnamese pages are a full mirror, and their links are absolute with the prefix:
 `/vi/docs/commands`, not `/docs/commands`. In-game wording comes from
-`src/main/resources/assets/thirstwastaken/lang/vi_vn.json`, so purity levels are Bẩn, Hơi bẩn, Có thể
+`src/main/resources/assets/thirstwastaken2/lang/vi_vn.json`, so purity levels are Bẩn, Hơi bẩn, Có thể
 uống and Đã tinh lọc, and "quenched" is "đã khát".
 
 ## Keeping it true

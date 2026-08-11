@@ -1,0 +1,1 @@
+{"type":"minecraft:campfire_cooking","category":"misc","cookingtime":600,"experience":0.35,"ingredient":{"fabric:type":"fabric:components","base":"thirstwastaken2:terracotta_water_bowl","components":{"thirstwastaken2:water_purity":2}},"result":{"id":"thirstwastaken2:terracotta_water_bowl","components":{"thirstwastaken2:water_purity":3}}}

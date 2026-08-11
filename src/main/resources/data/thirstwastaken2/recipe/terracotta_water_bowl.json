@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "thirstwastaken2:terracotta_bowl",
+    "minecraft:water_bucket"
+  ],
+  "result": { "id": "thirstwastaken2:terracotta_water_bowl" }
+}

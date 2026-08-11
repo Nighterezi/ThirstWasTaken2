@@ -1,37 +1,39 @@
 <p align="center">
-  <img src=".github/assets/banner.png" alt="Thirst Was Taken" width="352">
-</p>
-
-<h1 align="center">Thirst Was Taken Fabric</h1>
-
-<p align="center">
-  A lightweight thirst and hydration mod for Minecraft 26.2 on Fabric.
+  <img src=".github/assets/banner.png" alt="ThirstWasTaken2" width="420">
 </p>
 
 <p align="center">
-  <a href="https://github.com/Nighterezi/ThirstWasTakenFabric/actions/workflows/build.yml"><img src="https://github.com/Nighterezi/ThirstWasTakenFabric/actions/workflows/build.yml/badge.svg" alt="Build status"></a>
+  A survival thirst and hydration mod for Minecraft on Fabric.
+</p>
+
+<p align="center">
+  <a href="https://github.com/Nighterezi/ThirstWasTaken2/actions/workflows/build.yml"><img src="https://github.com/Nighterezi/ThirstWasTaken2/actions/workflows/build.yml/badge.svg" alt="Build status"></a>
   <img src="https://img.shields.io/badge/Minecraft-26.2-62B47A" alt="Minecraft 26.2">
   <img src="https://img.shields.io/badge/Loader-Fabric-DBD0B4" alt="Fabric">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT license"></a>
 </p>
 
-> A Fabric port of the original [Thirst Was Taken](https://modrinth.com/mod/thirst-was-taken) by ghen.
+> A fork of **[Thirst Was Taken](https://github.com/ghen-git/Thirst-Mod)** by
+> **[ghen](https://github.com/ghen-git)**, rebuilt for Fabric and extended by
+> **[Nighter](https://github.com/Nighterezi)**. The banner, icon and translations come from the
+> original project. See [what this fork changes](FORK-STATUS.md).
 
-> [View the Fabric port status, implemented changes, and remaining work](FABRIC-PORT.md).
+ThirstWasTaken2 adds a survival thirst system designed to fit naturally into modpacks. Movement and
+other exhausting activities consume hydration, drinks and watery foods restore it, and severe
+dehydration can slow or damage the player.
 
-Thirst Was Taken adds a survival thirst system designed to fit naturally into modpacks. Movement and other exhausting activities consume hydration, drinks and watery foods restore it, and severe dehydration can slow or damage the player.
+📖 **[Documentation](https://nighterezi.github.io/ThirstWasTaken2/)** ·
+🧩 **[Fork status](FORK-STATUS.md)** · 🗺️ **[Code map](CODEMAP.md)**
 
 ## Highlights
 
 - Persistent thirst, quenched hydration, and exhaustion data
-- A client-synchronized thirst HUD
+- Four grades of water purity, with dirty water that can make you sick
 - Dehydration damage and sprint prevention at low hydration
 - Hydration from potions, drinks, watery foods, and water bowls
 - Shift-right-click a water source with an empty hand to drink
 - Rain drinking when looking upward
 - Extra dehydration in the Nether
-- Administrator commands for setting or enabling thirst
-- Client language detection with 9 bundled translations
 
 ## Screenshots
 
@@ -57,18 +59,29 @@ Every setting has a widget in Mod Menu, and the mod's items have their own creat
 
 | Settings | Creative tab |
 |---|---|
-| ![The config screen](docs/public/screenshots/config-1.png) | ![The Thirst was Taken creative tab](docs/public/screenshots/creative-tab.png) |
+| ![The config screen](docs/public/screenshots/config-1.png) | ![The ThirstWasTaken2 creative tab](docs/public/screenshots/creative-tab.png) |
 
-## Install
+## Supported versions
 
-Install the following on both the client and server:
+Every Minecraft version has its own branch. Releases are named `<minecraft>-<mod>`, so a higher mod
+number does not always mean a newer Minecraft: `1.21.11-1.0.1` can ship after `26.2-1.0.0` when a
+branch catches up later. Pick the row that matches your Minecraft version, not the highest number.
 
-- Minecraft Java Edition 26.2
-- Fabric Loader 0.19.3 or newer
-- Fabric API 0.156.0+26.2 or another compatible 26.2 release
-- Java 25
+| Release | Branch | Minecraft | Fabric Loader | Fabric API | Java | Optional mods (tested build) | Status |
+|---|---|---|---|---|---|---|---|
+| `26.2-1.0.0` | [`main`](https://github.com/Nighterezi/ThirstWasTaken2/tree/main) | 26.2 | 0.19.3+ | 0.156.0+26.2 | 25 | Mod Menu `20.0.1` | Active |
 
-Download the JAR from a successful [GitHub Actions build](https://github.com/Nighterezi/ThirstWasTakenFabric/actions/workflows/build.yml), then place it in the `mods` folder.
+Install the mod and Fabric API on **both** the client and the server. Mod Menu is never required, the
+config screen falls back to the JSON file without it. Full requirements and the per-mod notes are in
+the [installation guide](https://nighterezi.github.io/ThirstWasTaken2/docs/installation).
+
+> [!NOTE]
+> **Create Fly is not supported yet.** The Sand Filter is currently broken and will come back in a
+> later release. Nothing else in the mod depends on it.
+
+Download the JAR from a successful
+[GitHub Actions build](https://github.com/Nighterezi/ThirstWasTaken2/actions/workflows/build.yml),
+then place it in the `mods` folder.
 
 ## Commands
 
@@ -80,21 +93,15 @@ Download the JAR from a successful [GitHub Actions build](https://github.com/Nig
 
 These commands require game master permission.
 
-## Languages
+## Supported languages
 
-Minecraft automatically uses the language selected by each client. No server-side language option is needed.
+Nine translations ship with the mod. Each client sees the one its game is already set to, so there is
+nothing to configure on the server.
 
-- English
-- French
-- Japanese
-- Korean
-- Polish
-- Russian
-- Vietnamese
-- Simplified Chinese
-- Traditional Chinese
+English · French · Japanese · Korean · Polish · Russian · Vietnamese · Simplified Chinese ·
+Traditional Chinese
 
-Translation files are located in `src/main/resources/assets/thirstwastaken/lang/`.
+Translation files live in `src/main/resources/assets/thirstwastaken2/lang/`.
 
 ## Build
 
@@ -104,16 +111,6 @@ Translation files are located in `src/main/resources/assets/thirstwastaken/lang/
 
 The ready-to-use JAR is created in `build/libs/`.
 
-## Credits
-
-- Original author: [ghen](https://github.com/ghen-git)
-- Original source: [ghen-git/Thirst-Mod](https://github.com/ghen-git/Thirst-Mod)
-- Fabric port: [Nighter](https://github.com/Nighterezi)
-- Fabric port source: [Nighterezi/ThirstWasTakenFabric](https://github.com/Nighterezi/ThirstWasTakenFabric)
-
-The banner, icon and translations originate from the original project. The screenshots were taken in
-this port.
-
 ## License
 
-[MIT](LICENSE). See the original project and its contributors in the credits above.
+[MIT](LICENSE), the same licence as the original project credited at the top of this page.
