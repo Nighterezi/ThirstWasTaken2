@@ -88,6 +88,22 @@ public final class WaterInteractions {
         return InteractionResult.SUCCESS_SERVER;
     }
 
+    /** Sneak-using a filled waterskin on a block pours away all of its stored water. */
+    public static InteractionResult emptyWaterskinOnBlock(Player player, Level level, InteractionHand hand,
+                                                           BlockHitResult hit) {
+        ItemStack held = player.getItemInHand(hand);
+        if (!player.isCrouching() || !held.is(ThirstItems.WATERSKIN) || WaterskinItem.servings(held) == 0) {
+            return InteractionResult.PASS;
+        }
+        if (level.isClientSide()) return InteractionResult.SUCCESS;
+
+        WaterskinItem.removeWater(held, WaterskinItem.CAPACITY);
+        BlockPos pos = hit.getBlockPos();
+        level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+        level.gameEvent(player, GameEvent.FLUID_PLACE, pos);
+        return InteractionResult.SUCCESS_SERVER;
+    }
+
     /**
      * Mirrors the original {@code fillablesHandler}: pouring a container into a cauldron stores the
      * worse of the two purities, and drawing from a cauldron stamps the resulting container.

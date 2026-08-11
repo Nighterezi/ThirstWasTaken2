@@ -44,8 +44,6 @@
   "thirstwastaken2.config.dehydration_halts_health_regen.tooltip": "갈증이 가득하지 않으면 자연 체력 회복을 막습니다.",
   "thirstwastaken2.config.prevent_sprinting_when_thirsty": "갈증 시 달리기 금지",
   "thirstwastaken2.config.prevent_sprinting_when_thirsty.tooltip": "갈증이 6 이하로 떨어지면 달릴 수 없습니다.",
-  "thirstwastaken2.config.can_drink_rain": "빗물 마시기",
-  "thirstwastaken2.config.can_drink_rain.tooltip": "비가 올 때 바로 위를 보면 물을 마십니다.",
   "thirstwastaken2.config.can_drink_by_hand": "손으로 마시기",
   "thirstwastaken2.config.can_drink_by_hand.tooltip": "웅크린 채 빈손으로 물을 사용하면 바로 마십니다.",
   "thirstwastaken2.config.drink_by_hand_needs_both_hands_empty": "양손 모두 비우기",

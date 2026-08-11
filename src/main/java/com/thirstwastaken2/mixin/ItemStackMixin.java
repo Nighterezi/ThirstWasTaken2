@@ -7,6 +7,8 @@ import com.thirstwastaken2.item.WaterskinItem;
 import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.tooltip.ThirstTooltip;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -24,6 +26,16 @@ import java.util.function.Consumer;
 
 @Mixin(ItemStack.class)
 abstract class ItemStackMixin {
+    @Inject(method = "use", at = @At("HEAD"), cancellable = true)
+    private void thirst$preventDrinkingWhenFull(Level level, Player player,
+                                                 InteractionHand hand,
+                                                 CallbackInfoReturnable<InteractionResult> cir) {
+        ItemStack stack = (ItemStack) (Object) this;
+        if (WaterPurity.isPlainWaterDrink(stack) && !ThirstManager.canDrinkWater(player)) {
+            cir.setReturnValue(InteractionResult.FAIL);
+        }
+    }
+
     @Inject(method = "finishUsingItem", at = @At("HEAD"))
     private void thirst$onFinishUsing(Level level, LivingEntity entity, CallbackInfoReturnable<ItemStack> cir) {
         if (level.isClientSide() || !(entity instanceof Player player)) return;

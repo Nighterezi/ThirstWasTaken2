@@ -20,7 +20,7 @@ Minecraft and further extends the original mod.
 - Thirst, quenched hydration and exhaustion
 - Faster thirst loss from activity, hot biomes and the Nether
 - Damage, disabled sprinting and disabled natural healing when dehydrated
-- Drinking from water sources, rain, potions, foods and water bowls
+- Drinking from water sources, potions, foods, water bowls and a reusable waterskin
 - Four water-purity levels with negative effects from unsafe water
 - Water purification using furnaces and campfires
 - Two-row thirst and quenched sprites plus purity information in item tooltips

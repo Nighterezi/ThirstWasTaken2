@@ -48,8 +48,6 @@
   "thirstwastaken2.config.dehydration_halts_health_regen.tooltip": "Ngăn hồi máu tự nhiên khi độ khát chưa đầy.",
   "thirstwastaken2.config.prevent_sprinting_when_thirsty": "Không chạy khi khát",
   "thirstwastaken2.config.prevent_sprinting_when_thirsty.tooltip": "Không cho chạy nhanh khi độ khát còn 6 hoặc thấp hơn.",
-  "thirstwastaken2.config.can_drink_rain": "Uống nước mưa",
-  "thirstwastaken2.config.can_drink_rain.tooltip": "Nhìn thẳng lên trời khi trời mưa để uống.",
   "thirstwastaken2.config.can_drink_by_hand": "Uống bằng tay",
   "thirstwastaken2.config.can_drink_by_hand.tooltip": "Ngồi xuống và dùng tay không lên mặt nước để uống trực tiếp.",
   "thirstwastaken2.config.drink_by_hand_needs_both_hands_empty": "Cần trống cả hai tay",

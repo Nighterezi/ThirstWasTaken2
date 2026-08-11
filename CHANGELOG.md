@@ -6,26 +6,35 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 
 ### Added
 
-- A reusable three-drink waterskin with purity-aware mixing, cauldron filling and bottle or bucket
-  transfers.
-- Environment-sampled contamination, persistent salinity and four code-generated water-bowl
-  sprites that visually match their purity.
+- A waterskin that holds three drinks, mixes water of different purity, fills from cauldrons and
+  trades water with bottles and buckets.
+- Filled waterskins can now be emptied by sneaking and using them on a block.
+- Water is now graded by its surroundings when it is collected, and salt water stays salty wherever
+  it is moved.
+- Water bowls now look different at each purity level.
 - Optional AppleSkin integration that shows thirst exhaustion behind the thirst bar whenever
   AppleSkin's exhaustion-underlay option is enabled.
 
 ### Changed
 
-- Water quality now starts from biome type and receives small temperature, altitude, flow, mud and
-  agriculture modifiers instead of treating all high, deep or flowing water as automatically clean.
-- Ocean water no longer hydrates, cannot be desalinated by cooking, and remains salty through
-  waterskin, cauldron and filter transfers.
-- The creative-tab water bowl and tab icon now use the Purified sprite, and purity tooltip colors
-  match the original mod's palette exactly.
-- Filled waterskins now expand with a cleaner silhouette and consistent leather shading across all
-  three serving levels; the empty sprite is unchanged.
-- Item hydration tooltips now use two distinct sprite rows: filled droplets for thirst on top and
-  outline droplets for quenched underneath.
-- Salty-water tooltips now use plain wording without an em dash.
+- Drinking directly from water with an empty hand is now enabled by default.
+- Water quality now starts from the biome and is adjusted by temperature, altitude, whether the water
+  flows, and nearby mud, farmland or composters, instead of treating all high, deep or flowing water
+  as clean.
+- Ocean water no longer hydrates and cannot be made drinkable by cooking. It stays salty through
+  waterskins, cauldrons and the sand filter.
+- The creative tab icon and its water bowl now show purified water, and purity tooltip colors match
+  the original mod.
+- Filled waterskins are easier to read at a glance, so the three serving levels can be told apart.
+  The empty waterskin is unchanged.
+- Hydration tooltips now show thirst as filled droplets, with quenched as outlined droplets on a
+  second row.
+- Plain water now follows vanilla food behaviour and cannot be consumed while the thirst bar is
+  full. Potions and foods with other uses remain available.
+
+### Removed
+
+- Outdoor rain drinking and its `canDrinkRain` configuration option.
 
 ## [1.0.0] - 2026-08-11
 

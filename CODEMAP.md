@@ -70,12 +70,13 @@ flowchart TD
 
     Tick --> TickPlayer[tickPlayer per ServerPlayer]
     TickPlayer --> Consume[consumeExhaustion: quenched then thirst]
-    TickPlayer --> Slow[every 11 ticks: peaceful regen, rain]
+    TickPlayer --> Slow[every 11 ticks: peaceful regen]
     TickPlayer --> Dmg[every 40 ticks at 0 thirst: dehydrate damage]
 
     Exh[PlayerMixin.causeFoodExhaustion] --> AddExh[ThirstManager.addExhaustion]
     AddExh --> Mod[exhaustionModifier: climate x fire res x fire prot]
 
+    UseDrink[ItemStackMixin.use] --> FullGuard[block plain water at full thirst]
     Eat[ItemStackMixin.finishUsingItem] --> DrinkItem[ThirstManager.drinkItem]
     DrinkItem --> Api[ThirstApi.hydration]
     DrinkItem --> Effects[WaterPurity.applyEffects]

@@ -44,8 +44,6 @@
   "thirstwastaken2.config.dehydration_halts_health_regen.tooltip": "Blokuje naturalną regenerację zdrowia, dopóki pragnienie nie jest pełne.",
   "thirstwastaken2.config.prevent_sprinting_when_thirsty": "Bez biegu przy pragnieniu",
   "thirstwastaken2.config.prevent_sprinting_when_thirsty.tooltip": "Uniemożliwia bieganie, gdy pragnienie spadnie do 6 lub niżej.",
-  "thirstwastaken2.config.can_drink_rain": "Picie deszczu",
-  "thirstwastaken2.config.can_drink_rain.tooltip": "Spójrz prosto w górę podczas deszczu, aby się napić.",
   "thirstwastaken2.config.can_drink_by_hand": "Picie z ręki",
   "thirstwastaken2.config.can_drink_by_hand.tooltip": "Kucnij i użyj pustej ręki na wodzie, aby napić się bezpośrednio.",
   "thirstwastaken2.config.drink_by_hand_needs_both_hands_empty": "Obie ręce puste",

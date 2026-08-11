@@ -53,12 +53,6 @@ public record ThirstData(int thirst, int quenched, float exhaustion, boolean ena
         return new ThirstData(newThirst, newQuenched, exhaustion, enabled);
     }
 
-    /** Rain caps quenched at {@link #MAX} rather than at the thirst level, as in the original mod. */
-    public ThirstData drinkRain(int hydration, int quenchness) {
-        return new ThirstData(Math.min(MAX, thirst + hydration),
-                Math.min(MAX, quenched + quenchness), exhaustion, enabled);
-    }
-
     /** Passive thirst recovery used by the peaceful-difficulty branch. */
     public ThirstData regenerate(int amount) {
         int newThirst = Math.min(MAX, thirst + amount);

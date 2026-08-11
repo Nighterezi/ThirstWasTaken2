@@ -44,8 +44,6 @@
   "thirstwastaken2.config.dehydration_halts_health_regen.tooltip": "Блокирует естественное восстановление здоровья, пока жажда не полная.",
   "thirstwastaken2.config.prevent_sprinting_when_thirsty": "Не бегать при жажде",
   "thirstwastaken2.config.prevent_sprinting_when_thirsty.tooltip": "Запрещает бег, когда жажда падает до 6 или ниже.",
-  "thirstwastaken2.config.can_drink_rain": "Пить дождь",
-  "thirstwastaken2.config.can_drink_rain.tooltip": "Посмотрите строго вверх во время дождя, чтобы напиться.",
   "thirstwastaken2.config.can_drink_by_hand": "Пить рукой",
   "thirstwastaken2.config.can_drink_by_hand.tooltip": "Присядьте и используйте пустую руку на воде, чтобы напиться напрямую.",
   "thirstwastaken2.config.drink_by_hand_needs_both_hands_empty": "Обе руки пусты",

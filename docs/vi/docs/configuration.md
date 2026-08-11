@@ -10,10 +10,6 @@ mở thẳng file, dành cho vài mục quá dài để nhét vừa một thanh 
 
 ![ThirstWasTaken2 trong danh sách Mod Menu](/screenshots/mod-menu.png)
 
-| Tiêu hao và uống nước | Nhiễm bệnh, giao diện và giá trị vật phẩm |
-|---|---|
-| ![Phần trên của màn hình cấu hình](/screenshots/config-1.png) | ![Phần dưới của màn hình cấu hình](/screenshots/config-2.png) |
-
 ::: tip
 Chỉ mục Giao diện được đọc từ file của chính bạn. Phần còn lại lấy từ máy đang chạy thế giới, nên với
 máy chủ riêng thì đó là file của máy chủ. Sửa file bằng tay thì lần khởi động sau mới có hiệu lực.
@@ -57,14 +53,9 @@ Mặc định `true`. Không cho chạy nhanh khi độ khát còn 6 hoặc th�
 
 ## Uống nước
 
-### canDrinkRain
-
-Mặc định `true`. Nhìn thẳng lên trời khi mưa để hồi lại từ từ.
-
 ### canDrinkByHand
 
-Mặc định `false`. Cho phép người chơi ngồi xuống và dùng tay không lên mặt nước để uống trực tiếp. Tắt
-sẵn vì nó khiến nước thành thứ miễn phí ở mọi nơi gần bờ.
+Mặc định `true`. Cho phép người chơi ngồi xuống và dùng tay không lên mặt nước để uống trực tiếp.
 
 ### drinkByHandNeedsBothHandsEmpty
 
@@ -80,7 +71,9 @@ Mặc định `1`. Mức đã khát hồi lại cho chính lần uống đó.
 
 ### extraHydrationConvertsToQuenched
 
-Mặc định `true`. Lượng nước vượt quá thanh đầy sẽ thành mức dự trữ thay vì bị bỏ đi.
+Mặc định `true`. Lượng nước vượt quá thanh đầy sẽ thành mức dự trữ thay vì bị bỏ đi. Bạn không thể bắt
+đầu uống nước thuần khi thanh đã đầy, nhưng phần hồi dư vẫn có tác dụng nếu lúc bắt đầu uống thanh còn
+thiếu điểm.
 
 ## Độ sạch của nước
 

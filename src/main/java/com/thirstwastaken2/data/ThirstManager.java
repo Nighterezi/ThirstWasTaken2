@@ -12,7 +12,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.util.Mth;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.InteractionHand;
@@ -27,7 +26,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.BlockHitResult;
 
 public final class ThirstManager {
-    /** Matches the original mod's syncTimer cadence for rain drinking and peaceful regeneration. */
+    /** Matches the original mod's syncTimer cadence for peaceful regeneration. */
     private static final int SLOW_TICK_INTERVAL = 11;
     private static final int DAMAGE_INTERVAL = 40;
     /** Softens any modifier below 1, exactly like the original MODIFIER_HARSHNESS. */
@@ -58,6 +57,12 @@ public final class ThirstManager {
 
     public static void drink(Player player, int hydration, int quenched) {
         if (!player.level().isClientSide()) set(player, get(player).drink(hydration, quenched));
+    }
+
+    /** Plain water follows vanilla food rules: it cannot be consumed while the visible bar is full. */
+    public static boolean canDrinkWater(Player player) {
+        ThirstData data = get(player);
+        return !data.enabled() || player.getAbilities().invulnerable || data.thirst() < ThirstData.MAX;
     }
 
     public static void drinkItem(Player player, ItemStack stack) {
@@ -95,10 +100,6 @@ public final class ThirstManager {
         if (player.tickCount % SLOW_TICK_INTERVAL == 0) {
             if (peaceful) {
                 updated = updated.regenerate(1);
-            }
-            if (config.canDrinkRain && Mth.wrapDegrees(player.getXRot()) <= -80.0F
-                    && player.level().isRainingAt(player.blockPosition().above())) {
-                updated = updated.drinkRain(1, 1);
             }
         }
 

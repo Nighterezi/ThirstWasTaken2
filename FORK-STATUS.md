@@ -13,7 +13,7 @@ changes, and what is still missing.
 - Running out of water hurts you, and stops you from sprinting and from healing naturally.
 - On Peaceful, thirst slowly refills instead of draining.
 - Drink from potions, modded drinks, watery foods and the water bowl.
-- Drink straight from a water source by sneaking with an empty hand, or from the rain by looking up.
+- Optionally drink straight from a water source by sneaking with an empty hand.
 - Four levels of water purity. Dirty water can make you nauseous or poison you.
 - Purify water in a furnace or on a campfire, in bottles, bowls and buckets.
 - Cauldrons remember how clean the water poured into them was.
@@ -55,6 +55,9 @@ it adds a dithered thirst-exhaustion strip that follows AppleSkin's exhaustion-u
 
 ### Smaller additions
 
+- Plain water follows vanilla food rules and cannot be consumed while the thirst bar is full. Drinks
+  and foods with other uses are unaffected.
+- Looking up in the rain no longer restores thirst, and the old setting for it has been removed.
 - A config screen in Mod Menu for every setting, no file editing needed.
 - Settings are stored in `config/thirstwastaken2.json` if you prefer to edit them by hand.
 - The thirst bar can be moved anywhere on the screen.

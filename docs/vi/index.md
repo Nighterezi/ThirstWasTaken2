@@ -37,7 +37,7 @@ features:
     details: Lò nung hoặc lửa trại biến nước xấu thành nước tốt.
     link: /vi/docs/features/water-purity
   - title: Nhiều cách để uống
-    details: Chai, bát, nước mưa, hoặc chính tay không của bạn.
+    details: Chai, bát, túi da, hoặc chính tay không của bạn.
     link: /vi/docs/features/drinking
   - title: Tùy bạn chỉnh
     details: Mọi con số đều là một thanh trượt trong Mod Menu.

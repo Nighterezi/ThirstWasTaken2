@@ -48,8 +48,6 @@
   "thirstwastaken2.config.dehydration_halts_health_regen.tooltip": "Blocks natural health regeneration while thirst is not full.",
   "thirstwastaken2.config.prevent_sprinting_when_thirsty": "No Sprinting When Thirsty",
   "thirstwastaken2.config.prevent_sprinting_when_thirsty.tooltip": "Stops sprinting once thirst drops to 6 or below.",
-  "thirstwastaken2.config.can_drink_rain": "Drink Rain",
-  "thirstwastaken2.config.can_drink_rain.tooltip": "Look straight up in the rain to drink.",
   "thirstwastaken2.config.can_drink_by_hand": "Drink by Hand",
   "thirstwastaken2.config.can_drink_by_hand.tooltip": "Sneak and use an empty hand on water to drink directly from it.",
   "thirstwastaken2.config.drink_by_hand_needs_both_hands_empty": "Both Hands Empty",

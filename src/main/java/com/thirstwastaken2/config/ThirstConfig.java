@@ -36,8 +36,7 @@ public final class ThirstConfig {
     /** Mirrors the original DEPLETES_WHEN_NAUSEA: nausea adds extra exhaustion while active. */
     public boolean depletesWhenNauseous = true;
     public boolean preventSprintingWhenThirsty = true;
-    public boolean canDrinkRain = true;
-    public boolean canDrinkByHand = false;
+    public boolean canDrinkByHand = true;
     public boolean drinkByHandNeedsBothHandsEmpty = false;
     public int handDrinkingHydration = 1;
     public int handDrinkingQuenched = 1;

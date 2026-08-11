@@ -37,7 +37,7 @@ features:
     details: A furnace or a campfire turns bad water good.
     link: /docs/features/water-purity
   - title: Many Ways To Drink
-    details: Bottles, bowls, the rain, or your bare hands.
+    details: Bottles, bowls, a waterskin, or your bare hands.
     link: /docs/features/drinking
   - title: Yours To Tune
     details: Every number is a slider in Mod Menu.

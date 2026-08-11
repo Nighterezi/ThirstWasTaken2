@@ -44,8 +44,6 @@
   "thirstwastaken2.config.dehydration_halts_health_regen.tooltip": "渇きが満タンでない間は、体力の自然回復を止めます。",
   "thirstwastaken2.config.prevent_sprinting_when_thirsty": "渇いたら走れない",
   "thirstwastaken2.config.prevent_sprinting_when_thirsty.tooltip": "渇きが 6 以下になるとダッシュできなくなります。",
-  "thirstwastaken2.config.can_drink_rain": "雨水を飲む",
-  "thirstwastaken2.config.can_drink_rain.tooltip": "雨の中で真上を向くと水が飲めます。",
   "thirstwastaken2.config.can_drink_by_hand": "手で飲む",
   "thirstwastaken2.config.can_drink_by_hand.tooltip": "スニークしながら空の手で水を使うと、直接飲めます。",
   "thirstwastaken2.config.drink_by_hand_needs_both_hands_empty": "両手が空のときのみ",

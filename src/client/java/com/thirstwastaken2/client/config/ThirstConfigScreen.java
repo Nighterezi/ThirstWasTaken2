@@ -54,7 +54,6 @@ public final class ThirstConfigScreen extends OptionsSubScreen {
 
         list.addHeader(Component.translatable("thirstwastaken2.config.category.drinking"));
         list.addSmall(
-                toggle("can_drink_rain", config.canDrinkRain, value -> config.canDrinkRain = value),
                 toggle("can_drink_by_hand", config.canDrinkByHand, value -> config.canDrinkByHand = value),
                 toggle("drink_by_hand_needs_both_hands_empty", config.drinkByHandNeedsBothHandsEmpty,
                         value -> config.drinkByHandNeedsBothHandsEmpty = value),

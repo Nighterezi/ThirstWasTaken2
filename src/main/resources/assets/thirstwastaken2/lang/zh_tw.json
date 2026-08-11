@@ -44,8 +44,6 @@
   "thirstwastaken2.config.dehydration_halts_health_regen.tooltip": "口渴值未滿時阻止自然回復生命值。",
   "thirstwastaken2.config.prevent_sprinting_when_thirsty": "口渴時不能疾跑",
   "thirstwastaken2.config.prevent_sprinting_when_thirsty.tooltip": "口渴值降到 6 或更低時無法疾跑。",
-  "thirstwastaken2.config.can_drink_rain": "喝雨水",
-  "thirstwastaken2.config.can_drink_rain.tooltip": "下雨時抬頭看向正上方即可飲水。",
   "thirstwastaken2.config.can_drink_by_hand": "用手喝水",
   "thirstwastaken2.config.can_drink_by_hand.tooltip": "潛行並用空手對水使用即可直接飲水。",
   "thirstwastaken2.config.drink_by_hand_needs_both_hands_empty": "需要雙手為空",

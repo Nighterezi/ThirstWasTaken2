@@ -22,7 +22,10 @@ These are the values the mod ships with for vanilla and its own items:
 | Carrot, golden carrot, beetroot, sweet berries, glow berries | 1 | 2 |
 
 Hydration fills the bar, quenched fills the reserve behind it. Hydration past a full bar is not
-wasted, it turns into extra reserve.
+wasted, it turns into extra reserve. Plain water follows vanilla food rules: a water bottle, water
+bowl or waterskin cannot be used while the thirst bar is already full. Once even one point is
+missing, drinking is allowed and any overflow can still become quenched. Potions and foods with
+other uses are not blocked by this rule.
 
 Dozens of items from Farmer's Delight, Farmer's Respite, Brewin' and Chewin', Collector's Reap,
 Tough As Nails and Create already have values too. None of those mods are required, the values just
@@ -56,7 +59,8 @@ Craft a reusable **waterskin** from three leather and one string:
 
 It holds three drinks. Use it on water or a water cauldron to add one drink at a time. In the
 inventory, right-click a waterskin with a water bottle to add one drink, or with a water bucket to
-fill every remaining drink; the empty bottle or bucket is returned.
+fill every remaining drink; the empty bottle or bucket is returned. Sneak and use a filled waterskin
+on a block to pour away all of its water.
 
 Mixing water always keeps the lowest purity. Adding dirty water to purified water makes the whole
 waterskin dirty, and adding cleaner water afterwards does not purify it. Each drink restores 4
@@ -64,16 +68,10 @@ hydration and 5 quenched, and the empty waterskin is kept for refilling.
 
 ## Straight from the source
 
-Two ways to drink with nothing in your hands.
-
-**Rain.** Look straight up while it is raining on you and you slowly take on water, a small amount
-at a time. This is on by default.
-
-![Rain falling over a forest, with the thirst bar part drained](/screenshots/drinking-in-rain.png)
-
-**Sneak and use an empty hand on water.** Off by default. Turn it on with
+**Sneak and use an empty hand on water.** This is on by default and can be changed with
 [canDrinkByHand](/docs/configuration#candrinkbyhand). It is worth a little less than a full bowl,
-and it drinks the water exactly as it is, so a swamp puddle carries a swamp puddle's risks.
+and it drinks the water exactly as it is, so a swamp puddle carries a swamp puddle's risks. Like
+other plain water, it cannot be used while the thirst bar is full.
 
 ## Finding water
 

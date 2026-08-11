@@ -34,6 +34,7 @@ public final class ThirstWasTaken2 implements ModInitializer {
         ServerTickEvents.END_SERVER_TICK.register(ThirstManager::tick);
         ServerTickEvents.END_SERVER_TICK.register(WaterInteractions::tick);
         UseBlockCallback.EVENT.register(ThirstManager::drinkByHand);
+        UseBlockCallback.EVENT.register(WaterInteractions::emptyWaterskinOnBlock);
         UseBlockCallback.EVENT.register(WaterInteractions::fillWaterskinFromCauldron);
         UseBlockCallback.EVENT.register(WaterInteractions::transferCauldronPurity);
         UseItemCallback.EVENT.register(WaterInteractions::fillFromWater);

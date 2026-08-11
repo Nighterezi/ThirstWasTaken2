@@ -22,7 +22,9 @@ khung.
 | Cà rốt, cà rốt vàng, củ dền, quả mọng ngọt, quả mọng phát sáng | 1 | 2 |
 
 Độ khát làm đầy thanh, đã khát làm đầy phần dự trữ phía sau. Lượng nước vượt quá thanh đầy không bị bỏ
-phí, nó chuyển thành dự trữ.
+phí, nó chuyển thành dự trữ. Nước thuần tuân theo cách hoạt động của thức ăn vanilla: bạn không thể
+dùng chai nước, bát nước hay túi da khi thanh khát đã đầy. Chỉ cần thiếu một điểm là có thể uống, và
+phần hồi dư vẫn chuyển thành đã khát. Quy tắc này không chặn thuốc hay thức ăn có công dụng khác.
 
 Hàng chục vật phẩm của Farmer's Delight, Farmer's Respite, Brewin' and Chewin', Collector's Reap,
 Tough As Nails và Create cũng đã có sẵn giá trị. Không mod nào trong số đó là bắt buộc, các giá trị
@@ -56,7 +58,8 @@ Chế tạo **túi da đựng nước** có thể tái sử dụng từ ba miế
 
 Túi chứa được ba lần uống. Dùng túi lên mặt nước hoặc vạc nước để thêm từng lần uống. Trong túi đồ,
 nhấp chuột phải vào túi da bằng chai nước để thêm một lần uống, hoặc bằng xô nước để đổ đầy phần còn
-thiếu; chai hay xô rỗng sẽ được trả lại.
+thiếu; chai hay xô rỗng sẽ được trả lại. Ngồi xuống và dùng túi có nước lên một block để đổ bỏ
+toàn bộ nước trong túi.
 
 Khi trộn, túi luôn giữ cấp độ sạch thấp nhất. Thêm nước bẩn vào nước đã tinh lọc sẽ làm toàn bộ túi
 thành nước bẩn; thêm nước sạch hơn sau đó không thể tinh lọc túi. Mỗi lần uống hồi 4 độ khát và 5 đã
@@ -64,17 +67,10 @@ khát, còn túi rỗng được giữ lại để nạp tiếp.
 
 ## Uống thẳng từ nguồn
 
-Hai cách uống mà không cần cầm gì trong tay.
-
-**Nước mưa.** Nhìn thẳng lên trời khi trời đang mưa lên người bạn, nước sẽ vào từ từ, mỗi lần một ít.
-Cách này bật sẵn.
-
-![Mưa đổ xuống khu rừng, thanh khát đã vơi một phần](/screenshots/drinking-in-rain.png)
-
-**Ngồi xuống và dùng tay không lên mặt nước.** Tắt sẵn. Bật nó bằng
+**Ngồi xuống và dùng tay không lên mặt nước.** Tính năng này bật sẵn và có thể thay đổi bằng
 [canDrinkByHand](/vi/docs/configuration#candrinkbyhand). Nó đáng giá kém hơn một bát nước đầy một chút,
 và nó uống đúng thứ nước đang có ở đó, nên vũng nước đầm lầy mang theo đủ rủi ro của một vũng nước đầm
-lầy.
+lầy. Giống các loại nước thuần khác, cách này không dùng được khi thanh khát đã đầy.
 
 ## Tìm nước ở đâu
 

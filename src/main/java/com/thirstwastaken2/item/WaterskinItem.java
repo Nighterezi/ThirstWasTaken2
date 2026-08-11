@@ -58,6 +58,17 @@ public final class WaterskinItem extends Item {
         return true;
     }
 
+    /** Removes stored drinks, clearing their quality once the waterskin becomes empty. */
+    public static boolean removeWater(ItemStack stack, int amount) {
+        int current = servings(stack);
+        if (!stack.is(ThirstItems.WATERSKIN) || current <= 0 || amount <= 0) return false;
+
+        int remaining = Math.max(0, current - amount);
+        setServings(stack, remaining);
+        if (remaining == 0) clearWaterQuality(stack);
+        return true;
+    }
+
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
@@ -75,13 +86,7 @@ public final class WaterskinItem extends Item {
         }
         boolean creativePlayer = entity instanceof Player player && player.getAbilities().instabuild;
         if (!level.isClientSide() && current > 0 && !creativePlayer) {
-            int remaining = current - 1;
-            setServings(stack, remaining);
-            if (remaining == 0) {
-                stack.remove(ThirstComponents.WATER_PURITY);
-                stack.remove(ThirstComponents.WATER_CONTAMINATION);
-                stack.remove(ThirstComponents.WATER_SALTY);
-            }
+            removeWater(stack, 1);
         }
         return stack;
     }
@@ -147,6 +152,12 @@ public final class WaterskinItem extends Item {
             stack.set(DataComponents.CUSTOM_MODEL_DATA,
                     new CustomModelData(List.of((float) servings), List.of(), List.of(), List.of()));
         }
+    }
+
+    private static void clearWaterQuality(ItemStack stack) {
+        stack.remove(ThirstComponents.WATER_PURITY);
+        stack.remove(ThirstComponents.WATER_CONTAMINATION);
+        stack.remove(ThirstComponents.WATER_SALTY);
     }
 
     private static void consumeContainer(ItemStack carried, ItemStack remainder, Player player,

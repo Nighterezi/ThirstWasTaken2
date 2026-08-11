@@ -44,8 +44,6 @@
   "thirstwastaken2.config.dehydration_halts_health_regen.tooltip": "Empêche la régénération naturelle tant que la soif n'est pas pleine.",
   "thirstwastaken2.config.prevent_sprinting_when_thirsty": "Pas de sprint assoiffé",
   "thirstwastaken2.config.prevent_sprinting_when_thirsty.tooltip": "Empêche de sprinter dès que la soif tombe à 6 ou moins.",
-  "thirstwastaken2.config.can_drink_rain": "Boire la pluie",
-  "thirstwastaken2.config.can_drink_rain.tooltip": "Regardez droit vers le haut sous la pluie pour boire.",
   "thirstwastaken2.config.can_drink_by_hand": "Boire à la main",
   "thirstwastaken2.config.can_drink_by_hand.tooltip": "Accroupissez-vous et utilisez une main vide sur l'eau pour boire directement.",
   "thirstwastaken2.config.drink_by_hand_needs_both_hands_empty": "Deux mains vides",

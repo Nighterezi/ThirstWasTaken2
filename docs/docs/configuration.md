@@ -10,10 +10,6 @@ button opens the file itself, for the few settings that are too long to fit on a
 
 ![ThirstWasTaken2 listed in Mod Menu](/screenshots/mod-menu.png)
 
-| Depletion and drinking | Sickness, HUD and item values |
-|---|---|
-| ![The top of the config screen](/screenshots/config-1.png) | ![The bottom of the config screen](/screenshots/config-2.png) |
-
 ::: tip
 Only the HUD section is read from your own copy. Everything else comes from the copy on the machine
 running the world, so on a dedicated server that is the server's file. Editing the file by hand
@@ -57,14 +53,9 @@ Default `true`. Stops sprinting once thirst is 6 or below.
 
 ## Drinking
 
-### canDrinkRain
-
-Default `true`. Look straight up in the rain to slowly refill.
-
 ### canDrinkByHand
 
-Default `false`. Lets a player sneak and use an empty hand on water to drink from it directly. Off
-because it makes water free everywhere near a coast.
+Default `true`. Lets a player sneak and use an empty hand on water to drink from it directly.
 
 ### drinkByHandNeedsBothHandsEmpty
 
@@ -80,7 +71,9 @@ Default `1`. Reserve restored by that same drink.
 
 ### extraHydrationConvertsToQuenched
 
-Default `true`. Hydration above a full bar becomes reserve instead of being thrown away.
+Default `true`. Hydration above a full bar becomes reserve instead of being thrown away. Plain water
+cannot be started while the bar is already full, but overflow still applies when a drink begins
+below full.
 
 ## Water Purity
 

@@ -50,9 +50,9 @@ public final class WaterPurity {
     /** Purity that has to be looked up from the config instead of being baked into the item. */
     private static final int PURITY_FROM_CONFIG = -1;
 
-    private record ItemInfo(boolean container, int staticPurity) { }
+    private record ItemInfo(boolean container, boolean plainWater, int staticPurity) { }
 
-    private static final ItemInfo NOT_A_CONTAINER = new ItemInfo(false, PURITY_FROM_CONFIG);
+    private static final ItemInfo NOT_A_CONTAINER = new ItemInfo(false, false, PURITY_FROM_CONFIG);
     private static final Map<Item, ItemInfo> INFO = new ConcurrentHashMap<>();
 
     private WaterPurity() { }
@@ -64,6 +64,16 @@ public final class WaterPurity {
         // Water bottles are plain potions distinguished only by their contents component.
         PotionContents potion = stack.get(DataComponents.POTION_CONTENTS);
         return potion != null && potion.is(Potions.WATER);
+    }
+
+    /** Water-only drinks are blocked at a full thirst bar, unlike drinks with other gameplay uses. */
+    public static boolean isPlainWaterDrink(ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        if (stack.is(ThirstItems.WATERSKIN)) return WaterskinItem.servings(stack) > 0;
+        if (stack.is(ThirstItems.TERRACOTTA_WATER_BOWL)) return true;
+        PotionContents potion = stack.get(DataComponents.POTION_CONTENTS);
+        if (stack.is(Items.POTION) && potion != null && potion.is(Potions.WATER)) return true;
+        return info(stack.getItem()).plainWater();
     }
 
     public static int get(ItemStack stack) {
@@ -224,7 +234,7 @@ public final class WaterPurity {
 
     private static ItemInfo resolve(Item item) {
         if (item == Items.WATER_BUCKET || item == ThirstItems.TERRACOTTA_WATER_BOWL) {
-            return new ItemInfo(true, PURITY_FROM_CONFIG);
+            return new ItemInfo(true, item == ThirstItems.TERRACOTTA_WATER_BOWL, PURITY_FROM_CONFIG);
         }
         if (item == Items.POTION) {
             // Only water bottles count, which isWaterContainer decides per stack.
@@ -242,20 +252,20 @@ public final class WaterPurity {
                 case "water_canteen" -> 2;
                 default -> 3;
             };
-            return new ItemInfo(container, purity);
+            return new ItemInfo(container, container, purity);
         }
         if (namespace.equals("farmersdelight")) {
             // Only the two bottled drinks were registered as containers by the original mod.
             boolean container = path.equals("melon_juice") || path.equals("apple_cider");
-            return new ItemInfo(container, 3);
+            return new ItemInfo(container, false, 3);
         }
         if (namespace.equals("collectorsreap")) {
             boolean container = path.equals("pomegranate_black_tea") || path.equals("lime_green_tea");
-            return new ItemInfo(container, PURITY_FROM_CONFIG);
+            return new ItemInfo(container, false, PURITY_FROM_CONFIG);
         }
         if (namespace.equals("farmersrespite") || namespace.equals("brewinandchewin")
                 || (namespace.equals("create") && path.equals("builders_tea"))) {
-            return new ItemInfo(true, PURITY_FROM_CONFIG);
+            return new ItemInfo(true, false, PURITY_FROM_CONFIG);
         }
         return NOT_A_CONTAINER;
     }

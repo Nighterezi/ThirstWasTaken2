@@ -9,7 +9,7 @@ thirst, and the client only receives it through the attachment sync.
 | Want to change | Go to |
 |---|---|
 | What an item restores | `config/ThirstConfig.defaultDrinks()` / `defaultFoods()`, read through `api/ThirstApi` |
-| Drain rate, climate, damage, rain, hand drinking | `data/ThirstManager` |
+| Drain rate, climate, damage, full-bar drinking rules, hand drinking | `data/ThirstManager` |
 | The state record itself (thirst, quenched, exhaustion) | `data/ThirstData` |
 | A new config key | `config/ThirstConfig` (field + `sanitize()`), then the client config screen |
 | Bowls, waterskin, creative tab | `item/` |
@@ -31,9 +31,10 @@ thirst, and the client only receives it through the attachment sync.
 Events registered there, in registration order per event:
 
 - `END_SERVER_TICK` → `ThirstManager.tick`, then `WaterInteractions.tick` (drains the deferred queue).
-- `UseBlockCallback` → `ThirstManager.drinkByHand`, `WaterInteractions.fillWaterskinFromCauldron`,
-  `WaterInteractions.transferCauldronPurity`. A handler that returns anything but `PASS` stops the
-  rest, which is why `transferCauldronPurity` deliberately returns `PASS` and defers its work.
+- `UseBlockCallback` → `ThirstManager.drinkByHand`, `WaterInteractions.emptyWaterskinOnBlock`,
+  `WaterInteractions.fillWaterskinFromCauldron`, `WaterInteractions.transferCauldronPurity`. A
+  handler that returns anything but `PASS` stops the rest, which is why `transferCauldronPurity`
+  deliberately returns `PASS` and defers its work.
 - `UseItemCallback` → `WaterInteractions.fillFromWater`.
 
 ## Invariants worth not breaking
@@ -59,5 +60,5 @@ Events registered there, in registration order per event:
 ## Divergences from upstream live as comments
 
 Where behaviour intentionally differs from the original Forge mod, the reason sits next to the code
-(`climateModifier`, `drinkRain`, `WaterPurity.at`). Keep that habit: a new divergence gets a comment
+(`climateModifier`, `canDrinkWater`, `WaterPurity.at`). Keep that habit: a new divergence gets a comment
 at the divergence, not only a note in the docs.
