@@ -113,17 +113,8 @@ trượt riêng.
 
 ## Giao diện
 
-Bốn mục này luôn đọc từ file cấu hình của chính bạn, kể cả khi chơi trên máy chủ.
-
-### showQuenchedOverlay
-
-Mặc định `true`. Vẽ viền sáng thể hiện mức dự trữ lên trên các giọt nước. Tắt đi thì chỉ còn giọt
-nước trơn.
-
-### showExhaustionUnderlay
-
-Mặc định `false`. Vẽ một dải chấm phía sau thanh khát, đầy dần theo mức tiêu hao, theo kiểu AppleSkin
-hay dùng. Chỉ bật khi bạn thật sự muốn, vì nó làm thanh khát trông rối.
+Hai mục này luôn đọc từ file cấu hình của chính bạn, kể cả khi chơi trên máy chủ. Viền dự trữ và
+kiểu vơi theo từng phần tư giọt luôn bật, không có tùy chọn tắt.
 
 ### thirstBarXOffset
 

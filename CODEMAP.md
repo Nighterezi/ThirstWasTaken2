@@ -121,15 +121,12 @@ Brewin' and Chewin' / Collector's Reap support stays dependency-free.
 `ThirstWasTaken2Client` attaches `thirst_bar` after `VanillaHudElements.FOOD_BAR` and reserves 10px
 of right-stack height. `ThirstHud.render` draws, in order:
 
-1. the exhaustion dither strip from `appleskin_icons.png` at v=18 — **off by default**
-   (`showExhaustionUnderlay`), because it is what produces the dotted look between droplets;
-2. ten droplet slots from `thirst_icons.png` (41x9: empty, quarter, half, three quarter and full on an
+1. ten droplet slots from `thirst_icons.png` (41x9: empty, quarter, half, three quarter and full on an
    8px stride, so u = 0/8/16/24/32), shaken when quenched hits zero, exactly like the vanilla hunger
    bar. Frames share their transparent edge columns, which is why the stride is 8 and not 9. Each
    droplet holds two thirst points; the quarter and three-quarter frames come from
    `drainedFraction`, which spends the client's `exhaustion` (0..4) against the next point once
-   quenched is empty. `smoothThirstDrain=false` pins the fraction to 0 and restores the original
-   three-frame stepping;
+   quenched is empty. There is no setting for this, the five-frame drain is the only behaviour;
 3. the quenched outline from `appleskin_icons.png` at v=0, u = 0/9/18/27 by quarter.
 
 ## Config

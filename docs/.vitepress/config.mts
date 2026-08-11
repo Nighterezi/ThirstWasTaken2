@@ -66,16 +66,16 @@ const viFeaturesSidebar = [
 export default defineConfig({
   base: BASE,
   title: 'ThirstWasTaken2',
-  description: 'A survival thirst system for Minecraft 26.2 on Fabric, with water that is not always clean.',
+  description: 'Adds a survival thirst bar, drinking, and water purity.',
   cleanUrls: true,
   lastUpdated: true,
   head: [
-    ['link', { rel: 'icon', type: 'image/png', href: `${BASE}logo.png` }]
+    ['link', { rel: 'icon', type: 'image/png', href: `${BASE}logo-small.png` }]
   ],
   // Notes for contributors, not a page on the site.
   srcExclude: ['CLAUDE.md'],
   themeConfig: {
-    logo: '/logo.png',
+    logo: '/logo-small.png',
     externalLinkIcon: true,
     socialLinks: [{ icon: 'github', link: REPO }],
     search: {
@@ -120,7 +120,7 @@ export default defineConfig({
     vi: {
       label: 'Tiếng Việt',
       lang: 'vi',
-      description: 'Hệ thống khát nước sinh tồn cho Minecraft 26.2 trên Fabric, với nguồn nước không phải lúc nào cũng sạch.',
+      description: 'Thêm thanh khát nước, cơ chế uống nước và độ sạch của nước cho sinh tồn.',
       themeConfig: {
         nav: [
           { text: 'Trang chủ', link: '/vi/', activeMatch: '^/vi/$' },

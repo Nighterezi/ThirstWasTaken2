@@ -2,6 +2,11 @@
 Description for the ThirstWasTaken2 (Fabric) project page on Modrinth.
 Paste the content below the marker into the Modrinth description editor.
 Image links are absolute so they resolve outside this repository.
+
+Modrinth "Summary" field, kept in sync with the mod's fabric.mod.json description
+and the docs site title tag:
+
+  Adds a survival thirst bar, drinking, and water purity.
 -->
 
 # ThirstWasTaken2
@@ -90,7 +95,7 @@ it.
 You can tune depletion speed inside and outside the Nether, the Fire Resistance discount, Peaceful
 behaviour, sprint and healing penalties, rain and hand drinking, overflow into the reserve, default
 purity, the mountain and cave heights, the flowing water bonus, every sickness chance, and the HUD:
-the exhaustion strip, the quenched outline, quarter step droplet draining, and where the bar sits.
+where the bar sits on screen.
 
 Only the HUD section is read from your own copy. Everything else comes from the machine running the
 world, so on a dedicated server that is the server's file.

@@ -47,20 +47,6 @@ public final class ThirstConfig {
     // ---- HUD --------------------------------------------------------------
     public int thirstBarXOffset = 0;
     public int thirstBarYOffset = 0;
-    /**
-     * Draws the dithered "exhaustion" strip behind the thirst bar. The original only drew it when
-     * AppleSkin was installed and its own SHOW_FOOD_EXHAUSTION_UNDERLAY option was enabled, so it is
-     * off by default here.
-     */
-    public boolean showExhaustionUnderlay = false;
-    /** Draws the lighter quenched (saturation-style) overlay on top of the droplets. */
-    public boolean showQuenchedOverlay = true;
-    /**
-     * Lets the droplet that is currently emptying step through the quarter and three-quarter frames
-     * as exhaustion builds, instead of jumping straight from full to half to empty. Not in the
-     * original mod, whose sheet only had the three frames.
-     */
-    public boolean smoothThirstDrain = true;
 
     // ---- water purity -----------------------------------------------------
     public int mountainsY = 100;

@@ -5,7 +5,9 @@ ThirstWasTaken2 is a fork of [Thirst Was Taken](https://github.com/ghen-git/Thir
 Fabric on Minecraft 26.2 and has kept growing since. This page lists what carried over, what the fork
 adds on top, and what is still missing.
 
-## What works
+## Carried over from the original
+
+Everything ghen's mod did that still exists here, unchanged in spirit.
 
 - Thirst and quenched bars that drain as you play, faster when you sprint, fight or take damage.
 - Hotter, drier biomes and the Nether dry you out quicker; Fire Resistance and Fire Protection slow it down.
@@ -18,23 +20,59 @@ adds on top, and what is still missing.
 - Purify water in a furnace or on a campfire, in bottles, bowls and buckets.
 - Cauldrons remember how clean the water poured into them was.
 - Clay bowl, terracotta bowl and terracotta water bowl. The clay bowl must be smelted before it can scoop water; hold the resulting terracotta bowl and use it on any water block, including flowing water.
-- A dedicated **ThirstWasTaken2** creative inventory tab collects every item from the mod.
 - Water bottles appear in dungeon, mineshaft, shipwreck, nether bridge and bastion chests, and in Piglin barters.
 - `/thirst` commands to check, set, or turn thirst off for a player.
-- Nine languages, all covering the config screen as well as the in-game text.
 
 ## New in this fork
 
+Ordered by how much they change the game you already know, biggest first. If you are coming from the
+original mod, read the first four.
+
+### 1. Hand drinking is worth a third of what it was
+
+Drinking straight from a water source restores **1 thirst and 1 quenched**, down from the original's
+3 and 2. Free, unlimited water refilling both bars that fast made every other drink pointless. Both
+values are still configurable.
+
+### 2. Item tooltips show droplets instead of numbers
+
+The original printed `Hydration: +6, Quenched: +8`. This fork draws the same droplets the bar uses,
+with the water level inside each droplet and the quenched outline around it, so one row carries both
+values. A drink worth 6 hydration and 8 quenched reads as three filled droplets followed by one
+outline-only droplet.
+
+![The tooltip of a water bottle, showing filled droplets and an outline droplet](docs/public/screenshots/item-tooltip.png)
+
+This is the AppleSkin way of putting food values in a tooltip, drawn by this mod itself. It is always
+there, whether or not AppleSkin is installed.
+
+### 3. Redrawn droplets
+
+Empty droplets now use the same dark shade as the empty hunger icons instead of a lighter grey, so
+the bar reads the same way the food bar directly below it does.
+
+![The thirst bar above the hunger bar, part drained](docs/public/screenshots/thirst-bar.png)
+
+### 4. Droplets empty in quarters
+
+The original sheet had full, half and empty. This one has five levels, and the droplet you are
+currently drinking away steps through all of them as exhaustion builds. There is no setting: the
+five-level drain is the only behaviour.
+
+### 5. The quenched outline is always on, and the exhaustion strip is gone
+
+The lighter reserve outline over the droplets is drawn unconditionally now. The dotted AppleSkin
+style exhaustion strip behind the bar was removed entirely, because it belongs to an AppleSkin
+integration this fork does not have yet.
+
+### Smaller additions
+
 - A config screen in Mod Menu for every setting, no file editing needed.
 - Settings are stored in `config/thirstwastaken2.json` if you prefer to edit them by hand.
-- The thirst bar can be moved around the screen.
-- Redrawn droplets. Empty droplets now use the same dark shade as the empty hunger icons instead of a lighter grey, so the bar reads the same way the food bar does.
-- Droplets empty in quarters. The original only had full, half and empty; the sheet now has five levels, and the droplet you are currently drinking away steps through all of them. Turn it off under `Smooth Droplet Drain` for the old three-step look.
-- The dotted exhaustion strip behind the bar and the quenched outline on the droplets can each be turned off. The dotted strip is off by default.
-- Optional setting requiring both hands to be empty before drinking by hand.
-- Hand drinking restores 1 thirst and 1 quenched by default, reduced from 3 and 2 so free water does not fill both bars too quickly. Both values remain configurable.
-- Item tooltips show droplets instead of a line of numbers. The original printed `Hydration: +6, Quenched: +8`; the port draws the same droplets the bar uses, with the water level inside each droplet and the quenched outline around it, so one row of droplets carries both values. A drink worth 6 hydration and 8 quenched reads as three filled droplets followed by one outline-only droplet.
-- Support for other food mods works by item name, so none of them are required to be installed.
+- The thirst bar can be moved anywhere on the screen.
+- An optional setting requiring both hands to be empty before drinking by hand.
+- A dedicated **ThirstWasTaken2** creative inventory tab collecting every item from the mod.
+- Nine languages, all covering the config screen as well as the in-game text.
 
 ## Not available yet
 

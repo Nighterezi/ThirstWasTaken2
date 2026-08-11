@@ -74,7 +74,9 @@ Once cached, `--offline` works — except that `clientCompileOnly` on Mod Menu m
 
 - Structure-chest water uses one Fabric loot pool per table instead of the original's
   Farmer's-Respite / Brewin'-and-Chewin' loot variants.
-- The AppleSkin exhaustion underlay and quenched overlay are drawn by this mod directly and gated on
-  `showExhaustionUnderlay` / `showQuenchedOverlay`, since AppleSkin's config is not available.
+- The quenched overlay is drawn by this mod directly, always on, with no setting. The AppleSkin
+  exhaustion underlay was removed: it belongs to an AppleSkin integration that does not exist yet, so
+  shipping a half version of it was worse than not shipping it. `appleskin_icons.png` still supplies
+  the quenched frames, and its v=18 dither row is now unused.
 - Water purity at altitude follows the documented rule (mountains *or* caves are cleaner); upstream
   had a contradictory extra clause that made the mountain case dead code.

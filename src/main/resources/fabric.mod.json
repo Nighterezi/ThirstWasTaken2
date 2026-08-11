@@ -3,7 +3,7 @@
   "id": "thirstwastaken2",
   "version": "${version}",
   "name": "ThirstWasTaken2",
-  "description": "A survival thirst and hydration system, with water that is not always clean.",
+  "description": "Adds a survival thirst bar, drinking, and water purity.",
   "authors": [
     "ghen (original author)",
     "Nighter (fork)"

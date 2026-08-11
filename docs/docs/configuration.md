@@ -114,16 +114,8 @@ eight separate sliders.
 
 ## HUD
 
-These four are read from your own config file, even on a server.
-
-### showQuenchedOverlay
-
-Default `true`. Draws the lighter reserve outline over the droplets. Off leaves plain droplets.
-
-### showExhaustionUnderlay
-
-Default `false`. Draws a dotted strip behind the bar that fills as exhaustion builds, in the style
-AppleSkin uses. On by request only, because it makes the bar look busy.
+These two are read from your own config file, even on a server. The quenched outline and the quarter
+step droplet drain are always on and have no setting.
 
 ### thirstBarXOffset
 
