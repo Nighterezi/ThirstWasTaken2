@@ -49,7 +49,7 @@ bẩn gây hại hai lần.
 ### dehydrationHaltsHealthRegen
 
 Mặc định `true`. Chặn hồi máu tự nhiên khi độ khát chưa gần đầy. Xem
-[Khi sắp cạn](/vi/features/thirst-and-quenched#khi-sap-can).
+[Khi sắp cạn](/vi/docs/features/thirst-and-quenched#khi-sap-can).
 
 ### preventSprintingWhenThirsty
 
@@ -108,7 +108,7 @@ Mặc định `true`. Nước gây trúng độc vẫn hồi thanh khát. Tắt 
 ### nauseaChance và poisonChance
 
 Hai danh sách bốn phần trăm, mỗi mức sạch một giá trị, từ bẩn đến đã tinh lọc. Giá trị mặc định nằm ở
-[Uống nước xấu](/vi/features/water-purity#uong-nuoc-xau). Màn hình cấu hình chia chúng thành tám thanh
+[Uống nước xấu](/vi/docs/features/water-purity#uong-nuoc-xau). Màn hình cấu hình chia chúng thành tám thanh
 trượt riêng.
 
 ## Giao diện

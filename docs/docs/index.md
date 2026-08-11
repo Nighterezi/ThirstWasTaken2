@@ -26,5 +26,5 @@ Minecraft and further extends the original mod.
 ## Where to go next
 
 - [Installation](/docs/installation) to get it running
-- [Thirst and Quenched](/features/thirst-and-quenched) for how the bar behaves
+- [Thirst and Quenched](/docs/features/thirst-and-quenched) for how the bar behaves
 - [Configuration](/docs/configuration) for every setting

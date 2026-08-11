@@ -21,24 +21,24 @@ hero:
       link: /docs/configuration
     - theme: alt
       text: Features
-      link: /features/
+      link: /docs/features/thirst-and-quenched
 
 features:
   - title: A Bar Below Hunger
     details: Ten droplets that drain as you run, fight and build.
-    link: /features/thirst-and-quenched
+    link: /docs/features/thirst-and-quenched
   - title: The Desert Costs More
     details: Hot biomes and the Nether dry you out faster.
-    link: /features/thirst-and-quenched
+    link: /docs/features/thirst-and-quenched
   - title: Water Has Quality
     details: Four grades, from dirty puddle to purified.
-    link: /features/water-purity
+    link: /docs/features/water-purity
   - title: Boil It Clean
     details: A furnace or a campfire turns bad water good.
-    link: /features/water-purity
+    link: /docs/features/water-purity
   - title: Many Ways To Drink
     details: Bottles, bowls, the rain, or your bare hands.
-    link: /features/drinking
+    link: /docs/features/drinking
   - title: Yours To Tune
     details: Every number is a slider in Mod Menu.
     link: /docs/configuration

@@ -49,7 +49,7 @@ dirty water hurt twice.
 ### dehydrationHaltsHealthRegen
 
 Default `true`. Blocks natural healing while thirst is not nearly full. See
-[Running low](/features/thirst-and-quenched#running-low).
+[Running low](/docs/features/thirst-and-quenched#running-low).
 
 ### preventSprintingWhenThirsty
 
@@ -109,7 +109,7 @@ loss.
 ### nauseaChance and poisonChance
 
 Two lists of four percentages, one per grade, from dirty to purified. The defaults are in
-[Drinking bad water](/features/water-purity#drinking-bad-water). The config screen shows them as
+[Drinking bad water](/docs/features/water-purity#drinking-bad-water). The config screen shows them as
 eight separate sliders.
 
 ## HUD

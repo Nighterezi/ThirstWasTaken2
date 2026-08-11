@@ -32,6 +32,16 @@ Minecraft and further extends the original mod.
 |---|---|
 | ![Thirst bar above the hunger bar](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/thirst-bar.png) | ![Four water-purity levels shown in item tooltips](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/water-purity.png) |
 
+## Items
+
+| Item | Use |
+|---|---|
+| Clay Bowl | Smelt it to make a Terracotta Bowl |
+| Terracotta Bowl | Collects still or flowing water |
+| Terracotta Water Bowl | Stores drinkable water and its purity level |
+
+![The ThirstWasTaken2 creative tab containing the clay bowl, terracotta bowl and terracotta water bowl](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/creative-tab.png)
+
 ## Water purity
 
 Water receives a purity level when collected in a bottle, bucket or terracotta bowl.

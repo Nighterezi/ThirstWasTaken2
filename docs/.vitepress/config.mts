@@ -13,6 +13,14 @@ const enManualSidebar = [
     ]
   },
   {
+    text: 'Features',
+    items: [
+      { text: 'Thirst and Quenched', link: '/docs/features/thirst-and-quenched' },
+      { text: 'Drinking', link: '/docs/features/drinking' },
+      { text: 'Water Purity', link: '/docs/features/water-purity' }
+    ]
+  },
+  {
     text: 'Server Guide',
     items: [
       { text: 'Commands', link: '/docs/commands' },
@@ -31,34 +39,18 @@ const viManualSidebar = [
     ]
   },
   {
+    text: 'Tính năng',
+    items: [
+      { text: 'Khát và Đã khát', link: '/vi/docs/features/thirst-and-quenched' },
+      { text: 'Uống nước', link: '/vi/docs/features/drinking' },
+      { text: 'Độ sạch của nước', link: '/vi/docs/features/water-purity' }
+    ]
+  },
+  {
     text: 'Hướng dẫn máy chủ',
     items: [
       { text: 'Lệnh', link: '/vi/docs/commands' },
       { text: 'Cấu hình', link: '/vi/docs/configuration' }
-    ]
-  }
-]
-
-const enFeaturesSidebar = [
-  {
-    text: 'Features',
-    items: [
-      { text: 'Overview', link: '/features/' },
-      { text: 'Thirst and Quenched', link: '/features/thirst-and-quenched' },
-      { text: 'Drinking', link: '/features/drinking' },
-      { text: 'Water Purity', link: '/features/water-purity' }
-    ]
-  }
-]
-
-const viFeaturesSidebar = [
-  {
-    text: 'Tính năng',
-    items: [
-      { text: 'Tổng quan', link: '/vi/features/' },
-      { text: 'Khát và Đã khát', link: '/vi/features/thirst-and-quenched' },
-      { text: 'Uống nước', link: '/vi/features/drinking' },
-      { text: 'Độ sạch của nước', link: '/vi/features/water-purity' }
     ]
   }
 ]
@@ -89,11 +81,9 @@ export default defineConfig({
       themeConfig: {
         nav: [
           { text: 'Home', link: '/', activeMatch: '^/$' },
-          { text: 'Docs', link: '/docs/', activeMatch: '^/docs/' },
-          { text: 'Features', link: '/features/', activeMatch: '^/features/' }
+          { text: 'Docs', link: '/docs/', activeMatch: '^/docs/' }
         ],
         sidebar: {
-          '/features/': enFeaturesSidebar,
           '/docs/': enManualSidebar
         },
         editLink: {
@@ -124,11 +114,9 @@ export default defineConfig({
       themeConfig: {
         nav: [
           { text: 'Trang chủ', link: '/vi/', activeMatch: '^/vi/$' },
-          { text: 'Tài liệu', link: '/vi/docs/', activeMatch: '^/vi/docs/' },
-          { text: 'Tính năng', link: '/vi/features/', activeMatch: '^/vi/features/' }
+          { text: 'Tài liệu', link: '/vi/docs/', activeMatch: '^/vi/docs/' }
         ],
         sidebar: {
-          '/vi/features/': viFeaturesSidebar,
           '/vi/docs/': viManualSidebar
         },
         editLink: {

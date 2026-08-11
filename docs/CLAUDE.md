@@ -12,15 +12,15 @@ npm run docs:build    # must pass before you call a docs change done
 
 | Path | Holds |
 |---|---|
-| `index.md`, `vi/index.md` | The hero page. Feature cards link into the two sections below. |
-| `docs/` | The manual: overview, installation, commands, configuration, FAQ. |
-| `features/` | What the mod does and why, in prose. No config key listings. |
+| `index.md`, `vi/index.md` | The hero page. Feature cards link into the documentation. |
+| `docs/` | The manual: overview, features, installation, commands, configuration, FAQ. |
+| `docs/features/` | What the mod does and why, in prose. No config key listings. |
 | `.vitepress/config.mts` | Nav and both sidebars. |
 | `.vitepress/theme/` | Default theme plus `custom.css` for the brand colour. |
 | `public/` | `logo-small.png` for the navbar and favicon, `logo.png` for the home hero, and `screenshots/`. |
 
-`docs/` answers "how do I set this up". `features/` answers "what is this like to play". A page that
-starts listing config keys belongs in `docs/`.
+`docs/` contains all player and server documentation. Pages describing gameplay belong in
+`docs/features/`; pages listing config keys belong directly in `docs/`.
 
 ## Style
 
@@ -35,7 +35,7 @@ Written for a server owner who has never seen the code. That means:
   `[—–]` before finishing.
 
 Say the same thing in exactly one place and link to it. Numbers a player cares about (item hydration
-values, sickness chances, purity by location) live on the `features/` page that explains them, and
+values, sickness chances, purity by location) live on the `docs/features/` page that explains them, and
 `docs/configuration.md` links there instead of repeating the tables.
 
 Vietnamese pages are a full mirror, and their links are absolute with the prefix:
@@ -52,7 +52,7 @@ ones most likely to go stale:
 |---|---|
 | A field in `ThirstConfig` | `docs/configuration.md`, both languages |
 | A `/thirst` subcommand | `docs/commands.md` |
-| Exhaustion, climate or damage in `ThirstManager` | `features/thirst-and-quenched.md` |
-| Hydration values, bowls, loot | `features/drinking.md` |
-| Anything in `WaterPurity` or a purify recipe | `features/water-purity.md` |
+| Exhaustion, climate or damage in `ThirstManager` | `docs/features/thirst-and-quenched.md` |
+| Hydration values, bowls, loot | `docs/features/drinking.md` |
+| Anything in `WaterPurity` or a purify recipe | `docs/features/water-purity.md` |
 | Supported Minecraft, Loader or Fabric API version | `docs/installation.md` |

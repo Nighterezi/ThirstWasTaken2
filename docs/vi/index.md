@@ -21,24 +21,24 @@ hero:
       link: /vi/docs/configuration
     - theme: alt
       text: Tính năng
-      link: /vi/features/
+      link: /vi/docs/features/thirst-and-quenched
 
 features:
   - title: Một thanh dưới thanh đói
     details: Mười giọt nước, vơi dần khi bạn chạy, đánh nhau và xây dựng.
-    link: /vi/features/thirst-and-quenched
+    link: /vi/docs/features/thirst-and-quenched
   - title: Sa mạc lấy giá cao hơn
     details: Quần xã nóng và Nether làm bạn mất nước nhanh hơn.
-    link: /vi/features/thirst-and-quenched
+    link: /vi/docs/features/thirst-and-quenched
   - title: Nước có chất lượng
     details: Bốn mức, từ vũng nước bẩn đến nước đã tinh lọc.
-    link: /vi/features/water-purity
+    link: /vi/docs/features/water-purity
   - title: Đun cho sạch
     details: Lò nung hoặc lửa trại biến nước xấu thành nước tốt.
-    link: /vi/features/water-purity
+    link: /vi/docs/features/water-purity
   - title: Nhiều cách để uống
     details: Chai, bát, nước mưa, hoặc chính tay không của bạn.
-    link: /vi/features/drinking
+    link: /vi/docs/features/drinking
   - title: Tùy bạn chỉnh
     details: Mọi con số đều là một thanh trượt trong Mod Menu.
     link: /vi/docs/configuration

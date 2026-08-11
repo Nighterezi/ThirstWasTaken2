@@ -26,5 +26,5 @@ và độ tinh khiết của nước cho Minecraft, đồng thời mở rộng m
 ## Đi tiếp
 
 - [Cài đặt](/vi/docs/installation) để chạy được mod
-- [Khát và Đã khát](/vi/features/thirst-and-quenched) để hiểu thanh khát hoạt động ra sao
+- [Khát và Đã khát](/vi/docs/features/thirst-and-quenched) để hiểu thanh khát hoạt động ra sao
 - [Cấu hình](/vi/docs/configuration) cho toàn bộ tùy chỉnh
