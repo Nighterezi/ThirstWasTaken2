@@ -23,6 +23,7 @@ Minecraft and further extends the original mod.
 - Faster thirst loss from activity, hot biomes and the Nether
 - Damage, disabled sprinting and disabled natural healing when dehydrated
 - Drinking from water sources, rain, potions, foods and water bowls
+- A reusable three-drink waterskin that preserves and mixes water purity
 - Four water-purity levels with negative effects from unsafe water
 - Water purification using furnaces and campfires
 - Hydration and purity information in item tooltips

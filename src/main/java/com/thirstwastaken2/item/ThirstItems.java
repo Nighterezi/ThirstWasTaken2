@@ -22,6 +22,10 @@ public final class ThirstItems {
             new Item.Properties().stacksTo(64).usingConvertsTo(TERRACOTTA_BOWL)
                     .component(ThirstComponents.WATER_PURITY, 0)
                     .component(net.minecraft.core.component.DataComponents.CONSUMABLE, Consumables.DEFAULT_DRINK));
+    public static final Item WATERSKIN = register("waterskin", WaterskinItem::new,
+            new Item.Properties().stacksTo(1)
+                    .component(ThirstComponents.WATER_SERVINGS, 0)
+                    .component(net.minecraft.core.component.DataComponents.CONSUMABLE, Consumables.DEFAULT_DRINK));
     public static final ResourceKey<CreativeModeTab> CREATIVE_TAB_KEY = ResourceKey.create(
             Registries.CREATIVE_MODE_TAB, ThirstWasTaken2.id("thirstwastaken2"));
 
@@ -42,6 +46,7 @@ public final class ThirstItems {
                             entries.accept(CLAY_BOWL);
                             entries.accept(TERRACOTTA_BOWL);
                             entries.accept(TERRACOTTA_WATER_BOWL);
+                            entries.accept(WATERSKIN);
                         })
                         .build());
     }

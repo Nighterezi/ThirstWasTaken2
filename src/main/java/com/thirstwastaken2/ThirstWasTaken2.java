@@ -34,8 +34,9 @@ public final class ThirstWasTaken2 implements ModInitializer {
         ServerTickEvents.END_SERVER_TICK.register(ThirstManager::tick);
         ServerTickEvents.END_SERVER_TICK.register(WaterInteractions::tick);
         UseBlockCallback.EVENT.register(ThirstManager::drinkByHand);
+        UseBlockCallback.EVENT.register(WaterInteractions::fillWaterskinFromCauldron);
         UseBlockCallback.EVENT.register(WaterInteractions::transferCauldronPurity);
-        UseItemCallback.EVENT.register(WaterInteractions::fillBowl);
+        UseItemCallback.EVENT.register(WaterInteractions::fillFromWater);
         CommandRegistrationCallback.EVENT.register((dispatcher, access, environment) -> ThirstCommands.register(dispatcher));
 
         LOGGER.info("ThirstWasTaken2 initialized for Minecraft 26.2");

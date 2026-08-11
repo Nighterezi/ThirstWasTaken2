@@ -13,12 +13,12 @@ Every Minecraft version the mod supports has its own branch, and each branch has
 numbering. A release is named `<minecraft>-<mod>`, for example `26.2-1.0.0`.
 
 That means the highest number is not always the newest build. If the 1.21.11 branch gets a fix that
-the 26.2 branch already had, it ships as `1.21.11-1.0.1` while 26.2 is still on `26.2-1.0.0`. Read
+the 26.2 branch already had, it ships as `1.21.11-1.0.2` while 26.2 is still on `26.2-1.0.1`. Read
 the Minecraft column first, then take the highest release in that row.
 
 | Release | Branch | Minecraft | Fabric Loader | Fabric API | Java | Status |
 |---|---|---|---|---|---|---|
-| `26.2-1.0.0` | `main` | 26.2 | 0.19.3 or newer | 0.156.0+26.2 or newer | 25 | Active |
+| `26.2-1.0.1` | `main` | 26.2 | 0.19.3 or newer | 0.156.0+26.2 or newer | 25 | Active |
 
 A branch marked Active still gets fixes. One marked Frozen builds and runs, but new features land
 only on the Active branches.

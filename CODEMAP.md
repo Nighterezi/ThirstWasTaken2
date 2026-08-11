@@ -13,10 +13,11 @@ src/main/java/com/thirstwastaken2/      common (client + server)
   damage/ThirstDamageTypes.java        thirstwastaken2:dehydrate damage source
   data/ThirstData.java                 immutable player state + attachment type
   data/ThirstManager.java              tick loop, exhaustion maths, drink-by-hand
-  item/ThirstItems.java                clay bowl, terracotta bowl, terracotta water bowl
-  purity/ThirstComponents.java         thirstwastaken2:water_purity data component
+  item/ThirstItems.java                bowl and waterskin registration + creative tab
+  item/WaterskinItem.java              three-drink storage, consumption and inventory transfers
+  purity/ThirstComponents.java         water_purity and water_servings data components
   purity/WaterPurity.java              purity lookup/apply, sickness table, container detection
-  purity/WaterInteractions.java        bowl filling, cauldron purity transfer
+  purity/WaterInteractions.java        bowl/waterskin filling, cauldron purity transfer
   tooltip/ThirstTooltip.java           droplet row for the item tooltip (thirstwastaken2:droplets font)
   compat/LootIntegration.java          structure chests + Piglin barter water
   compat/createfly/                    optional Create Fly Sand Filter

@@ -1,6 +1,8 @@
 package com.thirstwastaken2.api;
 
 import com.thirstwastaken2.config.ThirstConfig;
+import com.thirstwastaken2.item.ThirstItems;
+import com.thirstwastaken2.item.WaterskinItem;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -25,6 +27,7 @@ public final class ThirstApi {
     /** @return {hydration, quenched}, or {@code null} when the item restores no thirst. */
     public static int[] hydration(ItemStack stack) {
         if (stack.isEmpty()) return null;
+        if (stack.is(ThirstItems.WATERSKIN) && WaterskinItem.servings(stack) == 0) return null;
         return hydration(stack.getItem());
     }
 

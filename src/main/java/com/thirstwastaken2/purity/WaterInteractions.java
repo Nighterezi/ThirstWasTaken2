@@ -1,6 +1,7 @@
 package com.thirstwastaken2.purity;
 
 import com.thirstwastaken2.item.ThirstItems;
+import com.thirstwastaken2.item.WaterskinItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvents;
@@ -15,6 +16,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
@@ -37,10 +39,12 @@ public final class WaterInteractions {
 
     private WaterInteractions() { }
 
-    /** Lets the terracotta bowl scoop from any water, including flowing water. */
-    public static InteractionResult fillBowl(Player player, Level level, InteractionHand hand) {
+    /** Lets the terracotta bowl and waterskin scoop from any water, including flowing water. */
+    public static InteractionResult fillFromWater(Player player, Level level, InteractionHand hand) {
         ItemStack held = player.getItemInHand(hand);
-        if (!held.is(ThirstItems.TERRACOTTA_BOWL)) return InteractionResult.PASS;
+        boolean bowl = held.is(ThirstItems.TERRACOTTA_BOWL);
+        boolean waterskin = held.is(ThirstItems.WATERSKIN) && WaterskinItem.servings(held) < WaterskinItem.CAPACITY;
+        if (!bowl && !waterskin) return InteractionResult.PASS;
 
         BlockHitResult hit = pick(player, level, ClipContext.Fluid.ANY);
         if (hit.getType() != HitResult.Type.BLOCK || !level.getFluidState(hit.getBlockPos()).is(FluidTags.WATER)) {
@@ -50,9 +54,35 @@ public final class WaterInteractions {
         if (level.isClientSide()) return InteractionResult.SUCCESS;
 
         BlockPos pos = hit.getBlockPos();
-        ItemStack filled = WaterPurity.set(new ItemStack(ThirstItems.TERRACOTTA_WATER_BOWL), WaterPurity.at(level, pos));
-        player.setItemInHand(hand, ItemUtils.createFilledResult(held, player, filled));
-        level.playSound(null, player.blockPosition(), SoundEvents.BUCKET_FILL, SoundSource.NEUTRAL, 1.0F, 1.0F);
+        int purity = WaterPurity.at(level, pos);
+        if (bowl) {
+            ItemStack filled = WaterPurity.set(new ItemStack(ThirstItems.TERRACOTTA_WATER_BOWL), purity);
+            player.setItemInHand(hand, ItemUtils.createFilledResult(held, player, filled));
+        } else {
+            WaterskinItem.addWater(held, purity, 1);
+        }
+        level.playSound(null, player.blockPosition(), bowl ? SoundEvents.BUCKET_FILL : SoundEvents.BOTTLE_FILL,
+                SoundSource.NEUTRAL, 1.0F, 1.0F);
+        level.gameEvent(player, GameEvent.FLUID_PICKUP, pos);
+        return InteractionResult.SUCCESS_SERVER;
+    }
+
+    /** Draws one serving from a water cauldron and lowers it by one vanilla layer. */
+    public static InteractionResult fillWaterskinFromCauldron(Player player, Level level, InteractionHand hand,
+                                                               BlockHitResult hit) {
+        ItemStack held = player.getItemInHand(hand);
+        if (!held.is(ThirstItems.WATERSKIN) || WaterskinItem.servings(held) >= WaterskinItem.CAPACITY) {
+            return InteractionResult.PASS;
+        }
+
+        BlockPos pos = hit.getBlockPos();
+        BlockState state = level.getBlockState(pos);
+        if (!state.is(Blocks.WATER_CAULDRON)) return InteractionResult.PASS;
+        if (level.isClientSide()) return InteractionResult.SUCCESS;
+
+        WaterskinItem.addWater(held, WaterPurity.at(level, pos), 1);
+        LayeredCauldronBlock.lowerFillLevel(state, level, pos);
+        level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
         level.gameEvent(player, GameEvent.FLUID_PICKUP, pos);
         return InteractionResult.SUCCESS_SERVER;
     }
@@ -71,6 +101,9 @@ public final class WaterInteractions {
         if (!cauldron) return InteractionResult.PASS;
 
         ItemStack held = player.getItemInHand(hand);
+        // Waterskins draw from cauldrons in fillWaterskinFromCauldron; vanilla has no matching
+        // interaction that could actually pour them back, so do not schedule a phantom transfer.
+        if (held.is(ThirstItems.WATERSKIN)) return InteractionResult.PASS;
         boolean filling = WaterPurity.isWaterContainer(held);
         boolean draining = before.is(Blocks.WATER_CAULDRON)
                 && (held.is(Items.GLASS_BOTTLE) || held.is(Items.BUCKET));

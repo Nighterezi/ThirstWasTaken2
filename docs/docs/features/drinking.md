@@ -19,6 +19,7 @@ These are the values the mod ships with for vanilla and its own items:
 | Beetroot soup | 5 | 7 |
 | Melon slice | 4 | 5 |
 | Terracotta water bowl | 4 | 5 |
+| Waterskin, per drink | 4 | 5 |
 | Apple, golden apple, enchanted golden apple, mushroom stew, rabbit stew | 2 | 3 |
 | Carrot, golden carrot, beetroot, sweet berries, glow berries | 1 | 2 |
 
@@ -48,6 +49,24 @@ Drinking one leaves you holding the empty terracotta bowl again.
 There is also a crafting recipe, a terracotta bowl plus a water bucket, which returns the empty
 bucket. Water made that way counts as dirty, because nothing tells the recipe where the bucket had
 been. Scooping from the world is both cheaper and cleaner.
+
+## Waterskin
+
+Craft a reusable **waterskin** from three leather and one string:
+
+```text
+ S
+L L
+ L
+```
+
+It holds three drinks. Use it on water or a water cauldron to add one drink at a time. In the
+inventory, right-click a waterskin with a water bottle to add one drink, or with a water bucket to
+fill every remaining drink; the empty bottle or bucket is returned.
+
+Mixing water always keeps the lowest purity. Adding dirty water to purified water makes the whole
+waterskin dirty, and adding cleaner water afterwards does not purify it. Each drink restores 4
+hydration and 5 quenched, and the empty waterskin is kept for refilling.
 
 ## Straight from the source
 

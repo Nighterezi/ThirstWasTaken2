@@ -131,6 +131,8 @@ public final class ThirstConfig {
 
     private void sanitize() {
         if (drinks == null) drinks = defaultDrinks();
+        // Existing config files predate the waterskin, so merge its required built-in value once.
+        drinks.putIfAbsent("thirstwastaken2:waterskin", new int[]{4, 5});
         if (foods == null) foods = defaultFoods();
         if (itemBlacklist == null) itemBlacklist = new LinkedHashSet<>();
         if (nauseaChance == null || nauseaChance.length != 4) nauseaChance = new int[]{100, 50, 5, 0};
@@ -176,6 +178,7 @@ public final class ThirstConfig {
         Map<String, int[]> values = new LinkedHashMap<>();
         put(values, 6, 8, "minecraft:potion");
         put(values, 4, 5, "thirstwastaken2:terracotta_water_bowl");
+        put(values, 4, 5, "thirstwastaken2:waterskin");
         put(values, 10, 14, "farmersrespite:green_tea", "farmersrespite:yellow_tea", "farmersrespite:black_tea");
         put(values, 12, 22, "farmersrespite:rose_hip_tea", "farmersrespite:dandelion_tea", "create:builders_tea");
         put(values, 6, 11, "farmersrespite:coffee");

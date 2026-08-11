@@ -2,6 +2,13 @@
 
 All notable changes to ThirstWasTaken2 are documented in this file.
 
+## [1.0.1] - 2026-08-11
+
+### Added
+
+- A reusable three-drink waterskin with purity-aware mixing, cauldron filling and bottle or bucket
+  transfers.
+
 ## [1.0.0] - 2026-08-11
 
 Initial release of ThirstWasTaken2, a Fabric fork of
@@ -49,4 +56,3 @@ Initial release of ThirstWasTaken2, a Fabric fork of
 - Jade does not currently display water purity.
 - Cold Sweat, Farmer's Respite, Brewin' and Chewin', Tough As Nails, Supplementaries and Botania
   integrations are awaiting compatible Minecraft 26.2 Fabric releases.
-

@@ -13,12 +13,12 @@ Mỗi phiên bản Minecraft có một nhánh riêng, và mỗi nhánh đánh s�
 hành là `<minecraft>-<mod>`, ví dụ `26.2-1.0.0`.
 
 Vì vậy số lớn hơn không đồng nghĩa với bản mới hơn. Nếu nhánh 1.21.11 nhận một bản sửa lỗi mà nhánh
-26.2 đã có sẵn, nó sẽ ra mắt dưới tên `1.21.11-1.0.1` trong khi 26.2 vẫn đang ở `26.2-1.0.0`. Hãy
+26.2 đã có sẵn, nó sẽ ra mắt dưới tên `1.21.11-1.0.2` trong khi 26.2 vẫn đang ở `26.2-1.0.1`. Hãy
 nhìn cột Minecraft trước, rồi lấy bản phát hành cao nhất trong hàng đó.
 
 | Bản phát hành | Nhánh | Minecraft | Fabric Loader | Fabric API | Java | Trạng thái |
 |---|---|---|---|---|---|---|
-| `26.2-1.0.0` | `main` | 26.2 | 0.19.3 trở lên | 0.156.0+26.2 trở lên | 25 | Đang phát triển |
+| `26.2-1.0.1` | `main` | 26.2 | 0.19.3 trở lên | 0.156.0+26.2 trở lên | 25 | Đang phát triển |
 
 Nhánh Đang phát triển vẫn nhận bản sửa lỗi. Nhánh Đóng băng vẫn chạy được nhưng tính năng mới chỉ về
 các nhánh đang phát triển.

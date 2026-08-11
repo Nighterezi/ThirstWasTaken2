@@ -2,6 +2,7 @@ package com.thirstwastaken2.purity;
 
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.item.ThirstItems;
+import com.thirstwastaken2.item.WaterskinItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -42,6 +43,7 @@ public final class WaterPurity {
 
     public static boolean isWaterContainer(ItemStack stack) {
         if (stack.isEmpty()) return false;
+        if (stack.is(ThirstItems.WATERSKIN)) return WaterskinItem.servings(stack) > 0;
         if (info(stack.getItem()).container()) return true;
         // Water bottles are plain potions distinguished only by their contents component.
         PotionContents potion = stack.get(DataComponents.POTION_CONTENTS);

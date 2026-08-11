@@ -18,6 +18,7 @@ nước ở trên cho 6 độ khát, tức ba giọt có nước, và 8 đã kh�
 | Súp củ dền | 5 | 7 |
 | Lát dưa hấu | 4 | 5 |
 | Bát đất nung đựng nước | 4 | 5 |
+| Túi da đựng nước, mỗi lần uống | 4 | 5 |
 | Táo, táo vàng, táo vàng phù phép, súp nấm, súp thỏ | 2 | 3 |
 | Cà rốt, cà rốt vàng, củ dền, quả mọng ngọt, quả mọng phát sáng | 1 | 2 |
 
@@ -47,6 +48,24 @@ Uống xong bạn cầm lại chiếc bát đất nung rỗng.
 Còn một công thức chế tạo nữa, bát đất nung cộng xô nước, và xô rỗng được trả lại. Nước làm theo cách
 đó bị tính là bẩn, vì không có gì cho công thức biết chiếc xô đã đi qua đâu. Múc thẳng từ thế giới vừa
 rẻ hơn vừa sạch hơn.
+
+## Túi da đựng nước
+
+Chế tạo **túi da đựng nước** có thể tái sử dụng từ ba miếng da và một sợi dây:
+
+```text
+ S
+L L
+ L
+```
+
+Túi chứa được ba lần uống. Dùng túi lên mặt nước hoặc vạc nước để thêm từng lần uống. Trong túi đồ,
+nhấp chuột phải vào túi da bằng chai nước để thêm một lần uống, hoặc bằng xô nước để đổ đầy phần còn
+thiếu; chai hay xô rỗng sẽ được trả lại.
+
+Khi trộn, túi luôn giữ cấp độ sạch thấp nhất. Thêm nước bẩn vào nước đã tinh lọc sẽ làm toàn bộ túi
+thành nước bẩn; thêm nước sạch hơn sau đó không thể tinh lọc túi. Mỗi lần uống hồi 4 độ khát và 5 đã
+khát, còn túi rỗng được giữ lại để nạp tiếp.
 
 ## Uống thẳng từ nguồn
 
