@@ -40,8 +40,9 @@ Minecraft and further extends the original mod.
 | Clay Bowl | Smelt it to make a Terracotta Bowl |
 | Terracotta Bowl | Collects still or flowing water |
 | Terracotta Water Bowl | Stores drinkable water and its purity level |
+| Waterskin | Holds three drinks, preserves water purity and can be refilled |
 
-![The ThirstWasTaken2 creative tab containing the clay bowl, terracotta bowl and terracotta water bowl](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/creative-tab.png)
+![The ThirstWasTaken2 creative tab containing its bowls and waterskin](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/creative-tab.png)
 
 ## Water purity
 
