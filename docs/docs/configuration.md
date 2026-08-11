@@ -89,18 +89,6 @@ Default `true`. Hydration above a full bar becomes reserve instead of being thro
 Default `2`, acceptable. Used for any water the mod cannot place, including drinks added by other
 mods.
 
-### runningWaterPurification
-
-Default `1`. Grades added when you collect from flowing water rather than a source block.
-
-### mountainsY
-
-Default `100`. Water collected above this height counts as one grade cleaner.
-
-### cavesY
-
-Default `48`. Water collected below this height counts as one grade cleaner.
-
 ### quenchWhenDebuffed
 
 Default `true`. Water that poisons you still fills the bar. Turn it off to make bad water a pure

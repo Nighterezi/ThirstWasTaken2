@@ -83,5 +83,5 @@ Once cached, `--offline` works — except that `clientCompileOnly` on Mod Menu m
   exhaustion underlay was removed: it belongs to an AppleSkin integration that does not exist yet, so
   shipping a half version of it was worse than not shipping it. `appleskin_icons.png` still supplies
   the quenched frames, and its v=18 dither row is now unused.
-- Water purity at altitude follows the documented rule (mountains *or* caves are cleaner); upstream
-  had a contradictory extra clause that made the mountain case dead code.
+- Water quality is sampled from biome and a fixed local neighborhood only when water is collected.
+  Salinity is separate from the four player-facing purity tiers.

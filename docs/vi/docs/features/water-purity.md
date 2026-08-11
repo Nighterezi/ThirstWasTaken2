@@ -1,36 +1,54 @@
-# Độ sạch của nước
+# Chất lượng nước
 
-Mỗi vật chứa nước đều mang một trong bốn mức, hiện ngay trong dòng mô tả.
+Mỗi vật chứa lưu mức nhiễm bẩn và việc nước có mặn hay không. Dòng mô tả và sprite của vật phẩm tóm
+tắt mức nhiễm bẩn thành bốn cấp quen thuộc.
 
-![Mô tả vật phẩm hiển thị Bẩn, Hơi bẩn, Có thể uống và Đã tinh lọc](/screenshots/water-purity.png)
+| Điểm nhiễm bẩn | Mức sạch |
+|---:|---|
+| 0 đến 15 | Đã tinh lọc |
+| 16 đến 35 | Có thể uống |
+| 36 đến 65 | Hơi bẩn |
+| 66 đến 100 | Bẩn |
 
-## Mức sạch đến từ đâu
+## Lấy mẫu nguồn nước
 
-Chai, xô hay bát đất nung được đóng dấu ngay lúc múc nước, và giữ dấu đó cho tới khi có gì đó thay
-đổi nó. Hai yếu tố quyết định mức sạch: nước nằm cao bao nhiêu, và nó có đang chảy hay không.
+Nước chỉ được đánh giá một lần khi được múc hoặc uống trực tiếp. Mod không quét môi trường mỗi tick.
+Tag biome quyết định điểm nền, sau đó một vài điều kiện tại chỗ điều chỉnh nhẹ kết quả.
 
-| Bạn múc ở đâu | Mức |
-|---|---|
-| Ao tù hoặc biển ở độ cao thường | Bẩn |
-| Dòng chảy ở độ cao thường | Hơi bẩn |
-| Nước tĩnh trên y 100, hoặc dưới y 48 | Hơi bẩn |
-| Dòng chảy trên y 100, hoặc dưới y 48 | Có thể uống |
+| Nguồn | Điểm nhiễm nền | Mức thường gặp |
+|---|---:|---|
+| Biển hoặc bãi biển | 25, có mặn | Có thể uống về độ sạch, nhưng không giải khát |
+| Đầm lầy hoặc đầm lầy ngập mặn | 85 | Bẩn |
+| Sông | 42 | Hơi bẩn |
+| Núi | 28 | Có thể uống |
+| Rừng rậm, xavan hoặc badlands | 70 | Bẩn |
+| Biome khác | 55 | Hơi bẩn |
 
-Vậy nên cái ao trước cửa nhà bạn là thứ nước tệ nhất trong game, còn thác nước trên núi thì uống được
-ngay. Cả hai mốc độ cao lẫn phần thưởng cho nước chảy đều là tùy chỉnh, nằm ở
-[Độ sạch của nước](/vi/docs/configuration#đo-sach-cua-nuoc).
+Biome rất nóng cộng 10 điểm, còn biome rất lạnh trừ 10. Nước trên y 100 hoặc dưới y 32 được trừ 5.
+Nước chảy chỉ trừ 5, vì vậy thác nước không tự động an toàn. Bùn, rễ đước, đất trồng hoặc composter
+trong phạm vi hai block có thể làm nước bẩn hơn.
 
-Vật chứa chưa từng được đóng dấu, ví dụ một loại đồ uống do mod khác thêm vào, được tính là có thể
-uống.
+Modpack có thể thêm biome vào tag `thirstwastaken2:stagnant_water` mà không sửa code. Đồ uống từ mod
+khác chưa mang mẫu chất lượng vẫn sử dụng `defaultPurity`.
 
-Vạc nước thì nhớ dai. Đổ một vật chứa vào và cái vạc giữ lại mức tệ hơn trong hai bên, nên châm thêm
-nước bẩn vào nước sạch là làm hỏng cả mẻ. Múc ra thì chai hoặc xô bạn nhận lại mang đúng dấu của thứ
-đang nằm trong vạc.
+## Nước mặn
 
-## Uống nước xấu
+Độ mặn tách biệt với độ sạch. Nước biển có thể trông sạch nhưng vẫn không uống được. Uống nước mặn
+không hồi độ khát, làm tăng exhaustion của thanh khát và gây Buồn nôn trong năm giây. Lò nung, lửa
+trại và bộ lọc cát không loại bỏ muối.
 
-Nước bẩn vẫn giải khát. Rủi ro nằm ở thứ đi kèm: Buồn nôn cùng Đói, hoặc Trúng độc, được quay số một
-lần cho mỗi ngụm.
+## Trộn nước và vạc
+
+Waterskin tính trung bình điểm nhiễm theo số phần nước đang có. Nếu một trong hai phía là nước Bẩn,
+hỗn hợp bị cộng thêm 10 điểm. Vì vậy một phần nước sạch không thể dễ dàng vô hiệu hóa cả mẻ nước bẩn.
+Chỉ cần thêm nước mặn thì cả waterskin sẽ được tính là mặn.
+
+Vạc giữ mức tệ hơn khi trộn hai nguồn và ghi nhớ độ mặn. Nước được múc lại vào chai, xô hoặc
+waterskin vẫn mang chất lượng đã lưu.
+
+## Uống nước nhiễm bẩn
+
+Nước ngọt nhiễm bẩn vẫn giải khát. Cơ chế quay hiệu ứng hiện tại không thay đổi.
 
 | Mức | Buồn nôn và Đói | Trúng độc |
 |---|---|---|
@@ -39,15 +57,12 @@ lần cho mỗi ngụm.
 | Có thể uống | 5% | không |
 | Đã tinh lọc | không | không |
 
-Buồn nôn kéo dài năm giây và cơn Đói đi kèm kéo dài ba mươi giây. Trúng độc kéo dài mười giây. Theo
-mặc định, ngụm nước làm bạn trúng độc vẫn hồi thanh khát, nên nước xấu là một cuộc đổi chác chứ không
-phải phí công.
+Buồn nôn kéo dài năm giây, Đói kéo dài ba mươi giây và Trúng độc kéo dài mười giây. Cơ chế nhiễm
+bệnh dài hạn chưa nằm trong bản này.
 
-## Làm sạch nước
+## Làm sạch nước ngọt
 
-### Đun lên
-
-Bỏ chai nước, bát đất nung đựng nước hoặc xô nước vào lò nung, hoặc đặt lên lửa trại.
+Bỏ chai nước ngọt, bát đất nung đựng nước hoặc xô nước vào lò nung hay đặt lên lửa trại.
 
 | Trước | Sau |
 |---|---|
@@ -55,20 +70,15 @@ Bỏ chai nước, bát đất nung đựng nước hoặc xô nước vào lò 
 | Hơi bẩn | Đã tinh lọc |
 | Có thể uống | Đã tinh lọc |
 
-Lò nung mất mười giây, lửa trại mất ba mươi giây. Nước bẩn phải qua hai lượt mới thành đã tinh lọc.
+Lò nung mất mười giây và lửa trại mất ba mươi giây. Nước Bẩn cần qua hai lượt để thành Đã tinh lọc.
+Vật chứa nước mặn không vào được công thức, thay vì bị khử mặn ngoài ý muốn.
 
 ### Bộ lọc cát
 
 ::: warning Chưa dùng được
-Bộ lọc cát đang lỗi và phần tích hợp Create Fly đã bị tắt, nên bản này chưa lọc nước hàng loạt được.
-Phần mô tả bên dưới là những gì nó sẽ làm khi hỗ trợ quay lại.
+Phần tích hợp Create Fly của Bộ lọc cát vẫn đang bị tắt. Mô tả dưới đây áp dụng khi tích hợp này quay
+lại.
 :::
 
-Khi có Create Fly, bạn chế tạo được Bộ lọc cát từ sáu thỏi đồng thau, hai song sắt và một khối cát.
-Bơm nước qua nó thì nước ra sạch hơn một mức. Đây là cách duy nhất để lọc nước với số lượng lớn, và
-cũng là phần duy nhất của mod cần một mod khác mới tồn tại.
-
-### Độ cao và thời tiết
-
-Rẻ nhất, và miễn phí: lấy nước từ con suối trên núi thay vì cái ao cạnh nhà. Dòng chảy trên cao có thể
-đã đạt mức có thể uống hoặc hơn trước cả khi bạn đun nó.
+Bộ lọc cải thiện nước ngọt hoặc nước mặn thêm một mức nhưng vẫn giữ độ mặn. Nó không thể biến nước
+biển thành nước uống.

@@ -43,6 +43,7 @@ abstract class ItemStackMixin {
         }
         if (WaterPurity.isWaterContainer(stack)) {
             tooltip.accept(WaterPurity.tooltip(WaterPurity.get(stack)));
+            if (WaterPurity.isSalty(stack)) tooltip.accept(WaterPurity.salinityTooltip());
         }
         int[] hydration = ThirstApi.hydration(stack);
         if (hydration != null) {

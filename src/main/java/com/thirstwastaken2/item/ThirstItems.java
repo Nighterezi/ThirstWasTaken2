@@ -3,6 +3,7 @@ package com.thirstwastaken2.item;
 import com.thirstwastaken2.ThirstWasTaken2;
 import com.thirstwastaken2.purity.ThirstComponents;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -11,8 +12,10 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.Consumables;
+import net.minecraft.world.item.component.CustomModelData;
 import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 
+import java.util.List;
 import java.util.function.Function;
 
 public final class ThirstItems {
@@ -20,12 +23,16 @@ public final class ThirstItems {
     public static final Item TERRACOTTA_BOWL = register("terracotta_bowl", Item::new, new Item.Properties().stacksTo(64));
     public static final Item TERRACOTTA_WATER_BOWL = register("terracotta_water_bowl", Item::new,
             new Item.Properties().stacksTo(64).usingConvertsTo(TERRACOTTA_BOWL)
-                    .component(ThirstComponents.WATER_PURITY, 0)
-                    .component(net.minecraft.core.component.DataComponents.CONSUMABLE, Consumables.DEFAULT_DRINK));
+                    .component(ThirstComponents.WATER_PURITY, 3)
+                    .component(ThirstComponents.WATER_CONTAMINATION, 5)
+                    .component(ThirstComponents.WATER_SALTY, false)
+                    .component(DataComponents.CUSTOM_MODEL_DATA,
+                            new CustomModelData(List.of(0.0F, 3.0F), List.of(), List.of(), List.of()))
+                    .component(DataComponents.CONSUMABLE, Consumables.DEFAULT_DRINK));
     public static final Item WATERSKIN = register("waterskin", WaterskinItem::new,
             new Item.Properties().stacksTo(1)
                     .component(ThirstComponents.WATER_SERVINGS, 0)
-                    .component(net.minecraft.core.component.DataComponents.CONSUMABLE, Consumables.DEFAULT_DRINK));
+                    .component(DataComponents.CONSUMABLE, Consumables.DEFAULT_DRINK));
     public static final ResourceKey<CreativeModeTab> CREATIVE_TAB_KEY = ResourceKey.create(
             Registries.CREATIVE_MODE_TAB, ThirstWasTaken2.id("thirstwastaken2"));
 

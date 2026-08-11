@@ -14,6 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class LayeredCauldronBlockMixin {
     @Inject(method = "createBlockStateDefinition", at = @At("HEAD"))
     private void thirst$addPurity(StateDefinition.Builder<Block, BlockState> builder, CallbackInfo ci) {
-        builder.add(WaterPurity.BLOCK_PURITY);
+        builder.add(WaterPurity.BLOCK_PURITY, WaterPurity.BLOCK_SALTY);
     }
 }

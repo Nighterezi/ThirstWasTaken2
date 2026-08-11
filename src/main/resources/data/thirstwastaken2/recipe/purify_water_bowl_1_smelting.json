@@ -1,1 +1,28 @@
-{"type":"minecraft:smelting","category":"misc","cookingtime":200,"experience":0.35,"ingredient":{"fabric:type":"fabric:components","base":"thirstwastaken2:terracotta_water_bowl","components":{"thirstwastaken2:water_purity":1}},"result":{"id":"thirstwastaken2:terracotta_water_bowl","components":{"thirstwastaken2:water_purity":3}}}
+﻿{
+    "type":  "minecraft:smelting",
+    "category":  "misc",
+    "cookingtime":  200,
+    "experience":  0.35,
+    "ingredient":  {
+                       "fabric:type":  "fabric:components",
+                       "base":  "thirstwastaken2:terracotta_water_bowl",
+                       "components":  {
+                                          "thirstwastaken2:water_purity":  1,
+                                          "thirstwastaken2:water_salty":  false
+                                      }
+                   },
+    "result":  {
+                   "id":  "thirstwastaken2:terracotta_water_bowl",
+                   "components":  {
+                                      "thirstwastaken2:water_purity":  3,
+                                      "thirstwastaken2:water_contamination":  5,
+                                      "thirstwastaken2:water_salty":  false,
+                                      "minecraft:custom_model_data":  {
+                                                                          "floats":  [
+                                                                                         0,
+                                                                                         3
+                                                                                     ]
+                                                                      }
+                                  }
+               }
+}

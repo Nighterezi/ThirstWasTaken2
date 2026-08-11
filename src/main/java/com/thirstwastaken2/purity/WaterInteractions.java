@@ -54,12 +54,13 @@ public final class WaterInteractions {
         if (level.isClientSide()) return InteractionResult.SUCCESS;
 
         BlockPos pos = hit.getBlockPos();
-        int purity = WaterPurity.at(level, pos);
+        WaterQuality quality = WaterPurity.sampleAt(level, pos);
         if (bowl) {
-            ItemStack filled = WaterPurity.set(new ItemStack(ThirstItems.TERRACOTTA_WATER_BOWL), purity);
+            ItemStack filled = WaterPurity.setQuality(
+                    new ItemStack(ThirstItems.TERRACOTTA_WATER_BOWL), quality);
             player.setItemInHand(hand, ItemUtils.createFilledResult(held, player, filled));
         } else {
-            WaterskinItem.addWater(held, purity, 1);
+            WaterskinItem.addWater(held, quality, 1);
         }
         level.playSound(null, player.blockPosition(), bowl ? SoundEvents.BUCKET_FILL : SoundEvents.BOTTLE_FILL,
                 SoundSource.NEUTRAL, 1.0F, 1.0F);
@@ -80,7 +81,7 @@ public final class WaterInteractions {
         if (!state.is(Blocks.WATER_CAULDRON)) return InteractionResult.PASS;
         if (level.isClientSide()) return InteractionResult.SUCCESS;
 
-        WaterskinItem.addWater(held, WaterPurity.at(level, pos), 1);
+        WaterskinItem.addWater(held, WaterPurity.sampleAt(level, pos), 1);
         LayeredCauldronBlock.lowerFillLevel(state, level, pos);
         level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
         level.gameEvent(player, GameEvent.FLUID_PICKUP, pos);
@@ -109,13 +110,19 @@ public final class WaterInteractions {
                 && (held.is(Items.GLASS_BOTTLE) || held.is(Items.BUCKET));
         if (!filling && !draining) return InteractionResult.PASS;
 
-        int purity = filling ? WaterPurity.get(held) : WaterPurity.at(level, pos);
+        WaterQuality quality = filling ? WaterPurity.quality(held) : WaterPurity.sampleAt(level, pos);
         if (filling && before.hasProperty(WaterPurity.BLOCK_PURITY)) {
             int stored = before.getValue(WaterPurity.BLOCK_PURITY);
-            if (stored > 0) purity = Math.min(purity, stored - 1);
+            if (stored > 0) {
+                boolean storedSalty = before.hasProperty(WaterPurity.BLOCK_SALTY)
+                        && before.getValue(WaterPurity.BLOCK_SALTY);
+                WaterQuality storedQuality = WaterQuality.fromPurity(stored - 1, storedSalty);
+                quality = new WaterQuality(Math.max(quality.contamination(), storedQuality.contamination()),
+                        quality.salty() || storedQuality.salty());
+            }
         }
 
-        int transferred = Math.max(WaterPurity.MIN, Math.min(WaterPurity.MAX, purity));
+        WaterQuality transferred = quality;
         END_OF_TICK.add(filling
                 ? () -> storeInCauldron(level, pos, transferred)
                 : () -> stampDrawnContainer(player, hand, transferred));
@@ -127,11 +134,15 @@ public final class WaterInteractions {
         while ((action = END_OF_TICK.poll()) != null) action.run();
     }
 
-    private static void storeInCauldron(Level level, BlockPos pos, int purity) {
+    private static void storeInCauldron(Level level, BlockPos pos, WaterQuality quality) {
         BlockState after = level.getBlockState(pos);
         if (!after.hasProperty(WaterPurity.BLOCK_PURITY)) return;
         // Stored purity is offset by one so that zero can act as "unset".
-        level.setBlock(pos, after.setValue(WaterPurity.BLOCK_PURITY, purity + 1), BLOCK_UPDATE_FLAGS);
+        BlockState stamped = after.setValue(WaterPurity.BLOCK_PURITY, quality.purity() + 1);
+        if (stamped.hasProperty(WaterPurity.BLOCK_SALTY)) {
+            stamped = stamped.setValue(WaterPurity.BLOCK_SALTY, quality.salty());
+        }
+        level.setBlock(pos, stamped, BLOCK_UPDATE_FLAGS);
     }
 
     /**
@@ -139,19 +150,19 @@ public final class WaterInteractions {
      * bottle sends the water bottle to the first free inventory slot - so the first freshly created,
      * still unstamped container wins.
      */
-    private static void stampDrawnContainer(Player player, InteractionHand hand, int purity) {
-        if (stamp(player.getItemInHand(hand), purity)) return;
+    private static void stampDrawnContainer(Player player, InteractionHand hand, WaterQuality quality) {
+        if (stamp(player.getItemInHand(hand), quality)) return;
         var inventory = player.getInventory();
         for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
-            if (stamp(inventory.getItem(slot), purity)) return;
+            if (stamp(inventory.getItem(slot), quality)) return;
         }
     }
 
-    private static boolean stamp(ItemStack stack, int purity) {
+    private static boolean stamp(ItemStack stack, WaterQuality quality) {
         if (stack.isEmpty() || stack.has(ThirstComponents.WATER_PURITY) || !WaterPurity.isWaterContainer(stack)) {
             return false;
         }
-        WaterPurity.set(stack, purity);
+        WaterPurity.setQuality(stack, quality);
         return true;
     }
 

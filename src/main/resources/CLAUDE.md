@@ -39,6 +39,9 @@ Purity 3 has no recipe because it is already clean.
   `{"fabric:type": "fabric:components", "base": …, "components": {"thirstwastaken2:water_purity": N}}`.
   Water bottles must also match `"minecraft:potion_contents": "minecraft:water"` on top of the
   `minecraft:potion` base.
+- Every cooking ingredient also requires `water_salty: false`, and every result writes matching
+  purity, representative contamination and fresh salinity. Bowl results additionally write custom
+  model data index 1 so their purity sprite is correct without runtime rendering work.
 - Changing the purity table means editing all 18 files consistently, and the recipes carry it
   independently of `WaterPurity` — the Java side has no idea these exist.
 
@@ -63,6 +66,11 @@ holds the model it points at.
 `WaterskinItem.setServings`, which mirrors the `water_servings` component into `CUSTOM_MODEL_DATA` as
 a float (and removes the component at zero) — the two must always be set together, which is why
 nothing outside that helper writes `WATER_SERVINGS`.
+
+`items/terracotta_water_bowl.json` dispatches custom model data float index 1 to four pixel-art water
+colors. `WaterPurity.setQuality` writes that value for sampled bowls; cooking recipes write it in the
+result. The PNG variants are reproducibly derived from the original sprite by
+`tools/generate_water_sprites.py`. Waterskins deliberately do not display purity in their sprite.
 
 ## Fonts and GUI sheets
 

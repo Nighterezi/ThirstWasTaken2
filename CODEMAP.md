@@ -28,8 +28,9 @@ src/main/java/com/thirstwastaken2/      common (client + server)
   data/ThirstManager.java              tick loop, exhaustion maths, drink-by-hand
   item/ThirstItems.java                bowl and waterskin registration + creative tab
   item/WaterskinItem.java              three-drink storage, consumption and inventory transfers
-  purity/ThirstComponents.java         water_purity and water_servings data components
-  purity/WaterPurity.java              purity lookup/apply, sickness table, container detection
+  purity/ThirstComponents.java         quality, salinity, purity and serving data components
+  purity/WaterQuality.java             contamination score, salinity and tier thresholds
+  purity/WaterPurity.java              environmental sampling, effects and container detection
   purity/WaterInteractions.java        bowl/waterskin filling, cauldron purity transfer
   tooltip/ThirstTooltip.java           droplet row for the item tooltip (thirstwastaken2:droplets font)
   compat/LootIntegration.java          structure chests + Piglin barter water
@@ -107,13 +108,15 @@ Purity is an integer 0-3 (dirty, slightly dirty, acceptable, purified).
 
 | Carrier | Storage |
 |---|---|
-| Items | `thirstwastaken2:water_purity` data component |
-| Cauldrons | `purity` blockstate property, offset by 1 so 0 means "unset" |
-| Create Fly fluids | the same data component on `FluidStack` |
+| Items | contamination, purity and salinity data components |
+| Cauldrons | offset `purity` and boolean `salty` blockstate properties |
+| Create Fly fluids | the same quality components on `FluidStack` |
 | Anything else | `ThirstConfig.defaultPurity` |
 
-`WaterPurity.at(level, pos)` resolves the purity of water in the world: block property first, then
-altitude (above `mountainsY` or below `cavesY` is cleaner) plus a bonus for flowing water.
+`WaterPurity.sampleAt(level, pos)` samples contamination and salinity only when water is collected or
+drunk. Biome tags choose the baseline; temperature, altitude, flow and nearby mud or agriculture
+apply small fixed modifiers. The result is stored on the container, so no environmental scan runs
+on tick or tooltip paths.
 
 `WaterPurity.INFO` caches, per `Item`, whether it counts as a water container and what static purity
 it carries — this is how the optional Tough As Nails / Farmer's Delight / Farmer's Respite /
@@ -128,7 +131,7 @@ Brewin' and Chewin' / Collector's Reap support stays dependency-free.
 | `ItemStackMixin` | `#finishUsingItem`, `#addDetailsToTooltip` | grant hydration, render purity line + droplet row |
 | `BottleItemMixin` | `BottleItem#use` | stamp purity on a bottle filled from a water block |
 | `BucketItemMixin` | `BucketItem#use` | stamp purity on a bucket filled from a water block |
-| `LayeredCauldronBlockMixin` | `#createBlockStateDefinition` | add the `purity` blockstate property |
+| `LayeredCauldronBlockMixin` | `#createBlockStateDefinition` | add purity and salinity properties |
 
 ## HUD
 

@@ -135,7 +135,8 @@ public final class ThirstManager {
             if (!level.getFluidState(pos).is(FluidTags.WATER)) return InteractionResult.PASS;
         }
 
-        ItemStack sample = WaterPurity.set(new ItemStack(ThirstItems.TERRACOTTA_WATER_BOWL), WaterPurity.at(level, pos));
+        ItemStack sample = WaterPurity.setQuality(
+                new ItemStack(ThirstItems.TERRACOTTA_WATER_BOWL), WaterPurity.sampleAt(level, pos));
         if (WaterPurity.applyEffects(player, sample)) {
             drink(player, config.handDrinkingHydration, config.handDrinkingQuenched);
         }

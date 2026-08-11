@@ -8,6 +8,19 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 
 - A reusable three-drink waterskin with purity-aware mixing, cauldron filling and bottle or bucket
   transfers.
+- Environment-sampled contamination, persistent salinity and four code-generated water-bowl
+  sprites that visually match their purity.
+
+### Changed
+
+- Water quality now starts from biome type and receives small temperature, altitude, flow, mud and
+  agriculture modifiers instead of treating all high, deep or flowing water as automatically clean.
+- Ocean water no longer hydrates, cannot be desalinated by cooking, and remains salty through
+  waterskin, cauldron and filter transfers.
+- The creative-tab water bowl and tab icon now use the Purified sprite, and purity tooltip colors
+  match the original mod's palette exactly.
+- Filled waterskins now expand with a cleaner silhouette and consistent leather shading across all
+  three serving levels; the empty sprite is unchanged.
 
 ## [1.0.0] - 2026-08-11
 

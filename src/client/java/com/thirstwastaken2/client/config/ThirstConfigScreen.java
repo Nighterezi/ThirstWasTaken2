@@ -68,10 +68,6 @@ public final class ThirstConfigScreen extends OptionsSubScreen {
         list.addHeader(Component.translatable("thirstwastaken2.config.category.purity"));
         list.addSmall(
                 slider("default_purity", config.defaultPurity, 0, 3, value -> config.defaultPurity = value),
-                slider("running_water_purification", config.runningWaterPurification, 0, 3,
-                        value -> config.runningWaterPurification = value),
-                slider("mountains_y", config.mountainsY, -64, 320, value -> config.mountainsY = value),
-                slider("caves_y", config.cavesY, -64, 320, value -> config.cavesY = value),
                 toggle("quench_when_debuffed", config.quenchWhenDebuffed,
                         value -> config.quenchWhenDebuffed = value));
 

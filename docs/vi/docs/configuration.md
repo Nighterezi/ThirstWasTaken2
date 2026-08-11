@@ -89,18 +89,6 @@ Mặc định `true`. Lượng nước vượt quá thanh đầy sẽ thành m�
 Mặc định `2`, tức có thể uống. Dùng cho mọi loại nước mà mod không tự xếp hạng được, kể cả đồ uống của
 mod khác.
 
-### runningWaterPurification
-
-Mặc định `1`. Số mức được cộng thêm khi bạn lấy nước từ dòng chảy thay vì khối nguồn.
-
-### mountainsY
-
-Mặc định `100`. Nước lấy trên độ cao này được tính là sạch hơn một mức.
-
-### cavesY
-
-Mặc định `48`. Nước lấy dưới độ cao này được tính là sạch hơn một mức.
-
 ### quenchWhenDebuffed
 
 Mặc định `true`. Nước gây trúng độc vẫn hồi thanh khát. Tắt đi để nước xấu trở thành lỗ vốn hoàn toàn.

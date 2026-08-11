@@ -1,1 +1,24 @@
-{"type":"minecraft:smelting","category":"misc","cookingtime":200,"experience":0.35,"ingredient":{"fabric:type":"fabric:components","base":"minecraft:potion","components":{"minecraft:potion_contents":"minecraft:water","thirstwastaken2:water_purity":1}},"result":{"id":"minecraft:potion","components":{"minecraft:potion_contents":"minecraft:water","thirstwastaken2:water_purity":3}}}
+﻿{
+    "type":  "minecraft:smelting",
+    "category":  "misc",
+    "cookingtime":  200,
+    "experience":  0.35,
+    "ingredient":  {
+                       "fabric:type":  "fabric:components",
+                       "base":  "minecraft:potion",
+                       "components":  {
+                                          "minecraft:potion_contents":  "minecraft:water",
+                                          "thirstwastaken2:water_purity":  1,
+                                          "thirstwastaken2:water_salty":  false
+                                      }
+                   },
+    "result":  {
+                   "id":  "minecraft:potion",
+                   "components":  {
+                                      "minecraft:potion_contents":  "minecraft:water",
+                                      "thirstwastaken2:water_purity":  3,
+                                      "thirstwastaken2:water_contamination":  5,
+                                      "thirstwastaken2:water_salty":  false
+                                  }
+               }
+}

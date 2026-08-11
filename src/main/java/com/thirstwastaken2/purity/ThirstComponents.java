@@ -24,6 +24,24 @@ public final class ThirstComponents {
                     .networkSynchronized(ByteBufCodecs.VAR_INT)
                     .build());
 
+    /** Exact sampled contamination. Purity remains the compact, player-facing four-tier value. */
+    public static final DataComponentType<Integer> WATER_CONTAMINATION = Registry.register(
+            BuiltInRegistries.DATA_COMPONENT_TYPE,
+            ThirstWasTaken2.id("water_contamination"),
+            DataComponentType.<Integer>builder()
+                    .persistent(Codec.intRange(WaterQuality.MIN_CONTAMINATION, WaterQuality.MAX_CONTAMINATION))
+                    .networkSynchronized(ByteBufCodecs.VAR_INT)
+                    .build());
+
+    /** Salinity is independent of cleanliness: boiling unsafe fresh water must not desalinate it. */
+    public static final DataComponentType<Boolean> WATER_SALTY = Registry.register(
+            BuiltInRegistries.DATA_COMPONENT_TYPE,
+            ThirstWasTaken2.id("water_salty"),
+            DataComponentType.<Boolean>builder()
+                    .persistent(Codec.BOOL)
+                    .networkSynchronized(ByteBufCodecs.BOOL)
+                    .build());
+
     private ThirstComponents() { }
     public static void register() { }
 }

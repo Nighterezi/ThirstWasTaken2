@@ -2,6 +2,7 @@ package com.thirstwastaken2.item;
 
 import com.thirstwastaken2.purity.ThirstComponents;
 import com.thirstwastaken2.purity.WaterPurity;
+import com.thirstwastaken2.purity.WaterQuality;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -34,13 +35,26 @@ public final class WaterskinItem extends Item {
     }
 
     public static boolean addWater(ItemStack stack, int purity, int amount) {
+        return addWater(stack, WaterQuality.fromPurity(purity, false), amount);
+    }
+
+    public static boolean addWater(ItemStack stack, WaterQuality addedQuality, int amount) {
         int current = servings(stack);
         if (!stack.is(ThirstItems.WATERSKIN) || current >= CAPACITY || amount <= 0) return false;
 
         int added = Math.min(amount, CAPACITY - current);
-        int mixedPurity = current == 0 ? purity : Math.min(WaterPurity.get(stack), purity);
+        WaterQuality mixed = addedQuality;
+        if (current > 0) {
+            WaterQuality existing = WaterPurity.quality(stack);
+            int contamination = Math.round((existing.contamination() * current
+                    + addedQuality.contamination() * added) / (float) (current + added));
+            // A small dirty-water penalty prevents trivial dilution while still allowing realistic
+            // volume-weighted mixing instead of permanently taking the worst whole tier.
+            if (existing.contamination() > 65 || addedQuality.contamination() > 65) contamination += 10;
+            mixed = new WaterQuality(contamination, existing.salty() || addedQuality.salty());
+        }
         setServings(stack, current + added);
-        WaterPurity.set(stack, mixedPurity);
+        WaterPurity.setQuality(stack, mixed);
         return true;
     }
 
@@ -63,7 +77,11 @@ public final class WaterskinItem extends Item {
         if (!level.isClientSide() && current > 0 && !creativePlayer) {
             int remaining = current - 1;
             setServings(stack, remaining);
-            if (remaining == 0) stack.remove(ThirstComponents.WATER_PURITY);
+            if (remaining == 0) {
+                stack.remove(ThirstComponents.WATER_PURITY);
+                stack.remove(ThirstComponents.WATER_CONTAMINATION);
+                stack.remove(ThirstComponents.WATER_SALTY);
+            }
         }
         return stack;
     }
@@ -89,7 +107,7 @@ public final class WaterskinItem extends Item {
             return false;
         }
 
-        if (!addWater(waterskin, WaterPurity.get(carried), amount)) return false;
+        if (!addWater(waterskin, WaterPurity.quality(carried), amount)) return false;
         if (!player.getAbilities().instabuild) consumeContainer(carried, remainder, player, carriedAccess);
         slot.setChanged();
         return true;
@@ -107,7 +125,12 @@ public final class WaterskinItem extends Item {
 
     @Override
     public int getBarColor(ItemStack stack) {
-        return 0x3F76E4;
+        return switch (WaterPurity.get(stack)) {
+            case 0 -> 0x8A5A2B;
+            case 1 -> 0x7086A0;
+            case 2 -> 0x3F76E4;
+            default -> 0x42C8F5;
+        };
     }
 
     private static boolean isWaterBottle(ItemStack stack) {

@@ -2,6 +2,7 @@ package com.thirstwastaken2.compat.createfly;
 
 import com.thirstwastaken2.purity.ThirstComponents;
 import com.thirstwastaken2.purity.WaterPurity;
+import com.thirstwastaken2.purity.WaterQuality;
 import com.zurrtum.create.api.behaviour.BlockEntityBehaviour;
 import com.zurrtum.create.foundation.blockEntity.SmartBlockEntity;
 import com.zurrtum.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
@@ -56,6 +57,8 @@ public final class SandFilterBlockEntity extends SmartBlockEntity {
 
         FluidStack filtered = source.copyWithAmount(TRANSFER_PER_TICK);
         filtered.set(ThirstComponents.WATER_PURITY, purified);
+        filtered.set(ThirstComponents.WATER_CONTAMINATION,
+                WaterQuality.fromPurity(purified, false).contamination());
 
         int inserted = output.getCapability().insert(filtered);
         if (inserted > 0) input.getCapability().extract(source.copyWithAmount(inserted));

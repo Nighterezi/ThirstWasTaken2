@@ -1,22 +1,23 @@
 # purity/
 
-Everything about how clean a given body of water is. Purity is an int `0..3`
-(dirty, slightly dirty, acceptable, purified), `WaterPurity.MIN`/`MAX`.
+Everything about sampled water quality. Contamination is `0..100`, salinity is independent, and the
+player-facing purity tier remains `0..3` (dirty, slightly dirty, acceptable, purified).
 
 | File | Owns |
 |---|---|
-| `ThirstComponents` | the `water_purity` and `water_servings` data component types |
-| `WaterPurity` | reading, writing and deciding purity; the sickness table; the container test |
+| `ThirstComponents` | quality, salinity, purity and serving data component types |
+| `WaterQuality` | immutable contamination/salinity sample and tier thresholds |
+| `WaterPurity` | environmental sampling, storage, sickness and container tests |
 | `WaterInteractions` | the interaction callbacks that move purity between world, blocks and items |
 
 ## Where a purity value can live
 
 | Carrier | Storage | Read with |
 |---|---|---|
-| Item stack | `thirstwastaken2:water_purity` component | `WaterPurity.get(stack)` |
-| Cauldron | `purity` blockstate property, **offset by +1 so 0 means "unset"** | `WaterPurity.at(level, pos)` |
-| Water in the world | derived from Y level and flow | `WaterPurity.at(level, pos)` |
-| Anything unstamped | `ThirstConfig.defaultPurity` | falls out of `get`/`at` |
+| Item stack | `water_contamination`, `water_purity`, `water_salty` components | `WaterPurity.quality(stack)` |
+| Cauldron | offset `purity` plus `salty` blockstate properties | `WaterPurity.sampleAt(level, pos)` |
+| Water in the world | biome baseline plus small local modifiers | `WaterPurity.sampleAt(level, pos)` |
+| Anything unstamped | `ThirstConfig.defaultPurity`, fresh | falls out of `quality` |
 
 The `+1` offset is the single most common thing to get wrong: `BLOCK_PURITY` ranges `0..4`, a stored
 `0` means nothing has been poured in yet, and every read must do `stored - 1` after checking
@@ -24,8 +25,11 @@ The `+1` offset is the single most common thing to get wrong: `BLOCK_PURITY` ran
 
 ## Rules the code keeps
 
-- **Mixing takes the worse purity.** Pouring into a cauldron stores `min(held, stored)`;
-  `WaterskinItem.addWater` mixes the same way. Never average, never take the better one.
+- **Waterskin mixing is serving-weighted.** Contamination is averaged by volume, with a +10 dirty
+  penalty if either side is above 65. Salinity spreads to the whole batch. Cauldrons retain the
+  worse tier because their blockstate intentionally does not carry a 101-value score.
+- **Sampling is interaction-only and server-only.** The fixed 5x3x5 block inspection must never move
+  into a tick or tooltip path. Bottle and bucket mixins skip it on the prediction client.
 - **`isWaterContainer` is per stack, not per item.** Water bottles are plain `minecraft:potion` stacks
   distinguished only by their `POTION_CONTENTS`, and an empty waterskin is not a container. The
   `INFO` cache only answers the per-`Item` half of the question.
@@ -38,6 +42,8 @@ The `+1` offset is the single most common thing to get wrong: `BLOCK_PURITY` ran
 - **One roll drives both effects.** `applyEffects` rolls once and compares it against
   `nauseaChance[purity]` and `poisonChance[purity]`, matching the original mod; it returns whether
   hydration should still be granted (`quenchWhenDebuffed`).
+- **Salt is not a purity tier.** Salty water grants no hydration, and cooking/filtering must preserve
+  or reject salinity rather than silently desalinating it.
 - **`tooltip(purity)` owns both the lang key suffix and the colour.** Adding a tier means touching the
   two switches together plus `thirst.purity.*` in all nine lang files.
 

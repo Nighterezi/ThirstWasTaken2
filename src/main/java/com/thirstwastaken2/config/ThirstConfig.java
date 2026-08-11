@@ -49,9 +49,6 @@ public final class ThirstConfig {
     public int thirstBarYOffset = 0;
 
     // ---- water purity -----------------------------------------------------
-    public int mountainsY = 100;
-    public int cavesY = 48;
-    public int runningWaterPurification = 1;
     public int defaultPurity = 2;
     public boolean quenchWhenDebuffed = true;
     public int[] nauseaChance = {100, 50, 5, 0};
@@ -146,7 +143,6 @@ public final class ThirstConfig {
         }
         defaultPurity = clamp(defaultPurity, 0, 3);
         fireResistanceDehydrationPercent = clamp(fireResistanceDehydrationPercent, 0, 100);
-        runningWaterPurification = clamp(runningWaterPurification, 0, 3);
         handDrinkingHydration = clamp(handDrinkingHydration, 0, 20);
         handDrinkingQuenched = clamp(handDrinkingQuenched, 0, 20);
         thirstBarXOffset = clamp(thirstBarXOffset, -200, 200);

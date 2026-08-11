@@ -1,36 +1,54 @@
-# Water Purity
+# Water Quality
 
-Every container of water carries one of four grades, shown in its tooltip.
+Every collected container stores the water's contamination and whether it is salty. The tooltip and
+item sprite summarize contamination as one of four familiar grades.
 
-![Item tooltips reading Dirty, Slightly Dirty, Acceptable and Purified](/screenshots/water-purity.png)
+| Contamination | Grade |
+|---:|---|
+| 0 to 15 | Purified |
+| 16 to 35 | Acceptable |
+| 36 to 65 | Slightly dirty |
+| 66 to 100 | Dirty |
 
-## Where the grade comes from
+## Sampling a source
 
-A bottle, bucket or terracotta bowl is stamped at the moment it is filled, and keeps that stamp
-until something changes it. Two things decide the grade: how high up the water is, and whether it is
-moving.
+Water is sampled once, when it is collected or drunk directly. The mod does not scan water every
+tick. Biome tags choose the baseline, then a few local conditions make small adjustments.
 
-| Where you fill it | Grade |
-|---|---|
-| A still pond or ocean at ordinary heights | Dirty |
-| A stream at ordinary heights | Slightly dirty |
-| Still water above y 100, or below y 48 | Slightly dirty |
-| A stream above y 100, or below y 48 | Acceptable |
+| Source | Baseline contamination | Typical grade |
+|---|---:|---|
+| Ocean or beach | 25, salty | Acceptable, but not drinkable |
+| Swamp or mangrove swamp | 85 | Dirty |
+| River | 42 | Slightly dirty |
+| Mountain | 28 | Acceptable |
+| Jungle, savanna or badlands | 70 | Dirty |
+| Other biomes | 55 | Slightly dirty |
 
-So the pond outside your door is the worst water in the game, and a mountain waterfall is drinkable
-as it is. Both heights and the bonus for moving water are settings, under
-[Water Purity](/docs/configuration#water-purity).
+Very hot biomes add 10 contamination and very cold biomes remove 10. Water above y 100 or below y
+32 removes 5. Flowing water removes only 5, so a waterfall is not automatically safe. Mud,
+mangrove roots, farmland or a composter within two blocks can add contamination.
 
-A container that was never stamped, such as a drink added by another mod, counts as acceptable.
+Modpacks can add biomes to `thirstwastaken2:stagnant_water` without changing code. A container that
+has no sampled quality, such as an unknown modded drink, still uses `defaultPurity`.
 
-Cauldrons remember. Pour a container in and the cauldron keeps the worse of the two grades, so
-topping up clean water with dirty water spoils the batch. Draw from it and the bottle or bucket you
-get back is stamped with what was in there.
+## Salt water
 
-## Drinking bad water
+Salinity is separate from cleanliness. Ocean water can look acceptable while still being unsafe to
+drink. A salty drink restores no thirst, adds thirst exhaustion and causes five seconds of Nausea.
+Furnaces, campfires and sand filters do not remove salt.
 
-Dirty water still hydrates you. The risk is what comes with it: Nausea and Hunger together, or
-Poison, rolled once per drink.
+## Mixing and cauldrons
+
+A waterskin mixes contamination by the number of servings already inside it. If either side is
+dirty, the result receives 10 extra contamination, so one clean serving cannot cheaply neutralize a
+dirty batch. Adding any salt water makes the mixed waterskin salty.
+
+Cauldrons retain the worse grade when water is poured together and remember salinity. Water drawn
+back into a bottle, bucket or waterskin keeps that stored quality.
+
+## Drinking contaminated water
+
+Contaminated fresh water still hydrates you. The existing sickness roll remains unchanged.
 
 | Grade | Nausea and Hunger | Poison |
 |---|---|---|
@@ -39,14 +57,12 @@ Poison, rolled once per drink.
 | Acceptable | 5% | none |
 | Purified | none | none |
 
-Nausea lasts five seconds and the Hunger it comes with lasts thirty. Poison lasts ten seconds. By
-default a drink that poisons you still fills the bar, so bad water is a trade rather than a waste.
+Nausea lasts five seconds, Hunger lasts thirty seconds and Poison lasts ten seconds. A longer-term
+infection system is not part of this release.
 
-## Cleaning it
+## Cleaning fresh water
 
-### Cooking
-
-Put a water bottle, a terracotta water bowl or a water bucket in a furnace or on a campfire.
+Put a fresh water bottle, terracotta water bowl or water bucket in a furnace or on a campfire.
 
 | In | Out |
 |---|---|
@@ -54,20 +70,15 @@ Put a water bottle, a terracotta water bowl or a water bucket in a furnace or on
 | Slightly dirty | Purified |
 | Acceptable | Purified |
 
-A furnace takes ten seconds, a campfire thirty. Dirty water needs two passes to reach purified.
+A furnace takes ten seconds and a campfire takes thirty. Dirty water needs two passes to become
+purified. Salty containers are rejected instead of being silently desalinated.
 
 ### Sand filter
 
 ::: warning Not available yet
-The Sand Filter is broken and its Create Fly integration is turned off, so bulk purification is not
-possible on this release. The description below is what it will do when support returns.
+The Sand Filter's Create Fly integration is still disabled. The behavior below applies when that
+integration returns.
 :::
 
-With Create Fly installed, a Sand Filter can be crafted from six brass ingots, two iron bars and one
-sand. Pump water through it and it comes out one grade cleaner. It is the only way to purify water
-in bulk, and the only part of the mod that needs another mod to exist.
-
-### Height and weather
-
-Cheapest of all, and free: collect from a mountain stream instead of the pond next to your base.
-Flowing water high up can already be acceptable or better before you cook it.
+The filter improves fresh or salty water by one grade but preserves salinity. It cannot turn ocean
+water into drinking water.
