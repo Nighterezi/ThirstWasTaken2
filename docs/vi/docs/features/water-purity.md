@@ -3,6 +3,8 @@
 Mỗi vật chứa lưu mức nhiễm bẩn và việc nước có mặn hay không. Dòng mô tả và sprite của vật phẩm tóm
 tắt mức nhiễm bẩn thành bốn cấp quen thuộc.
 
+![Dòng mô tả chai nước hiển thị Bẩn, Hơi bẩn, Có thể uống và Đã tinh lọc](/screenshots/water-purity.png)
+
 | Điểm nhiễm bẩn | Mức sạch |
 |---:|---|
 | 0 đến 15 | Đã tinh lọc |

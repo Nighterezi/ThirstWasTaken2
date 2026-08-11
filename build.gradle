@@ -41,7 +41,7 @@ dependencies {
 	clientRuntimeOnly "maven.modrinth:appleskin:${project.appleskin_version}"
 	// AppleSkin uses Cloth Config for its Mod Menu configuration screen.
 	clientRuntimeOnly "maven.modrinth:cloth-config:${project.cloth_config_version}"
-	clientRuntimeOnly "maven.modrinth:create-fly:26.2-rc-2-6.0.9-1"
+	// clientRuntimeOnly "maven.modrinth:create-fly:26.2-rc-2-6.0.9-1"
 	clientRuntimeOnly "maven.modrinth:modmenu:${project.modmenu_version}"
 }
 

@@ -3,6 +3,8 @@
 Every collected container stores the water's contamination and whether it is salty. The tooltip and
 item sprite summarize contamination as one of four familiar grades.
 
+![Water bottle tooltips showing Dirty, Slightly Dirty, Acceptable and Purified](/screenshots/water-purity.png)
+
 | Contamination | Grade |
 |---:|---|
 | 0 to 15 | Purified |

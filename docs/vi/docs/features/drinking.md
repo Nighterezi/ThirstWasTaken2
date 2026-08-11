@@ -7,6 +7,8 @@ Mọi vật phẩm hồi độ khát đều ghi rõ trong dòng mô tả bằng 
 thị mức đã khát. Vì vậy chai nước hồi 6 độ khát và 8 đã khát sẽ hiện ba giọt đầy phía trên bốn giọt
 khung.
 
+![Dòng mô tả chai nước bẩn hiển thị các giọt độ khát và đã khát](/screenshots/item-tooltip.png)
+
 Đây là các giá trị mod đặt sẵn cho vật phẩm gốc và vật phẩm của chính nó:
 
 | Vật phẩm | Độ khát | Đã khát |
@@ -50,11 +52,7 @@ rẻ hơn vừa sạch hơn.
 
 Chế tạo **túi da đựng nước** có thể tái sử dụng từ ba miếng da và một sợi dây:
 
-```text
- S
-L L
- L
-```
+![Công thức túi da đựng nước dùng ba miếng da và một sợi dây](/screenshots/waterskin-recipe.png)
 
 Túi chứa được ba lần uống. Dùng túi lên mặt nước hoặc vạc nước để thêm từng lần uống. Trong túi đồ,
 nhấp chuột phải vào túi da bằng chai nước để thêm một lần uống, hoặc bằng xô nước để đổ đầy phần còn

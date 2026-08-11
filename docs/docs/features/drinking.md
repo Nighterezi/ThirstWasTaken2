@@ -7,6 +7,8 @@ Each droplet is worth two points. The upper row uses filled droplets for hydrati
 uses outline droplets for quenched. A water bottle worth 6 hydration and 8 quenched therefore shows
 three filled droplets above four outline droplets.
 
+![A dirty water bottle tooltip showing hydration and quenched droplets](/screenshots/item-tooltip.png)
+
 These are the values the mod ships with for vanilla and its own items:
 
 | Item | Hydration | Quenched |
@@ -50,11 +52,7 @@ been. Scooping from the world is both cheaper and cleaner.
 
 Craft a reusable **waterskin** from three leather and one string:
 
-```text
- S
-L L
- L
-```
+![The waterskin recipe uses three leather and one string](/screenshots/waterskin-recipe.png)
 
 It holds three drinks. Use it on water or a water cauldron to add one drink at a time. In the
 inventory, right-click a waterskin with a water bottle to add one drink, or with a water bucket to
