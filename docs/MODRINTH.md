@@ -51,13 +51,13 @@ Every bottle, bucket and bowl is stamped the moment you fill it.
 | Still water above y 100, or below y 48 | Slightly dirty |
 | A stream above y 100, or below y 48 | Acceptable |
 
-The pond outside your door is the worst water in the game. A mountain stream is drinkable as it is.
-Drink something dirty and you risk Nausea with Hunger behind it, or Poison. Bad water still fills the
-bar, so it stays a trade rather than a wasted item.
+Unsafe water can cause Nausea, Hunger or Poison, but it still restores thirst.
 
 ## Boiling it clean
 
 Put a water bottle, a terracotta water bowl or a water bucket in a furnace or on a campfire.
+
+![Water bottles and bowls being purified over a campfire](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/boilling-water.png)
 
 | In | Out |
 |---|---|
@@ -82,16 +82,6 @@ water source, which drinks it exactly as it is, swamp puddle risks included.
 
 Water bottles also turn up in mineshaft, dungeon, shipwreck, nether bridge and bastion chests, and
 from Piglin bartering. That is often what keeps a player alive in the Nether.
-
-## Tooltips you can read at a glance
-
-The water inside each droplet is the hydration, the outline around it is the quenched reserve, so one
-row carries both values.
-
-![The tooltip of a water bottle, showing three filled droplets and one outline](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/item-tooltip.png)
-
-The original mod only drew this, and the quenched outline on the bar, when AppleSkin was installed.
-Here both are part of the mod, with or without AppleSkin.
 
 ## Every number is a slider
 

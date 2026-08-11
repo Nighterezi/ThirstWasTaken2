@@ -17,7 +17,7 @@ npm run docs:build    # must pass before you call a docs change done
 | `features/` | What the mod does and why, in prose. No config key listings. |
 | `.vitepress/config.mts` | Nav and both sidebars. |
 | `.vitepress/theme/` | Default theme plus `custom.css` for the brand colour. |
-| `public/` | `logo-small.png` for the navbar and favicon, `logo.png` for the home hero, `logo-icon.png` for release pages, `banner.png` for wide headers, `screenshots/`. |
+| `public/` | `logo-small.png` for the navbar and favicon, `logo.png` for the home hero, and `screenshots/`. |
 
 `docs/` answers "how do I set this up". `features/` answers "what is this like to play". A page that
 starts listing config keys belongs in `docs/`.
