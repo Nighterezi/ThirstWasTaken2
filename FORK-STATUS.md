@@ -63,7 +63,11 @@ AppleSkin was present; here it is simply part of the bar.
 - The thirst bar can be moved anywhere on the screen.
 - An optional setting requiring both hands to be empty before drinking by hand.
 - A dedicated **ThirstWasTaken2** creative inventory tab collecting every item from the mod.
-- Nine languages, all covering the config screen as well as the in-game text.
+
+  ![The ThirstWasTaken2 creative inventory tab, collecting every item from the mod](docs/public/screenshots/creative-tab.png)
+
+- The fork adds Vietnamese alongside the other bundled languages. Both the config screen and in-game
+  text automatically follow each player's Minecraft client language, with no separate language setting.
 
 ## Not available yet
 
