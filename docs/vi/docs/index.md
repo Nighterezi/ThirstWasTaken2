@@ -8,10 +8,10 @@ Phần thú vị nằm ở chuyện đổ đầy lại. Chai nước, bát nư�
 nước lấy từ thế giới còn mang theo một mức chất lượng. Nước xấu có thể làm bạn phát bệnh, và đun lên
 thì nó trở nên an toàn.
 
-ThirstWasTaken2 là một bản fork của
-[Thirst Was Taken của ghen](https://modrinth.com/mod/thirst-was-taken), được dựng lại cho Fabric trên
-Minecraft 26.2 và mở rộng thêm bởi [Nighter](https://github.com/Nighterezi). Banner, icon và bản dịch
-đến từ dự án gốc. [Fork này thay đổi những gì](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/FORK-STATUS.md).
+ThirstWasTaken2 là bản fork của
+[Thirst Was Taken](https://modrinth.com/mod/thirst-was-taken) do
+[**ghen**](https://github.com/ghen-git) phát triển. Mod bổ sung thanh khát sinh tồn, cơ chế uống nước
+và độ tinh khiết của nước cho Minecraft, đồng thời mở rộng mod gốc.
 
 ## Bạn nhận được gì
 

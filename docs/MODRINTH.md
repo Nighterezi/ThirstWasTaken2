@@ -1,131 +1,106 @@
 <!--
-Description for the ThirstWasTaken2 (Fabric) project page on Modrinth.
-Paste everything below the marker into the Modrinth description editor.
-Image links are absolute so they resolve outside this repository.
+Description for the ThirstWasTaken2 project page on Modrinth.
+Image links are absolute so they work outside this repository.
 
-Modrinth "Summary" field, kept in sync with fabric.mod.json and the docs site:
-
+Modrinth summary:
   Adds a survival thirst bar, drinking, and water purity.
-
-Re-shoot before publishing, these still show the old name:
-  config-1.png, creative-tab.png
 -->
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/.github/assets/banner.png" alt="ThirstWasTaken2 banner" width="420">
 </p>
 
-<p align="center"><strong>Water stops being scenery and starts being supplies.</strong></p>
+ThirstWasTaken2 is a fork of the original
+[Thirst Was Taken](https://modrinth.com/mod/thirst-was-taken) by
+[**ghen**](https://github.com/ghen-git). It adds a survival thirst bar, drinking, and water purity to
+Minecraft and further extends the original mod.
 
-> A fork of **[Thirst Was Taken](https://modrinth.com/mod/thirst-was-taken)** by **ghen**, rebuilt for
-> Fabric and extended by **[Nighter](https://github.com/Nighterezi)**. The banner, icon and
-> translations come from the original project.
+## Features
 
-ThirstWasTaken2 adds a second survival bar. It sits above hunger, drains while you play, and refills
-from potions, watery foods, the rain, or a bowl you scooped yourself. Where that water came from
-matters, because dirty water can make you sick.
+- Thirst, quenched hydration and exhaustion
+- Faster thirst loss from activity, hot biomes and the Nether
+- Damage, disabled sprinting and disabled natural healing when dehydrated
+- Drinking from water sources, rain, potions, foods and water bowls
+- Four water-purity levels with negative effects from unsafe water
+- Water purification using furnaces and campfires
+- Hydration and purity information in item tooltips
+- Configurable HUD position and gameplay settings
+- Mod Menu configuration screen
+- `/thirst` commands for server administrators
 
-## A bar that reads like hunger
-
-Ten droplets, a lighter reserve outline behind them, and the same shake when that reserve runs out.
-It drains for the same reasons hunger does, and faster in hot or dry biomes. The Nether runs at
-triple speed, which Fire Resistance and Fire Protection both cut back.
-
-![The thirst bar above the hunger bar, part drained, in a birch forest](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/thirst-bar.png)
-
-An empty bar takes half a heart every two seconds, ignores armour, and on Normal or Hard it will kill
-you. Before that it stops you sprinting and blocks natural healing.
-
-![An empty thirst bar with health down to two and a half hearts](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/dehydration.png)
-
-## Water remembers where it came from
-
-Every bottle, bucket and bowl is stamped the moment you fill it.
-
-![Tooltips reading Dirty, Slightly Dirty, Acceptable and Purified](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/water-purity.png)
-
-| Where you fill it | Grade |
+| Thirst bar | Water purity |
 |---|---|
-| A still pond or ocean at ordinary heights | Dirty |
-| A stream at ordinary heights | Slightly dirty |
-| Still water above y 100, or below y 48 | Slightly dirty |
-| A stream above y 100, or below y 48 | Acceptable |
+| ![Thirst bar above the hunger bar](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/thirst-bar.png) | ![Four water-purity levels shown in item tooltips](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/water-purity.png) |
 
-Unsafe water can cause Nausea, Hunger or Poison, but it still restores thirst.
+## Water purity
 
-## Boiling it clean
+Water receives a purity level when collected in a bottle, bucket or terracotta bowl.
 
-Put a water bottle, a terracotta water bowl or a water bucket in a furnace or on a campfire.
+| Water source | Purity |
+|---|---|
+| Still water at ordinary heights | Dirty |
+| Flowing water at ordinary heights | Slightly dirty |
+| Still water above y 100 or below y 48 | Slightly dirty |
+| Flowing water above y 100 or below y 48 | Acceptable |
+
+Unsafe water can cause Nausea, Hunger or Poison. It still restores thirst.
+
+Water can be purified in a furnace or on a campfire.
 
 ![Water bottles and bowls being purified over a campfire](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/boilling-water.png)
 
-| In | Out |
+| Input | Output |
 |---|---|
 | Dirty | Acceptable |
 | Slightly dirty | Purified |
 | Acceptable | Purified |
 
-A furnace takes ten seconds, a campfire thirty. Dirty water needs two passes to reach purified.
-Cauldrons remember the worse of whatever you pour in, so you cannot launder bad water by mixing it.
+## Requirements
 
-## Plenty of ways to drink
+| Component | Version |
+|---|---|
+| Minecraft | 26.2 |
+| Fabric Loader | 0.19.3 or newer |
+| Fabric API | Required |
+| Java | 25 |
+| Mod Menu | Optional, 20.0.1 tested |
 
-The mod adds a clay bowl, smelted into a terracotta bowl, which scoops water straight out of the
-world, flowing water included. Drinking one leaves the empty bowl in your hand.
+Install ThirstWasTaken2 and Fabric API on both the client and server.
 
-![The creative tab, holding the clay bowl, terracotta bowl and terracotta water bowl](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/creative-tab.png)
+## Configuration
 
-With nothing in your hands, look straight up in the rain. Or turn on hand drinking and sneak onto any
-water source, which drinks it exactly as it is, swamp puddle risks included.
+Settings can be changed through Mod Menu or in `config/thirstwastaken2.json`.
 
-![Rain falling over a forest, with the thirst bar part drained](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/drinking-in-rain.png)
-
-Water bottles also turn up in mineshaft, dungeon, shipwreck, nether bridge and bastion chests, and
-from Piglin bartering. That is often what keeps a player alive in the Nether.
-
-## Every number is a slider
-
-Over thirty settings, editable in game from **Mods > ThirstWasTaken2 > Config** with Mod Menu
-installed, or straight from `config/thirstwastaken2.json`.
-
-![The config screen, showing the depletion and drinking sections](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/config-1.png)
-
-Only the bar position is read from your own copy. Everything else comes from the machine running the
-world, so on a dedicated server that is the server's file.
-
-## Nine languages
-
-English, French, Japanese, Korean, Polish, Russian, Vietnamese, Simplified Chinese and Traditional
-Chinese, covering the config screen as well as the in-game text. Each player sees the language their
-game is already set to.
+Gameplay settings are controlled by the server. HUD settings are controlled by each client.
 
 ## Commands
 
-| Command | Action |
+| Command | Description |
 |---|---|
-| `/thirst query <player>` | Show current thirst and quenched |
-| `/thirst set <players> <thirst> <quenched>` | Set both values |
-| `/thirst enable <players> <true/false>` | Turn thirst ticking on or off |
+| `/thirst query <player>` | Show thirst and quenched values |
+| `/thirst set <players> <thirst> <quenched>` | Set thirst and quenched values |
+| `/thirst enable <players> <true/false>` | Enable or disable thirst |
 
-These need game master permission.
+These commands require game master permission.
 
-## Requirements
+## Current integration limitations
 
-| | |
-|---|---|
-| Minecraft | 26.2 |
-| Loader | Fabric Loader 0.19.3 or newer |
-| Java | 25 |
-| Required | Fabric API |
-| Optional | Mod Menu, for the settings screen |
+- The Create Sand Filter is disabled because the Create Fly integration is currently broken.
+- Jade does not currently display water purity.
+- Cold Sweat, Farmer's Respite, Brewin' and Chewin', Tough As Nails, Supplementaries and Botania do
+  not yet have compatible Minecraft 26.2 Fabric releases. Their items are already configured and
+  will be supported when compatible versions become available.
 
-Install it on the server and on every client that joins. A player without the mod will not see the
-bar at all. Thirst is stored on the player, so existing worlds work.
+## Languages
+
+English, French, Japanese, Korean, Polish, Russian, Vietnamese, Simplified Chinese and Traditional
+Chinese are included.
 
 ## Links
 
 - [Documentation](https://nighterezi.github.io/ThirstWasTaken2/)
-- [What this fork changes](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/FORK-STATUS.md)
+- [Fork changes](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/FORK-STATUS.md)
+- [Changelog](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/CHANGELOG.md)
 - [Source code](https://github.com/Nighterezi/ThirstWasTaken2)
 - [Issue tracker](https://github.com/Nighterezi/ThirstWasTaken2/issues)
-- [Original mod by ghen](https://modrinth.com/mod/thirst-was-taken)
+- [Original mod](https://modrinth.com/mod/thirst-was-taken)
