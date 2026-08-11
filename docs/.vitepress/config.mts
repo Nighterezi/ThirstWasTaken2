@@ -72,8 +72,8 @@ export default defineConfig({
   head: [
     ['link', { rel: 'icon', type: 'image/png', href: `${BASE}logo-small.png` }]
   ],
-  // Notes for contributors, not a page on the site.
-  srcExclude: ['CLAUDE.md'],
+  // Notes and paste sources for maintainers, not pages on the site.
+  srcExclude: ['CLAUDE.md', 'MODRINTH.md'],
   themeConfig: {
     logo: '/logo-small.png',
     externalLinkIcon: true,

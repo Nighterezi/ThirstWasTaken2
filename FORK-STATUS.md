@@ -2,12 +2,10 @@
 
 ThirstWasTaken2 is a fork of [Thirst Was Taken](https://github.com/ghen-git/Thirst-Mod) by
 [ghen](https://github.com/ghen-git), originally a Forge mod for Minecraft 1.19.2. It was rebuilt for
-Fabric on Minecraft 26.2 and has kept growing since. This page lists what carried over, what the fork
-adds on top, and what is still missing.
+Fabric on Minecraft 26.2, then improved and changed. This page lists what carried over, what the fork
+changes, and what is still missing.
 
 ## Carried over from the original
-
-Everything ghen's mod did that still exists here, unchanged in spirit.
 
 - Thirst and quenched bars that drain as you play, faster when you sprint, fight or take damage.
 - Hotter, drier biomes and the Nether dry you out quicker; Fire Resistance and Fire Protection slow it down.
@@ -25,45 +23,38 @@ Everything ghen's mod did that still exists here, unchanged in spirit.
 
 ## New in this fork
 
-Ordered by how much they change the game you already know, biggest first. If you are coming from the
-original mod, read the first four.
-
 ### 1. Hand drinking is worth a third of what it was
 
 Drinking straight from a water source restores **1 thirst and 1 quenched**, down from the original's
 3 and 2. Free, unlimited water refilling both bars that fast made every other drink pointless. Both
 values are still configurable.
 
-### 2. Item tooltips show droplets instead of numbers
+### 2. Tooltips show droplets, and no longer need AppleSkin
 
-The original printed `Hydration: +6, Quenched: +8`. This fork draws the same droplets the bar uses,
-with the water level inside each droplet and the quenched outline around it, so one row carries both
-values. A drink worth 6 hydration and 8 quenched reads as three filled droplets followed by one
-outline-only droplet.
+The original printed `Hydration: +6, Quenched: +8` as plain text, and only drew a graphical version
+when AppleSkin was installed. Here the droplet row is part of the mod and always there.
 
 ![The tooltip of a water bottle, showing filled droplets and an outline droplet](docs/public/screenshots/item-tooltip.png)
 
-This is the AppleSkin way of putting food values in a tooltip, drawn by this mod itself. It is always
-there, whether or not AppleSkin is installed.
+The water inside each droplet is the hydration, the outline around it is the quenched, so one row
+carries both values. A drink worth 6 hydration and 8 quenched reads as three filled droplets followed
+by one outline-only droplet.
 
-### 3. Redrawn droplets
+### 3. New droplet sprites
 
-Empty droplets now use the same dark shade as the empty hunger icons instead of a lighter grey, so
-the bar reads the same way the food bar directly below it does.
+Empty droplets use the same dark shade as the empty hunger icons instead of the original's lighter
+grey, so the bar reads the same way the food bar directly below it does. The sheet also went from
+three frames to five, so the droplet you are currently drinking away steps through quarters as
+exhaustion builds instead of jumping straight from full to half to empty.
 
-![The thirst bar above the hunger bar, part drained](docs/public/screenshots/thirst-bar.png)
+| Original, three frames | ThirstWasTaken2, five frames |
+|---|---|
+| ![The original droplet sprites: empty, half and full](docs/public/screenshots/droplets-original.png) | ![The fork's droplet sprites: empty, quarter, half, three quarter and full](docs/public/screenshots/droplets-fork.png) |
 
-### 4. Droplets empty in quarters
+### 4. The quenched outline is always on
 
-The original sheet had full, half and empty. This one has five levels, and the droplet you are
-currently drinking away steps through all of them as exhaustion builds. There is no setting: the
-five-level drain is the only behaviour.
-
-### 5. The quenched outline is always on, and the exhaustion strip is gone
-
-The lighter reserve outline over the droplets is drawn unconditionally now. The dotted AppleSkin
-style exhaustion strip behind the bar was removed entirely, because it belongs to an AppleSkin
-integration this fork does not have yet.
+Same story as the tooltips. The original only drew the lighter reserve outline over the droplets when
+AppleSkin was present; here it is simply part of the bar.
 
 ### Smaller additions
 

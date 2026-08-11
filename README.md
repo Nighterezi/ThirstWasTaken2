@@ -22,8 +22,8 @@ ThirstWasTaken2 adds a survival thirst system designed to fit naturally into mod
 other exhausting activities consume hydration, drinks and watery foods restore it, and severe
 dehydration can slow or damage the player.
 
-📖 **[Documentation](https://nighterezi.github.io/ThirstWasTaken2/)** ·
-🧩 **[Fork status](FORK-STATUS.md)** · 🗺️ **[Code map](CODEMAP.md)**
+**[Documentation](https://nighterezi.github.io/ThirstWasTaken2/)** ·
+**[Fork status](FORK-STATUS.md)** · **[Code map](CODEMAP.md)**
 
 ## Highlights
 
