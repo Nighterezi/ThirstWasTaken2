@@ -12,7 +12,7 @@ Re-shoot before publishing, these still show the old name:
 -->
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/.github/assets/banner.png" width="420">
+  <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/.github/assets/banner.png" alt="ThirstWasTaken2 banner" width="420">
 </p>
 
 <p align="center"><strong>Water stops being scenery and starts being supplies.</strong></p>
