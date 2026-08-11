@@ -2,6 +2,19 @@
 
 How ThirstWasTaken2 (Fabric 26.2) is put together, and where to change what.
 
+This page is the overview. Each area also carries its own `CLAUDE.md` with the rules and traps local
+to it, sitting next to the code it describes:
+
+| File | Covers |
+|---|---|
+| [src/main/java/com/thirstwastaken2/CLAUDE.md](src/main/java/com/thirstwastaken2/CLAUDE.md) | common code: init order, state invariants, caching rules |
+| [.../mixin/CLAUDE.md](src/main/java/com/thirstwastaken2/mixin/CLAUDE.md) | mixin conventions, what is hooked, the fragile injections |
+| [.../purity/CLAUDE.md](src/main/java/com/thirstwastaken2/purity/CLAUDE.md) | purity carriers, the cauldron offset, deferred interactions |
+| [.../compat/CLAUDE.md](src/main/java/com/thirstwastaken2/compat/CLAUDE.md) | loot modification, the gated Create Fly integration |
+| [src/client/java/com/thirstwastaken2/client/CLAUDE.md](src/client/java/com/thirstwastaken2/client/CLAUDE.md) | HUD sprite geometry, the config screen contract |
+| [src/main/resources/CLAUDE.md](src/main/resources/CLAUDE.md) | manifests, recipes, tags, models, fonts, lang keys |
+| [docs/CLAUDE.md](docs/CLAUDE.md) | the VitePress site and its writing style |
+
 ## Layout
 
 ```

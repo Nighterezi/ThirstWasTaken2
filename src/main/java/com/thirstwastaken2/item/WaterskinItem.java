@@ -16,7 +16,10 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.component.Consumable;
+import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.level.Level;
+
+import java.util.List;
 
 /** A reusable leather water container holding three drinks of one mixed purity. */
 public final class WaterskinItem extends Item {
@@ -36,7 +39,7 @@ public final class WaterskinItem extends Item {
 
         int added = Math.min(amount, CAPACITY - current);
         int mixedPurity = current == 0 ? purity : Math.min(WaterPurity.get(stack), purity);
-        stack.set(ThirstComponents.WATER_SERVINGS, current + added);
+        setServings(stack, current + added);
         WaterPurity.set(stack, mixedPurity);
         return true;
     }
@@ -59,7 +62,7 @@ public final class WaterskinItem extends Item {
         boolean creativePlayer = entity instanceof Player player && player.getAbilities().instabuild;
         if (!level.isClientSide() && current > 0 && !creativePlayer) {
             int remaining = current - 1;
-            stack.set(ThirstComponents.WATER_SERVINGS, remaining);
+            setServings(stack, remaining);
             if (remaining == 0) stack.remove(ThirstComponents.WATER_PURITY);
         }
         return stack;
@@ -111,6 +114,16 @@ public final class WaterskinItem extends Item {
         if (!stack.is(Items.POTION)) return false;
         PotionContents contents = stack.get(DataComponents.POTION_CONTENTS);
         return contents != null && contents.is(Potions.WATER);
+    }
+
+    private static void setServings(ItemStack stack, int servings) {
+        stack.set(ThirstComponents.WATER_SERVINGS, servings);
+        if (servings == 0) {
+            stack.remove(DataComponents.CUSTOM_MODEL_DATA);
+        } else {
+            stack.set(DataComponents.CUSTOM_MODEL_DATA,
+                    new CustomModelData(List.of((float) servings), List.of(), List.of(), List.of()));
+        }
     }
 
     private static void consumeContainer(ItemStack carried, ItemStack remainder, Player player,

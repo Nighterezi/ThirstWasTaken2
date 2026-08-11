@@ -1,1 +1,22 @@
-{ "model": { "type": "minecraft:model", "model": "thirstwastaken2:item/waterskin" } }
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 1.0,
+        "model": { "type": "minecraft:model", "model": "thirstwastaken2:item/waterskin_1" }
+      },
+      {
+        "threshold": 2.0,
+        "model": { "type": "minecraft:model", "model": "thirstwastaken2:item/waterskin_2" }
+      },
+      {
+        "threshold": 3.0,
+        "model": { "type": "minecraft:model", "model": "thirstwastaken2:item/waterskin_3" }
+      }
+    ],
+    "fallback": { "type": "minecraft:model", "model": "thirstwastaken2:item/waterskin_0" }
+  }
+}

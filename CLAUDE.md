@@ -18,6 +18,11 @@ has since diverged, so upstream is a reference, not a spec.
 See [CODEMAP.md](CODEMAP.md) for the file-by-file architecture and
 [FORK-STATUS.md](FORK-STATUS.md) for what the fork carries, adds and still lacks.
 
+The conventions below are global. Each area of the tree also has its own `CLAUDE.md` next to the code
+(`src/main/java/com/thirstwastaken2/`, its `mixin/`, `purity/` and `compat/` subpackages,
+`src/client/java/com/thirstwastaken2/client/`, `src/main/resources/`, `docs/`) — read the one for the
+directory you are editing; CODEMAP.md indexes them.
+
 ## Build and run
 
 ```bash

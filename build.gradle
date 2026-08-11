@@ -46,6 +46,16 @@ processResources {
 	filesMatching("fabric.mod.json") { expand "version": project.version }
 }
 
+// Per-directory notes for contributors; they live next to the files they describe, not in the jars.
+tasks.withType(ProcessResources).configureEach {
+	exclude "**/CLAUDE.md"
+}
+
+// Registered lazily: withSourcesJar() below adds the task after this block is evaluated.
+tasks.matching { it.name.endsWith("sourcesJar") }.configureEach {
+	exclude "**/CLAUDE.md"
+}
+
 tasks.withType(JavaCompile).configureEach {
 	options.encoding = "UTF-8"
 	options.release = 25
