@@ -102,10 +102,6 @@ rules above. In addition:
 
 - Bilingual. English lives in `docs/docs/`, Vietnamese in `docs/vi/docs/`. Adding or changing a page
   means updating both languages in the same pass.
-- Vietnamese links are absolute and carry the prefix: `/vi/docs/commands`, not `/docs/commands`.
-- Vietnamese in-game wording comes from
-  `src/main/resources/assets/thirstwastaken2/lang/vi_vn.json`, so purity levels are Bẩn, Hơi bẩn,
-  Có thể uống and Đã tinh lọc, and "quenched" is "đã khát".
 - Pages start with a `#` heading, not frontmatter.
 - Use normal Markdown: headings, short paragraphs, tables for options, numbered lists for steps. Keep
   pages scannable.
