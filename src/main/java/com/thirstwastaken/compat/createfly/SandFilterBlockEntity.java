@@ -5,6 +5,7 @@ import com.thirstwastaken.purity.WaterPurity;
 import com.zurrtum.create.api.behaviour.BlockEntityBehaviour;
 import com.zurrtum.create.foundation.blockEntity.SmartBlockEntity;
 import com.zurrtum.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
+import com.zurrtum.create.infrastructure.fluids.FluidInventory;
 import com.zurrtum.create.infrastructure.fluids.FluidStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.FluidTags;
@@ -32,6 +33,14 @@ public final class SandFilterBlockEntity extends SmartBlockEntity {
                 .forbidInsertion().allowExtraction();
         behaviours.add(input);
         behaviours.add(output);
+    }
+
+    FluidInventory inputInventory() {
+        return input == null ? null : input.getCapability();
+    }
+
+    FluidInventory outputInventory() {
+        return output == null ? null : output.getCapability();
     }
 
     public void tickFilter() {
