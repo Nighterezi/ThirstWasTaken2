@@ -33,6 +33,8 @@ Sprite geometry, which is easy to break:
 - The quarter and three-quarter frames come from `drainedFraction`, which spends the synced
   `exhaustion` (0..4) against the next point — and only once quenched is empty, so a quenched player
   never shows a partially drained droplet. There is no setting for this.
+- When AppleSkin is loaded and its exhaustion-underlay option is enabled, `AppleSkinIntegration`
+  exposes that setting and `ThirstHud` draws the synced exhaustion as the `v = 18` dither strip.
 - The quenched outline comes from `appleskin_icons.png` row `v = 0`, at `u = 0/9/18/27` by quarter,
   blitted with the 256x256 texture size. That sheet is 256x256, unlike `thirst_icons.png` — do not
   copy blit arguments between the two.

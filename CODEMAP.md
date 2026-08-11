@@ -32,7 +32,7 @@ src/main/java/com/thirstwastaken2/      common (client + server)
   purity/WaterQuality.java             contamination score, salinity and tier thresholds
   purity/WaterPurity.java              environmental sampling, effects and container detection
   purity/WaterInteractions.java        bowl/waterskin filling, cauldron purity transfer
-  tooltip/ThirstTooltip.java           droplet row for the item tooltip (thirstwastaken2:droplets font)
+  tooltip/ThirstTooltip.java           separate thirst/quenched tooltip rows (thirstwastaken2:droplets font)
   compat/LootIntegration.java          structure chests + Piglin barter water
   compat/createfly/                    optional Create Fly Sand Filter
   mixin/                               vanilla hooks
@@ -41,6 +41,7 @@ src/client/java/com/thirstwastaken2/client/
   ThirstWasTaken2Client.java            HUD element registration
   ThirstHud.java                       thirst bar rendering
   config/ThirstConfigScreen.java       vanilla-styled options screen
+  compat/AppleSkinIntegration.java     optional exhaustion-underlay setting bridge
   compat/ModMenuIntegration.java       modmenu entrypoint
 
 src/main/resources/
@@ -128,7 +129,7 @@ Brewin' and Chewin' / Collector's Reap support stays dependency-free.
 |---|---|---|
 | `PlayerMixin` | `Player#causeFoodExhaustion`, `#canSprint` | mirror exhaustion, block sprinting at thirst <= 6 |
 | `FoodDataMixin` | `FoodData#tick` (both `heal` call sites) | dehydration halts natural regen and refunds the food cost |
-| `ItemStackMixin` | `#finishUsingItem`, `#addDetailsToTooltip` | grant hydration, render purity line + droplet row |
+| `ItemStackMixin` | `#finishUsingItem`, `#addDetailsToTooltip` | grant hydration, render purity + thirst/quenched rows |
 | `BottleItemMixin` | `BottleItem#use` | stamp purity on a bottle filled from a water block |
 | `BucketItemMixin` | `BucketItem#use` | stamp purity on a bucket filled from a water block |
 | `LayeredCauldronBlockMixin` | `#createBlockStateDefinition` | add purity and salinity properties |
@@ -138,7 +139,9 @@ Brewin' and Chewin' / Collector's Reap support stays dependency-free.
 `ThirstWasTaken2Client` attaches `thirst_bar` after `VanillaHudElements.FOOD_BAR` and reserves 10px
 of right-stack height. `ThirstHud.render` draws, in order:
 
-1. ten droplet slots from `thirst_icons.png` (41x9: empty, quarter, half, three quarter and full on an
+1. when AppleSkin is present and its exhaustion-underlay option is enabled, a right-to-left dither
+   strip from `appleskin_icons.png` at v=18, proportional to the client's exhaustion (0..4);
+2. ten droplet slots from `thirst_icons.png` (41x9: empty, quarter, half, three quarter and full on an
    8px stride, so u = 0/8/16/24/32), shaken when quenched hits zero, exactly like the vanilla hunger
    bar. Frames share their transparent edge columns, which is why the stride is 8 and not 9. Each
    droplet holds two thirst points; the quarter and three-quarter frames come from

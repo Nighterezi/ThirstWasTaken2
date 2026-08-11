@@ -12,7 +12,7 @@ assets/thirstwastaken2/
   models/item|block/         the actual models the definitions point at
   blockstates/               sand_filter only
   textures/                  item, block, gui and font sheets
-  font/droplets.json         bitmap font for the tooltip droplet row
+  font/droplets.json         bitmap font for the tooltip droplet rows
   lang/                      9 locales
 data/thirstwastaken2/
   recipe/                    18 purify recipes + 4 crafting/smelting + the Create-gated one
@@ -75,14 +75,12 @@ result. The PNG variants are reproducibly derived from the original sprite by
 ## Fonts and GUI sheets
 
 `font/droplets.json` maps `U+E000..U+E007` onto `textures/font/droplets.png` at height 9, ascent 8.
-The code points are indexed `[water fill][quenched fill]` by `ThirstTooltip.GLYPHS`; the
-"neither" combination is never emitted, which is why only 8 glyphs exist. Reordering the sheet means
-reordering that table.
+`ThirstTooltip` uses `U+E000/U+E001` for the filled thirst row and `U+E004/U+E007` for the outline
+quenched row. The combined glyphs remain on the sheet for compatibility but are not emitted.
 
 `textures/gui/thirst_icons.png` is 41x9 (five frames, 8px stride) and
-`textures/gui/appleskin_icons.png` is a 256x256 sheet of which only the `v = 0` row is used — the
-`v = 18` dither row is a leftover from the removed AppleSkin underlay. `ThirstHud` documents the
-exact blit arguments.
+`textures/gui/appleskin_icons.png` is a 256x256 sheet: `v = 0` supplies quenched outlines and
+`v = 18` supplies the optional AppleSkin exhaustion strip. `ThirstHud` documents the exact blits.
 
 ## Lang
 

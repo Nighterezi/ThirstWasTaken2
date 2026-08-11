@@ -16,7 +16,7 @@ thirst, and the client only receives it through the attachment sync.
 | Anything about water cleanliness | `purity/` (has its own CLAUDE.md) |
 | A vanilla behaviour hook | `mixin/` (has its own CLAUDE.md) |
 | Loot, Create Fly | `compat/` (has its own CLAUDE.md) |
-| The droplet row on tooltips | `tooltip/ThirstTooltip` |
+| The thirst and quenched droplet rows on tooltips | `tooltip/ThirstTooltip` |
 | `/thirst` | `command/ThirstCommands` |
 
 ## Init order

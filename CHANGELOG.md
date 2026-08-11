@@ -10,6 +10,8 @@ All notable changes to ThirstWasTaken2 are documented in this file.
   transfers.
 - Environment-sampled contamination, persistent salinity and four code-generated water-bowl
   sprites that visually match their purity.
+- Optional AppleSkin integration that shows thirst exhaustion behind the thirst bar whenever
+  AppleSkin's exhaustion-underlay option is enabled.
 
 ### Changed
 
@@ -21,6 +23,9 @@ All notable changes to ThirstWasTaken2 are documented in this file.
   match the original mod's palette exactly.
 - Filled waterskins now expand with a cleaner silhouette and consistent leather shading across all
   three serving levels; the empty sprite is unchanged.
+- Item hydration tooltips now use two distinct sprite rows: filled droplets for thirst on top and
+  outline droplets for quenched underneath.
+- Salty-water tooltips now use plain wording without an em dash.
 
 ## [1.0.0] - 2026-08-11
 

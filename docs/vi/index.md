@@ -25,7 +25,7 @@ hero:
 
 features:
   - title: Một thanh dưới thanh đói
-    details: Mười giọt nước, vơi dần khi bạn chạy, đánh nhau và xây dựng.
+    details: Mười giọt nước, kèm phản hồi tiêu hao tùy chọn từ AppleSkin.
     link: /vi/docs/features/thirst-and-quenched
   - title: Sa mạc lấy giá cao hơn
     details: Quần xã nóng và Nether làm bạn mất nước nhanh hơn.

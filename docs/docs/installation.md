@@ -41,6 +41,8 @@ the extra behaviour listed here when it finds one.
 |---|---|---|---|---|
 | [Fabric API](https://modrinth.com/mod/fabric-api) | 0.156.0+26.2 | 26.2 | Required. Events, networking and the HUD hooks the mod is built on. | The mod will not load. |
 | [Mod Menu](https://modrinth.com/mod/modmenu) | 20.0.1 | 26.2 | A Config button in the Mods list that opens the [settings screen](/docs/configuration). | Edit `config/thirstwastaken2.json` by hand. |
+| [AppleSkin](https://modrinth.com/mod/appleskin) | 3.0.10+mc26.2 | 26.2 | A dithered thirst-exhaustion strip controlled by AppleSkin's HUD-underlay option. | The thirst bar renders normally without the strip. |
+| [Cloth Config](https://modrinth.com/mod/cloth-config) | 26.2.155 | 26.2 | AppleSkin's configuration screen inside Mod Menu. | AppleSkin still works, but its Config button is unavailable. |
 
 ::: warning Create Fly is not supported yet
 The Sand Filter is broken on this release and the Create Fly integration is off. Installing Create

@@ -42,6 +42,8 @@ vi được liệt kê bên dưới nếu tìm thấy.
 |---|---|---|---|---|
 | [Fabric API](https://modrinth.com/mod/fabric-api) | 0.156.0+26.2 | 26.2 | Bắt buộc. Sự kiện, mạng và các móc HUD mà mod dựa trên. | Mod sẽ không nạp được. |
 | [Mod Menu](https://modrinth.com/mod/modmenu) | 20.0.1 | 26.2 | Nút Config trong danh sách Mods, mở [màn hình tùy chỉnh](/vi/docs/configuration). | Sửa `config/thirstwastaken2.json` bằng tay. |
+| [AppleSkin](https://modrinth.com/mod/appleskin) | 3.0.10+mc26.2 | 26.2 | Dải tiêu hao dạng hạt trên thanh khát, theo tùy chọn HUD underlay của AppleSkin. | Thanh khát vẫn hiển thị bình thường nhưng không có dải này. |
+| [Cloth Config](https://modrinth.com/mod/cloth-config) | 26.2.155 | 26.2 | Màn hình cấu hình AppleSkin bên trong Mod Menu. | AppleSkin vẫn chạy nhưng nút Config của nó không dùng được. |
 
 ::: warning Chưa hỗ trợ Create Fly
 Bộ lọc cát đang lỗi ở bản này nên phần tích hợp Create Fly đã bị tắt. Cài Create cũng không thay đổi

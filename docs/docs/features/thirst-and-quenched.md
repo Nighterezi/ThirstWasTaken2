@@ -20,6 +20,11 @@ Thirst uses the same exhaustion vanilla already tracks for hunger. Sprinting, ju
 mining, attacking and taking damage all count. Every 4 points of exhaustion spends one point of
 quenched, or one point of thirst once the reserve is empty.
 
+With AppleSkin installed, the thirst bar also gets a dithered exhaustion strip behind its droplets.
+It fills from right to left as exhaustion approaches 4 and follows AppleSkin's **Food Exhaustion HUD
+Underlay** setting. AppleSkin is optional; without it, thirst and quenched still work and render
+normally.
+
 Sitting on a horse, a boat or a minecart costs nothing. Creative and spectator players are ignored
 entirely.
 

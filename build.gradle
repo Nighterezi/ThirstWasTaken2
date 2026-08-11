@@ -36,7 +36,11 @@ dependencies {
 	compileOnly "maven.modrinth:create-fly:26.2-rc-2-6.0.9-1"
 	// Optional config-screen entry point; the mod works without Mod Menu installed.
 	clientCompileOnly "maven.modrinth:modmenu:${project.modmenu_version}"
-	// Temporarily disabled for runClient while the Create Fly integration is being tested.
+	// Test the client HUD and food tooltips alongside AppleSkin in runClient.
+	clientCompileOnly "maven.modrinth:appleskin:${project.appleskin_version}"
+	clientRuntimeOnly "maven.modrinth:appleskin:${project.appleskin_version}"
+	// AppleSkin uses Cloth Config for its Mod Menu configuration screen.
+	clientRuntimeOnly "maven.modrinth:cloth-config:${project.cloth_config_version}"
 	clientRuntimeOnly "maven.modrinth:create-fly:26.2-rc-2-6.0.9-1"
 	clientRuntimeOnly "maven.modrinth:modmenu:${project.modmenu_version}"
 }
@@ -44,6 +48,12 @@ dependencies {
 processResources {
 	inputs.property "version", project.version
 	filesMatching("fabric.mod.json") { expand "version": project.version }
+}
+
+// The client source set currently has Java only. Keep its runtime classpath entry present so Fabric
+// Loader does not report build/resources/client as a missing path during runClient.
+tasks.named("runClient") {
+	doFirst { layout.buildDirectory.dir("resources/client").get().asFile.mkdirs() }
 }
 
 // Per-directory notes for contributors; they live next to the files they describe, not in the jars.

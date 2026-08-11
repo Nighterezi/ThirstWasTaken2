@@ -32,13 +32,9 @@ values are still configurable.
 ### 2. Tooltips show droplets, and no longer need AppleSkin
 
 The original printed `Hydration: +6, Quenched: +8` as plain text, and only drew a graphical version
-when AppleSkin was installed. Here the droplet row is part of the mod and always there.
-
-![The tooltip of a water bottle, showing filled droplets and an outline droplet](docs/public/screenshots/item-tooltip.png)
-
-The water inside each droplet is the hydration, the outline around it is the quenched, so one row
-carries both values. A drink worth 6 hydration and 8 quenched reads as three filled droplets followed
-by one outline-only droplet.
+when AppleSkin was installed. Here the sprites are part of the mod and always there. Hydration uses a
+top row of filled droplets, while quenched uses a lower row of outline droplets. A drink worth 6
+hydration and 8 quenched reads as three filled droplets above four outline droplets.
 
 ### 3. New droplet sprites
 
@@ -51,10 +47,11 @@ exhaustion builds instead of jumping straight from full to half to empty.
 |---|---|
 | ![The original droplet sprites: empty, half and full](docs/public/screenshots/droplets-original.png) | ![The fork's droplet sprites: empty, quarter, half, three quarter and full](docs/public/screenshots/droplets-fork.png) |
 
-### 4. The quenched outline is always on
+### 4. Quenched is always on; AppleSkin adds exhaustion
 
 Same story as the tooltips. The original only drew the lighter reserve outline over the droplets when
-AppleSkin was present; here it is simply part of the bar.
+AppleSkin was present; here it is simply part of the bar. AppleSkin remains optional, but installing
+it adds a dithered thirst-exhaustion strip that follows AppleSkin's exhaustion-underlay option.
 
 ### Smaller additions
 

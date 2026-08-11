@@ -47,8 +47,10 @@ abstract class ItemStackMixin {
         }
         int[] hydration = ThirstApi.hydration(stack);
         if (hydration != null) {
-            Component droplets = ThirstTooltip.hydration(hydration[0], hydration[1]);
-            if (droplets != null) tooltip.accept(droplets);
+            Component thirst = ThirstTooltip.thirst(hydration[0]);
+            Component quenched = ThirstTooltip.quenched(hydration[1]);
+            if (thirst != null) tooltip.accept(thirst);
+            if (quenched != null) tooltip.accept(quenched);
         }
     }
 }

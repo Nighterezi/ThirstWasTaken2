@@ -16,7 +16,7 @@
   "thirst.purity.slightly_dirty": "Slightly Dirty",
   "thirst.purity.acceptable": "Acceptable",
   "thirst.purity.purified": "Purified",
-  "thirst.water.salty": "Salty water — does not hydrate",
+  "thirst.water.salty": "Salty water does not hydrate",
   "block.thirstwastaken2.sand_filter": "Sand Filter",
   "thirst.ponder.sand_filter.header": "Purifying Water with a Sand Filter",
   "thirst.ponder.sand_filter.text_1": "A Sand Filter purifies by one step water pumped through it",

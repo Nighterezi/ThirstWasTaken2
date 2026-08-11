@@ -102,7 +102,9 @@ trượt riêng.
 ## Giao diện
 
 Hai mục này luôn đọc từ file cấu hình của chính bạn, kể cả khi chơi trên máy chủ. Viền dự trữ và
-kiểu vơi theo từng phần tư giọt luôn bật, không có tùy chọn tắt.
+kiểu vơi theo từng phần tư giọt luôn bật, không có tùy chọn trong ThirstWasTaken2. Nếu cài AppleSkin,
+tùy chọn **Food Exhaustion HUD Underlay** của nó cũng điều khiển dải tiêu hao dạng hạt phía sau thanh
+khát.
 
 ### thirstBarXOffset
 

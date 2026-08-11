@@ -2,13 +2,10 @@
 
 ## Thứ gì đáng uống
 
-Mọi vật phẩm hồi độ khát đều ghi rõ trong dòng mô tả, bằng một hàng giọt nước thay vì con số.
-
-![Dòng mô tả của chai nước, hiện bốn giọt nước](/screenshots/item-tooltip.png)
-
-Cách đọc giống hệt thanh khát trên màn hình. Mỗi giọt đáng hai điểm, phần nước bên trong giọt là độ
-khát, còn viền quanh giọt là mức đã khát. Hàng dài bằng giá trị lớn hơn trong hai giá trị đó, nên chai
-nước ở trên cho 6 độ khát, tức ba giọt có nước, và 8 đã khát, tức bốn giọt có viền.
+Mọi vật phẩm hồi độ khát đều ghi rõ trong dòng mô tả bằng hai hàng giọt nước thay vì con số. Mỗi giọt
+đáng hai điểm. Hàng trên dùng giọt đầy để biểu thị độ khát được hồi; hàng dưới dùng giọt khung để biểu
+thị mức đã khát. Vì vậy chai nước hồi 6 độ khát và 8 đã khát sẽ hiện ba giọt đầy phía trên bốn giọt
+khung.
 
 Đây là các giá trị mod đặt sẵn cho vật phẩm gốc và vật phẩm của chính nó:
 

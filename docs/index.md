@@ -25,7 +25,7 @@ hero:
 
 features:
   - title: A Bar Below Hunger
-    details: Ten droplets that drain as you run, fight and build.
+    details: Ten droplets, with optional AppleSkin exhaustion feedback.
     link: /docs/features/thirst-and-quenched
   - title: The Desert Costs More
     details: Hot biomes and the Nether dry you out faster.

@@ -103,7 +103,9 @@ eight separate sliders.
 ## HUD
 
 These two are read from your own config file, even on a server. The quenched outline and the quarter
-step droplet drain are always on and have no setting.
+step droplet drain are always on and have no ThirstWasTaken2 setting. If AppleSkin is installed, its
+**Food Exhaustion HUD Underlay** option also controls the dithered exhaustion strip behind the thirst
+bar.
 
 ### thirstBarXOffset
 

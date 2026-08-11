@@ -1,6 +1,7 @@
 package com.thirstwastaken2.client;
 
 import com.thirstwastaken2.ThirstWasTaken2;
+import com.thirstwastaken2.client.compat.AppleSkinIntegration;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.data.ThirstData;
 import com.thirstwastaken2.data.ThirstManager;
@@ -33,6 +34,8 @@ public final class ThirstHud {
     private static final float[] FILL_THRESHOLDS = {0.5F, 1.0F, 1.5F, 2.0F};
     private static final int OVERLAY_TEXTURE_SIZE = 256;
     private static final int OPAQUE = 0xFFFFFFFF;
+    private static final int EXHAUSTION_TINT = 0xBFFFFFFF;
+    private static final int BAR_WIDTH = 81;
     private static final float MAX_EXHAUSTION = 4.0F;
 
     private ThirstHud() { }
@@ -54,6 +57,8 @@ public final class ThirstHud {
 
         int right = graphics.guiWidth() / 2 + 91 + config.thirstBarXOffset;
         int top = graphics.guiHeight() - HudStatusBarHeightRegistry.getHeight(BAR_ID) + config.thirstBarYOffset;
+
+        renderExhaustion(graphics, right, top, data.exhaustion());
 
         // Vanilla shakes the hunger bar once saturation runs out; the thirst bar mirrors that.
         boolean shake = quenched <= 0;
@@ -96,6 +101,19 @@ public final class ThirstHud {
     private static void icon(GuiGraphicsExtractor graphics, int x, int y, int u) {
         graphics.blit(RenderPipelines.GUI_TEXTURED, ICONS, x, y, u, 0, ICON_SIZE, ICON_SIZE,
                 ICONS_TEXTURE_WIDTH, ICONS_TEXTURE_HEIGHT);
+    }
+
+    /** Draws AppleSkin's dithered exhaustion underlay beneath the thirst icons when enabled. */
+    private static void renderExhaustion(GuiGraphicsExtractor graphics, int right, int top, float exhaustion) {
+        if (!AppleSkinIntegration.shouldShowExhaustion()) return;
+
+        float ratio = Math.min(1.0F, Math.max(0.0F, exhaustion / MAX_EXHAUSTION));
+        int width = (int) (ratio * BAR_WIDTH);
+        if (width <= 0) return;
+
+        graphics.blit(RenderPipelines.GUI_TEXTURED, OVERLAY_ICONS,
+                right - width, top, BAR_WIDTH - width, 18.0F, width, ICON_SIZE,
+                OVERLAY_TEXTURE_SIZE, OVERLAY_TEXTURE_SIZE, EXHAUSTION_TINT);
     }
 
     private static void renderQuenched(GuiGraphicsExtractor graphics, int x, int y, float effective) {

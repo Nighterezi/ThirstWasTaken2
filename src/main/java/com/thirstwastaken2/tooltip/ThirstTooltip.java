@@ -6,18 +6,13 @@ import net.minecraft.network.chat.FontDescription;
 import net.minecraft.resources.Identifier;
 
 /**
- * Renders the hydration line as droplets instead of numbers, the way the HUD already shows them.
- *
- * <p>Hydration and quenched share one row of droplets rather than sitting in two groups: quenched is
- * layered over the water inside the same droplet, exactly as {@code ThirstHud} draws its overlay.
- * The two never hide each other, because they occupy different parts of the sprite — water fills the
- * body bottom-up, quenched traces the outline — so a droplet still reports both values at a glance,
- * and the row is only {@code max(hydration, quenched)} droplets wide.
+ * Renders item hydration as two droplet rows instead of numbers. Thirst uses filled droplets on the
+ * first row and quenched uses outline droplets on the second, matching the layout used by other
+ * thirst integrations.
  *
  * <p>The droplets are glyphs of the {@code thirstwastaken2:droplets} bitmap font rather than a
- * {@code ClientTooltipComponent}. That keeps the line an ordinary {@link Component}, so it survives
- * the whole tooltip pipeline unchanged — vanilla screens, but equally REI, EMI and JEI, none of
- * which route third-party tooltip components through their own renderers.
+ * {@code ClientTooltipComponent}. That keeps each line an ordinary {@link Component}, so it survives
+ * the whole tooltip pipeline unchanged in vanilla screens as well as REI, EMI and JEI.
  */
 public final class ThirstTooltip {
     private static final FontDescription FONT =
@@ -28,33 +23,34 @@ public final class ThirstTooltip {
     /** Ten droplets is a full bar; anything beyond that is capped rather than wrapped. */
     private static final int MAX_DROPLETS = 10;
 
-    /**
-     * Private-use code points of the glyph sheet, indexed {@code [water units][quenched units]}.
-     * A droplet with neither is never emitted, so that slot stays unused.
-     */
-    private static final char UNUSED = '\0';
-    private static final char[][] GLYPHS = {
-            //  quenched: none      half        full
-            /* no water   */ {UNUSED, '\uE007', '\uE004'},
-            /* half water */ {'\uE001', '\uE006', '\uE003'},
-            /* full water */ {'\uE000', '\uE005', '\uE002'},
-    };
+    private static final char THIRST_FULL = '\uE000';
+    private static final char THIRST_HALF = '\uE001';
+    private static final char QUENCHED_FULL = '\uE004';
+    private static final char QUENCHED_HALF = '\uE007';
 
     private ThirstTooltip() { }
 
-    /** @return the droplet row for what this item restores, or {@code null} when it restores nothing. */
-    public static Component hydration(int hydration, int quenched) {
-        int droplets = Math.min(Math.max(droplets(hydration), droplets(quenched)), MAX_DROPLETS);
+    /** @return the filled thirst row, or {@code null} when the item restores no thirst. */
+    public static Component thirst(int hydration) {
+        return row(hydration, THIRST_FULL, THIRST_HALF);
+    }
+
+    /** @return the outline quenched row, or {@code null} when the item restores no quenched. */
+    public static Component quenched(int quenched) {
+        return row(quenched, QUENCHED_FULL, QUENCHED_HALF);
+    }
+
+    private static Component row(int units, char full, char half) {
+        int droplets = Math.min(droplets(units), MAX_DROPLETS);
         if (droplets == 0) return null;
 
         StringBuilder icons = new StringBuilder(droplets);
         for (int i = 0; i < droplets; i++) {
-            icons.append(GLYPHS[fillOf(hydration, i)][fillOf(quenched, i)]);
+            icons.append(fillOf(units, i) == UNITS_PER_DROPLET ? full : half);
         }
         return Component.literal(icons.toString()).withStyle(style -> style
                 .withFont(FONT)
-                // Bitmap glyphs are tinted by the text colour, so they have to stay white to keep
-                // their own palette, and the tooltip drop shadow would smear the 1px outlines.
+                // Bitmap glyphs keep their own palette; shadows would smear their 1px outlines.
                 .withColor(0xFFFFFF)
                 .withoutShadow());
     }

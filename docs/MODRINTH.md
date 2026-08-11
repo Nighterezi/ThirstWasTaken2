@@ -23,7 +23,8 @@ Minecraft and further extends the original mod.
 - Drinking from water sources, rain, potions, foods and water bowls
 - Four water-purity levels with negative effects from unsafe water
 - Water purification using furnaces and campfires
-- Hydration and purity information in item tooltips
+- Two-row thirst and quenched sprites plus purity information in item tooltips
+- Optional AppleSkin exhaustion underlay on the thirst bar
 - Configurable HUD position and gameplay settings
 - Mod Menu configuration screen
 - `/thirst` commands for server administrators
@@ -74,6 +75,8 @@ Water can be purified in a furnace or on a campfire.
 | Fabric API | Required |
 | Java | 25 |
 | Mod Menu | Optional, 20.0.1 tested |
+| AppleSkin | Optional, 3.0.10+mc26.2 tested |
+| Cloth Config | Optional, needed for AppleSkin's Mod Menu screen |
 
 Install ThirstWasTaken2 and Fabric API on both the client and server.
 

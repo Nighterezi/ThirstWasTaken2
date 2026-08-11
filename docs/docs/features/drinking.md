@@ -2,14 +2,10 @@
 
 ## What is worth drinking
 
-Every item that restores thirst says so in its tooltip, as a row of droplets rather than numbers.
-
-![The tooltip of a water bottle, showing four droplets](/screenshots/item-tooltip.png)
-
-Read it the same way you read the bar. Each droplet is worth two points, the water inside it is the
-hydration, and the outline around it is the quenched. The row is as long as the larger of the two, so
-the bottle above gives 6 hydration, three droplets of water, and 8 quenched, four droplets of
-outline.
+Every item that restores thirst says so in its tooltip as two rows of droplets rather than numbers.
+Each droplet is worth two points. The upper row uses filled droplets for hydration; the lower row
+uses outline droplets for quenched. A water bottle worth 6 hydration and 8 quenched therefore shows
+three filled droplets above four outline droplets.
 
 These are the values the mod ships with for vanilla and its own items:
 
