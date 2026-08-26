@@ -1,16 +1,8 @@
-<!--
-Description for the ThirstWasTaken2 project page on Modrinth.
-Image links are absolute so they work outside this repository.
-
-Modrinth summary:
-  Adds a survival thirst bar, drinking, and water purity.
--->
-
 <p align="center">
   <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/.github/assets/banner.png" alt="ThirstWasTaken2 banner" width="420">
 </p>
 
-ThirstWasTaken2 is a fork of the original
+ThirstWasTaken2 is [a fork](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/FORK-STATUS.md) of the original
 [Thirst Was Taken](https://modrinth.com/mod/thirst-was-taken) by
 [**ghen**](https://github.com/ghen-git). It adds a survival thirst bar, drinking, and water purity to
 Minecraft and further extends the original mod.
