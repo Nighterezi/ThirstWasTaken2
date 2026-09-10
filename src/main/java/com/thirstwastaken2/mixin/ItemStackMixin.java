@@ -1,9 +1,6 @@
 package com.thirstwastaken2.mixin;
 
-import com.thirstwastaken2.api.ThirstApi;
 import com.thirstwastaken2.data.ThirstManager;
-import com.thirstwastaken2.item.ThirstItems;
-import com.thirstwastaken2.item.WaterskinItem;
 import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.tooltip.ThirstTooltip;
 import net.minecraft.network.chat.Component;
@@ -45,24 +42,6 @@ abstract class ItemStackMixin {
     @Inject(method = "addDetailsToTooltip", at = @At("TAIL"))
     private void thirst$addPurityTooltip(Item.TooltipContext context, TooltipDisplay display, Player player,
                                          TooltipFlag flag, Consumer<Component> tooltip, CallbackInfo ci) {
-        ItemStack stack = (ItemStack) (Object) this;
-        if (stack.is(ThirstItems.WATERSKIN)) {
-            int servings = WaterskinItem.servings(stack);
-            tooltip.accept(servings == 0
-                    ? Component.translatable("tooltip.thirstwastaken2.waterskin.empty")
-                    : Component.translatable("tooltip.thirstwastaken2.waterskin.servings",
-                            servings, WaterskinItem.CAPACITY));
-        }
-        if (WaterPurity.isWaterContainer(stack)) {
-            tooltip.accept(WaterPurity.tooltip(WaterPurity.get(stack)));
-            if (WaterPurity.isSalty(stack)) tooltip.accept(WaterPurity.salinityTooltip());
-        }
-        int[] hydration = ThirstApi.hydration(stack);
-        if (hydration != null) {
-            Component thirst = ThirstTooltip.thirst(hydration[0]);
-            Component quenched = ThirstTooltip.quenched(hydration[1]);
-            if (thirst != null) tooltip.accept(thirst);
-            if (quenched != null) tooltip.accept(quenched);
-        }
+        ThirstTooltip.appendTo((ItemStack) (Object) this, tooltip);
     }
 }

@@ -2,6 +2,7 @@ package com.thirstwastaken2.client;
 
 import com.thirstwastaken2.ThirstWasTaken2;
 import com.thirstwastaken2.client.compat.AppleSkinIntegration;
+import com.thirstwastaken2.client.platform.ClientVanilla;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.data.ThirstData;
 import com.thirstwastaken2.data.ThirstManager;
@@ -43,7 +44,7 @@ public final class ThirstHud {
     public static boolean shouldRender(Player player) {
         if (player == null || !player.isAlive() || player.getVehicle() instanceof LivingEntity) return false;
         Minecraft minecraft = Minecraft.getInstance();
-        return !minecraft.gui.hud.isHidden() && ThirstManager.get(player).enabled();
+        return !ClientVanilla.isHudHidden(minecraft) && ThirstManager.get(player).enabled();
     }
 
     public static void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {

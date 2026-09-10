@@ -19,29 +19,80 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  # A newer push to the same ref makes the running build obsolete. Without this, one push while
+  # another is still going costs twice the matrix.
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build:
+  discover:
+    name: Discover versions
     runs-on: ubuntu-latest
+    outputs:
+      versions: ${{ steps.read.outputs.versions }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Set up Java 25
+      - name: Read supported Minecraft versions
+        id: read
+        # The matrix is derived from stonecutter.properties.toml rather than written out here.
+        # Every version needs a table in that file because the build reads its dependency versions
+        # from it, so the two cannot drift. A hard-coded list would let a version added to
+        # settings.gradle.kts go silently unbuilt.
+        run: |
+          set -euo pipefail
+          names=$(grep -oP '^\["\K[^"]+' stonecutter.properties.toml || true)
+          if [ -z "$names" ]; then
+            echo "No version tables found in stonecutter.properties.toml." >&2
+            exit 1
+          fi
+          echo "Versions to build:"
+          echo "$names"
+          echo "versions=$(echo "$names" | jq -R . | jq -cs .)" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build ${{ matrix.version }}
+    needs: discover
+    runs-on: ubuntu-latest
+    strategy:
+      # One job per Minecraft version, so a break is attributed to the version that caused it.
+      fail-fast: false
+      matrix:
+        version: ${{ fromJSON(needs.discover.outputs.versions) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # 26.1 and later need Java 25; 1.21.x needs Java 21. Both are installed so no job has to
+      # download a JDK at build time.
+      - name: Set up Java
         uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: "25"
+          java-version: |
+            21
+            25
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
 
+      - name: Register both JDKs as Gradle toolchains
+        # setup-java exports every JDK it installs as JAVA_HOME_<major>_X64 but does not tell Gradle
+        # about them, and Gradle does not scan the runner tool cache. Without this, the job whose
+        # required toolchain is not the current JAVA_HOME provisions a second JDK of its own.
+        run: |
+          mkdir -p ~/.gradle
+          echo "org.gradle.java.installations.fromEnv=JAVA_HOME_21_X64,JAVA_HOME_25_X64" >> ~/.gradle/gradle.properties
+
       - name: Build
-        run: ./gradlew build --no-daemon --stacktrace
+        run: ./gradlew ":${{ matrix.version }}:buildAndCollect" --stacktrace
 
       - name: Upload mod JAR
         uses: actions/upload-artifact@v7
         with:
-          name: ThirstWasTaken2
+          name: ThirstWasTaken2-${{ matrix.version }}
           path: |
             build/libs/*.jar
             !build/libs/*-sources.jar

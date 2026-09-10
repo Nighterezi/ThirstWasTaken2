@@ -3,6 +3,7 @@ package com.thirstwastaken2.api;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.item.WaterskinItem;
+import com.thirstwastaken2.platform.Vanilla;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -46,7 +47,7 @@ public final class ThirstApi {
     }
 
     private static int[] resolve(Item item) {
-        Identifier identifier = item.builtInRegistryHolder().key().identifier();
+        Identifier identifier = Vanilla.itemId(item);
         String id = identifier.toString();
         ThirstConfig config = ThirstConfig.get();
         if (config.itemBlacklist.contains(id)) return NONE;

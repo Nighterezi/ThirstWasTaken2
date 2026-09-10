@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 
 public final class ThirstWasTaken2 implements ModInitializer {
     public static final String MOD_ID = "thirstwastaken2";
+    /** The Minecraft version this jar was built against; substituted per version at build time. */
+    public static final String MINECRAFT = /*$ minecraft*/ "26.2";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     @Override
@@ -38,7 +40,7 @@ public final class ThirstWasTaken2 implements ModInitializer {
         UseItemCallback.EVENT.register(WaterInteractions::fillFromWater);
         CommandRegistrationCallback.EVENT.register((dispatcher, access, environment) -> ThirstCommands.register(dispatcher));
 
-        LOGGER.info("ThirstWasTaken2 initialized for Minecraft 26.2");
+        LOGGER.info("ThirstWasTaken2 initialized for Minecraft {}", MINECRAFT);
     }
 
     public static Identifier id(String path) {

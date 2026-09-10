@@ -1,0 +1,39 @@
+# Everything that differs per Minecraft version. Gradle-only options stay in gradle.properties.
+mod.id = "thirstwastaken2"
+mod.name = "ThirstWasTaken2"
+mod.group = "com.thirstwastaken2"
+mod.version = "1.0.2"
+
+deps.fabric_loader = "0.19.3"
+loomx.loom_version = "1.17-SNAPSHOT"
+
+["1.21.11"]
+mod.mc_compat = "1.21.11"
+mod.mc_releases = ["1.21.11"]
+
+deps.fabric_api = "0.141.6+1.21.11"
+deps.modmenu = "17.0.0"
+deps.appleskin = "59ti1rvg"
+deps.cloth_config = "21.11.153+fabric"
+
+["26.1.x"]
+mod.mc_compat = "~26.1"
+mod.mc_releases = ["26.1", "26.1.1", "26.1.2"]
+
+deps.fabric_api = "0.155.3+26.1.2"
+deps.modmenu = "18.0.0"
+deps.appleskin = "zLlqqiTA"
+deps.cloth_config = "26.1.154+fabric"
+
+["26.2.x"]
+# Range written into fabric.mod.json.
+mod.mc_compat = "~26.2"
+# Releases to mark compatible when publishing.
+mod.mc_releases = ["26.2"]
+
+deps.fabric_api = "0.160.0+26.2"
+# Mod Menu and Cloth Config resolve by version number; AppleSkin shares one version number across
+# its Fabric and NeoForge uploads, so it is pinned by Modrinth version id instead.
+deps.modmenu = "20.0.1"
+deps.appleskin = "uo5bAN1Y"
+deps.cloth_config = "26.2.155+fabric"

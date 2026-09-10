@@ -1,4 +1,5 @@
-# Installation
+
+# Installation
 
 ## Download
 
@@ -11,40 +12,38 @@ developers. There is no installer, the jar is the whole mod.
 
 ## Supported versions
 
-Every Minecraft version the mod supports has its own branch, and each branch has its own release
-numbering. A release is named `<minecraft>-<mod>`, for example `26.2-1.0.0`.
+One release covers every supported Minecraft version, and they all share the same mod version. The
+Minecraft version is the suffix on the file name, for example `ThirstWasTaken2-1.0.2+1.21.11.jar`.
+Take the file whose suffix matches the game.
 
-That means the highest number is not always the newest build. If the 1.21.11 branch gets a fix that
-the 26.2 branch already had, it ships as `1.21.11-1.0.3` while 26.2 is still on `26.2-1.0.2`. Read
-the Minecraft column first, then take the highest release in that row.
-
-| Release | Branch | Minecraft | Fabric Loader | Fabric API | Java | Status |
-|---|---|---|---|---|---|---|
-| `26.2-1.0.2` | `main` | 26.2 | 0.19.3 or newer | 0.156.0+26.2 or newer | 25 | Active |
-
-A branch marked Active still gets fixes. One marked Frozen builds and runs, but new features land
-only on the Active branches.
+| Minecraft | File suffix | Fabric Loader | Fabric API | Java |
+|---|---|---|---|---|
+| 26.2 | `+26.2` | 0.19.3 or newer | 0.160.0+26.2 or newer | 25 |
+| 26.1, 26.1.1, 26.1.2 | `+26.1.2` | 0.19.3 or newer | 0.155.3+26.1.2 or newer | 25 |
+| 1.21.11 | `+1.21.11` | 0.19.3 or newer | 0.141.6+1.21.11 or newer | 21 |
 
 ### Reading the table
 
 - **Fabric Loader** is the number the launcher shows in the profile name. Newer is always fine.
 - **Fabric API** must match the Minecraft version. The `+26.2` suffix is the Minecraft version it
-  was built for, so `0.156.0+26.2` will not load on 1.21.11.
-- **Java** is the minimum. Minecraft 26.2 already ships a Java 25 runtime, so the bundled runtime is
-  enough unless you run a server with your own JDK.
-- The mod never targets a snapshot. A row appears once the branch builds against a full release.
+  was built for, so `0.160.0+26.2` will not load on 1.21.11.
+- **Java** is the minimum. Minecraft ships a matching runtime, so the bundled one is enough unless
+  you run a server with your own JDK.
+- The mod never targets a snapshot. A row appears once the mod builds against a full release.
 
 ## Compatible mods
 
 None of these are required. The mod loads and plays exactly the same without them, it only unlocks
 the extra behaviour listed here when it finds one.
 
-| Mod | Version tested | Minecraft | What it adds | If it is missing |
-|---|---|---|---|---|
-| [Fabric API](https://modrinth.com/mod/fabric-api) | 0.156.0+26.2 | 26.2 | Required. Events, networking and the HUD hooks the mod is built on. | The mod will not load. |
-| [Mod Menu](https://modrinth.com/mod/modmenu) | 20.0.1 | 26.2 | A Config button in the Mods list that opens the [settings screen](/docs/configuration). | Edit `config/thirstwastaken2.json` by hand. |
-| [AppleSkin](https://modrinth.com/mod/appleskin) | 3.0.10+mc26.2 | 26.2 | A dithered thirst-exhaustion strip controlled by AppleSkin's HUD-underlay option. | The thirst bar renders normally without the strip. |
-| [Cloth Config](https://modrinth.com/mod/cloth-config) | 26.2.155 | 26.2 | AppleSkin's configuration screen inside Mod Menu. | AppleSkin still works, but its Config button is unavailable. |
+Versions tested are listed per Minecraft version, in the order 26.2, 26.1.x, 1.21.11.
+
+| Mod | Versions tested | What it adds | If it is missing |
+|---|---|---|---|
+| [Fabric API](https://modrinth.com/mod/fabric-api) | 0.160.0+26.2, 0.155.3+26.1.2, 0.141.6+1.21.11 | Required. Events, networking and the HUD hooks the mod is built on. | The mod will not load. |
+| [Mod Menu](https://modrinth.com/mod/modmenu) | 20.0.1, 18.0.0, 17.0.0 | A Config button in the Mods list that opens the [settings screen](/docs/configuration). | Edit `config/thirstwastaken2.json` by hand. |
+| [AppleSkin](https://modrinth.com/mod/appleskin) | 3.0.10+mc26.2, 3.0.10+mc26.1.2, 3.0.8+mc1.21.11 | A dithered thirst-exhaustion strip controlled by AppleSkin's HUD-underlay option. | The thirst bar renders normally without the strip. |
+| [Cloth Config](https://modrinth.com/mod/cloth-config) | 26.2.155, 26.1.154, 21.11.153 | AppleSkin's configuration screen inside Mod Menu. | AppleSkin still works, but its Config button is unavailable. |
 
 Anything not listed simply coexists. Food mods usually work without a patch: an item whose name
 contains a drink, soup or fruit keyword picks up hydration on its own, and the per-item values in
@@ -67,7 +66,7 @@ There is nothing to configure on the server.
 ## First run
 
 Start the game or the server once. The mod writes `config/thirstwastaken2.json` with its defaults and
-logs `ThirstWasTaken2 initialized for Minecraft 26.2`.
+logs `ThirstWasTaken2 initialized for Minecraft` followed by the version it was built for.
 
 Thirst is stored on the player, so existing worlds work. Everyone who has never been tracked before
 starts at full thirst.

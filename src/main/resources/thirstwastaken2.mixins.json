@@ -1,7 +1,7 @@
 {
   "required": true,
   "package": "com.thirstwastaken2.mixin",
-  "compatibilityLevel": "JAVA_25",
+  "compatibilityLevel": "${java}",
   "mixins": [
     "BottleItemMixin",
     "BucketItemMixin",

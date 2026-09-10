@@ -4,6 +4,7 @@ import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.data.ThirstManager;
 import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.item.WaterskinItem;
+import com.thirstwastaken2.platform.Vanilla;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
@@ -241,7 +242,7 @@ public final class WaterPurity {
             return NOT_A_CONTAINER;
         }
 
-        Identifier id = item.builtInRegistryHolder().key().identifier();
+        Identifier id = Vanilla.itemId(item);
         String namespace = id.getNamespace();
         String path = id.getPath();
 

@@ -15,6 +15,13 @@ everything except the HUD section.
 | `ThirstHud` | drawing the bar |
 | `config/ThirstConfigScreen` | the vanilla-styled options screen |
 | `compat/ModMenuIntegration` | the `modmenu` entrypoint |
+| `platform/ClientVanilla` | client vanilla calls whose shape differs between Minecraft versions |
+
+`ClientVanilla` is the client half of `com.thirstwastaken2.platform.Vanilla` and follows the same
+rules — plumbing only, one signature on every version. A Stonecutter `//?` branch anywhere else in
+this source set means a seam is missing from it. The HUD draw target is the exception that needs no
+branch: 26.1 renamed `GuiGraphics` to `GuiGraphicsExtractor` and left every drawing method this mod
+uses untouched, so `stonecutter.gradle.kts` renames the type back for older versions instead.
 
 ## HUD
 
@@ -58,6 +65,9 @@ Java field name.
 Doubles are edited as integer percentages (`percentSlider`, `PERCENT = 100`) because the vanilla
 slider is integer-only. Only scalars are exposed; maps and keyword patterns stay in the JSON, which
 the footer button opens with `Util.getPlatform().openPath`.
+
+Not every version of `OptionsList` takes a plain widget, so the footer button goes through
+`ClientVanilla.addFullWidthRow`.
 
 Mod Menu is `clientCompileOnly`. `ModMenuIntegration` is only ever class-loaded when Mod Menu itself
 resolves the entrypoint, so nothing else may reference it.

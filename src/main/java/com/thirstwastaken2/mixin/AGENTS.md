@@ -12,7 +12,9 @@ Vanilla hooks. Everything the mod cannot do through a Fabric API event lands her
 - Client-only mixins would need their own `thirstwastaken2.client.mixins.json`; there are none yet, so
   if you add one, wire the file into `fabric.mod.json` as well.
 - Keep the mixin thin: capture or redirect, then call into `com.thirstwastaken2.*`. Game logic does
-  not belong in this package.
+  not belong in this package. One line of body is the target.
+- A mixin is the one place outside `platform/` allowed to carry a Stonecutter `//?` branch, because
+  an `@Inject` signature tracks its target method across Minecraft versions.
 
 ## What is hooked
 
@@ -27,17 +29,18 @@ Vanilla hooks. Everything the mod cannot do through a Fabric API event lands her
 
 ## The fragile ones
 
-`BottleItemMixin` and `BucketItemMixin` share a two-step shape: a server-only `@Inject` at HEAD
-re-raycasts the player's view (`ClipContext.Fluid.SOURCE_ONLY`) and stores the sampled quality in a
-`@Unique` field, then a `@ModifyArg` stamps the resulting stack. They depend on an exact target descriptor, and the bucket one
-also on `ordinal = 1` of `ItemUtils#createFilledResult` — the first call is the empty-bucket branch.
-Both break on a vanilla refactor rather than misbehaving, which is the intent.
+`BottleItemMixin` and `BucketItemMixin` share a two-step shape, implemented in
+`com.thirstwastaken2.purity.FillCapture`: a server-only `@Inject` at HEAD re-raycasts the player's
+view (`ClipContext.Fluid.SOURCE_ONLY`) and stores the sampled quality, then a `@ModifyArg` stamps the
+resulting stack. They depend on an exact target descriptor, and the bucket one also on `ordinal = 1`
+of `ItemUtils#createFilledResult` — the first call is the empty-bucket branch. Both break on a
+vanilla refactor rather than misbehaving, which is the intent.
 
 `FoodDataMixin` uses `@Redirect` with `ordinal = 0` (saturation-driven regen) and `ordinal = 1`
 (hunger-driven regen). Redirecting means vanilla's `heal` is *not* called unless the mixin calls it, so
 every branch must either heal or refund exhaustion — dropping both would let hunger drain for free.
 
-`@Unique` fields on an item mixin live on the shared item singleton, not per stack. Bottle and bucket
-capture therefore use `ThreadLocal`: integrated-client prediction and the server may call the same
-item singleton from different threads. Values are removed at HEAD and immediately after stamping;
-do not let interaction state outlive one `use` call.
+`@Unique` fields on an item mixin live on the shared item singleton, not per stack. `FillCapture`
+therefore uses `ThreadLocal`: integrated-client prediction and the server may call the same item
+singleton from different threads. Values are removed at HEAD and immediately after stamping; do not
+let interaction state outlive one `use` call.

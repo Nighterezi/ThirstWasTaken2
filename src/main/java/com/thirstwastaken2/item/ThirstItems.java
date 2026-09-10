@@ -1,6 +1,7 @@
 package com.thirstwastaken2.item;
 
 import com.thirstwastaken2.ThirstWasTaken2;
+import com.thirstwastaken2.platform.Vanilla;
 import com.thirstwastaken2.purity.ThirstComponents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
@@ -13,7 +14,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.Consumables;
 import net.minecraft.world.item.component.CustomModelData;
-import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 
 import java.util.List;
 import java.util.function.Function;
@@ -46,7 +46,7 @@ public final class ThirstItems {
 
     public static void register() {
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, CREATIVE_TAB_KEY,
-                FabricCreativeModeTab.builder()
+                Vanilla.creativeTabBuilder()
                         .title(Component.translatable("itemGroup.thirstwastaken2"))
                         .icon(() -> new ItemStack(TERRACOTTA_WATER_BOWL))
                         .displayItems((parameters, entries) -> {

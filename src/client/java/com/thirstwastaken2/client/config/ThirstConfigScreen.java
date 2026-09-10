@@ -1,5 +1,6 @@
 package com.thirstwastaken2.client.config;
 
+import com.thirstwastaken2.client.platform.ClientVanilla;
 import com.thirstwastaken2.config.ThirstConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
@@ -91,7 +92,8 @@ public final class ThirstConfigScreen extends OptionsSubScreen {
         list.addSmall(
                 toggle("enable_keyword_matching", config.enableKeywordMatching,
                         value -> config.enableKeywordMatching = value));
-        list.addBig(Button.builder(Component.translatable("thirstwastaken2.config.open_file"),
+        ClientVanilla.addFullWidthRow(list, Button.builder(
+                        Component.translatable("thirstwastaken2.config.open_file"),
                         button -> Util.getPlatform().openPath(
                                 FabricLoader.getInstance().getConfigDir().resolve("thirstwastaken2.json")))
                 .build());

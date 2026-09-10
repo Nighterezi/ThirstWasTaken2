@@ -1,9 +1,14 @@
 package com.thirstwastaken2.tooltip;
 
-import com.thirstwastaken2.ThirstWasTaken2;
+import com.thirstwastaken2.api.ThirstApi;
+import com.thirstwastaken2.item.ThirstItems;
+import com.thirstwastaken2.item.WaterskinItem;
+import com.thirstwastaken2.platform.Vanilla;
+import com.thirstwastaken2.purity.WaterPurity;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FontDescription;
-import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
+
+import java.util.function.Consumer;
 
 /**
  * Renders item hydration as two droplet rows instead of numbers. Thirst uses filled droplets on the
@@ -15,9 +20,6 @@ import net.minecraft.resources.Identifier;
  * the whole tooltip pipeline unchanged in vanilla screens as well as REI, EMI and JEI.
  */
 public final class ThirstTooltip {
-    private static final FontDescription FONT =
-            new FontDescription.Resource(Identifier.fromNamespaceAndPath(ThirstWasTaken2.MOD_ID, "droplets"));
-
     /** One droplet holds two units, matching {@code ThirstHud}'s fill thresholds. */
     private static final int UNITS_PER_DROPLET = 2;
     /** Ten droplets is a full bar; anything beyond that is capped rather than wrapped. */
@@ -29,6 +31,32 @@ public final class ThirstTooltip {
     private static final char QUENCHED_HALF = '\uE007';
 
     private ThirstTooltip() { }
+
+    /**
+     * Appends every line the mod contributes to an item tooltip: waterskin fill, water purity and
+     * salinity, then the two droplet rows.
+     *
+     * <p>Called once per frame per hovered stack, so both lookups it makes are memoised.
+     */
+    public static void appendTo(ItemStack stack, Consumer<Component> tooltip) {
+        if (stack.is(ThirstItems.WATERSKIN)) {
+            int servings = WaterskinItem.servings(stack);
+            tooltip.accept(servings == 0
+                    ? Component.translatable("tooltip.thirstwastaken2.waterskin.empty")
+                    : Component.translatable("tooltip.thirstwastaken2.waterskin.servings",
+                            servings, WaterskinItem.CAPACITY));
+        }
+        if (WaterPurity.isWaterContainer(stack)) {
+            tooltip.accept(WaterPurity.tooltip(WaterPurity.get(stack)));
+            if (WaterPurity.isSalty(stack)) tooltip.accept(WaterPurity.salinityTooltip());
+        }
+        int[] hydration = ThirstApi.hydration(stack);
+        if (hydration == null) return;
+        Component thirst = thirst(hydration[0]);
+        Component quenched = quenched(hydration[1]);
+        if (thirst != null) tooltip.accept(thirst);
+        if (quenched != null) tooltip.accept(quenched);
+    }
 
     /** @return the filled thirst row, or {@code null} when the item restores no thirst. */
     public static Component thirst(int hydration) {
@@ -48,8 +76,7 @@ public final class ThirstTooltip {
         for (int i = 0; i < droplets; i++) {
             icons.append(fillOf(units, i) == UNITS_PER_DROPLET ? full : half);
         }
-        return Component.literal(icons.toString()).withStyle(style -> style
-                .withFont(FONT)
+        return Component.literal(icons.toString()).withStyle(style -> Vanilla.dropletFont(style)
                 // Bitmap glyphs keep their own palette; shadows would smear their 1px outlines.
                 .withColor(0xFFFFFF)
                 .withoutShadow());

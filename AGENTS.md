@@ -1,9 +1,9 @@
 # ThirstWasTaken2
 
 A Fabric fork of [Thirst Was Taken](https://github.com/ghen-git/Thirst-Mod) (originally Forge,
-Minecraft 1.19.2) for **Minecraft 26.2 / Fabric Loader 0.19.3 / Java 25**. It adds a survival thirst
-bar, drinking, and water purity to Minecraft and further extends the original mod. It started as a port
-and has since diverged, so upstream is a reference, not a spec.
+Minecraft 1.19.2) for **Minecraft 26.2, 26.1.x and 1.21.11** on **Fabric Loader 0.19.3**. It adds a
+survival thirst bar, drinking, and water purity to Minecraft and further extends the original mod. It
+started as a port and has since diverged, so upstream is a reference, not a spec.
 
 - Mod id and resource namespace: `thirstwastaken2`
 - Java package: `com.thirstwastaken2`
@@ -12,30 +12,56 @@ and has since diverged, so upstream is a reference, not a spec.
 
 ## Build and run
 
+One source tree produces one jar per Minecraft version. Every version is a Gradle subproject named
+after its entry in `settings.gradle.kts`: `26.2.x`, `26.1.x`, `1.21.11`.
+
+Build every version and collect the jars in `build/libs/`:
+
 ```bash
-./gradlew build
+./gradlew buildAndCollect
+```
+
+Build or run one version:
+
+```bash
+./gradlew ":26.1.x:build"
 ```
 
 ```bash
-./gradlew runServer
+./gradlew ":26.1.x:runServer"
 ```
 
 ```bash
-./gradlew runClient
+./gradlew ":26.1.x:runClient"
 ```
 
 `runServer` is the fastest smoke test: it applies every mixin, loads the datapack registries, then
-idles. A clean run prints
-`ThirstWasTaken2 initialized for Minecraft 26.2` and no exceptions.
+idles. A clean run prints `ThirstWasTaken2 initialized for Minecraft <version>` and no exceptions.
+Each version gets its own `run/<subproject>/` directory, because a world saved by one Minecraft
+version is not readable by another.
+
+Unqualified `./gradlew build` and `./gradlew runServer` still work; they act on the **active**
+version, which is whichever one the source tree is currently checked out for (`26.2.x` by default).
+Switch it with `./gradlew "Set active project to 1.21.11"` — that rewrites the versioned comments in
+`src/` in place, which is what makes the IDE resolve against that version. Run
+`./gradlew "Reset active project"` before committing.
 
 Gradle needs network access on the first run for `maven.modrinth` artifacts (Mod Menu, AppleSkin).
-Once cached, `--offline` works — except that `clientCompileOnly` on Mod Menu must already be cached.
+Once cached, `--offline` works — except that the client compile-only dependencies must already be
+cached.
 
 ## Stack and constraints
 
-- **Java 25**, **Minecraft 26.2**, **Fabric Loader 0.19.3**, **Fabric Loom 1.17-SNAPSHOT**.
-- **Gradle Kotlin DSL** (`build.gradle.kts`, `settings.gradle.kts`) with version catalog in
-  `gradle/libs.versions.toml`.
+- **Minecraft 26.2, 26.1.x and 1.21.11**, **Fabric Loader 0.19.3**, **Fabric Loom 1.17**. 26.1+ runs
+  on **Java 25**, 1.21.11 on **Java 21**; the build sets the toolchain and `--release` per version,
+  so do not use a language feature newer than Java 21.
+- **Multi-version via [Stonecutter](https://stonecutter.kikugie.dev)**. `settings.gradle.kts` lists
+  the versions, `stonecutter.properties.toml` holds every per-version value (dependency versions,
+  the `fabric.mod.json` range), `stonecutter.gradle.kts` is the controller, and `build.gradle.kts`
+  is shared by all of them. `dev.kikugie.loom-back-compat` picks the Loom variant each version
+  needs — 26.1 dropped obfuscation — and keeps `modImplementation` meaning the same thing on both.
+- **Gradle Kotlin DSL**. There is no version catalog: per-version values cannot live in one, so
+  they are all in `stonecutter.properties.toml`.
 - **Source sets are split** (`loom.splitEnvironmentSourceSets()`). Anything that touches
   `net.minecraft.client` belongs in `src/client/java`, never in `src/main/java`.
 - **Mixins live in `com.thirstwastaken2.mixin`**, are package-private, `abstract`, and prefix every
@@ -52,6 +78,56 @@ Once cached, `--offline` works — except that `clientCompileOnly` on Mod Menu m
 - Player thirst state is an **immutable record** (`ThirstData`) stored as a Fabric attachment. Mutate
   by deriving a new record and calling `ThirstManager.set`; only write when the value actually
   changed, because every write costs a sync packet.
+
+## Supporting several Minecraft versions
+
+The rule is that version differences stay in two places and nowhere else.
+
+**`platform/`** — `com.thirstwastaken2.platform.Vanilla` for common code and
+`com.thirstwastaken2.client.platform.ClientVanilla` for client code. Each is a thin wrapper over a
+vanilla call whose shape moved between versions, with the same signature on every version. Callers
+never learn which branch is live. Both have their own `AGENTS.md`.
+
+**`mixin/`** — an `@Inject` signature tracks its target method and cannot be abstracted away, so a
+mixin is allowed to fork. Its body still stays one line; the logic it calls lives in a normal class.
+
+Everything else — `data/`, `purity/`, `config/`, `api/`, `item/` — should compile unchanged on every
+version. A versioned comment appearing there means a seam is missing from `platform/`.
+
+Version-specific branches are Stonecutter comments. The disabled branch is the commented one, and
+which branch is commented is rewritten when the active version changes:
+
+```java
+//? if >=26.2 {
+return minecraft.gui.hud.isHidden();
+//?} else {
+/*return minecraft.options.hideGui;
+*///?}
+```
+
+A pure rename needs no branch at all. Register it once in `stonecutter.gradle.kts` and every file
+follows:
+
+```kotlin
+replacements {
+    string(current.parsed < "26.1") {
+        replace("GuiGraphicsExtractor", "GuiGraphics")
+    }
+}
+```
+
+### Adding a Minecraft version
+
+1. Add it to `stonecutter { create }` in `settings.gradle.kts` and add its matching block to
+   `stonecutter.properties.toml` — Fabric API, Mod Menu, AppleSkin, Cloth Config, and the
+   `mod.mc_compat` range. Mod Menu and Cloth Config resolve by version number; AppleSkin publishes
+   one version number for both its Fabric and NeoForge uploads, so it is pinned by Modrinth version
+   id or Maven resolves the wrong jar.
+2. Add it to the matrix in `.github/workflows/build.yml`.
+3. Run `./gradlew ":<version>:build"` and fix what the compiler reports, by extending `platform/`
+   rather than by branching at the call site.
+4. Smoke-test with `./gradlew ":<version>:runServer"`. The new `run/<version>/` directory needs its
+   own `eula.txt`.
 
 ## Architecture in one pass
 
@@ -117,6 +193,7 @@ Each area of the tree carries its own `AGENTS.md` with rules and conventions loc
 | Vanilla behaviour hooks & fragile injections | [.../mixin/AGENTS.md](src/main/java/com/thirstwastaken2/mixin/AGENTS.md) |
 | Water purity carriers, environmental sampling, cauldrons | [.../purity/AGENTS.md](src/main/java/com/thirstwastaken2/purity/AGENTS.md) |
 | Loot injection & optional-integration rules | [.../compat/AGENTS.md](src/main/java/com/thirstwastaken2/compat/AGENTS.md) |
+| Minecraft version differences | [.../platform/AGENTS.md](src/main/java/com/thirstwastaken2/platform/AGENTS.md) |
 | Client HUD element rendering & config screen contract | [src/client/java/com/thirstwastaken2/client/AGENTS.md](src/client/java/com/thirstwastaken2/client/AGENTS.md) |
 | Manifests, recipes, tags, models, fonts, lang keys | [src/main/resources/AGENTS.md](src/main/resources/AGENTS.md) |
 | End-user documentation site (VitePress) | [docs/AGENTS.md](docs/AGENTS.md) |
@@ -132,12 +209,15 @@ src/main/java/com/thirstwastaken2/      common (client + server)
   damage/ThirstDamageTypes.java        thirstwastaken2:dehydrate damage source
   data/ThirstData.java                 immutable player state + attachment type
   data/ThirstManager.java              tick loop, exhaustion maths, drink-by-hand
+  data/HealthRegen.java                whether a dehydrated player may still regenerate
   item/ThirstItems.java                bowl and waterskin registration + creative tab
   item/WaterskinItem.java              three-drink storage, consumption and inventory transfers
   purity/ThirstComponents.java         quality, salinity, purity and serving data components
   purity/WaterQuality.java             contamination score, salinity and tier thresholds
   purity/WaterPurity.java              environmental sampling, effects and container detection
   purity/WaterInteractions.java        bowl/waterskin filling, cauldron purity transfer
+  purity/FillCapture.java              sample-then-stamp shared by the bottle and bucket mixins
+  platform/Vanilla.java                vanilla calls that differ between Minecraft versions
   tooltip/ThirstTooltip.java           separate thirst/quenched tooltip rows (thirstwastaken2:droplets font)
   compat/LootIntegration.java          structure chests + Piglin barter water
   mixin/                               vanilla hooks
@@ -146,11 +226,17 @@ src/client/java/com/thirstwastaken2/client/
   ThirstWasTaken2Client.java            HUD element registration
   ThirstHud.java                       thirst bar rendering
   config/ThirstConfigScreen.java       vanilla-styled options screen
+  platform/ClientVanilla.java          client vanilla calls that differ between versions
   compat/AppleSkinIntegration.java     optional exhaustion-underlay setting bridge
   compat/ModMenuIntegration.java       modmenu entrypoint
 
+settings.gradle.kts                    the list of supported Minecraft versions
+stonecutter.properties.toml            every per-version value
+stonecutter.gradle.kts                 active version, swaps and renames
+build.gradle.kts                       one build script, shared by every version
+
 src/main/resources/
-  fabric.mod.json                      entrypoints (main, client, modmenu)
+  fabric.mod.json                      entrypoints (main, client, modmenu); templated per version
   thirstwastaken2.mixins.json           mixin registry
   assets/thirstwastaken2/               textures, models, lang (9 locales)
   assets/thirstwastaken2/font/          droplets.json: tooltip droplet glyphs (U+E000..U+E007)

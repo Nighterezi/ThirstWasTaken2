@@ -1,0 +1,104 @@
+name: Feature suggestion
+description: Suggest a mechanic, item, setting or mod integration.
+title: "[Suggestion] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Suggestions are welcome. The most persuasive ones describe the gap in play first and the
+        solution second, because that leaves room to solve the same problem a better way.
+
+        This mod began as a port of Thirst Was Taken and has since diverged, so how the original
+        behaved is useful context rather than a decision on its own.
+
+  - type: checkboxes
+    id: preliminary
+    attributes:
+      label: Before you suggest
+      options:
+        - label: I searched the existing issues and this has not been suggested already.
+          required: true
+        - label: I checked the documentation and the existing configuration options.
+          required: true
+        - label: I understand this may be declined, or reshaped to fit the rest of the mod.
+          required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: What this touches
+      options:
+        - Thirst and hydration mechanics
+        - Water purity and contamination
+        - Items, blocks or recipes
+        - HUD and tooltips
+        - Configuration
+        - Commands
+        - Compatibility with another mod
+        - Documentation
+        - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem or gap
+      description: >-
+        What does play feel like today, and where does it fall short? Describe the situation rather
+        than the feature.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you would like to happen
+      description: >-
+        Be concrete. Numbers, item names and specific interactions are far easier to evaluate than a
+        general direction.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+      description: >-
+        Including anything you already tried in the config file, and why it was not enough.
+
+  - type: dropdown
+    id: default
+    attributes:
+      label: Should this be on by default?
+      options:
+        - It should be the default behaviour
+        - It should be an option that is off by default
+        - It should be an option that is on by default
+        - Not sure
+    validations:
+      required: true
+
+  - type: input
+    id: minecraft
+    attributes:
+      label: Minecraft versions this matters for
+      description: Leave as All unless the suggestion only makes sense on a particular version.
+      value: All
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: >-
+        Other mods that do something similar, the upstream Thirst Was Taken behaviour, a wiki page,
+        or a mockup of what you have in mind.
+
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Would you like to help?
+      options:
+        - label: I am willing to open a pull request for this.
+        - label: I am willing to test a build that implements this.

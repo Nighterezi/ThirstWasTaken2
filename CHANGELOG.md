@@ -4,16 +4,25 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 
 ## [1.0.2] - 2026-09-10
 
+### Added
+
+- Support for Minecraft 26.1 and 1.21.11, alongside 26.2.
+
+### Changed
+
+- Redesigned the water droplet sprites used in the thirst HUD bar and hydration tooltips, replacing
+  the greenish sea-water palette with a crystal-clear spring water blue and crisp highlight glints.
+
 ### Removed
 
-- All Create support. The Sand Filter and its recipe are gone, and Builder's Tea no longer has
-  hydration values. The Sand Filter never worked, so nothing playable is lost.
+- All Create support. The Sand Filter and its recipe are gone. The Sand Filter never worked, so nothing playable is lost.
 
 ### Notes
 
 - Create support is planned to return in a future release.
-- No action is needed for existing worlds or config files. A config file that still lists
-  `create:builders_tea` keeps working, the id is simply no longer a default.
+- No action is needed for existing worlds or config files.
+- Each Minecraft version has its own download, named after it, for example
+  `ThirstWasTaken2-1.0.2+1.21.11.jar`.
 
 ## [1.0.1] - 2026-08-11
 

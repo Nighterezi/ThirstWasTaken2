@@ -4,6 +4,7 @@ import com.thirstwastaken2.api.ThirstApi;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.damage.ThirstDamageTypes;
 import com.thirstwastaken2.item.ThirstItems;
+import com.thirstwastaken2.platform.Vanilla;
 import com.thirstwastaken2.purity.WaterPurity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
@@ -13,7 +14,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -158,9 +158,7 @@ public final class ThirstManager {
      */
     private static float exhaustionModifier(Player player) {
         ThirstConfig config = ThirstConfig.get();
-        // WATER_EVAPORATES replaced DimensionType#ultraWarm; it still means "Nether-like".
-        boolean scorching = Boolean.TRUE.equals(player.level().environmentAttributes()
-                .getValue(EnvironmentAttributes.WATER_EVAPORATES, player.blockPosition()));
+        boolean scorching = Vanilla.waterEvaporates(player.level(), player.blockPosition());
         float modifier = scorching
                 ? (float) config.netherThirstDepletionModifier
                 : climateModifier(player, config);

@@ -1,7 +1,6 @@
 package com.thirstwastaken2.mixin;
 
-import com.thirstwastaken2.config.ThirstConfig;
-import com.thirstwastaken2.data.ThirstManager;
+import com.thirstwastaken2.data.HealthRegen;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.food.FoodData;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,34 +19,31 @@ abstract class FoodDataMixin {
 
     @Shadow public abstract float getSaturationLevel();
 
-    /** Lets a nearly-hydrated player still regenerate, just eight times slower. */
+    /** Heals skipped since the last one that was let through. */
     @Unique private int thirst$dehydratedHealTimer;
 
     @Redirect(method = "tick", at = @At(value = "INVOKE", ordinal = 0,
             target = "Lnet/minecraft/server/level/ServerPlayer;heal(F)V"))
     private void thirst$healWithSaturation(ServerPlayer player, float amount) {
-        int thirst = ThirstManager.get(player).thirst();
-        if (!ThirstConfig.get().dehydrationHaltsHealthRegen || thirst >= 20) {
+        if (!HealthRegen.blocksSaturationHeal(player)) {
             player.heal(amount);
             return;
         }
-
-        if (++thirst$dehydratedHealTimer >= 8 && thirst > 18) {
+        if (HealthRegen.allowsSlowHeal(player, ++thirst$dehydratedHealTimer)) {
             thirst$dehydratedHealTimer = 0;
             player.heal(amount);
             return;
         }
-
-        addExhaustion(-Math.min(getSaturationLevel(), 6.0F));
+        addExhaustion(-Math.min(getSaturationLevel(), HealthRegen.MAX_REFUND));
     }
 
     @Redirect(method = "tick", at = @At(value = "INVOKE", ordinal = 1,
             target = "Lnet/minecraft/server/level/ServerPlayer;heal(F)V"))
     private void thirst$healWithHunger(ServerPlayer player, float amount) {
-        if (!ThirstConfig.get().dehydrationHaltsHealthRegen || ThirstManager.get(player).thirst() > 18) {
-            player.heal(amount);
+        if (HealthRegen.blocksHungerHeal(player)) {
+            addExhaustion(-HealthRegen.MAX_REFUND);
         } else {
-            addExhaustion(-6.0F);
+            player.heal(amount);
         }
     }
 }
