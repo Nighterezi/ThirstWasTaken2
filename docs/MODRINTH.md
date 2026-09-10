@@ -61,15 +61,17 @@ Water can be purified in a furnace or on a campfire.
 
 ## Requirements
 
-| Component | Version |
-|---|---|
-| Minecraft | 26.2 |
-| Fabric Loader | 0.19.3 or newer |
-| Fabric API | Required |
-| Java | 25 |
-| Mod Menu | Optional, 20.0.1 tested |
-| AppleSkin | Optional, 3.0.10+mc26.2 tested |
-| Cloth Config | Optional, needed for AppleSkin's Mod Menu screen |
+There is one download per Minecraft version, named after it, for example
+`ThirstWasTaken2-1.0.2+1.21.11.jar`. Pick the one that matches the game.
+
+| Component | Minecraft 26.2 | Minecraft 26.1.x | Minecraft 1.21.11 |
+|---|---|---|---|
+| Java | 25 | 25 | 21 |
+| Fabric Loader | 0.19.3 or newer | 0.19.3 or newer | 0.19.3 or newer |
+| Fabric API | 0.160.0+26.2 | 0.155.3+26.1.2 | 0.141.6+1.21.11 |
+| Mod Menu | Optional, 20.0.1 tested | Optional, 18.0.0 tested | Optional, 17.0.0 tested |
+| AppleSkin | Optional, 3.0.10+mc26.2 tested | Optional, 3.0.10+mc26.1.2 tested | Optional, 3.0.8+mc1.21.11 tested |
+| Cloth Config | Optional, needed for AppleSkin's Mod Menu screen | Same | Same |
 
 Install ThirstWasTaken2 and Fabric API on both the client and server.
 
@@ -95,8 +97,8 @@ These commands require game master permission.
   return in a future release.
 - Jade does not currently display water purity.
 - Cold Sweat, Farmer's Respite, Brewin' and Chewin', Tough As Nails, Supplementaries and Botania do
-  not yet have compatible Minecraft 26.2 Fabric releases. Their items are already configured and
-  will be supported when compatible versions become available.
+  not yet have compatible Fabric releases on Minecraft 26.x. Their items are already configured and
+  start working as soon as those mods are available.
 
 ## Languages
 

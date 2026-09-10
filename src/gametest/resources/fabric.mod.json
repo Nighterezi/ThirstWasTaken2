@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "thirstwastaken2-gametest",
+  "version": "1.0.0",
+  "name": "ThirstWasTaken2 Game Tests",
+  "description": "Server-side gametests for ThirstWasTaken2. Development only, never published.",
+  "environment": "server",
+  "entrypoints": {
+    "fabric-gametest": [
+      "com.thirstwastaken2.gametest.WaterFillingGameTest",
+      "com.thirstwastaken2.gametest.WaterEffectsGameTest",
+      "com.thirstwastaken2.gametest.HealthRegenGameTest",
+      "com.thirstwastaken2.gametest.WaterskinGameTest",
+      "com.thirstwastaken2.gametest.TooltipGameTest",
+      "com.thirstwastaken2.gametest.PlayerStateGameTest",
+      "com.thirstwastaken2.gametest.CauldronGameTest",
+      "com.thirstwastaken2.gametest.EnvironmentGameTest",
+      "com.thirstwastaken2.gametest.CreativeTabGameTest"
+    ]
+  },
+  "depends": {
+    "thirstwastaken2": "*",
+    "fabric-gametest-api-v1": "*"
+  }
+}

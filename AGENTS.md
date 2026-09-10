@@ -35,6 +35,18 @@ Build or run one version:
 ./gradlew ":26.1.x:runClient"
 ```
 
+Run the automated in-game tests for one version:
+
+```bash
+./gradlew ":26.1.x:runGametest"
+```
+
+That is the check that actually proves behaviour. It replaces the dedicated server with Mojang's
+GameTest runner, needs no display and no accepted EULA, finishes in a few seconds, and fails the
+build on a failed assertion. CI runs it for every version. See
+[src/gametest/java/AGENTS.md](src/gametest/java/AGENTS.md) before adding to it, including what it
+deliberately does not cover.
+
 `runServer` is the fastest smoke test: it applies every mixin, loads the datapack registries, then
 idles. A clean run prints `ThirstWasTaken2 initialized for Minecraft <version>` and no exceptions.
 Each version gets its own `run/<subproject>/` directory, because a world saved by one Minecraft
@@ -194,6 +206,7 @@ Each area of the tree carries its own `AGENTS.md` with rules and conventions loc
 | Water purity carriers, environmental sampling, cauldrons | [.../purity/AGENTS.md](src/main/java/com/thirstwastaken2/purity/AGENTS.md) |
 | Loot injection & optional-integration rules | [.../compat/AGENTS.md](src/main/java/com/thirstwastaken2/compat/AGENTS.md) |
 | Minecraft version differences | [.../platform/AGENTS.md](src/main/java/com/thirstwastaken2/platform/AGENTS.md) |
+| Automated in-game tests | [src/gametest/java/AGENTS.md](src/gametest/java/AGENTS.md) |
 | Client HUD element rendering & config screen contract | [src/client/java/com/thirstwastaken2/client/AGENTS.md](src/client/java/com/thirstwastaken2/client/AGENTS.md) |
 | Manifests, recipes, tags, models, fonts, lang keys | [src/main/resources/AGENTS.md](src/main/resources/AGENTS.md) |
 | End-user documentation site (VitePress) | [docs/AGENTS.md](docs/AGENTS.md) |
@@ -234,6 +247,14 @@ settings.gradle.kts                    the list of supported Minecraft versions
 stonecutter.properties.toml            every per-version value
 stonecutter.gradle.kts                 active version, swaps and renames
 build.gradle.kts                       one build script, shared by every version
+
+src/gametest/java/com/thirstwastaken2/gametest/
+  TestFixtures.java                    water source, aimed player, readable assertions
+  WaterFillingGameTest.java            bottle and bucket filling, resampling
+  WaterEffectsGameTest.java            salt, dirty and purified water, drinking
+  HealthRegenGameTest.java             dehydration halting regen, and the food refund
+  WaterskinGameTest.java               mixing, capacity, emptying
+  TooltipGameTest.java                 the lines the mod adds to a tooltip
 
 src/main/resources/
   fabric.mod.json                      entrypoints (main, client, modmenu); templated per version

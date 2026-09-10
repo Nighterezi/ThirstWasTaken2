@@ -36,7 +36,7 @@ sit unused until the item exists. For anything else, see
 
 Everything the mod adds lives in its own creative tab.
 
-![The ThirstWasTaken2 creative tab, holding the clay bowl, terracotta bowl and terracotta water bowl](/screenshots/creative-tab.png)
+![The ThirstWasTaken2 creative tab, holding the clay bowl, terracotta bowl, terracotta water bowl and waterskin](/screenshots/creative-tab.png)
 
 The mod adds a bowl that survives being filled with water.
 

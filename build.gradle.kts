@@ -30,6 +30,10 @@ repositories {
     }
 }
 
+// Server-side gametests. They are their own source set and their own small mod, so none of it can
+// reach the published jar. See src/gametest/java/AGENTS.md.
+val gametest: SourceSet = sourceSets.create("gametest")
+
 loom {
     splitEnvironmentSourceSets()
 
@@ -38,14 +42,43 @@ loom {
             sourceSet(sourceSets.main.get())
             sourceSet(sourceSets["client"])
         }
+        register("thirstwastaken2-gametest") {
+            sourceSet(gametest)
+        }
+    }
+
+    runs {
+        register("gametest") {
+            server()
+            displayName = "Game Test"
+            sourceSet = gametest.name
+            // Turns the dedicated server into the GameTest runner. It skips the EULA prompt and the
+            // normal server startup, runs every @GameTest method headlessly, then exits non-zero if
+            // any of them failed. The runner only checks that the flag is set, not its value.
+            systemProperties.put("fabric-api.gametest", "true")
+            systemProperties.put(
+                "fabric-api.gametest.report-file",
+                layout.buildDirectory.file("gametest/report.xml").get().asFile.absolutePath,
+            )
+        }
     }
 
     runConfigs.all {
         // One run directory per version. Sharing a single one would hand a 26.2 world to a 1.21.11
-        // server, which fails on world format rather than on anything the mod did.
-        runDirectory = rootProject.file("run/${project.name}")
+        // server, which fails on world format rather than on anything the mod did. The gametest
+        // runner gets its own again, so a failed run cannot leave a broken world behind for
+        // runServer.
+        runDirectory = if (name == "gametest") {
+            rootProject.file("run/${project.name}/gametest")
+        } else {
+            rootProject.file("run/${project.name}")
+        }
     }
 }
+
+// The gametests compile and run against the mod itself and against everything the mod uses.
+gametest.compileClasspath += sourceSets.main.get().compileClasspath + sourceSets.main.get().output
+gametest.runtimeClasspath += sourceSets.main.get().runtimeClasspath + sourceSets.main.get().output
 
 /**
  * Adds a client-only mod dependency. Loom prefixes these configurations with `mod` where it remaps

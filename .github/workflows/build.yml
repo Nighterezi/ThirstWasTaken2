@@ -89,6 +89,19 @@ jobs:
       - name: Build
         run: ./gradlew ":${{ matrix.version }}:buildAndCollect" --stacktrace
 
+      # The GameTest runner replaces the dedicated server, skips the EULA prompt and needs no
+      # display, so it runs here exactly as it does locally. It exits non-zero when a test fails.
+      - name: Game tests
+        run: ./gradlew ":${{ matrix.version }}:runGametest" --stacktrace
+
+      - name: Upload game test report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: gametest-report-${{ matrix.version }}
+          path: versions/${{ matrix.version }}/build/gametest/report.xml
+          if-no-files-found: warn
+
       - name: Upload mod JAR
         uses: actions/upload-artifact@v7
         with:

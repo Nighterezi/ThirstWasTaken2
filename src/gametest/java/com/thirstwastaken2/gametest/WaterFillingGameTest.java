@@ -1,0 +1,138 @@
+package com.thirstwastaken2.gametest;
+
+import com.thirstwastaken2.purity.ThirstComponents;
+import com.thirstwastaken2.purity.WaterPurity;
+import net.fabricmc.fabric.api.gametest.v1.GameTest;
+import net.minecraft.core.BlockPos;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
+
+/**
+ * Filling a container from a water block has to stamp the quality of the water it was actually
+ * filled from, every time.
+ *
+ * <p>{@code BottleItemMixin} and {@code BucketItemMixin} do that in two steps: sample the water the
+ * player is aiming at as the vanilla method starts, then stamp the container vanilla hands back.
+ * Both steps share one capture in {@code FillCapture}, so the tests here care less about the value
+ * being right once than about it being right on the second fill as well.
+ */
+public final class WaterFillingGameTest {
+    /** Mud inside the sampling neighbourhood is the cheapest way to change the water's quality. */
+    private static final BlockPos MUD = new BlockPos(4, TestFixtures.WATER.getY(), 2);
+
+    @GameTest
+    public void sampledContaminationReflectsSurroundings(GameTestHelper helper) {
+        BlockPos water = TestFixtures.water(helper);
+
+        int clean = WaterPurity.sampleAt(helper.getLevel(), water).contamination();
+        helper.setBlock(MUD, Blocks.MUD);
+        int polluted = WaterPurity.sampleAt(helper.getLevel(), water).contamination();
+
+        TestFixtures.check(helper, polluted > clean,
+                "mud beside the water should raise contamination, got " + clean + " then " + polluted);
+        helper.succeed();
+    }
+
+    @GameTest
+    public void bottleFillStampsSampledQuality(GameTestHelper helper) {
+        BlockPos water = TestFixtures.water(helper);
+        ServerPlayer player = TestFixtures.playerAboveWater(helper);
+        int expected = WaterPurity.sampleAt(helper.getLevel(), water).contamination();
+
+        fill(player, Items.GLASS_BOTTLE);
+
+        ItemStack filled = TestFixtures.findSampledWater(player);
+        TestFixtures.check(helper, !filled.isEmpty(),
+                "using a glass bottle on water should produce a container carrying water quality");
+        TestFixtures.check(helper, filled.getOrDefault(ThirstComponents.WATER_CONTAMINATION, -1) == expected,
+                "bottle should carry the sampled contamination " + expected + ", got "
+                        + filled.get(ThirstComponents.WATER_CONTAMINATION));
+        helper.succeed();
+    }
+
+    @GameTest
+    public void bucketFillStampsSampledQuality(GameTestHelper helper) {
+        BlockPos water = TestFixtures.water(helper);
+        ServerPlayer player = TestFixtures.playerAboveWater(helper);
+        int expected = WaterPurity.sampleAt(helper.getLevel(), water).contamination();
+
+        fill(player, Items.BUCKET);
+
+        ItemStack filled = TestFixtures.findSampledWater(player);
+        TestFixtures.check(helper, !filled.isEmpty(),
+                "using a bucket on water should produce a water bucket carrying water quality");
+        TestFixtures.check(helper, filled.getOrDefault(ThirstComponents.WATER_CONTAMINATION, -1) == expected,
+                "bucket should carry the sampled contamination " + expected + ", got "
+                        + filled.get(ThirstComponents.WATER_CONTAMINATION));
+        helper.succeed();
+    }
+
+    /**
+     * The regression this suite exists for. A second fill must sample the water again rather than
+     * reuse whatever the first fill captured.
+     */
+    @GameTest
+    public void secondFillResamplesTheWater(GameTestHelper helper) {
+        BlockPos water = TestFixtures.water(helper);
+        ServerPlayer player = TestFixtures.playerAboveWater(helper);
+
+        fill(player, Items.GLASS_BOTTLE);
+        ItemStack first = TestFixtures.findSampledWater(player);
+        TestFixtures.check(helper, !first.isEmpty(), "the first fill should have produced a water bottle");
+        int before = first.getOrDefault(ThirstComponents.WATER_CONTAMINATION, -1);
+        // Take the bottle back out of the inventory so the second one is unambiguous.
+        first.setCount(0);
+
+        helper.setBlock(MUD, Blocks.MUD);
+        int expected = WaterPurity.sampleAt(helper.getLevel(), water).contamination();
+        TestFixtures.check(helper, expected > before,
+                "the fixture should have made the water dirtier, got " + before + " then " + expected);
+
+        fill(player, Items.GLASS_BOTTLE);
+        ItemStack second = TestFixtures.findSampledWater(player);
+        TestFixtures.check(helper, !second.isEmpty(), "the second fill should have produced a water bottle");
+        TestFixtures.check(helper,
+                second.getOrDefault(ThirstComponents.WATER_CONTAMINATION, -1) == expected,
+                "the second fill should resample the water and report " + expected + ", got "
+                        + second.get(ThirstComponents.WATER_CONTAMINATION));
+        helper.succeed();
+    }
+
+    /**
+     * A fill that never happens must not leave a sample behind for the next one. Using a filled
+     * bucket while aiming at water is the branch that captures a sample and then stamps nothing.
+     */
+    @GameTest
+    public void abandonedFillLeavesNoSampleBehind(GameTestHelper helper) {
+        TestFixtures.water(helper);
+        ServerPlayer player = TestFixtures.playerAboveWater(helper);
+
+        // A water bucket used on a water source places nothing and fills nothing.
+        fill(player, Items.WATER_BUCKET);
+        ItemStack leaked = TestFixtures.findSampledWater(player);
+        TestFixtures.check(helper, leaked.isEmpty() || leaked.getItem() == Items.WATER_BUCKET,
+                "using a water bucket should not have produced a freshly stamped container");
+
+        // Now aim at nothing and fill: with no water in reach there is nothing to stamp, so a stale
+        // sample from the previous interaction would show up here.
+        player.snapTo(player.getX(), player.getY(), player.getZ(), 0.0F, -90.0F);
+        player.getInventory().clearContent();
+        fill(player, Items.GLASS_BOTTLE);
+
+        ItemStack stale = TestFixtures.findSampledWater(player);
+        TestFixtures.check(helper, stale.isEmpty(),
+                "filling with no water in reach must not stamp a quality, got " + stale);
+        helper.succeed();
+    }
+
+    /** Runs the real server-side right-click path so the mixins see exactly what vanilla sees. */
+    private static void fill(ServerPlayer player, net.minecraft.world.item.Item item) {
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(item));
+        player.gameMode.useItem(player, player.level(), player.getItemInHand(InteractionHand.MAIN_HAND),
+                InteractionHand.MAIN_HAND);
+    }
+}

@@ -10,8 +10,10 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 
 ### Changed
 
-- Redesigned the water droplet sprites used in the thirst HUD bar and hydration tooltips, replacing
-  the greenish sea-water palette with a crystal-clear spring water blue and crisp highlight glints.
+- Redesigned water droplet sprites on the thirst HUD and hydration tooltips.
+- Redesigned waterskin sprites across all filling stages.
+- A filled terracotta water bowl no longer stacks, matching water bottles and buckets. One bowl is
+  one drink, so the waterskin and the three it holds are worth carrying again.
 
 ### Removed
 
