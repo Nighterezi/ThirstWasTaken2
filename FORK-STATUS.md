@@ -2,7 +2,8 @@
 
 ThirstWasTaken2 is a fork of [Thirst Was Taken](https://github.com/ghen-git/Thirst-Mod) by
 [ghen](https://github.com/ghen-git), originally a Forge mod for Minecraft 1.19.2. It was rebuilt for
-Fabric on Minecraft 26.2, then improved and changed. This page lists what carried over, what the fork
+Fabric on Minecraft 26.2, then improved and changed. It is published on
+[Modrinth](https://modrinth.com/mod/thirst-was-taken-2). This page lists what carried over, what the fork
 changes, and what is still missing.
 
 ## Carried over from the original
@@ -88,4 +89,4 @@ These need mods that have no Minecraft 26.2 Fabric release yet. Their items are 
 
 ---
 
-Developers: see [CODEMAP.md](CODEMAP.md) and [CLAUDE.md](CLAUDE.md).
+Developers: see [AGENTS.md](AGENTS.md).

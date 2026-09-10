@@ -1,8 +1,10 @@
-# Installation
+# Installation
 
 ## Download
 
-Open the latest green run of the
+Download the mod from **[Modrinth](https://modrinth.com/mod/thirst-was-taken-2)** (recommended).
+
+Alternatively, open the latest green run of the
 [build workflow](https://github.com/Nighterezi/ThirstWasTaken2/actions/workflows/build.yml) and
 take `ThirstWasTaken2-<version>.jar` from its artifacts. Skip the `-sources` jar, it is for
 developers. There is no installer, the jar is the whole mod.

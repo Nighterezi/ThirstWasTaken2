@@ -1,7 +1,7 @@
 # src/main/java — common code
 
 Runs on both sides but **must not reference `net.minecraft.client`**. Anything client-only belongs in
-`src/client/java` (see its own CLAUDE.md). Gameplay here is server-authoritative: the server owns
+`src/client/java` (see its own AGENTS.md). Gameplay here is server-authoritative: the server owns
 thirst, and the client only receives it through the attachment sync.
 
 ## Where to change what
@@ -13,9 +13,9 @@ thirst, and the client only receives it through the attachment sync.
 | The state record itself (thirst, quenched, exhaustion) | `data/ThirstData` |
 | A new config key | `config/ThirstConfig` (field + `sanitize()`), then the client config screen |
 | Bowls, waterskin, creative tab | `item/` |
-| Anything about water cleanliness | `purity/` (has its own CLAUDE.md) |
-| A vanilla behaviour hook | `mixin/` (has its own CLAUDE.md) |
-| Loot, Create Fly | `compat/` (has its own CLAUDE.md) |
+| Anything about water cleanliness | `purity/` (has its own AGENTS.md) |
+| A vanilla behaviour hook | `mixin/` (has its own AGENTS.md) |
+| Loot, Create Fly | `compat/` (has its own AGENTS.md) |
 | The thirst and quenched droplet rows on tooltips | `tooltip/ThirstTooltip` |
 | `/thirst` | `command/ThirstCommands` |
 

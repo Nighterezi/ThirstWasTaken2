@@ -4,6 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/Nighterezi/ThirstWasTaken2/actions/workflows/build.yml"><img src="https://github.com/Nighterezi/ThirstWasTaken2/actions/workflows/build.yml/badge.svg" alt="Build status"></a>
+  <a href="https://modrinth.com/mod/thirst-was-taken-2"><img src="https://img.shields.io/badge/Modrinth-thirst--was--taken--2-00AF5C?logo=modrinth&logoColor=white" alt="Modrinth"></a>
   <img src="https://img.shields.io/badge/Minecraft-26.2-62B47A" alt="Minecraft 26.2">
   <img src="https://img.shields.io/badge/Loader-Fabric-DBD0B4" alt="Fabric">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT license"></a>
@@ -14,6 +15,7 @@ ThirstWasTaken2 is a fork of the original
 [**ghen**](https://github.com/ghen-git). It adds a survival thirst bar, drinking, and water purity to
 Minecraft and further extends the original mod.
 
+[Modrinth](https://modrinth.com/mod/thirst-was-taken-2) ·
 [Documentation](https://nighterezi.github.io/ThirstWasTaken2/) ·
 [Fork changes](FORK-STATUS.md) · [Changelog](CHANGELOG.md)
 
@@ -48,7 +50,7 @@ Minecraft and further extends the original mod.
 | AppleSkin | Optional, 3.0.10+mc26.2 tested |
 | Cloth Config | Optional, needed for AppleSkin's Mod Menu screen |
 
-Install ThirstWasTaken2 and Fabric API on both the client and server. Put the downloaded JAR in the
+Download ThirstWasTaken2 from [Modrinth](https://modrinth.com/mod/thirst-was-taken-2) and install it along with Fabric API on both the client and server. Put the downloaded JAR in the
 `mods` folder.
 
 See the [installation guide](https://nighterezi.github.io/ThirstWasTaken2/docs/installation) for

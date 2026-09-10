@@ -1,7 +1,7 @@
 # src/main/resources
 
 Assets and datapack files for the `thirstwastaken2` namespace, plus the two manifests. This file is
-excluded from the built jar by `processResources` in `build.gradle`; keep that exclude if you add
+excluded from the built jar by `processResources` in `build.gradle.kts`; keep that exclude if you add
 more notes here.
 
 ```
@@ -100,4 +100,4 @@ Key families, and who reads them:
 | `death.attack.dehydrate*` | the `dehydrate` damage type's `message_id` |
 
 Player-facing wording in `vi_vn.json` is the source of truth for the Vietnamese docs site, so keep the
-two in step (see `docs/CLAUDE.md`).
+two in step (see `docs/AGENTS.md`).

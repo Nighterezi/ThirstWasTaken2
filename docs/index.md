@@ -12,8 +12,8 @@ hero:
       text: Get Started
       link: /docs/
     - theme: alt
-      text: Download the JAR
-      link: https://github.com/Nighterezi/ThirstWasTaken2/actions/workflows/build.yml
+      text: Download on Modrinth
+      link: https://modrinth.com/mod/thirst-was-taken-2
       target: _blank
       rel: external
     - theme: alt

@@ -34,7 +34,7 @@ Two gates, both required:
 
 `CreateFlyIntegration.isAvailable()` runs both. **Nothing in this package may be referenced unless it
 returned true** — that includes touching `CreateFlyIntegration.sandFilter()` from elsewhere. The
-Create Fly artifact is `compileOnly` in `build.gradle`, so a stray reference from common code compiles
+Create Fly artifact is `compileOnly` in `build.gradle.kts`, so a stray reference from common code compiles
 and then crashes at runtime for everyone without Create installed.
 
 Registration adds the block, its `BlockItem`, the block entity type and a creative-tab entry via

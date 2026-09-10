@@ -12,8 +12,8 @@ hero:
       text: Bắt đầu
       link: /vi/docs/
     - theme: alt
-      text: Tải file JAR
-      link: https://github.com/Nighterezi/ThirstWasTaken2/actions/workflows/build.yml
+      text: Tải về từ Modrinth
+      link: https://modrinth.com/mod/thirst-was-taken-2
       target: _blank
       rel: external
     - theme: alt

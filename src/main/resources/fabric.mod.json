@@ -14,7 +14,8 @@
   "contact": {
     "homepage": "https://github.com/Nighterezi/ThirstWasTaken2",
     "sources": "https://github.com/Nighterezi/ThirstWasTaken2",
-    "issues": "https://github.com/Nighterezi/ThirstWasTaken2/issues"
+    "issues": "https://github.com/Nighterezi/ThirstWasTaken2/issues",
+    "modrinth": "https://modrinth.com/mod/thirst-was-taken-2"
   },
   "license": "MIT",
   "icon": "assets/thirstwastaken2/icon.png",

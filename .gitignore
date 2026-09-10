@@ -5,3 +5,6 @@ out/
 *.iml
 .idea/
 tools/
+
+# Local agent workspace
+.claude/

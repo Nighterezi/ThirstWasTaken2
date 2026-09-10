@@ -1,8 +1,10 @@
-# Cài đặt
+# Cài đặt
 
 ## Tải về
 
-Mở lần chạy thành công gần nhất của
+Tải mod trực tiếp từ **[Modrinth](https://modrinth.com/mod/thirst-was-taken-2)** (khuyên dùng).
+
+Ngoài ra, bạn cũng có thể mở lần chạy thành công gần nhất của
 [workflow build](https://github.com/Nighterezi/ThirstWasTaken2/actions/workflows/build.yml) rồi
 lấy `ThirstWasTaken2-<phiên bản>.jar` trong phần artifacts. Bỏ qua file `-sources`, đó là bản
 dành cho lập trình viên. Không có trình cài đặt, file jar chính là toàn bộ mod.
