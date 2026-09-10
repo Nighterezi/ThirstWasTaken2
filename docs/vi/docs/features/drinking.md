@@ -26,8 +26,8 @@ phí, nó chuyển thành dự trữ. Nước thuần tuân theo cách hoạt đ
 dùng chai nước, bát nước hay túi da khi thanh khát đã đầy. Chỉ cần thiếu một điểm là có thể uống, và
 phần hồi dư vẫn chuyển thành đã khát. Quy tắc này không chặn thuốc hay thức ăn có công dụng khác.
 
-Hàng chục vật phẩm của Farmer's Delight, Farmer's Respite, Brewin' and Chewin', Collector's Reap,
-Tough As Nails và Create cũng đã có sẵn giá trị. Không mod nào trong số đó là bắt buộc, các giá trị
+Hàng chục vật phẩm của Farmer's Delight, Farmer's Respite, Brewin' and Chewin', Collector's Reap và
+Tough As Nails cũng đã có sẵn giá trị. Không mod nào trong số đó là bắt buộc, các giá trị
 chỉ nằm im cho tới khi vật phẩm tồn tại. Với những thứ khác, xem
 [dò theo từ khóa](/vi/docs/configuration#enablekeywordmatching).
 

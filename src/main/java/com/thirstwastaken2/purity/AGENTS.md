@@ -36,9 +36,9 @@ The `+1` offset is the single most common thing to get wrong: `BLOCK_PURITY` ran
 - **`INFO` caches forever.** Only put facts in it that cannot change at runtime. Config-dependent
   purity is stored as the sentinel `PURITY_FROM_CONFIG` (`-1`) and resolved on each call.
 - **Optional mod support is by registry id only.** `resolve` matches namespaces
-  (`toughasnails`, `farmersdelight`, `collectorsreap`, `farmersrespite`, `brewinandchewin`, plus
-  `create:builders_tea`) as strings — no class is ever referenced, so none of those mods is a
-  dependency. Add support by extending `resolve`, not by importing anything.
+  (`toughasnails`, `farmersdelight`, `collectorsreap`, `farmersrespite`, `brewinandchewin`) as
+  strings — no class is ever referenced, so none of those mods is a dependency. Add support by
+  extending `resolve`, not by importing anything.
 - **One roll drives both effects.** `applyEffects` rolls once and compares it against
   `nauseaChance[purity]` and `poisonChance[purity]`, matching the original mod; it returns whether
   hydration should still be granted (`quenchWhenDebuffed`).

@@ -263,8 +263,7 @@ public final class WaterPurity {
             boolean container = path.equals("pomegranate_black_tea") || path.equals("lime_green_tea");
             return new ItemInfo(container, false, PURITY_FROM_CONFIG);
         }
-        if (namespace.equals("farmersrespite") || namespace.equals("brewinandchewin")
-                || (namespace.equals("create") && path.equals("builders_tea"))) {
+        if (namespace.equals("farmersrespite") || namespace.equals("brewinandchewin")) {
             return new ItemInfo(true, false, PURITY_FROM_CONFIG);
         }
         return NOT_A_CONTAINER;

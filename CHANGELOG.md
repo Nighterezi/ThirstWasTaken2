@@ -2,6 +2,19 @@
 
 All notable changes to ThirstWasTaken2 are documented in this file.
 
+## [1.0.2] - 2026-09-10
+
+### Removed
+
+- All Create support. The Sand Filter and its recipe are gone, and Builder's Tea no longer has
+  hydration values. The Sand Filter never worked, so nothing playable is lost.
+
+### Notes
+
+- Create support is planned to return in a future release.
+- No action is needed for existing worlds or config files. A config file that still lists
+  `create:builders_tea` keeps working, the id is simply no longer a default.
+
 ## [1.0.1] - 2026-08-11
 
 ### Added

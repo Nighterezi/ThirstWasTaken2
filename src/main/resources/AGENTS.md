@@ -9,15 +9,13 @@ fabric.mod.json              entrypoints (main, client, modmenu), deps, mixin co
 thirstwastaken2.mixins.json  every mixin class must be listed here
 assets/thirstwastaken2/
   items/                     item model *definitions* (26.2 style: range_dispatch, select, …)
-  models/item|block/         the actual models the definitions point at
-  blockstates/               sand_filter only
-  textures/                  item, block, gui and font sheets
+  models/item/               the actual models the definitions point at
+  textures/                  item, gui and font sheets
   font/droplets.json         bitmap font for the tooltip droplet rows
   lang/                      9 locales
 data/thirstwastaken2/
-  recipe/                    18 purify recipes + 4 crafting/smelting + the Create-gated one
+  recipe/                    18 purify recipes + 4 crafting/smelting
   damage_type/dehydrate.json the dehydration damage type
-  loot_table/blocks/         sand_filter drop
 data/minecraft/tags/         additions to vanilla tags
 ```
 
@@ -45,15 +43,10 @@ Purity 3 has no recipe because it is already clean.
 - Changing the purity table means editing all 18 files consistently, and the recipes carry it
   independently of `WaterPurity` — the Java side has no idea these exist.
 
-`compat_create_sand_filter.json` is gated by `"fabric:load_conditions"` with
-`fabric:all_mods_loaded: ["create"]`, so it simply never loads without Create. That is separate from
-`CreateFlyIntegration.isAvailable()`, which gates the block itself.
-
 ## Tags
 
-Both entries in `data/minecraft/tags/` are `"required": false` on purpose: `bypasses_armor` refers to
-the mod's own damage type and `mineable/pickaxe` to the Create-gated sand filter, which does not exist
-in most installs.
+`data/minecraft/tags/damage_type/bypasses_armor.json` is `"required": false` on purpose: it refers to
+the mod's own damage type.
 
 ## Item models
 

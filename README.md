@@ -74,7 +74,8 @@ These commands require game master permission.
 
 ## Known limitations
 
-- The Create Sand Filter is disabled because the Create Fly integration is currently broken.
+- Create is not supported in this release. The Sand Filter and Builder's Tea were removed and will
+  return in a future release.
 - Jade does not currently display water purity.
 - Cold Sweat, Farmer's Respite, Brewin' and Chewin', Tough As Nails, Supplementaries and Botania do
   not yet have compatible Minecraft 26.2 Fabric releases.

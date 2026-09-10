@@ -15,12 +15,12 @@ Every Minecraft version the mod supports has its own branch, and each branch has
 numbering. A release is named `<minecraft>-<mod>`, for example `26.2-1.0.0`.
 
 That means the highest number is not always the newest build. If the 1.21.11 branch gets a fix that
-the 26.2 branch already had, it ships as `1.21.11-1.0.2` while 26.2 is still on `26.2-1.0.1`. Read
+the 26.2 branch already had, it ships as `1.21.11-1.0.3` while 26.2 is still on `26.2-1.0.2`. Read
 the Minecraft column first, then take the highest release in that row.
 
 | Release | Branch | Minecraft | Fabric Loader | Fabric API | Java | Status |
 |---|---|---|---|---|---|---|
-| `26.2-1.0.1` | `main` | 26.2 | 0.19.3 or newer | 0.156.0+26.2 or newer | 25 | Active |
+| `26.2-1.0.2` | `main` | 26.2 | 0.19.3 or newer | 0.156.0+26.2 or newer | 25 | Active |
 
 A branch marked Active still gets fixes. One marked Frozen builds and runs, but new features land
 only on the Active branches.
@@ -45,12 +45,6 @@ the extra behaviour listed here when it finds one.
 | [Mod Menu](https://modrinth.com/mod/modmenu) | 20.0.1 | 26.2 | A Config button in the Mods list that opens the [settings screen](/docs/configuration). | Edit `config/thirstwastaken2.json` by hand. |
 | [AppleSkin](https://modrinth.com/mod/appleskin) | 3.0.10+mc26.2 | 26.2 | A dithered thirst-exhaustion strip controlled by AppleSkin's HUD-underlay option. | The thirst bar renders normally without the strip. |
 | [Cloth Config](https://modrinth.com/mod/cloth-config) | 26.2.155 | 26.2 | AppleSkin's configuration screen inside Mod Menu. | AppleSkin still works, but its Config button is unavailable. |
-
-::: warning Create Fly is not supported yet
-The Sand Filter is broken on this release and the Create Fly integration is off. Installing Create
-changes nothing: the block cannot be crafted and bulk purification is unavailable. Support is planned
-for a later release.
-:::
 
 Anything not listed simply coexists. Food mods usually work without a patch: an item whose name
 contains a drink, soup or fruit keyword picks up hydration on its own, and the per-item values in

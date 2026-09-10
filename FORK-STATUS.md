@@ -72,7 +72,8 @@ it adds a dithered thirst-exhaustion strip that follows AppleSkin's exhaustion-u
 
 ## Not available yet
 
-- **The Create Sand Filter.** The Create Fly integration is broken and is turned off for now, so the block cannot be crafted and bulk purification is unavailable. It will come back in a later release.
+- **Create.** Support was removed in this release: the Sand Filter never worked, and Builder's Tea
+  went with it. Create will be supported again in a future release.
 - **Jade** does not show water purity.
 
 These need mods that have no Minecraft 26.2 Fabric release yet. Their items are already configured, so they will start working as soon as those mods update.

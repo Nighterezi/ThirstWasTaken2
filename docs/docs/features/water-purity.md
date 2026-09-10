@@ -37,7 +37,7 @@ has no sampled quality, such as an unknown modded drink, still uses `defaultPuri
 
 Salinity is separate from cleanliness. Ocean water can look acceptable while still being unsafe to
 drink. A salty drink restores no thirst, adds thirst exhaustion and causes five seconds of Nausea.
-Furnaces, campfires and sand filters do not remove salt.
+Furnaces and campfires do not remove salt.
 
 ## Mixing and cauldrons
 
@@ -74,13 +74,3 @@ Put a fresh water bottle, terracotta water bowl or water bucket in a furnace or 
 
 A furnace takes ten seconds and a campfire takes thirty. Dirty water needs two passes to become
 purified. Salty containers are rejected instead of being silently desalinated.
-
-### Sand filter
-
-::: warning Not available yet
-The Sand Filter's Create Fly integration is still disabled. The behavior below applies when that
-integration returns.
-:::
-
-The filter improves fresh or salty water by one grade but preserves salinity. It cannot turn ocean
-water into drinking water.

@@ -36,8 +36,8 @@ khác chưa mang mẫu chất lượng vẫn sử dụng `defaultPurity`.
 ## Nước mặn
 
 Độ mặn tách biệt với độ sạch. Nước biển có thể trông sạch nhưng vẫn không uống được. Uống nước mặn
-không hồi độ khát, làm tăng exhaustion của thanh khát và gây Buồn nôn trong năm giây. Lò nung, lửa
-trại và bộ lọc cát không loại bỏ muối.
+không hồi độ khát, làm tăng exhaustion của thanh khát và gây Buồn nôn trong năm giây. Lò nung và lửa
+trại không loại bỏ muối.
 
 ## Trộn nước và vạc
 
@@ -74,13 +74,3 @@ Bỏ chai nước ngọt, bát đất nung đựng nước hoặc xô nước v�
 
 Lò nung mất mười giây và lửa trại mất ba mươi giây. Nước Bẩn cần qua hai lượt để thành Đã tinh lọc.
 Vật chứa nước mặn không vào được công thức, thay vì bị khử mặn ngoài ý muốn.
-
-### Bộ lọc cát
-
-::: warning Chưa dùng được
-Phần tích hợp Create Fly của Bộ lọc cát vẫn đang bị tắt. Mô tả dưới đây áp dụng khi tích hợp này quay
-lại.
-:::
-
-Bộ lọc cải thiện nước ngọt hoặc nước mặn thêm một mức nhưng vẫn giữ độ mặn. Nó không thể biến nước
-biển thành nước uống.

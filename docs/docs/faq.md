@@ -33,9 +33,9 @@ Its id is not in the lists. Add it to `drinks` in the config file, or switch on
 
 ## Is Create required?
 
-No, and it does nothing right now. The Create Fly integration is broken and turned off, so the Sand
-Filter cannot be crafted until a later release. Mod Menu only adds the settings button, and nothing
-else here needs another mod.
+No, and Create is not supported in this release. The Sand Filter and Builder's Tea were both
+removed, and support will return in a future release. Mod Menu only adds the settings button, and
+nothing else here needs another mod.
 
 ## Does it work on Peaceful?
 

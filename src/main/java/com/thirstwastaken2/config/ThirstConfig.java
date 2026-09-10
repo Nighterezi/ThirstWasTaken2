@@ -175,7 +175,7 @@ public final class ThirstConfig {
         put(values, 4, 5, "thirstwastaken2:terracotta_water_bowl");
         put(values, 4, 5, "thirstwastaken2:waterskin");
         put(values, 10, 14, "farmersrespite:green_tea", "farmersrespite:yellow_tea", "farmersrespite:black_tea");
-        put(values, 12, 22, "farmersrespite:rose_hip_tea", "farmersrespite:dandelion_tea", "create:builders_tea");
+        put(values, 12, 22, "farmersrespite:rose_hip_tea", "farmersrespite:dandelion_tea");
         put(values, 6, 11, "farmersrespite:coffee");
         put(values, 8, 13, "farmersdelight:apple_cider", "farmersdelight:melon_juice");
         put(values, 10, 14, "brewinandchewin:beer", "brewinandchewin:vodka", "brewinandchewin:rice_wine", "brewinandchewin:mead", "brewinandchewin:egg_grog", "brewinandchewin:glittering_grenadine");

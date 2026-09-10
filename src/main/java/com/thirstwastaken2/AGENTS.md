@@ -15,7 +15,7 @@ thirst, and the client only receives it through the attachment sync.
 | Bowls, waterskin, creative tab | `item/` |
 | Anything about water cleanliness | `purity/` (has its own AGENTS.md) |
 | A vanilla behaviour hook | `mixin/` (has its own AGENTS.md) |
-| Loot, Create Fly | `compat/` (has its own AGENTS.md) |
+| Loot, optional mod integrations | `compat/` (has its own AGENTS.md) |
 | The thirst and quenched droplet rows on tooltips | `tooltip/ThirstTooltip` |
 | `/thirst` | `command/ThirstCommands` |
 
@@ -23,7 +23,7 @@ thirst, and the client only receives it through the attachment sync.
 
 `ThirstWasTaken2.onInitialize` is the only entry point, and the order matters:
 `ThirstConfig.load()` → `ThirstData.register()` → `ThirstComponents.register()` →
-`ThirstItems.register()` → `LootIntegration.register()` → optional Create Fly → events.
+`ThirstItems.register()` → `LootIntegration.register()` → events.
 
 `ThirstItems` static fields reference `ThirstComponents`, and `WaterPurity.resolve` references
 `ThirstItems`, so registration cannot be reordered without checking those class-init chains.

@@ -9,9 +9,6 @@ and has since diverged, so upstream is a reference, not a spec.
 - Java package: `com.thirstwastaken2`
 - Upstream reference source is expected at `../Thirst-Mod` when comparing behaviour.
 - Published on [Modrinth](https://modrinth.com/mod/thirst-was-taken-2).
-- The Create Fly integration is **broken and documented as unsupported**. The code is still present
-  and still gated behind `CreateFlyIntegration.isAvailable()`; the docs say it is off. Re-enabling it
-  means fixing the integration and reverting those doc notes together.
 
 ## Build and run
 
@@ -27,11 +24,11 @@ and has since diverged, so upstream is a reference, not a spec.
 ./gradlew runClient
 ```
 
-`runServer` is the fastest smoke test: it applies every mixin, loads the datapack registries and the
-conditional Create recipe, then idles. A clean run prints
+`runServer` is the fastest smoke test: it applies every mixin, loads the datapack registries, then
+idles. A clean run prints
 `ThirstWasTaken2 initialized for Minecraft 26.2` and no exceptions.
 
-Gradle needs network access on the first run for `maven.modrinth` artifacts (Create Fly, Mod Menu).
+Gradle needs network access on the first run for `maven.modrinth` artifacts (Mod Menu, AppleSkin).
 Once cached, `--offline` works — except that `clientCompileOnly` on Mod Menu must already be cached.
 
 ## Stack and constraints
@@ -50,9 +47,8 @@ Once cached, `--offline` works — except that `clientCompileOnly` on Mod Menu m
   Never do registry-name string building or regex compilation on a per-call path; the tooltip
   renderer calls into both once per frame.
 - **Optional mod integrations are soft**. Never add a hard dependency: gate on
-  `FabricLoader.isModLoaded` plus, for Create Fly, a marker-class probe
-  (`CreateFlyIntegration.isAvailable()`), and keep integration classes out of the load path
-  otherwise.
+  `FabricLoader.isModLoaded`, plus a marker-class probe when the integration extends a foreign class,
+  and keep integration classes out of the load path otherwise.
 - Player thirst state is an **immutable record** (`ThirstData`) stored as a Fabric attachment. Mutate
   by deriving a new record and calling `ThirstManager.set`; only write when the value actually
   changed, because every write costs a sync packet.
@@ -120,7 +116,7 @@ Each area of the tree carries its own `AGENTS.md` with rules and conventions loc
 | Common code: init order, state invariants, caching rules | [src/main/java/com/thirstwastaken2/AGENTS.md](src/main/java/com/thirstwastaken2/AGENTS.md) |
 | Vanilla behaviour hooks & fragile injections | [.../mixin/AGENTS.md](src/main/java/com/thirstwastaken2/mixin/AGENTS.md) |
 | Water purity carriers, environmental sampling, cauldrons | [.../purity/AGENTS.md](src/main/java/com/thirstwastaken2/purity/AGENTS.md) |
-| Loot injection & gated Create Fly integration | [.../compat/AGENTS.md](src/main/java/com/thirstwastaken2/compat/AGENTS.md) |
+| Loot injection & optional-integration rules | [.../compat/AGENTS.md](src/main/java/com/thirstwastaken2/compat/AGENTS.md) |
 | Client HUD element rendering & config screen contract | [src/client/java/com/thirstwastaken2/client/AGENTS.md](src/client/java/com/thirstwastaken2/client/AGENTS.md) |
 | Manifests, recipes, tags, models, fonts, lang keys | [src/main/resources/AGENTS.md](src/main/resources/AGENTS.md) |
 | End-user documentation site (VitePress) | [docs/AGENTS.md](docs/AGENTS.md) |
@@ -144,7 +140,6 @@ src/main/java/com/thirstwastaken2/      common (client + server)
   purity/WaterInteractions.java        bowl/waterskin filling, cauldron purity transfer
   tooltip/ThirstTooltip.java           separate thirst/quenched tooltip rows (thirstwastaken2:droplets font)
   compat/LootIntegration.java          structure chests + Piglin barter water
-  compat/createfly/                    optional Create Fly Sand Filter
   mixin/                               vanilla hooks
 
 src/client/java/com/thirstwastaken2/client/
@@ -159,8 +154,8 @@ src/main/resources/
   thirstwastaken2.mixins.json           mixin registry
   assets/thirstwastaken2/               textures, models, lang (9 locales)
   assets/thirstwastaken2/font/          droplets.json: tooltip droplet glyphs (U+E000..U+E007)
-  data/thirstwastaken2/                 recipes, damage type, sand filter loot table
-  data/minecraft/tags/                 bypasses_armor, mineable/pickaxe additions
+  data/thirstwastaken2/                 recipes, damage type
+  data/minecraft/tags/                 bypasses_armor
 ```
 
 ## Water purity
@@ -171,7 +166,6 @@ Purity is an integer 0-3 (dirty, slightly dirty, acceptable, purified).
 |---|---|
 | Items | contamination, purity and salinity data components |
 | Cauldrons | offset `purity` and boolean `salty` blockstate properties |
-| Create Fly fluids | the same quality components on `FluidStack` |
 | Anything else | `ThirstConfig.defaultPurity` |
 
 `WaterPurity.sampleAt(level, pos)` samples contamination and salinity only when water is collected or
@@ -223,7 +217,6 @@ server.
 
 | Integration | Gate | Notes |
 |---|---|---|
-| Create Fly | `isModLoaded("create")` **and** `com.zurrtum.create...SmartBlockEntity` present | Sand Filter block, purifies pumped water by one step |
 | Mod Menu | `modmenu` entrypoint | class only loads if Mod Menu resolves it |
 | Loot | always | Fabric `LootTableEvents.MODIFY` on 5 vanilla chests + Piglin bartering |
 | Food mods | always | resolved by registry id in `ThirstConfig.drinks` / `foods`, no classes referenced |

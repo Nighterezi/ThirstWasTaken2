@@ -39,8 +39,6 @@ dependencies {
     "minecraft"(libs.minecraft)
     implementation(libs.fabric.loader)
     implementation(libs.fabric.api)
-    // Optional compile-time counterpart for the original Create integration.
-    compileOnly(libs.create.fly)
     // Optional config-screen entry point; the mod works without Mod Menu installed.
     "clientCompileOnly"(libs.modmenu)
     // Test the client HUD and food tooltips alongside AppleSkin in runClient.
@@ -48,7 +46,6 @@ dependencies {
     "clientRuntimeOnly"(libs.appleskin)
     // AppleSkin uses Cloth Config for its Mod Menu configuration screen.
     "clientRuntimeOnly"(libs.cloth.config)
-    // "clientRuntimeOnly"(libs.create.fly)
     "clientRuntimeOnly"(libs.modmenu)
 }
 

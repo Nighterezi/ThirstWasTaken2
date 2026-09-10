@@ -33,9 +33,9 @@ Id của nó chưa nằm trong danh sách. Thêm vào `drinks` trong file cấu 
 
 ## Có bắt buộc cài Create không?
 
-Không, và hiện tại nó cũng không có tác dụng gì. Phần tích hợp Create Fly đang lỗi và đã bị tắt, nên
-chưa chế tạo được Bộ lọc cát cho tới một bản sau. Mod Menu chỉ thêm nút mở màn hình cấu hình, ngoài
-ra không phần nào ở đây cần mod khác.
+Không, và bản này cũng không hỗ trợ Create. Bộ lọc cát và Trà thợ xây đều đã bị gỡ, phần hỗ trợ sẽ
+quay lại ở một bản sau. Mod Menu chỉ thêm nút mở màn hình cấu hình, ngoài ra không phần nào ở đây cần
+mod khác.
 
 ## Mod có chạy ở độ khó Hòa bình không?
 

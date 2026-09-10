@@ -2,7 +2,6 @@ package com.thirstwastaken2;
 
 import com.thirstwastaken2.command.ThirstCommands;
 import com.thirstwastaken2.compat.LootIntegration;
-import com.thirstwastaken2.compat.createfly.CreateFlyIntegration;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.data.ThirstData;
 import com.thirstwastaken2.data.ThirstManager;
@@ -29,7 +28,6 @@ public final class ThirstWasTaken2 implements ModInitializer {
         ThirstComponents.register();
         ThirstItems.register();
         LootIntegration.register();
-        if (CreateFlyIntegration.isAvailable()) CreateFlyIntegration.register();
 
         ServerTickEvents.END_SERVER_TICK.register(ThirstManager::tick);
         ServerTickEvents.END_SERVER_TICK.register(WaterInteractions::tick);

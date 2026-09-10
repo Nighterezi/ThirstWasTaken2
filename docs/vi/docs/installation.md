@@ -15,12 +15,12 @@ Mỗi phiên bản Minecraft có một nhánh riêng, và mỗi nhánh đánh s�
 hành là `<minecraft>-<mod>`, ví dụ `26.2-1.0.0`.
 
 Vì vậy số lớn hơn không đồng nghĩa với bản mới hơn. Nếu nhánh 1.21.11 nhận một bản sửa lỗi mà nhánh
-26.2 đã có sẵn, nó sẽ ra mắt dưới tên `1.21.11-1.0.2` trong khi 26.2 vẫn đang ở `26.2-1.0.1`. Hãy
+26.2 đã có sẵn, nó sẽ ra mắt dưới tên `1.21.11-1.0.3` trong khi 26.2 vẫn đang ở `26.2-1.0.2`. Hãy
 nhìn cột Minecraft trước, rồi lấy bản phát hành cao nhất trong hàng đó.
 
 | Bản phát hành | Nhánh | Minecraft | Fabric Loader | Fabric API | Java | Trạng thái |
 |---|---|---|---|---|---|---|
-| `26.2-1.0.1` | `main` | 26.2 | 0.19.3 trở lên | 0.156.0+26.2 trở lên | 25 | Đang phát triển |
+| `26.2-1.0.2` | `main` | 26.2 | 0.19.3 trở lên | 0.156.0+26.2 trở lên | 25 | Đang phát triển |
 
 Nhánh Đang phát triển vẫn nhận bản sửa lỗi. Nhánh Đóng băng vẫn chạy được nhưng tính năng mới chỉ về
 các nhánh đang phát triển.
@@ -46,11 +46,6 @@ vi được liệt kê bên dưới nếu tìm thấy.
 | [Mod Menu](https://modrinth.com/mod/modmenu) | 20.0.1 | 26.2 | Nút Config trong danh sách Mods, mở [màn hình tùy chỉnh](/vi/docs/configuration). | Sửa `config/thirstwastaken2.json` bằng tay. |
 | [AppleSkin](https://modrinth.com/mod/appleskin) | 3.0.10+mc26.2 | 26.2 | Dải tiêu hao dạng hạt trên thanh khát, theo tùy chọn HUD underlay của AppleSkin. | Thanh khát vẫn hiển thị bình thường nhưng không có dải này. |
 | [Cloth Config](https://modrinth.com/mod/cloth-config) | 26.2.155 | 26.2 | Màn hình cấu hình AppleSkin bên trong Mod Menu. | AppleSkin vẫn chạy nhưng nút Config của nó không dùng được. |
-
-::: warning Chưa hỗ trợ Create Fly
-Bộ lọc cát đang lỗi ở bản này nên phần tích hợp Create Fly đã bị tắt. Cài Create cũng không thay đổi
-gì: khối không chế tạo được và không thể lọc nước hàng loạt. Phần hỗ trợ sẽ quay lại ở bản sau.
-:::
 
 Những mod không nằm trong bảng thì cứ chạy song song bình thường. Mod đồ ăn thường không cần vá: món
 nào có tên chứa từ khóa đồ uống, súp hoặc trái cây sẽ tự có giá trị cấp nước, phần còn lại thì khai

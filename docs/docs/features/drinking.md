@@ -27,8 +27,8 @@ bowl or waterskin cannot be used while the thirst bar is already full. Once even
 missing, drinking is allowed and any overflow can still become quenched. Potions and foods with
 other uses are not blocked by this rule.
 
-Dozens of items from Farmer's Delight, Farmer's Respite, Brewin' and Chewin', Collector's Reap,
-Tough As Nails and Create already have values too. None of those mods are required, the values just
+Dozens of items from Farmer's Delight, Farmer's Respite, Brewin' and Chewin', Collector's Reap and
+Tough As Nails already have values too. None of those mods are required, the values just
 sit unused until the item exists. For anything else, see
 [keyword matching](/docs/configuration#enablekeywordmatching).
 
