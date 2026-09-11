@@ -13,7 +13,7 @@ developers. There is no installer, the jar is the whole mod.
 ## Supported versions
 
 One release covers every supported Minecraft version, and they all share the same mod version. The
-Minecraft version is the suffix on the file name, for example `ThirstWasTaken2-1.0.2+1.21.11.jar`.
+Minecraft version is the suffix on the file name, for example `ThirstWasTaken2-1.0.3+1.21.11.jar`.
 Take the file whose suffix matches the game.
 
 | Minecraft | File suffix | Fabric Loader | Fabric API | Java |

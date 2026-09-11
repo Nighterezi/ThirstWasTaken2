@@ -14,6 +14,8 @@ import net.minecraft.network.codec.StreamCodec;
 
 public record ThirstData(int thirst, int quenched, float exhaustion, boolean enabled) {
     public static final int MAX = 20;
+    /** Exhaustion that spends one point of quenched, or of thirst once quenched is empty. */
+    public static final float EXHAUSTION_PER_POINT = 4.0F;
 
     public static final Codec<ThirstData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.INT.fieldOf("thirst").forGetter(ThirstData::thirst),
@@ -65,8 +67,8 @@ public record ThirstData(int thirst, int quenched, float exhaustion, boolean ena
     }
 
     public ThirstData consumeExhaustion(boolean peaceful) {
-        if (!enabled || exhaustion <= 4.0F) return this;
-        float nextExhaustion = exhaustion - 4.0F;
+        if (!enabled || exhaustion <= EXHAUSTION_PER_POINT) return this;
+        float nextExhaustion = exhaustion - EXHAUSTION_PER_POINT;
         if (quenched > 0) return new ThirstData(thirst, quenched - 1, nextExhaustion, true);
         return new ThirstData(peaceful ? thirst : Math.max(0, thirst - 1), 0, nextExhaustion, true);
     }

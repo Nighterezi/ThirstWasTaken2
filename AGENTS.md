@@ -205,7 +205,9 @@ the network uses `STREAM_CODEC`.
 Every mutation returns a new record, so `ThirstManager.set` is the only write point and
 `tickPlayer` only calls it when `!updated.equals(data)`. Vanilla exhaustion never writes on its own:
 it is buffered on the player and applied by `tickPlayer`, which keeps the sync to at most one packet
-per player per tick.
+per player per tick. Exhaustion is also only written once it crosses a quarter point
+(`ThirstManager.SYNC_STEP`) or spends a point, with the remainder carried in
+`ExhaustionTracker.unsynced`, so a moving player sends a few packets a second rather than twenty.
 
 Drain chain, mirroring vanilla hunger:
 1. `Player.causeFoodExhaustion` → `ThirstManager.mirrorExhaustion`, which adds the raw amount to the

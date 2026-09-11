@@ -27,6 +27,8 @@ public final class PlayerStateGameTest {
     private static final float EXHAUSTION = 4.0F;
     /** What {@code HungerMobEffect#applyEffectTick} charges per amplifier level, every tick. */
     private static final float HUNGER_EXHAUSTION = 0.005F;
+    /** Three of these stay inside one quarter-point sync step under any climate modifier the test world has. */
+    private static final float SMALL_EXHAUSTION = 0.02F;
 
     @GameTest
     public void sprintingIsBlockedWhenThirsty(GameTestHelper helper) {
@@ -101,6 +103,33 @@ public final class PlayerStateGameTest {
 
         TestFixtures.check(helper, ThirstManager.get(player).equals(before),
                 "the Hunger effect should not dehydrate, thirst moved to " + ThirstManager.get(player));
+        helper.succeed();
+    }
+
+    @GameTest
+    public void smallExhaustionIsCarriedUntilItShows(GameTestHelper helper) {
+        ServerPlayer carrying = survivalPlayer(helper);
+        ServerPlayer control = survivalPlayer(helper);
+        ThirstData before = ThirstManager.get(carrying);
+
+        // A few ticks of light exhaustion: too little to change what the client draws.
+        for (int i = 0; i < 3; i++) {
+            carrying.causeFoodExhaustion(SMALL_EXHAUSTION);
+            ThirstManager.tick(helper.getLevel().getServer());
+        }
+        TestFixtures.check(helper, ThirstManager.get(carrying).equals(before),
+                "exhaustion that has not crossed a sync step should not be written, since every write is "
+                        + "a sync packet, but thirst moved to " + ThirstManager.get(carrying));
+
+        // Once a write happens it has to include what was carried until then.
+        carrying.causeFoodExhaustion(EXHAUSTION);
+        control.causeFoodExhaustion(EXHAUSTION);
+        ThirstManager.tick(helper.getLevel().getServer());
+        float carried = ThirstManager.get(carrying).exhaustion();
+        float plain = ThirstManager.get(control).exhaustion();
+        TestFixtures.check(helper, carried > plain,
+                "the carried exhaustion should be written with the next change, got " + carried
+                        + " against " + plain + " without it");
         helper.succeed();
     }
 

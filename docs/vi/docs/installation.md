@@ -13,7 +13,7 @@ dành cho lập trình viên. Không có trình cài đặt, file jar chính là
 ## Phiên bản được hỗ trợ
 
 Một bản phát hành bao gồm mọi phiên bản Minecraft được hỗ trợ, và tất cả dùng chung một số phiên bản
-mod. Phiên bản Minecraft nằm ở đuôi tên tệp, ví dụ `ThirstWasTaken2-1.0.2+1.21.11.jar`. Hãy lấy tệp
+mod. Phiên bản Minecraft nằm ở đuôi tên tệp, ví dụ `ThirstWasTaken2-1.0.3+1.21.11.jar`. Hãy lấy tệp
 có đuôi khớp với game.
 
 | Minecraft | Đuôi tệp | Fabric Loader | Fabric API | Java |

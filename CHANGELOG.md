@@ -2,6 +2,20 @@
 
 All notable changes to ThirstWasTaken2 are documented in this file.
 
+## [1.0.3] - 2026-09-11
+
+### Changed
+
+- Thirst uses less server time and memory and sends players far fewer updates, which matters most on
+  servers with many players.
+- The partly drained droplet and AppleSkin's exhaustion strip behind the thirst bar now move in small
+  steps instead of every tick.
+
+### Notes
+
+- Servers and players must run the same version. A mismatch shows the wrong blocks in the world.
+- No action is needed for existing worlds or config files.
+
 ## [1.0.2] - 2026-09-10
 
 ### Added

@@ -49,6 +49,11 @@ Events registered there, in registration order per event:
   `data/ExhaustionTracker`. `tickPlayer` applies the total once, together with the Hunger effect
   refund, so a player who sprints, jumps and fights in the same tick still costs one packet at most.
   `addExhaustion` writes immediately and is only for one-off sources such as salt water.
+- **Exhaustion is written in steps.** `tickPlayer` only writes when exhaustion crosses a quarter point
+  (`ThirstManager.SYNC_STEP`), spends a point, or something else in the record changes. The rest waits
+  in `ExhaustionTracker.unsynced` and is added to the next write, so the drain stays exact while the
+  client receives exhaustion in quarter steps. Ticks that write nothing build no record either. Keep
+  that fast path when changing the tick: it is where the per-player cost went.
 - **The exhaustion modifier is cached per player for 20 ticks** on the same tracker. Reading armour
   protection builds a loot context for every enchantment on every equipped item. A dimension or
   config change recomputes it straight away; anything else (biome, armour, Fire Resistance) may lag

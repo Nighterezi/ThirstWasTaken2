@@ -65,7 +65,7 @@ jar. Verify that with `unzip -l build/libs/<jar> | grep gametest` after a releas
 | `HealthRegenGameTest` | dehydration halting regeneration and the food refund that has to accompany it |
 | `WaterskinGameTest` | mixing, salinity, capacity, emptying |
 | `TooltipGameTest` | the lines the mod adds to a tooltip, droplet row arithmetic, and that cached lines are handed out as copies |
-| `PlayerStateGameTest` | the sprint gate, exhaustion mirroring waiting for the tick, the Hunger effect cancelling out, and that riding does not dehydrate |
+| `PlayerStateGameTest` | the sprint gate, exhaustion mirroring waiting for the tick, small exhaustion being carried until it crosses a sync step, the Hunger effect cancelling out, and that riding does not dehydrate |
 | `CauldronGameTest` | the cauldron blockstate properties (water cauldron only, old powder snow saves still load) and the deferred quality transfer |
 | `EnvironmentGameTest` | the datapack damage type and tag, and the version-forked environment call |
 | `CreativeTabGameTest` | the creative tab is registered, has the right icon, and holds every item the mod adds |

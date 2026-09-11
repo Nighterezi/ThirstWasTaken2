@@ -20,7 +20,7 @@ Vanilla hooks. Everything the mod cannot do through a Fabric API event lands her
 
 | Mixin | Target | Purpose |
 |---|---|---|
-| `PlayerMixin` | `causeFoodExhaustion` (HEAD), `canSprint` (RETURN); implements `ExhaustionTracker.Holder` | buffer hunger exhaustion for the thirst tick; block sprinting at thirst ≤ 6 |
+| `PlayerMixin` | `causeFoodExhaustion` (HEAD), `canSprint` (`@ModifyReturnValue`); implements `ExhaustionTracker.Holder` | buffer hunger exhaustion for the thirst tick; block sprinting at thirst ≤ 6 |
 | `FoodDataMixin` | `FoodData#tick`, both `ServerPlayer#heal` call sites | dehydration halts natural regen and refunds the food cost vanilla would have charged |
 | `ItemStackMixin` | `use` (HEAD), `finishUsingItem` (HEAD), `addDetailsToTooltip` (TAIL) | block plain water at full thirst; grant hydration on consume; append waterskin, purity and droplet lines |
 | `BottleItemMixin` | `BottleItem#use` | stamp sampled quality onto a bottle filled from a water block |

@@ -1,5 +1,6 @@
 package com.thirstwastaken2.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.data.ExhaustionTracker;
 import com.thirstwastaken2.data.ThirstData;
@@ -10,7 +11,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Player.class)
 abstract class PlayerMixin implements ExhaustionTracker.Holder {
@@ -31,10 +31,14 @@ abstract class PlayerMixin implements ExhaustionTracker.Holder {
         ThirstManager.mirrorExhaustion((Player) (Object) this, amount);
     }
 
-    @Inject(method = "canSprint", at = @At("RETURN"), cancellable = true)
-    private void thirst$preventSprintingWhenDehydrated(CallbackInfoReturnable<Boolean> cir) {
-        if (!cir.getReturnValue() || !ThirstConfig.get().preventSprintingWhenThirsty) return;
+    /**
+     * A return-value modifier rather than a cancellable {@code @Inject}: the sprint check runs every tick,
+     * and a cancellable inject allocates a callback object on every call.
+     */
+    @ModifyReturnValue(method = "canSprint", at = @At("RETURN"))
+    private boolean thirst$preventSprintingWhenDehydrated(boolean canSprint) {
+        if (!canSprint || !ThirstConfig.get().preventSprintingWhenThirsty) return canSprint;
         ThirstData data = ThirstManager.get((Player) (Object) this);
-        if (data.enabled() && data.thirst() <= SPRINT_THIRST_THRESHOLD) cir.setReturnValue(false);
+        return !data.enabled() || data.thirst() > SPRINT_THIRST_THRESHOLD;
     }
 }

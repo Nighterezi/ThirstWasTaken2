@@ -14,6 +14,11 @@ import net.minecraft.world.level.Level;
 public final class ExhaustionTracker {
     /** Raw vanilla exhaustion mirrored since the last tick, before the modifier is applied. */
     float pending;
+    /**
+     * Exhaustion already earned but not yet written to the attachment, because it has not crossed a sync
+     * step since the last write. Lost when the player leaves, which is less than one step.
+     */
+    float unsynced;
     float modifier;
     int modifierExpiresAt;
     int modifierGeneration;

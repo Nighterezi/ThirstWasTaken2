@@ -41,7 +41,7 @@ Minecraft and further extends the original mod.
 ## Requirements
 
 There is one download per Minecraft version, named after it, for example
-`ThirstWasTaken2-1.0.2+1.21.11.jar`.
+`ThirstWasTaken2-1.0.3+1.21.11.jar`.
 
 | Component | Minecraft 26.2 | Minecraft 26.1.x | Minecraft 1.21.11 |
 |---|---|---|---|

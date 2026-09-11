@@ -10,7 +10,7 @@ body:
 
         The mod ships a separate jar for each supported Minecraft version, so the most useful thing
         you can tell us is the exact version pair you are running. Both numbers are in the jar file
-        name, for example `ThirstWasTaken2-1.0.2+26.2.jar`.
+        name, for example `ThirstWasTaken2-1.0.3+26.2.jar`.
 
   - type: checkboxes
     id: preliminary
@@ -43,7 +43,7 @@ body:
     attributes:
       label: ThirstWasTaken2 version
       description: The full version, including the part after the plus sign.
-      placeholder: 1.0.2+26.2
+      placeholder: 1.0.3+26.2
     validations:
       required: true
 

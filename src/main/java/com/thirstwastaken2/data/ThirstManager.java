@@ -41,6 +41,17 @@ public final class ThirstManager {
      * point, so a lag of one second cannot be seen.
      */
     private static final int MODIFIER_REFRESH_TICKS = 20;
+    /**
+     * The tick only writes exhaustion, and so only syncs it, once it has moved into another step of this size
+     * or spent a point. The client draws exhaustion as the HUD's partly drained droplet, which changes at 0 and
+     * 2, and as AppleSkin's 81 px strip; a quarter point keeps both readable while a sprinting player costs
+     * about two sync packets a second instead of one every tick. The unwritten remainder stays on the
+     * player's {@link ExhaustionTracker}, so the drain itself is exact.
+     *
+     * <p>Diverges from the original mod, which saved every change: a player who leaves loses less than one
+     * step of exhaustion, a sixteenth of a point.
+     */
+    private static final float SYNC_STEP = 0.25F;
 
     private ThirstManager() { }
 
@@ -101,7 +112,9 @@ public final class ThirstManager {
     public static void tickPlayer(ServerPlayer player) {
         ExhaustionTracker tracker = ExhaustionTracker.of(player);
         float mirrored = tracker.pending;
+        float unsynced = tracker.unsynced;
         tracker.pending = 0.0F;
+        tracker.unsynced = 0.0F;
 
         ThirstData data = get(player);
         if (!data.enabled() || player.getAbilities().invulnerable) return;
@@ -119,18 +132,25 @@ public final class ThirstManager {
         if (hunger != null) raw -= HUNGER_EXHAUSTION * (hunger.getAmplifier() + 1);
         if (config.depletesWhenNauseous && player.hasEffect(MobEffects.NAUSEA)) raw += NAUSEA_EXHAUSTION;
 
-        ThirstData updated = raw == 0.0F ? data : data.addExhaustion(raw * exhaustionModifier(player));
-        updated = updated.consumeExhaustion(peaceful);
+        float added = unsynced + (raw == 0.0F ? 0.0F : raw * exhaustionModifier(player));
+        boolean slowTick = player.tickCount % SLOW_TICK_INTERVAL == 0;
+        boolean regenerates = peaceful && slowTick && data.thirst() < ThirstData.MAX;
+        // The same clamp ThirstData#addExhaustion applies.
+        float exhaustion = Math.max(0.0F, data.exhaustion() + added);
 
-        if (player.tickCount % SLOW_TICK_INTERVAL == 0) {
-            if (peaceful) {
-                updated = updated.regenerate(1);
-            }
+        int thirst = data.thirst();
+        if (!regenerates && exhaustion <= ThirstData.EXHAUSTION_PER_POINT
+                && sameSyncStep(data.exhaustion(), exhaustion)) {
+            // Nothing the client would draw differently: carry it rather than build a record and send it.
+            tracker.unsynced = exhaustion - data.exhaustion();
+        } else {
+            ThirstData updated = data.addExhaustion(added).consumeExhaustion(peaceful);
+            if (peaceful && slowTick) updated = updated.regenerate(1);
+            if (!updated.equals(data)) set(player, updated);
+            thirst = updated.thirst();
         }
 
-        if (!updated.equals(data)) set(player, updated);
-
-        if (updated.thirst() <= 0 && player.tickCount % DAMAGE_INTERVAL == 0) {
+        if (thirst <= 0 && player.tickCount % DAMAGE_INTERVAL == 0) {
             float health = player.getHealth();
             if (health > 10.0F || difficulty == Difficulty.HARD
                     || (health > 0.0F && difficulty == Difficulty.NORMAL)) {
@@ -175,6 +195,11 @@ public final class ThirstManager {
                 SoundEvents.GENERIC_DRINK.value(), SoundSource.PLAYERS,
                 0.5F, level.getRandom().nextFloat() * 0.1F + 0.9F);
         return InteractionResult.SUCCESS_SERVER;
+    }
+
+    /** Whether two exhaustion values fall in the same {@link #SYNC_STEP}, so the client would draw them alike. */
+    private static boolean sameSyncStep(float a, float b) {
+        return Math.floor(a / SYNC_STEP) == Math.floor(b / SYNC_STEP);
     }
 
     /**
