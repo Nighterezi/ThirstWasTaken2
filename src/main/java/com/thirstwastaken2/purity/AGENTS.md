@@ -15,7 +15,7 @@ player-facing purity tier remains `0..3` (dirty, slightly dirty, acceptable, pur
 | Carrier | Storage | Read with |
 |---|---|---|
 | Item stack | `water_contamination`, `water_purity`, `water_salty` components | `WaterPurity.quality(stack)` |
-| Cauldron | offset `purity` plus `salty` blockstate properties | `WaterPurity.sampleAt(level, pos)` |
+| Water cauldron | offset `purity` plus `salty` blockstate properties, added by `addCauldronProperties` to the water cauldron only | `WaterPurity.sampleAt(level, pos)` |
 | Water in the world | biome baseline plus small local modifiers | `WaterPurity.sampleAt(level, pos)` |
 | Anything unstamped | `ThirstConfig.defaultPurity`, fresh | falls out of `quality` |
 
@@ -44,8 +44,10 @@ The `+1` offset is the single most common thing to get wrong: `BLOCK_PURITY` ran
   hydration should still be granted (`quenchWhenDebuffed`).
 - **Salt is not a purity tier.** Salty water grants no hydration, and cooking/filtering must preserve
   or reject salinity rather than silently desalinating it.
-- **`tooltip(purity)` owns both the lang key suffix and the colour.** Adding a tier means touching the
-  two switches together plus `thirst.purity.*` in all nine lang files.
+- **`tooltip(purity)` owns both the lang key and the colour.** Adding a tier means touching the
+  `purityKey` and `purityColor` switches together plus `thirst.purity.*` in all nine lang files. The
+  lines are built once in `TooltipLines` and handed out with `copy()`, because tooltips are rebuilt
+  every frame and a caller may restyle its line in place.
 
 ## Why interactions are deferred
 

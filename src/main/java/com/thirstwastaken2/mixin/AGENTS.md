@@ -20,7 +20,7 @@ Vanilla hooks. Everything the mod cannot do through a Fabric API event lands her
 
 | Mixin | Target | Purpose |
 |---|---|---|
-| `PlayerMixin` | `causeFoodExhaustion` (HEAD), `canSprint` (RETURN) | mirror hunger exhaustion into thirst; block sprinting at thirst ≤ 6 |
+| `PlayerMixin` | `causeFoodExhaustion` (HEAD), `canSprint` (RETURN); implements `ExhaustionTracker.Holder` | buffer hunger exhaustion for the thirst tick; block sprinting at thirst ≤ 6 |
 | `FoodDataMixin` | `FoodData#tick`, both `ServerPlayer#heal` call sites | dehydration halts natural regen and refunds the food cost vanilla would have charged |
 | `ItemStackMixin` | `use` (HEAD), `finishUsingItem` (HEAD), `addDetailsToTooltip` (TAIL) | block plain water at full thirst; grant hydration on consume; append waterskin, purity and droplet lines |
 | `BottleItemMixin` | `BottleItem#use` | stamp sampled quality onto a bottle filled from a water block |
@@ -44,3 +44,8 @@ every branch must either heal or refund exhaustion — dropping both would let h
 therefore uses `ThreadLocal`: integrated-client prediction and the server may call the same item
 singleton from different threads. Values are removed at HEAD and immediately after stamping; do not
 let interaction state outlive one `use` call.
+
+`PlayerMixin`'s `@Unique` field is the opposite case: it lives on each player entity, so per-player
+state is safe there. It holds a lazily created `com.thirstwastaken2.data.ExhaustionTracker`, reached
+through the `ExhaustionTracker.Holder` duck interface so the logic itself stays in `data/`. Only
+`ThirstManager` reads or writes it, and only on the server thread.

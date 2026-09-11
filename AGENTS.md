@@ -47,6 +47,18 @@ build on a failed assertion. CI runs it for every version. See
 [src/gametest/java/AGENTS.md](src/gametest/java/AGENTS.md) before adding to it, including what it
 deliberately does not cover.
 
+Measure what the mod costs a server, in time and memory, without anyone joining:
+
+```bash
+./gradlew ":26.2.x:runBenchmark"
+```
+
+It starts the dedicated server with the dev tools, runs `/thirst benchmark` from the console once the
+server is up, simulates 1 to 200 players plus every interaction, writes
+`run/<version>/benchmark/latest.json` and stops the server again. `-Pbenchmark=quick`, `stress` or
+`"players 500 1200"` changes the scale. The same command works typed into a `runServer` console. Read
+[src/dev/java/AGENTS.md](src/dev/java/AGENTS.md) before comparing two reports.
+
 `runServer` is the fastest smoke test: it applies every mixin, loads the datapack registries, then
 idles. A clean run prints `ThirstWasTaken2 initialized for Minecraft <version>` and no exceptions.
 Each version gets its own `run/<subproject>/` directory, because a world saved by one Minecraft
@@ -76,6 +88,10 @@ cached.
   they are all in `stonecutter.properties.toml`.
 - **Source sets are split** (`loom.splitEnvironmentSourceSets()`). Anything that touches
   `net.minecraft.client` belongs in `src/client/java`, never in `src/main/java`.
+- **`ThirstWasTaken2.DEV` separates development runs from published jars.** It is true under every
+  Loom run task and false in the jar players install; `-Dthirstwastaken2.dev=true|false` overrides it.
+  Dev-only tooling checks it before registering anything and lives in the `dev` source set, its own
+  `thirstwastaken2-dev` mod like the gametests, which `main` and `client` never reference.
 - **Mixins live in `com.thirstwastaken2.mixin`**, are package-private, `abstract`, and prefix every
   injected member with `thirst$`. New mixins must be listed in `thirstwastaken2.mixins.json`.
 - **Config is a plain POJO** serialized by Gson (`ThirstConfig`). Adding a field means: add it to the
@@ -161,12 +177,15 @@ flowchart TD
     end
 
     Tick --> TickPlayer[tickPlayer per ServerPlayer]
+    TickPlayer --> Apply[apply buffered exhaustion once, minus the Hunger effect]
     TickPlayer --> Consume[consumeExhaustion: quenched then thirst]
     TickPlayer --> Slow[every 11 ticks: peaceful regen]
     TickPlayer --> Dmg[every 40 ticks at 0 thirst: dehydrate damage]
 
-    Exh[PlayerMixin.causeFoodExhaustion] --> AddExh[ThirstManager.addExhaustion]
-    AddExh --> Mod[exhaustionModifier: climate x fire res x fire prot]
+    Exh[PlayerMixin.causeFoodExhaustion] --> Mirror[ThirstManager.mirrorExhaustion]
+    Mirror --> Pending[ExhaustionTracker.pending]
+    Pending --> Apply
+    Apply --> Mod[exhaustionModifier: climate x fire res x fire prot, reused for 20 ticks]
 
     UseDrink[ItemStackMixin.use] --> FullGuard[block plain water at full thirst]
     Eat[ItemStackMixin.finishUsingItem] --> DrinkItem[ThirstManager.drinkItem]
@@ -184,13 +203,17 @@ as a Fabric data attachment with `AttachmentSyncPredicate.targetOnly()`. Persist
 the network uses `STREAM_CODEC`.
 
 Every mutation returns a new record, so `ThirstManager.set` is the only write point and
-`tickPlayer` only calls it when `!updated.equals(data)`. That keeps the sync to at most one packet
+`tickPlayer` only calls it when `!updated.equals(data)`. Vanilla exhaustion never writes on its own:
+it is buffered on the player and applied by `tickPlayer`, which keeps the sync to at most one packet
 per player per tick.
 
 Drain chain, mirroring vanilla hunger:
-1. `Player.causeFoodExhaustion` → `ThirstManager.addExhaustion` (skipped while riding a mount).
+1. `Player.causeFoodExhaustion` → `ThirstManager.mirrorExhaustion`, which adds the raw amount to the
+   player's `ExhaustionTracker` (skipped while riding a mount). `tickPlayer` takes the total once per
+   tick and subtracts what the Hunger effect charged.
 2. Raw exhaustion is scaled by `exhaustionModifier`: climate (or the flat Nether value in dimensions
-   where water evaporates), Fire Resistance, Fire Protection.
+   where water evaporates), Fire Resistance, Fire Protection. The modifier is cached on the tracker
+   for 20 ticks, or until the dimension or the config changes.
 3. Once exhaustion passes 4, one point of `quenched` is spent; when quenched is empty, one point of
    `thirst` goes instead (unless Peaceful and depletion in Peaceful is off).
 4. At 0 thirst, 1 damage every 40 ticks via `thirstwastaken2:dehydrate`.
@@ -207,6 +230,7 @@ Each area of the tree carries its own `AGENTS.md` with rules and conventions loc
 | Loot injection & optional-integration rules | [.../compat/AGENTS.md](src/main/java/com/thirstwastaken2/compat/AGENTS.md) |
 | Minecraft version differences | [.../platform/AGENTS.md](src/main/java/com/thirstwastaken2/platform/AGENTS.md) |
 | Automated in-game tests | [src/gametest/java/AGENTS.md](src/gametest/java/AGENTS.md) |
+| Performance and memory benchmark, dev-only tooling | [src/dev/java/AGENTS.md](src/dev/java/AGENTS.md) |
 | Client HUD element rendering & config screen contract | [src/client/java/com/thirstwastaken2/client/AGENTS.md](src/client/java/com/thirstwastaken2/client/AGENTS.md) |
 | Manifests, recipes, tags, models, fonts, lang keys | [src/main/resources/AGENTS.md](src/main/resources/AGENTS.md) |
 | End-user documentation site (VitePress) | [docs/AGENTS.md](docs/AGENTS.md) |
@@ -222,6 +246,7 @@ src/main/java/com/thirstwastaken2/      common (client + server)
   damage/ThirstDamageTypes.java        thirstwastaken2:dehydrate damage source
   data/ThirstData.java                 immutable player state + attachment type
   data/ThirstManager.java              tick loop, exhaustion maths, drink-by-hand
+  data/ExhaustionTracker.java          per-player buffered exhaustion and cached modifier, never saved
   data/HealthRegen.java                whether a dehydrated player may still regenerate
   item/ThirstItems.java                bowl and waterskin registration + creative tab
   item/WaterskinItem.java              three-drink storage, consumption and inventory transfers
@@ -255,6 +280,10 @@ src/gametest/java/com/thirstwastaken2/gametest/
   HealthRegenGameTest.java             dehydration halting regen, and the food refund
   WaterskinGameTest.java               mixing, capacity, emptying
   TooltipGameTest.java                 the lines the mod adds to a tooltip
+
+src/dev/java/com/thirstwastaken2/dev/   dev-only tools mod, never packaged
+  ThirstDev.java                       entrypoint: /thirst benchmark and the runBenchmark autorun
+  benchmark/                           simulated players, tick and interaction scenarios, JSON report
 
 src/main/resources/
   fabric.mod.json                      entrypoints (main, client, modmenu); templated per version

@@ -34,6 +34,11 @@ repositories {
 // reach the published jar. See src/gametest/java/AGENTS.md.
 val gametest: SourceSet = sourceSets.create("gametest")
 
+// Development tooling such as /thirst benchmark. The same arrangement as the gametests: its own source
+// set and its own small mod, loaded by runServer and runBenchmark, never packaged. See
+// src/dev/java/AGENTS.md.
+val dev: SourceSet = sourceSets.create("dev")
+
 loom {
     splitEnvironmentSourceSets()
 
@@ -44,6 +49,9 @@ loom {
         }
         register("thirstwastaken2-gametest") {
             sourceSet(gametest)
+        }
+        register("thirstwastaken2-dev") {
+            sourceSet(dev)
         }
     }
 
@@ -61,13 +69,29 @@ loom {
                 layout.buildDirectory.file("gametest/report.xml").get().asFile.absolutePath,
             )
         }
+
+        // runServer loads the dev tools, so /thirst benchmark can be typed into its console.
+        named("server") {
+            sourceSet = dev.name
+        }
+
+        // Unattended benchmark: starts the dedicated server, runs `/thirst benchmark <-Pbenchmark>` from
+        // the console once it is up, writes run/<version>/benchmark/latest.json and stops the server.
+        register("benchmark") {
+            server()
+            displayName = "Benchmark"
+            sourceSet = dev.name
+            systemProperties.put("thirstwastaken2.benchmark", providers.gradleProperty("benchmark").getOrElse("standard"))
+            systemProperties.put("thirstwastaken2.benchmark.exit", "true")
+        }
     }
 
     runConfigs.all {
         // One run directory per version. Sharing a single one would hand a 26.2 world to a 1.21.11
         // server, which fails on world format rather than on anything the mod did. The gametest
         // runner gets its own again, so a failed run cannot leave a broken world behind for
-        // runServer.
+        // runServer. The benchmark shares runServer's directory, world and accepted EULA, so the
+        // two cannot run at the same time.
         runDirectory = if (name == "gametest") {
             rootProject.file("run/${project.name}/gametest")
         } else {
@@ -76,9 +100,12 @@ loom {
     }
 }
 
-// The gametests compile and run against the mod itself and against everything the mod uses.
+// The gametests and the dev tools compile and run against the mod itself and against everything the
+// mod uses.
 gametest.compileClasspath += sourceSets.main.get().compileClasspath + sourceSets.main.get().output
 gametest.runtimeClasspath += sourceSets.main.get().runtimeClasspath + sourceSets.main.get().output
+dev.compileClasspath += sourceSets.main.get().compileClasspath + sourceSets.main.get().output
+dev.runtimeClasspath += sourceSets.main.get().runtimeClasspath + sourceSets.main.get().output
 
 /**
  * Adds a client-only mod dependency. Loom prefixes these configurations with `mod` where it remaps
@@ -129,14 +156,15 @@ tasks.named("runClient") {
     }
 }
 
-// Per-directory notes for contributors; they live next to the files they describe, not in the jars.
+// Per-directory notes for contributors and backup copies of edited textures; they live next to the
+// files they describe, not in the jars.
 tasks.withType<ProcessResources>().configureEach {
-    exclude("**/AGENTS.md")
+    exclude("**/AGENTS.md", "**/*.bak")
 }
 
 // Registered lazily: withSourcesJar() below adds the task after this block is evaluated.
 tasks.withType<Jar>().matching { it.name.endsWith("sourcesJar") }.configureEach {
-    exclude("**/AGENTS.md")
+    exclude("**/AGENTS.md", "**/*.bak")
 }
 
 tasks.withType<JavaCompile>().configureEach {

@@ -38,7 +38,8 @@ public final class ThirstApi {
             CACHE.clear();
             cachedGeneration = generation;
         }
-        int[] cached = CACHE.computeIfAbsent(item, ThirstApi::resolve);
+        int[] cached = CACHE.get(item);
+        if (cached == null) cached = CACHE.computeIfAbsent(item, ThirstApi::resolve);
         return cached == NONE ? null : cached;
     }
 

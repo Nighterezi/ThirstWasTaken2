@@ -18,6 +18,7 @@ thirst, and the client only receives it through the attachment sync.
 | Loot, optional mod integrations | `compat/` (has its own AGENTS.md) |
 | The thirst and quenched droplet rows on tooltips | `tooltip/ThirstTooltip` |
 | `/thirst` | `command/ThirstCommands` |
+| Dev-only tooling such as `/thirst benchmark` | `src/dev/java` (own AGENTS.md), gated on `ThirstWasTaken2.DEV` |
 
 ## Init order
 
@@ -43,6 +44,15 @@ Events registered there, in registration order per event:
   by deriving (`drink`, `addExhaustion`, `consumeExhaustion`, `withLevels`, `withEnabled`) and write
   only when the value actually changed — every write is a sync packet. `tickPlayer` accumulates into
   a local `updated` and writes once.
+- **Vanilla exhaustion is buffered, not written.** `PlayerMixin` calls
+  `ThirstManager.mirrorExhaustion`, which only adds the raw amount to the player's
+  `data/ExhaustionTracker`. `tickPlayer` applies the total once, together with the Hunger effect
+  refund, so a player who sprints, jumps and fights in the same tick still costs one packet at most.
+  `addExhaustion` writes immediately and is only for one-off sources such as salt water.
+- **The exhaustion modifier is cached per player for 20 ticks** on the same tracker. Reading armour
+  protection builds a loot context for every enchantment on every equipped item. A dimension or
+  config change recomputes it straight away; anything else (biome, armour, Fire Resistance) may lag
+  by up to a second, which exhaustion accumulating over many seconds hides.
 - **Per-`Item` caches, never per-call string work.** `ThirstApi.CACHE` and `WaterPurity.INFO` are
   `ConcurrentHashMap`s keyed by `Item` identity. `ThirstApi` drops its cache when
   `ThirstConfig.generation()` changes; `WaterPurity.INFO` never invalidates, so it may only hold

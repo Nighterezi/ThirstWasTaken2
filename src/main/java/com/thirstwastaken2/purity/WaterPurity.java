@@ -25,8 +25,10 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
@@ -41,6 +43,8 @@ public final class WaterPurity {
     /** Zero means unset; stored values 1-4 correspond to purity 0-3. */
     public static final IntegerProperty BLOCK_PURITY = IntegerProperty.create("purity", 0, 4);
     public static final BooleanProperty BLOCK_SALTY = BooleanProperty.create("salty");
+    /** Vanilla's description id for {@code Blocks.WATER_CAULDRON}, see {@link #addCauldronProperties}. */
+    private static final String WATER_CAULDRON = "block.minecraft.water_cauldron";
 
     private static final TagKey<Biome> STAGNANT_WATER = TagKey.create(
             Registries.BIOME, com.thirstwastaken2.ThirstWasTaken2.id("stagnant_water"));
@@ -180,24 +184,60 @@ public final class WaterPurity {
         return config.quenchWhenDebuffed || !poisoned;
     }
 
+    /** @return a fresh copy of the purity line, see {@link TooltipLines}. */
     public static Component tooltip(int purity) {
-        String suffix = switch (purity) {
-            case 0 -> "dirty";
-            case 1 -> "slightly_dirty";
-            case 2 -> "acceptable";
-            default -> "purified";
+        return TooltipLines.PURITY[Math.max(MIN, Math.min(MAX, purity))].copy();
+    }
+
+    public static Component salinityTooltip() {
+        return TooltipLines.SALTY.copy();
+    }
+
+    /**
+     * Adds the stored quality properties to the water cauldron and nothing else. Powder snow cauldrons
+     * are {@code LayeredCauldronBlock}s too, but they never hold water, and the two properties would
+     * multiply their blockstates tenfold for nothing.
+     *
+     * <p>Runs inside the block's constructor, before {@code Blocks.WATER_CAULDRON} is assigned or the
+     * block is registered, so its description id is the only identity available.
+     */
+    public static void addCauldronProperties(Block block, StateDefinition.Builder<Block, BlockState> builder) {
+        if (WATER_CAULDRON.equals(block.getDescriptionId())) builder.add(BLOCK_PURITY, BLOCK_SALTY);
+    }
+
+    private static String purityKey(int purity) {
+        return switch (purity) {
+            case 0 -> "thirst.purity.dirty";
+            case 1 -> "thirst.purity.slightly_dirty";
+            case 2 -> "thirst.purity.acceptable";
+            default -> "thirst.purity.purified";
         };
-        int color = switch (purity) {
+    }
+
+    private static int purityColor(int purity) {
+        return switch (purity) {
             case 0 -> 0xA84825;
             case 1 -> 0x796C71;
             case 2 -> 0x5D829D;
             default -> 0x21B1FF;
         };
-        return Component.translatable("thirst.purity." + suffix).withColor(color);
     }
 
-    public static Component salinityTooltip() {
-        return Component.translatable("thirst.water.salty").withColor(0x55C8E8);
+    /**
+     * Tooltip lines are rebuilt every frame a stack is hovered, so each one is built once and copied
+     * out. A copy shares the translatable contents, and with them the parsed translation, while the
+     * caller stays free to restyle its own line in place. Nested so that nothing is built during block
+     * bootstrap, which is when {@code WaterPurity} itself loads.
+     */
+    private static final class TooltipLines {
+        static final Component[] PURITY = new Component[MAX + 1];
+        static final Component SALTY = Component.translatable("thirst.water.salty").withColor(0x55C8E8);
+
+        static {
+            for (int purity = MIN; purity <= MAX; purity++) {
+                PURITY[purity] = Component.translatable(purityKey(purity)).withColor(purityColor(purity));
+            }
+        }
     }
 
     private static int nearbyPollution(Level level, BlockPos origin) {

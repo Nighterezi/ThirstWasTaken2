@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "thirstwastaken2-dev",
+  "version": "1.0.0",
+  "name": "ThirstWasTaken2 Dev Tools",
+  "description": "Development-only tooling for ThirstWasTaken2, such as /thirst benchmark. Never published.",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.thirstwastaken2.dev.ThirstDev"
+    ]
+  },
+  "depends": {
+    "thirstwastaken2": "*",
+    "fabric-command-api-v2": "*",
+    "fabric-lifecycle-events-v1": "*",
+    "fabric-events-interaction-v0": "*"
+  }
+}

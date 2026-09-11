@@ -6,8 +6,10 @@ import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.purity.WaterQuality;
 import com.thirstwastaken2.tooltip.ThirstTooltip;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
+import net.minecraft.ChatFormatting;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.item.ItemStack;
 
@@ -79,6 +81,20 @@ public final class TooltipGameTest {
                 "5 units rounds up to 3 droplets, got " + length(ThirstTooltip.thirst(5)));
         TestFixtures.check(helper, length(ThirstTooltip.quenched(40)) == 10,
                 "the row is capped at 10 droplets, got " + length(ThirstTooltip.quenched(40)));
+        helper.succeed();
+    }
+
+    @GameTest
+    public void cachedLinesAreHandedOutAsCopies(GameTestHelper helper) {
+        // Lines are built once and copied out. Restyling a returned line in place, as other mods are
+        // free to do, must not leak into the next tooltip.
+        ((MutableComponent) WaterPurity.tooltip(3)).withStyle(ChatFormatting.OBFUSCATED);
+        ((MutableComponent) ThirstTooltip.thirst(4)).withStyle(ChatFormatting.OBFUSCATED);
+
+        TestFixtures.check(helper, !WaterPurity.tooltip(3).getStyle().isObfuscated(),
+                "restyling one purity line should not change the next one");
+        TestFixtures.check(helper, !ThirstTooltip.thirst(4).getStyle().isObfuscated(),
+                "restyling one droplet row should not change the next one");
         helper.succeed();
     }
 

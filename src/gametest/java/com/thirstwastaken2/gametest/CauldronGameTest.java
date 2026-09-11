@@ -1,5 +1,7 @@
 package com.thirstwastaken2.gametest;
 
+import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.purity.WaterInteractions;
 import com.thirstwastaken2.purity.WaterPurity;
@@ -12,6 +14,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -38,6 +41,37 @@ public final class CauldronGameTest {
                 "the water cauldron should have a salinity property");
         TestFixtures.check(helper, state.getValue(WaterPurity.BLOCK_PURITY) == UNSET,
                 "a fresh water cauldron should store no quality yet");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void powderSnowCauldronsStayPlain(GameTestHelper helper) {
+        BlockState state = Blocks.POWDER_SNOW_CAULDRON.defaultBlockState();
+
+        TestFixtures.check(helper,
+                !state.hasProperty(WaterPurity.BLOCK_PURITY) && !state.hasProperty(WaterPurity.BLOCK_SALTY),
+                "powder snow never holds water, so its cauldron should not multiply its states with "
+                        + "the quality properties");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void powderSnowCauldronsSavedWithQualityStillLoad(GameTestHelper helper) {
+        // Worlds saved before the properties were limited to water cauldrons still list them on
+        // powder snow. Decoding has to ignore them instead of falling back to the default state.
+        JsonObject properties = new JsonObject();
+        properties.addProperty("level", "2");
+        properties.addProperty("purity", "4");
+        properties.addProperty("salty", "true");
+        JsonObject saved = new JsonObject();
+        saved.addProperty("Name", "minecraft:powder_snow_cauldron");
+        saved.add("Properties", properties);
+
+        BlockState loaded = BlockState.CODEC.parse(JsonOps.INSTANCE, saved).result().orElse(null);
+
+        TestFixtures.check(helper, loaded != null && loaded.is(Blocks.POWDER_SNOW_CAULDRON)
+                        && loaded.getValue(LayeredCauldronBlock.LEVEL) == 2,
+                "an old powder snow cauldron should load with its fill level intact, got " + loaded);
         helper.succeed();
     }
 

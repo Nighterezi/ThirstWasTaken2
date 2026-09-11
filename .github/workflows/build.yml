@@ -87,7 +87,9 @@ jobs:
           echo "org.gradle.java.installations.fromEnv=JAVA_HOME_21_X64,JAVA_HOME_25_X64" >> ~/.gradle/gradle.properties
 
       - name: Build
-        run: ./gradlew ":${{ matrix.version }}:buildAndCollect" --stacktrace
+        # devClasses compiles the dev tools (/thirst benchmark). They never ship, so nothing else would
+        # notice them breaking on one version.
+        run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:devClasses" --stacktrace
 
       # The GameTest runner replaces the dedicated server, skips the EULA prompt and needs no
       # display, so it runs here exactly as it does locally. It exits non-zero when a test fails.

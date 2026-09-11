@@ -33,6 +33,14 @@ public final class ThirstManager {
     private static final float MODIFIER_HARSHNESS = 0.5F;
     /** Nausea's extra drain per tick, from the original DEPLETES_WHEN_NAUSEA branch. */
     private static final float NAUSEA_EXHAUSTION = 0.06F;
+    /** What {@code HungerMobEffect#applyEffectTick} charges per amplifier level, every tick. */
+    private static final float HUNGER_EXHAUSTION = 0.005F;
+    /**
+     * How long a computed exhaustion modifier is reused. Climate, armour and Fire Resistance change far
+     * more slowly than vanilla charges exhaustion, and it takes seconds of exhaustion to spend a single
+     * point, so a lag of one second cannot be seen.
+     */
+    private static final int MODIFIER_REFRESH_TICKS = 20;
 
     private ThirstManager() { }
 
@@ -44,15 +52,27 @@ public final class ThirstManager {
         player.setAttached(ThirstData.TYPE, data);
     }
 
+    /** Applies exhaustion straight away, for one-off sources such as drinking salt water. */
     public static void addExhaustion(Player player, float amount) {
-        // Riding a mount does not dehydrate you, matching the original's isSitting guard.
-        if (player.level().isClientSide() || player.getAbilities().invulnerable
-                || player.isPassenger() || amount == 0.0F) {
-            return;
-        }
+        if (!drains(player, amount)) return;
         ThirstData data = get(player);
         if (!data.enabled()) return;
         set(player, data.addExhaustion(amount * exhaustionModifier(player)));
+    }
+
+    /**
+     * Mirrors vanilla food exhaustion. Vanilla charges it on nearly every tick a player sprints, swims,
+     * jumps or fights, sometimes more than once a tick, and every attachment write sends a sync packet.
+     * The raw amount is therefore only collected here and applied once per tick by {@link #tick}.
+     */
+    public static void mirrorExhaustion(Player player, float amount) {
+        if (drains(player, amount)) ExhaustionTracker.of(player).pending += amount;
+    }
+
+    /** Riding a mount does not dehydrate you, matching the original's isSitting guard. */
+    private static boolean drains(Player player, float amount) {
+        return amount != 0.0F && !player.level().isClientSide()
+                && !player.getAbilities().invulnerable && !player.isPassenger();
     }
 
     public static void drink(Player player, int hydration, int quenched) {
@@ -74,27 +94,32 @@ public final class ThirstManager {
         for (ServerPlayer player : server.getPlayerList().getPlayers()) tickPlayer(player);
     }
 
-    private static void tickPlayer(ServerPlayer player) {
+    /**
+     * One player's share of {@link #tick}. Public for the dev benchmark, which ticks simulated players
+     * that are not in the player list.
+     */
+    public static void tickPlayer(ServerPlayer player) {
+        ExhaustionTracker tracker = ExhaustionTracker.of(player);
+        float mirrored = tracker.pending;
+        tracker.pending = 0.0F;
+
         ThirstData data = get(player);
         if (!data.enabled() || player.getAbilities().invulnerable) return;
 
         ThirstConfig config = ThirstConfig.get();
         Difficulty difficulty = player.level().getDifficulty();
         boolean peaceful = difficulty == Difficulty.PEACEFUL && !config.thirstDepletionInPeaceful;
-        ThirstData updated = data;
 
         // The Hunger effect already routes through causeFoodExhaustion; the original cancels that
-        // contribution back out so poisoned food does not double as dehydration.
+        // contribution back out so poisoned food does not double as dehydration. Both sides are raw
+        // amounts from the same tick, so they cancel exactly instead of leaving float noise behind that
+        // would still cost a sync packet.
+        float raw = mirrored;
         MobEffectInstance hunger = player.getEffect(MobEffects.HUNGER);
-        boolean nauseous = config.depletesWhenNauseous && player.hasEffect(MobEffects.NAUSEA);
-        if (hunger != null || nauseous) {
-            float modifier = exhaustionModifier(player);
-            float delta = 0.0F;
-            if (hunger != null) delta -= 0.005F * (hunger.getAmplifier() + 1) * modifier;
-            if (nauseous) delta += NAUSEA_EXHAUSTION * modifier;
-            updated = updated.addExhaustion(delta);
-        }
+        if (hunger != null) raw -= HUNGER_EXHAUSTION * (hunger.getAmplifier() + 1);
+        if (config.depletesWhenNauseous && player.hasEffect(MobEffects.NAUSEA)) raw += NAUSEA_EXHAUSTION;
 
+        ThirstData updated = raw == 0.0F ? data : data.addExhaustion(raw * exhaustionModifier(player));
         updated = updated.consumeExhaustion(peaceful);
 
         if (player.tickCount % SLOW_TICK_INTERVAL == 0) {
@@ -153,10 +178,29 @@ public final class ThirstManager {
     }
 
     /**
+     * The exhaustion modifier, reused for {@link #MODIFIER_REFRESH_TICKS}. Reading armour protection
+     * builds a loot context for every enchantment on every equipped item, and this runs on every tick a
+     * player moves. Changing dimension or config recomputes it straight away.
+     */
+    private static float exhaustionModifier(Player player) {
+        ExhaustionTracker tracker = ExhaustionTracker.of(player);
+        Level level = player.level();
+        int generation = ThirstConfig.generation();
+        if (tracker.modifierLevel != level || tracker.modifierGeneration != generation
+                || player.tickCount >= tracker.modifierExpiresAt) {
+            tracker.modifier = computeExhaustionModifier(player);
+            tracker.modifierLevel = level;
+            tracker.modifierGeneration = generation;
+            tracker.modifierExpiresAt = player.tickCount + MODIFIER_REFRESH_TICKS;
+        }
+        return tracker.modifier;
+    }
+
+    /**
      * Combined biome, fire-protection and fire-resistance multiplier applied to raw exhaustion,
      * mirroring {@code ThirstHelper#getExhaustionBiomeModifier} and friends from the original mod.
      */
-    private static float exhaustionModifier(Player player) {
+    private static float computeExhaustionModifier(Player player) {
         ThirstConfig config = ThirstConfig.get();
         boolean scorching = Vanilla.waterEvaporates(player.level(), player.blockPosition());
         float modifier = scorching

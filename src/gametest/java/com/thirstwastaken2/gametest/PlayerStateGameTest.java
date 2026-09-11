@@ -1,11 +1,14 @@
 package com.thirstwastaken2.gametest;
 
 import com.thirstwastaken2.config.ThirstConfig;
+import com.thirstwastaken2.data.ThirstData;
 import com.thirstwastaken2.data.ThirstManager;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.GameType;
 
@@ -14,11 +17,16 @@ import net.minecraft.world.level.GameType;
  *
  * <p>Both hooks only take effect on top of a vanilla decision, so each test sets up the state where
  * vanilla would say yes before checking that the mod says no.
+ *
+ * <p>Mirrored exhaustion is collected during the tick and applied by {@code ThirstManager.tick}, so
+ * the exhaustion tests run that by hand, the same way {@code CauldronGameTest} drains its queue.
  */
 public final class PlayerStateGameTest {
     /** Vanilla gates sprinting on food above 6, and the mod applies the same cut-off to thirst. */
     private static final int SPRINT_CUTOFF = 6;
     private static final float EXHAUSTION = 4.0F;
+    /** What {@code HungerMobEffect#applyEffectTick} charges per amplifier level, every tick. */
+    private static final float HUNGER_EXHAUSTION = 0.005F;
 
     @GameTest
     public void sprintingIsBlockedWhenThirsty(GameTestHelper helper) {
@@ -66,13 +74,33 @@ public final class PlayerStateGameTest {
     @GameTest
     public void hungerExhaustionMirrorsIntoThirst(GameTestHelper helper) {
         ServerPlayer player = survivalPlayer(helper);
-        float before = ThirstManager.get(player).exhaustion();
+        ThirstData before = ThirstManager.get(player);
 
         player.causeFoodExhaustion(EXHAUSTION);
+        TestFixtures.check(helper, ThirstManager.get(player).equals(before),
+                "mirrored exhaustion should wait for the tick, so it costs one sync packet at most, "
+                        + "but thirst already moved to " + ThirstManager.get(player));
 
-        float after = ThirstManager.get(player).exhaustion();
-        TestFixtures.check(helper, after > before,
-                "spending hunger should also spend thirst, exhaustion stayed at " + after);
+        ThirstManager.tick(helper.getLevel().getServer());
+        ThirstData after = ThirstManager.get(player);
+        TestFixtures.check(helper, after.exhaustion() > before.exhaustion() || after.quenched() < before.quenched(),
+                "spending hunger should also spend thirst, got " + after);
+        helper.succeed();
+    }
+
+    @GameTest
+    public void hungerEffectDoesNotDehydrate(GameTestHelper helper) {
+        ServerPlayer player = survivalPlayer(helper);
+        int amplifier = 1;
+        player.addEffect(new MobEffectInstance(MobEffects.HUNGER, 200, amplifier));
+        ThirstData before = ThirstManager.get(player);
+
+        // Charge exactly what the effect charges in one tick; the tick has to cancel it back out.
+        player.causeFoodExhaustion(HUNGER_EXHAUSTION * (amplifier + 1));
+        ThirstManager.tick(helper.getLevel().getServer());
+
+        TestFixtures.check(helper, ThirstManager.get(player).equals(before),
+                "the Hunger effect should not dehydrate, thirst moved to " + ThirstManager.get(player));
         helper.succeed();
     }
 
@@ -83,12 +111,12 @@ public final class PlayerStateGameTest {
         player.startRiding(mount, true, true);
         TestFixtures.check(helper, player.isPassenger(), "the player should be riding the mount");
 
-        float before = ThirstManager.get(player).exhaustion();
+        ThirstData before = ThirstManager.get(player);
         player.causeFoodExhaustion(EXHAUSTION);
+        ThirstManager.tick(helper.getLevel().getServer());
 
-        TestFixtures.check(helper, ThirstManager.get(player).exhaustion() == before,
-                "riding should not dehydrate, exhaustion moved to "
-                        + ThirstManager.get(player).exhaustion());
+        TestFixtures.check(helper, ThirstManager.get(player).equals(before),
+                "riding should not dehydrate, thirst moved to " + ThirstManager.get(player));
         helper.succeed();
     }
 

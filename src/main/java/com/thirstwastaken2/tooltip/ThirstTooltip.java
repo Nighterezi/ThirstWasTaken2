@@ -24,11 +24,21 @@ public final class ThirstTooltip {
     private static final int UNITS_PER_DROPLET = 2;
     /** Ten droplets is a full bar; anything beyond that is capped rather than wrapped. */
     private static final int MAX_DROPLETS = 10;
+    /** Units past a full row of droplets draw exactly like a full row. */
+    private static final int MAX_UNITS = MAX_DROPLETS * UNITS_PER_DROPLET;
 
     private static final char THIRST_FULL = '\uE000';
     private static final char THIRST_HALF = '\uE001';
     private static final char QUENCHED_FULL = '\uE004';
     private static final char QUENCHED_HALF = '\uE007';
+
+    /**
+     * Every row that can be drawn, indexed by units. Tooltips are rebuilt every frame a stack is
+     * hovered, so rows are built once and handed out as copies: restyling a line in place, which other
+     * mods are free to do, must not leak into the next frame.
+     */
+    private static final Component[] THIRST_ROWS = rows(THIRST_FULL, THIRST_HALF);
+    private static final Component[] QUENCHED_ROWS = rows(QUENCHED_FULL, QUENCHED_HALF);
 
     private ThirstTooltip() { }
 
@@ -60,18 +70,26 @@ public final class ThirstTooltip {
 
     /** @return the filled thirst row, or {@code null} when the item restores no thirst. */
     public static Component thirst(int hydration) {
-        return row(hydration, THIRST_FULL, THIRST_HALF);
+        return row(THIRST_ROWS, hydration);
     }
 
     /** @return the outline quenched row, or {@code null} when the item restores no quenched. */
     public static Component quenched(int quenched) {
-        return row(quenched, QUENCHED_FULL, QUENCHED_HALF);
+        return row(QUENCHED_ROWS, quenched);
     }
 
-    private static Component row(int units, char full, char half) {
-        int droplets = Math.min(droplets(units), MAX_DROPLETS);
-        if (droplets == 0) return null;
+    private static Component row(Component[] rows, int units) {
+        return units <= 0 ? null : rows[Math.min(units, MAX_UNITS)].copy();
+    }
 
+    private static Component[] rows(char full, char half) {
+        Component[] rows = new Component[MAX_UNITS + 1];
+        for (int units = 1; units <= MAX_UNITS; units++) rows[units] = build(units, full, half);
+        return rows;
+    }
+
+    private static Component build(int units, char full, char half) {
+        int droplets = droplets(units);
         StringBuilder icons = new StringBuilder(droplets);
         for (int i = 0; i < droplets; i++) {
             icons.append(fillOf(units, i) == UNITS_PER_DROPLET ? full : half);
