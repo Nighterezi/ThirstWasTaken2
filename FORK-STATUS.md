@@ -34,9 +34,9 @@ values are still configurable.
 ### 2. Tooltips show droplets, and no longer need AppleSkin
 
 The original printed `Hydration: +6, Quenched: +8` as plain text, and only drew a graphical version
-when AppleSkin was installed. Here the sprites are part of the mod and always there. Hydration uses a
+when AppleSkin was installed. Here the sprites are part of the mod and always there. Thirst uses a
 top row of filled droplets, while quenched uses a lower row of outline droplets. A drink worth 6
-hydration and 8 quenched reads as three filled droplets above four outline droplets.
+thirst and 8 quenched reads as three filled droplets above four outline droplets.
 
 ### 3. New droplet sprites
 

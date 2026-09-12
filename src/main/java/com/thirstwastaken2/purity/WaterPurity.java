@@ -191,7 +191,7 @@ public final class WaterPurity {
         return WaterQuality.fresh(grade(score));
     }
 
-    /** Applies the four-grade sickness table and returns whether hydration should be granted. */
+    /** Applies the four-grade sickness table and returns whether thirst should still be restored. */
     public static boolean applyEffects(Player player, ItemStack stack) {
         if (!(player instanceof ServerPlayer) || !isWaterContainer(stack)) return true;
         ThirstConfig config = ThirstConfig.get();

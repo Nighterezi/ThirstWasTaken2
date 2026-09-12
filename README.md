@@ -21,7 +21,7 @@ Minecraft and further extends the original mod.
 
 ## Features
 
-- Thirst, quenched hydration and exhaustion
+- Thirst, quenched and exhaustion
 - Faster thirst loss from activity, hot biomes and the Nether
 - Damage, disabled sprinting and disabled natural healing when dehydrated
 - Drinking from water sources, potions, foods, water bowls and a reusable waterskin

@@ -29,7 +29,7 @@ body:
     attributes:
       label: What this touches
       options:
-        - Thirst and hydration mechanics
+        - Thirst and quenched mechanics
         - Water purity and contamination
         - Items, blocks or recipes
         - HUD and tooltips

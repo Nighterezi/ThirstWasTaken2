@@ -103,7 +103,7 @@ protection refusing a fill cannot pass as an impressively fast result.
 
 `sample_water`, `fill_bottle`, `fill_bucket`, `fill_bowl`, `fill_waterskin`, `drink_water_bottle`,
 `drink_waterskin`, `drink_by_hand`, `cauldron_pour`, `full_bar_guard`, `tooltip_water_bottle`,
-`tooltip_waterskin`, `tooltip_food`, `hydration_lookup`, `water_quality_read`, `waterskin_mix`,
+`tooltip_waterskin`, `tooltip_food`, `thirst_lookup`, `water_quality_read`, `waterskin_mix`,
 `exhaustion_mirror`, `thirst_tick_idle`. The report's `description` field says what each one does.
 
 ### Memory
@@ -112,11 +112,11 @@ protection refusing a fill cannot pass as an impressively fast result.
   thousand of them.
 - `firstTouchBytesPerPlayer`: allocated the first time a player drains, attachment creation included.
 - `steadyTickBytesPerPlayer`: allocated by one ordinary exhaustion charge plus thirst tick afterwards.
-- `hydrationCacheEntries`, `purityInfoEntries`: the sizes of `ThirstApi.CACHE` and `WaterPurity.INFO`.
+- `thirstCacheEntries`, `purityInfoEntries`: the sizes of `ThirstApi.CACHE` and `WaterPurity.INFO`.
 - `heapUsedAfterGcBeforeMiB`, `heapUsedAfterGcAfterMiB`, `heapRetainedKiB`: whole-heap use after a full
   collection, taken once the benchmark area has loaded and again after the run has let go of its players,
   with the area still loaded so chunk memory cancels out. The first run on a freshly started server also
-  counts what stays for the server's lifetime: the hydration cache and vanilla's per-UUID stats and
+  counts what stays for the server's lifetime: the thirst cache and vanilla's per-UUID stats and
   advancements for the simulated players. A second run in the same session should come out near zero;
   a value that keeps growing from run to run is a leak. Other threads allocate too, so a few MiB either
   way is noise.

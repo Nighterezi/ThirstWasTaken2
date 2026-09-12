@@ -61,7 +61,7 @@ Mặc định `true`. Cho phép người chơi ngồi xuống và dùng tay khô
 
 Mặc định `false`. Khi bật, uống bằng tay còn đòi hỏi tay còn lại cũng phải trống.
 
-### handDrinkingHydration
+### handDrinkingThirst
 
 Mặc định `1`. Độ khát hồi lại cho mỗi lần uống trực tiếp từ nguồn nước.
 
@@ -69,7 +69,7 @@ Mặc định `1`. Độ khát hồi lại cho mỗi lần uống trực tiếp 
 
 Mặc định `1`. Mức đã khát hồi lại cho chính lần uống đó.
 
-### extraHydrationConvertsToQuenched
+### extraThirstConvertsToQuenched
 
 Mặc định `true`. Lượng nước vượt quá thanh đầy sẽ thành mức dự trữ thay vì bị bỏ đi. Bạn không thể bắt
 đầu uống nước thuần khi thanh đã đầy, nhưng phần hồi dư vẫn có tác dụng nếu lúc bắt đầu uống thanh còn

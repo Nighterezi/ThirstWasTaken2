@@ -18,7 +18,7 @@ import java.util.function.IntConsumer;
 /**
  * Vanilla-styled editor for {@code config/thirstwastaken2.json}.
  *
- * <p>Only scalar settings are exposed here. The per-item hydration maps and keyword patterns stay in
+ * <p>Only scalar settings are exposed here. The per-item thirst maps and keyword patterns stay in
  * the JSON file, which the footer button opens directly.
  */
 public final class ThirstConfigScreen extends OptionsSubScreen {
@@ -58,10 +58,10 @@ public final class ThirstConfigScreen extends OptionsSubScreen {
                 toggle("can_drink_by_hand", config.canDrinkByHand, value -> config.canDrinkByHand = value),
                 toggle("drink_by_hand_needs_both_hands_empty", config.drinkByHandNeedsBothHandsEmpty,
                         value -> config.drinkByHandNeedsBothHandsEmpty = value),
-                toggle("extra_hydration_converts_to_quenched", config.extraHydrationConvertsToQuenched,
-                        value -> config.extraHydrationConvertsToQuenched = value),
-                slider("hand_drinking_hydration", config.handDrinkingHydration, 0, 20,
-                        value -> config.handDrinkingHydration = value),
+                toggle("extra_thirst_converts_to_quenched", config.extraThirstConvertsToQuenched,
+                        value -> config.extraThirstConvertsToQuenched = value),
+                slider("hand_drinking_thirst", config.handDrinkingThirst, 0, 20,
+                        value -> config.handDrinkingThirst = value),
                 slider("hand_drinking_quenched", config.handDrinkingQuenched, 0, 20,
                         value -> config.handDrinkingQuenched = value));
 

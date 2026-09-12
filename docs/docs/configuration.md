@@ -61,7 +61,7 @@ Default `true`. Lets a player sneak and use an empty hand on water to drink from
 
 Default `false`. When on, drinking by hand also asks for the other hand to be empty.
 
-### handDrinkingHydration
+### handDrinkingThirst
 
 Default `1`. Thirst restored by one drink from a water source.
 
@@ -69,9 +69,9 @@ Default `1`. Thirst restored by one drink from a water source.
 
 Default `1`. Reserve restored by that same drink.
 
-### extraHydrationConvertsToQuenched
+### extraThirstConvertsToQuenched
 
-Default `true`. Hydration above a full bar becomes reserve instead of being thrown away. Plain water
+Default `true`. Thirst above a full bar becomes reserve instead of being thrown away. Plain water
 cannot be started while the bar is already full, but overflow still applies when a drink begins
 below full.
 
@@ -121,7 +121,7 @@ of the screen.
 
 ### drinks and foods
 
-Two lists in the file, not on the screen. Each entry is an item id and a pair of numbers, hydration
+Two lists in the file, not on the screen. Each entry is an item id and a pair of numbers, thirst
 first:
 
 ```json

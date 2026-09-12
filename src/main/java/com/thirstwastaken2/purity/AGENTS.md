@@ -73,7 +73,7 @@ that know the encoding.
   extending `resolve`, not by importing anything.
 - **One roll drives both effects.** `applyEffects` rolls once for fresh water and compares it against
   `nauseaChance[purity]` and `poisonChance[purity]`, matching the original mod; it returns whether
-  hydration should still be granted (`quenchWhenDebuffed`). Salt water never reaches the roll: it
+  thirst should still be restored (`quenchWhenDebuffed`). Salt water never reaches the roll: it
   spends exhaustion, applies Nausea and returns false.
 - **`purityKey` and `purityColor` own the lang key and the colour together**, and they are the only
   palette for water quality; the tooltip tiers in `src/main/java/com/thirstwastaken2/AGENTS.md` say

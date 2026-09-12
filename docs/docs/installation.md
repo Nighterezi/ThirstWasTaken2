@@ -46,7 +46,7 @@ Versions tested are listed per Minecraft version, in the order 26.2, 26.1.x, 1.2
 | [Cloth Config](https://modrinth.com/mod/cloth-config) | 26.2.155, 26.1.154, 21.11.153 | AppleSkin's configuration screen inside Mod Menu. | AppleSkin still works, but its Config button is unavailable. |
 
 Anything not listed simply coexists. Food mods usually work without a patch: an item whose name
-contains a drink, soup or fruit keyword picks up hydration on its own, and the per-item values in
+contains a drink, soup or fruit keyword picks up thirst values on its own, and the per-item values in
 [Configuration](/docs/configuration) cover whatever the keywords miss.
 
 ## Where the mod goes

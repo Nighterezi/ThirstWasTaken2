@@ -94,7 +94,7 @@ matter how many lines it grows.
 - **Do not invent a second palette.** Water colours live in `WaterPurity.purityColor` and salt's line
   colour next to it. Anything about water quality reuses those.
 - **Tiers keep their order, and a tier may cancel the ones below it.** Salt water prints its own line
-  and returns, because droplet rows under it would promise hydration it does not give.
+  and returns, because droplet rows under it would promise thirst it does not restore.
 - **Lines are rebuilt every frame a stack is hovered.** Build a constant once and hand out `copy()`,
   as `CLAY_BOWL_HINT` and the droplet rows do; other mods are free to restyle a line they receive.
 - **A new line means a new `tooltip.thirstwastaken2.*` key in all nine lang files.** `en_us` and

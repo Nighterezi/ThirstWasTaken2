@@ -87,8 +87,8 @@ final class BenchmarkReport {
         JsonObject memory = object(report, "memory");
         lines.add("Memory: ThirstData " + text(memory, "thirstDataBytes") + " B, ExhaustionTracker "
                 + text(memory, "exhaustionTrackerBytes") + " B, first touch " + text(memory, "firstTouchBytesPerPlayer")
-                + " B/player, steady tick " + text(memory, "steadyTickBytesPerPlayer") + " B/player, hydration cache "
-                + text(memory, "hydrationCacheEntries") + " entries, purity cache " + text(memory, "purityInfoEntries")
+                + " B/player, steady tick " + text(memory, "steadyTickBytesPerPlayer") + " B/player, thirst cache "
+                + text(memory, "thirstCacheEntries") + " entries, purity cache " + text(memory, "purityInfoEntries")
                 + " entries");
         lines.add("Heap after GC: " + text(memory, "heapUsedAfterGcBeforeMiB") + " MiB before, "
                 + text(memory, "heapUsedAfterGcAfterMiB") + " MiB after ("

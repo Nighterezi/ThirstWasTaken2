@@ -58,10 +58,10 @@
   "thirstwastaken2.config.can_drink_by_hand.tooltip": "Sneak and use an empty hand on water to drink directly from it.",
   "thirstwastaken2.config.drink_by_hand_needs_both_hands_empty": "Both Hands Empty",
   "thirstwastaken2.config.drink_by_hand_needs_both_hands_empty.tooltip": "Requires both hands to be empty before drinking by hand.",
-  "thirstwastaken2.config.extra_hydration_converts_to_quenched": "Overflow Becomes Quenched",
-  "thirstwastaken2.config.extra_hydration_converts_to_quenched.tooltip": "Hydration above the maximum is turned into quenched instead of being lost.",
-  "thirstwastaken2.config.hand_drinking_hydration": "Hand Drinking Hydration",
-  "thirstwastaken2.config.hand_drinking_hydration.tooltip": "Hydration restored by one drink straight from a water source.",
+  "thirstwastaken2.config.extra_thirst_converts_to_quenched": "Overflow Becomes Quenched",
+  "thirstwastaken2.config.extra_thirst_converts_to_quenched.tooltip": "Thirst above the maximum is turned into quenched instead of being lost.",
+  "thirstwastaken2.config.hand_drinking_thirst": "Hand Drinking Thirst",
+  "thirstwastaken2.config.hand_drinking_thirst.tooltip": "Thirst restored by one drink straight from a water source.",
   "thirstwastaken2.config.hand_drinking_quenched": "Hand Drinking Quenched",
   "thirstwastaken2.config.hand_drinking_quenched.tooltip": "Quenched restored by one drink straight from a water source.",
   "thirstwastaken2.config.default_purity": "Default Purity",
@@ -81,6 +81,6 @@
   "thirstwastaken2.config.thirst_bar_y_offset": "Bar Y Offset",
   "thirstwastaken2.config.thirst_bar_y_offset.tooltip": "Vertical offset of the thirst bar, in pixels.",
   "thirstwastaken2.config.enable_keyword_matching": "Keyword Matching",
-  "thirstwastaken2.config.enable_keyword_matching.tooltip": "Guesses hydration values for unknown modded items from their registry name.",
+  "thirstwastaken2.config.enable_keyword_matching.tooltip": "Guesses thirst values for unknown modded items from their registry name.",
   "thirstwastaken2.config.note": "Only HUD settings are client-side; the rest apply on the server."
 }

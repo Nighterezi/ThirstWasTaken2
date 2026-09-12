@@ -38,9 +38,9 @@ public final class ThirstConfig {
     public boolean preventSprintingWhenThirsty = true;
     public boolean canDrinkByHand = true;
     public boolean drinkByHandNeedsBothHandsEmpty = false;
-    public int handDrinkingHydration = 1;
+    public int handDrinkingThirst = 1;
     public int handDrinkingQuenched = 1;
-    public boolean extraHydrationConvertsToQuenched = true;
+    public boolean extraThirstConvertsToQuenched = true;
     public boolean dehydrationHaltsHealthRegen = true;
 
     // ---- HUD --------------------------------------------------------------
@@ -155,7 +155,7 @@ public final class ThirstConfig {
         rainwaterPurity = clamp(rainwaterPurity, 0, 3);
         dripstonePurity = clamp(dripstonePurity, 0, 3);
         fireResistanceDehydrationPercent = clamp(fireResistanceDehydrationPercent, 0, 100);
-        handDrinkingHydration = clamp(handDrinkingHydration, 0, 20);
+        handDrinkingThirst = clamp(handDrinkingThirst, 0, 20);
         handDrinkingQuenched = clamp(handDrinkingQuenched, 0, 20);
         thirstBarXOffset = clamp(thirstBarXOffset, -200, 200);
         thirstBarYOffset = clamp(thirstBarYOffset, -200, 200);
@@ -223,7 +223,7 @@ public final class ThirstConfig {
         return values;
     }
 
-    private static void put(Map<String, int[]> values, int hydration, int quenched, String... ids) {
-        for (String id : ids) values.put(id, new int[]{hydration, quenched});
+    private static void put(Map<String, int[]> values, int thirst, int quenched, String... ids) {
+        for (String id : ids) values.put(id, new int[]{thirst, quenched});
     }
 }

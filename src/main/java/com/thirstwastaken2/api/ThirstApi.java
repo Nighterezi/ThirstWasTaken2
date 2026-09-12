@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 /**
- * Public, loader-neutral item hydration API.
+ * Public, loader-neutral item thirst API.
  *
  * <p>Resolution is per {@link Item} and is memoised, because the tooltip renderer asks for it once
  * per frame per hovered stack. The cache is dropped whenever the config generation changes.
@@ -25,14 +25,14 @@ public final class ThirstApi {
 
     private ThirstApi() { }
 
-    /** @return {hydration, quenched}, or {@code null} when the item restores no thirst. */
-    public static int[] hydration(ItemStack stack) {
+    /** @return {thirst, quenched}, or {@code null} when the item restores no thirst. */
+    public static int[] thirstValues(ItemStack stack) {
         if (stack.isEmpty()) return null;
         if (stack.is(ThirstItems.WATERSKIN) && WaterskinItem.servings(stack) == 0) return null;
-        return hydration(stack.getItem());
+        return thirstValues(stack.getItem());
     }
 
-    public static int[] hydration(Item item) {
+    public static int[] thirstValues(Item item) {
         int generation = ThirstConfig.generation();
         if (generation != cachedGeneration) {
             CACHE.clear();
@@ -44,7 +44,7 @@ public final class ThirstApi {
     }
 
     public static boolean restoresThirst(ItemStack stack) {
-        return hydration(stack) != null;
+        return thirstValues(stack) != null;
     }
 
     private static int[] resolve(Item item) {

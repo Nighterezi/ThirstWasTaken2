@@ -31,7 +31,7 @@ no grade of its own, such as an unknown modded drink, uses
 ## Salt water
 
 Oceans and beaches give salt water. It has its own icon and its own tooltip line, so it can be told
-apart from fresh water at a glance, and it shows no hydration droplets because it restores nothing.
+apart from fresh water at a glance, and it shows no thirst droplets because it restores nothing.
 
 Drinking it costs thirst instead of restoring it and causes five seconds of Nausea. A furnace or a
 campfire will not take it, so there is no way to make it drinkable. One salty drink poured into a

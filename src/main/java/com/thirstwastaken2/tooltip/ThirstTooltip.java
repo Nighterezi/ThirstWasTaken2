@@ -13,7 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.function.Consumer;
 
 /**
- * Renders item hydration as two droplet rows instead of numbers. Thirst uses filled droplets on the
+ * Renders item thirst as two droplet rows instead of numbers. Thirst uses filled droplets on the
  * first row and quenched uses outline droplets on the second, matching the layout used by other
  * thirst integrations.
  *
@@ -79,17 +79,17 @@ public final class ThirstTooltip {
                 case WaterQuality.Fresh fresh -> tooltip.accept(WaterPurity.tooltip(fresh.purity()));
             }
         }
-        int[] hydration = ThirstApi.hydration(stack);
-        if (hydration == null) return;
-        Component thirst = thirst(hydration[0]);
-        Component quenched = quenched(hydration[1]);
+        int[] values = ThirstApi.thirstValues(stack);
+        if (values == null) return;
+        Component thirst = thirst(values[0]);
+        Component quenched = quenched(values[1]);
         if (thirst != null) tooltip.accept(thirst);
         if (quenched != null) tooltip.accept(quenched);
     }
 
     /** @return the filled thirst row, or {@code null} when the item restores no thirst. */
-    public static Component thirst(int hydration) {
-        return row(THIRST_ROWS, hydration);
+    public static Component thirst(int amount) {
+        return row(THIRST_ROWS, amount);
     }
 
     /** @return the outline quenched row, or {@code null} when the item restores no quenched. */

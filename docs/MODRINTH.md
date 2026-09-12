@@ -13,7 +13,7 @@ way.
 ## Running out
 
 The bar has two parts, mirroring hunger and saturation. Filled droplets are thirst itself. Outlined
-droplets on the second row are quenched hydration, a reserve that drains first and holds the bar
+droplets on the second row are quenched, a reserve that drains first and holds the bar
 steady while it lasts.
 
 Natural healing slows as soon as the bar is not full. Sprinting stops once it drops to three

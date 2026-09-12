@@ -3,15 +3,15 @@
 ## What is worth drinking
 
 Every item that restores thirst says so in its tooltip as two rows of droplets rather than numbers.
-Each droplet is worth two points. The upper row uses filled droplets for hydration; the lower row
-uses outline droplets for quenched. A water bottle worth 6 hydration and 8 quenched therefore shows
+Each droplet is worth two points. The upper row uses filled droplets for thirst; the lower row
+uses outline droplets for quenched. A water bottle worth 6 thirst and 8 quenched therefore shows
 three filled droplets above four outline droplets.
 
-![A dirty water bottle tooltip showing hydration and quenched droplets](/screenshots/item-tooltip.png)
+![A dirty water bottle tooltip showing thirst and quenched droplets](/screenshots/item-tooltip.png)
 
 These are the values the mod ships with for vanilla and its own items:
 
-| Item | Hydration | Quenched |
+| Item | Thirst | Quenched |
 |---|---|---|
 | Any potion, water bottles included | 6 | 8 |
 | Milk bucket | 6 | 8 |
@@ -23,7 +23,7 @@ These are the values the mod ships with for vanilla and its own items:
 | Apple, golden apple, enchanted golden apple, mushroom stew, rabbit stew | 2 | 3 |
 | Carrot, golden carrot, beetroot, sweet berries, glow berries | 1 | 2 |
 
-Hydration fills the bar, quenched fills the reserve behind it. Hydration past a full bar is not
+Thirst fills the bar, quenched fills the reserve behind it. Thirst past a full bar is not
 wasted, it turns into extra reserve. Plain water follows vanilla food rules: a water bottle, water
 bowl or waterskin cannot be used while the thirst bar is already full. Once even one point is
 missing, drinking is allowed and any overflow can still become quenched. Potions and foods with
@@ -69,7 +69,7 @@ on a block to pour away all of its water.
 
 Mixing averages the grades of the drinks inside, rounded down, so adding one dirty drink drags the
 whole waterskin down. Salt water is the exception: one salty drink makes all of it salt water. Each
-drink restores 4 hydration and 5 quenched, and the empty waterskin is kept for refilling.
+drink restores 4 thirst and 5 quenched, and the empty waterskin is kept for refilling.
 
 ## Straight from the source
 

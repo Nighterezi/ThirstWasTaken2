@@ -88,7 +88,7 @@ final class MemoryProbe implements Stage {
         }
         json.addProperty("steadyTickBytesPerPlayer", Metrics.round((Metrics.allocatedBytes() - bytes) / (double) FRESH_PLAYERS));
 
-        json.addProperty("hydrationCacheEntries", mapSize(ThirstApi.class, "CACHE"));
+        json.addProperty("thirstCacheEntries", mapSize(ThirstApi.class, "CACHE"));
         json.addProperty("purityInfoEntries", mapSize(WaterPurity.class, "INFO"));
         return json;
     }

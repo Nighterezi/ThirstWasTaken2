@@ -196,7 +196,7 @@ final class InteractionScenario implements Stage {
                 },
                 () -> sink = WaterInteractions.fillFromWater(player, level, HAND),
                 () -> WaterskinItem.servings(player.getMainHandItem()) == 2);
-        single("drink_water_bottle", "Finishing a water bottle: vanilla consumption, hydration and the purity roll",
+        single("drink_water_bottle", "Finishing a water bottle: vanilla consumption, thirst gain and the purity roll",
                 () -> {
                     thirsty();
                     held[0] = waterBottle.copy();
@@ -259,10 +259,10 @@ final class InteractionScenario implements Stage {
                     ThirstTooltip.appendTo(apple, collect);
                 },
                 () -> !lines.isEmpty());
-        batched("hydration_lookup", "ThirstApi.hydration cycling through every registered item",
+        batched("thirst_lookup", "ThirstApi.thirstValues cycling through every registered item",
                 NOTHING,
                 () -> {
-                    sink = ThirstApi.hydration(everyItem[cursor[0]]);
+                    sink = ThirstApi.thirstValues(everyItem[cursor[0]]);
                     cursor[0] = (cursor[0] + 1) % everyItem.length;
                 },
                 () -> everyItem.length > 0);

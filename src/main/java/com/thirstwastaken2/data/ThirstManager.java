@@ -88,8 +88,8 @@ public final class ThirstManager {
                 && !player.getAbilities().invulnerable && !player.isPassenger();
     }
 
-    public static void drink(Player player, int hydration, int quenched) {
-        if (!player.level().isClientSide()) set(player, get(player).drink(hydration, quenched));
+    public static void drink(Player player, int thirst, int quenched) {
+        if (!player.level().isClientSide()) set(player, get(player).drink(thirst, quenched));
     }
 
     /** Plain water follows vanilla food rules: it cannot be consumed while the visible bar is full. */
@@ -99,7 +99,7 @@ public final class ThirstManager {
     }
 
     public static void drinkItem(Player player, ItemStack stack) {
-        int[] value = ThirstApi.hydration(stack);
+        int[] value = ThirstApi.thirstValues(stack);
         if (value == null) return;
         boolean quenches = WaterPurity.applyEffects(player, stack);
         // Salt water is drunk without quenching anything, and still counts as having been drunk.
@@ -193,7 +193,7 @@ public final class ThirstManager {
         ItemStack sample = WaterPurity.setQuality(
                 new ItemStack(ThirstItems.TERRACOTTA_WATER_BOWL), quality);
         if (WaterPurity.applyEffects(player, sample)) {
-            drink(player, config.handDrinkingHydration, config.handDrinkingQuenched);
+            drink(player, config.handDrinkingThirst, config.handDrinkingQuenched);
         }
         ThirstAdvancements.drank(player, quality);
         // Player#playSound routes through Level#playSound with itself as the excluded listener, so a

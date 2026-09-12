@@ -189,7 +189,7 @@ flowchart TD
 
     UseDrink[ItemStackMixin.use] --> FullGuard[block plain water at full thirst]
     Eat[ItemStackMixin.finishUsingItem] --> DrinkItem[ThirstManager.drinkItem]
-    DrinkItem --> Api[ThirstApi.hydration]
+    DrinkItem --> Api[ThirstApi.thirstValues]
     DrinkItem --> Effects[WaterPurity.applyEffects]
 
     Attach --> Sync[attachment sync to owning client]
@@ -243,7 +243,7 @@ Each area of the tree carries its own `AGENTS.md` with rules and conventions loc
 src/main/java/com/thirstwastaken2/      common (client + server)
   ThirstWasTaken2.java                  ModInitializer: wiring and event registration
   advancement/ThirstAdvancements.java  awards the mod's advancements by id from the drinking code
-  api/ThirstApi.java                   item -> {hydration, quenched}, memoised per Item
+  api/ThirstApi.java                   item -> {thirst, quenched}, memoised per Item
   command/ThirstCommands.java          /thirst query|set|enable
   config/ThirstConfig.java             config/thirstwastaken2.json, compiled patterns, generation counter
   damage/ThirstDamageTypes.java        thirstwastaken2:dehydrate damage source
@@ -332,7 +332,7 @@ Brewin' and Chewin' / Collector's Reap support stays dependency-free.
 |---|---|---|
 | `PlayerMixin` | `Player#causeFoodExhaustion`, `#canSprint` | mirror exhaustion, block sprinting at thirst <= 6 |
 | `FoodDataMixin` | `FoodData#tick` (both `heal` call sites) | dehydration halts natural regen and refunds the food cost |
-| `ItemStackMixin` | `#finishUsingItem`, `#addDetailsToTooltip` | grant hydration, render purity + thirst/quenched rows |
+| `ItemStackMixin` | `#finishUsingItem`, `#addDetailsToTooltip` | restore thirst, render purity + thirst/quenched rows |
 | `BottleItemMixin` | `BottleItem#use` | stamp purity on a bottle filled from a water block |
 | `BucketItemMixin` | `BucketItem#use` | stamp purity on a bucket filled from a water block |
 | `LayeredCauldronBlockMixin` | `#createBlockStateDefinition`, `#handlePrecipitation`, `#receiveStalactiteDrip` | add the stored-quality property; grade the water rain or a dripstone added |

@@ -34,7 +34,7 @@ Written for a server owner who has never seen the code. That means:
 - **No em dashes or en dashes.** Use a comma, a period, or "to" for a range. Check with a ripgrep for
   `[—–]` before finishing.
 
-Say the same thing in exactly one place and link to it. Numbers a player cares about (item hydration
+Say the same thing in exactly one place and link to it. Numbers a player cares about (item thirst
 values, sickness chances, purity by location) live on the `docs/features/` page that explains them, and
 `docs/configuration.md` links there instead of repeating the tables.
 
@@ -53,6 +53,6 @@ ones most likely to go stale:
 | A field in `ThirstConfig` | `docs/configuration.md`, both languages |
 | A `/thirst` subcommand | `docs/commands.md` |
 | Exhaustion, climate or damage in `ThirstManager` | `docs/features/thirst-and-quenched.md` |
-| Hydration values, bowls, loot | `docs/features/drinking.md` |
+| Thirst values, bowls, loot | `docs/features/drinking.md` |
 | Anything in `WaterPurity` or a purify recipe | `docs/features/water-purity.md` |
 | Supported Minecraft, Loader or Fabric API version | `docs/installation.md` |

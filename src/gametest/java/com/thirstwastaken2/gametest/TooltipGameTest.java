@@ -81,7 +81,7 @@ public final class TooltipGameTest {
     }
 
     @GameTest
-    public void hydrationRowsAreRendered(GameTestHelper helper) {
+    public void thirstRowsAreRendered(GameTestHelper helper) {
         // The bowl restores 4 thirst and 5 quenched in the default config, so both rows appear.
         List<Component> lines = linesFor(bowl(WaterQuality.fresh(3)));
 

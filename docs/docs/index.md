@@ -20,7 +20,7 @@ Minecraft and further extends the original mod.
 - Four levels of water purity, with sickness for the worst of it
 - Clay and terracotta bowls, plus purification recipes for bottles, bowls and buckets
 - Water bottles in structure chests and Piglin barters
-- Hydration values for a long list of food mod items, with none of them required
+- Thirst values for a long list of food mod items, with none of them required
 - An advancement tab that teaches the water system as you play
 - More than thirty settings, all editable in game
 
