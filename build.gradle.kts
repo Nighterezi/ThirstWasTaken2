@@ -130,6 +130,19 @@ fabricApi.configureDataGeneration {
 // fails: the tasks that read those resources have not been told to wait for them.
 tasks.named("processResources") { dependsOn("stonecutterGenerate") }
 
+/*
+ * Datagen keeps a hash cache of what it last wrote and skips a file whose hash still matches, so a
+ * generated file edited by hand survives a regeneration, and a file no longer generated at all is
+ * only deleted while the cache still remembers writing it. Emptying the directory first costs
+ * nothing at 58 small files and makes the task mean what its name says: what is on disk afterwards
+ * is what the generators produce, and `checkDatagen` can trust the difference.
+ */
+tasks.named("runDatagen") {
+    doFirst {
+        generatedResources.deleteRecursively()
+    }
+}
+
 // The gametests and the dev tools compile and run against the mod itself and against everything the
 // mod uses.
 gametest.compileClasspath += sourceSets.main.get().compileClasspath + sourceSets.main.get().output
@@ -198,6 +211,7 @@ tasks.withType<ProcessResources>().configureEach {
 // not out of this one.
 tasks.withType<Jar>().matching { it.name.endsWith("sourcesJar") }.configureEach {
     dependsOn("stonecutterGenerate")
+    mustRunAfter("runDatagen")
     exclude("**/AGENTS.md", "**/*.bak", "**/.cache/**")
 }
 

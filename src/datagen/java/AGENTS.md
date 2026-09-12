@@ -7,15 +7,19 @@ written by the code in this directory. Nothing under `src/main/generated/` is ed
 ./gradlew ":26.2.x:runDatagen"
 ```
 
-That rewrites `src/main/generated/<minecraft version>/` in place. Commit what it changes.
+That empties `src/main/generated/<minecraft version>/` and writes it again, so what is on disk
+afterwards is exactly what the generators produce — a file edited by hand is reverted and a file no
+longer generated is gone. Commit what it changes. (Emptying first is deliberate: datagen's hash cache
+records what it last wrote, not what is on disk, so without it neither of those two would be noticed.)
 
 ```bash
 ./gradlew ":26.2.x:checkDatagen"
 ```
 
 That regenerates and then fails if the result differs from what is committed, which is what catches
-a generator edited without regenerating, or a generated file edited by hand. It asks `git status`,
-so it reports files that are merely staged as changed too; commit before reading its verdict.
+a generator edited without regenerating, and a generated file edited by hand. It asks `git status`,
+so it reports a file that is merely staged as changed too — which is the right answer, because the
+index then holds something the generators did not produce.
 
 ## How it is wired
 
