@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "thirstwastaken2-datagen",
+  "version": "1.0.0",
+  "name": "ThirstWasTaken2 Data Generation",
+  "description": "Writes every datapack and asset JSON ThirstWasTaken2 ships. Development only, never published.",
+  "environment": "client",
+  "entrypoints": {
+    "fabric-datagen": [
+      "com.thirstwastaken2.datagen.ThirstDatagen"
+    ]
+  },
+  "depends": {
+    "thirstwastaken2": "*",
+    "fabric-data-generation-api-v1": "*"
+  }
+}

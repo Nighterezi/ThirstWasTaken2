@@ -1,25 +1,25 @@
 # src/main/resources
 
-Assets and datapack files for the `thirstwastaken2` namespace, plus the two manifests. This file is
-excluded from the built jar by `processResources` in `build.gradle.kts`; keep that exclude if you add
-more notes here.
+The hand-written half of the mod's assets, plus the two manifests. This file is excluded from the
+built jar by `processResources` in `build.gradle.kts`; keep that exclude if you add more notes here.
 
 ```
 fabric.mod.json              entrypoints (main, client, modmenu), deps, mixin config list
 thirstwastaken2.mixins.json  every mixin class must be listed here
 assets/thirstwastaken2/
   icon.png                   the Mod Menu icon, 512x512
-  items/                     item model *definitions* (26.2 style: range_dispatch, select, …)
-  models/item/               the actual models the definitions point at
   textures/                  item, gui and font sheets
   font/droplets.json         bitmap font for the tooltip droplet rows
   lang/                      9 locales
-data/thirstwastaken2/
-  recipe/                    18 purify recipes + 4 crafting/smelting
-  advancement/               the mod's own tab, plus recipes/misc/ recipe-book unlocks
-  damage_type/dehydrate.json the dehydration damage type
-data/minecraft/tags/         additions to vanilla tags
 ```
+
+**Every JSON that is not one of those is generated**, and lives in
+`src/main/generated/<minecraft version>/`, which is a second resource root of `main`. Recipes,
+advancements, tags, the damage type, item models and model definitions are all written by
+`src/datagen`; editing one by hand is undone by the next `runDatagen` and caught by `checkDatagen`.
+Read [src/datagen/java/AGENTS.md](../../datagen/java/AGENTS.md) before changing any of them. The
+notes below describe what those files mean, which is what you need in order to change the generator
+that writes them.
 
 ## Manifests
 
@@ -44,8 +44,9 @@ Purity 3 has no recipe because it is already clean.
   salt water carries no `water_purity` at all — but it also means **anything that hands out water has
   to stamp both components**, loot included, or its bottles can never be boiled. Bowl results
   additionally write custom model data index 1 so their sprite is right without runtime work.
-- Changing the purity table means editing all 18 files consistently, and the recipes carry it
-  independently of `WaterPurity` — the Java side has no idea these exist.
+- The purity table lives in `ThirstRecipeProvider.PURIFY_TABLE` and the recipes carry it
+  independently of `WaterPurity` — the Java side has no idea these exist. Changing it rewrites all
+  18 files at once, which is the whole reason they are generated.
 
 ## Advancements
 
@@ -58,7 +59,7 @@ trigger would be the idiomatic answer, but the trigger classes moved package twi
 supported Minecraft versions, and awarding by id uses one API that is the same on all of them. The
 cost is that datapacks cannot write their own conditions against these events.
 
-Renaming one of those files means renaming the constant in `ThirstAdvancements` with it, or the
+Renaming one of those means renaming the constant in `ThirstAdvancements` with it, or the
 advancement silently stops being awarded. `AdvancementGameTest` is what catches that.
 
 `boil_water` is the exception: a furnace credits the player who takes the result, so it uses

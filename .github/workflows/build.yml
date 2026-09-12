@@ -91,6 +91,13 @@ jobs:
         # notice them breaking on one version.
         run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:devClasses" --stacktrace
 
+      # Regenerates every datapack and asset JSON and fails if the result differs from what is
+      # committed, which is what catches a generator edited without regenerating and a generated
+      # file edited by hand. Fabric runs the generators out of the client's main before a window is
+      # ever created, so this needs no display either.
+      - name: Check generated resources
+        run: ./gradlew ":${{ matrix.version }}:checkDatagen" --stacktrace
+
       # The GameTest runner replaces the dedicated server, skips the EULA prompt and needs no
       # display, so it runs here exactly as it does locally. It exits non-zero when a test fails.
       - name: Game tests

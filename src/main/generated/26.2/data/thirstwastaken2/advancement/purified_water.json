@@ -1,0 +1,24 @@
+{
+  "parent": "thirstwastaken2:boil_water",
+  "criteria": {
+    "thirst": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.thirstwastaken2.purified_water.description"
+    },
+    "icon": {
+      "id": "minecraft:glass_bottle"
+    },
+    "title": {
+      "translate": "advancements.thirstwastaken2.purified_water.title"
+    }
+  },
+  "requirements": [
+    [
+      "thirst"
+    ]
+  ]
+}

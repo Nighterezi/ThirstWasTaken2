@@ -1,0 +1,24 @@
+{
+  "parent": "thirstwastaken2:root",
+  "criteria": {
+    "thirst": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.thirstwastaken2.first_drink.description"
+    },
+    "icon": {
+      "id": "thirstwastaken2:terracotta_water_bowl"
+    },
+    "title": {
+      "translate": "advancements.thirstwastaken2.first_drink.title"
+    }
+  },
+  "requirements": [
+    [
+      "thirst"
+    ]
+  ]
+}

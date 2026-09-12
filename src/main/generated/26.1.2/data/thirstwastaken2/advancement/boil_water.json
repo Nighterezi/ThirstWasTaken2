@@ -1,0 +1,83 @@
+{
+  "parent": "thirstwastaken2:dirty_water",
+  "criteria": {
+    "bottle_0": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_bottle_0_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "bottle_1": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_bottle_1_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "bottle_2": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_bottle_2_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "bowl_0": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_bowl_0_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "bowl_1": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_bowl_1_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "bowl_2": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_bowl_2_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "bucket_0": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_bucket_0_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "bucket_1": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_bucket_1_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "bucket_2": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_bucket_2_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.thirstwastaken2.boil_water.description"
+    },
+    "icon": {
+      "id": "minecraft:furnace"
+    },
+    "title": {
+      "translate": "advancements.thirstwastaken2.boil_water.title"
+    }
+  },
+  "requirements": [
+    [
+      "bottle_0",
+      "bottle_1",
+      "bottle_2",
+      "bowl_0",
+      "bowl_1",
+      "bowl_2",
+      "bucket_0",
+      "bucket_1",
+      "bucket_2"
+    ]
+  ]
+}

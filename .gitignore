@@ -3,6 +3,9 @@ build/
 versions/
 run/
 out/
+
+# Datagen writes a hash cache next to its output; the output itself is committed.
+src/main/generated/*/.cache/
 *.iml
 .idea/
 tools/

@@ -1,0 +1,25 @@
+{
+  "parent": "thirstwastaken2:first_drink",
+  "criteria": {
+    "thirst": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.thirstwastaken2.nether_drink.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "id": "minecraft:magma_block"
+    },
+    "title": {
+      "translate": "advancements.thirstwastaken2.nether_drink.title"
+    }
+  },
+  "requirements": [
+    [
+      "thirst"
+    ]
+  ]
+}

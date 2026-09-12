@@ -89,16 +89,46 @@ loom {
     runConfigs.all {
         // One run directory per version. Sharing a single one would hand a 26.2 world to a 1.21.11
         // server, which fails on world format rather than on anything the mod did. The gametest
-        // runner gets its own again, so a failed run cannot leave a broken world behind for
-        // runServer. The benchmark shares runServer's directory, world and accepted EULA, so the
+        // runner and datagen get their own again, so a failed run cannot leave a broken world behind
+        // for runServer. The benchmark shares runServer's directory, world and accepted EULA, so the
         // two cannot run at the same time.
-        runDirectory = if (name == "gametest") {
-            rootProject.file("run/${project.name}/gametest")
-        } else {
-            rootProject.file("run/${project.name}")
+        runDirectory = when (name) {
+            "gametest" -> rootProject.file("run/${project.name}/gametest")
+            "datagen" -> rootProject.file("run/${project.name}/datagen")
+            else -> rootProject.file("run/${project.name}")
         }
     }
 }
+
+/**
+ * Every datapack and asset JSON the mod ships, written by `src/datagen`. The directory is keyed by
+ * Minecraft version rather than by build node, because two nodes of the same Minecraft version on
+ * different loaders produce byte-identical files and should share one directory. It is a resource
+ * root of `main`, so the jar picks it up with no further wiring.
+ *
+ * Regenerate with `:<version>:runDatagen`; `:<version>:checkDatagen` fails when the committed files
+ * and the generators have drifted apart. See src/datagen/java/AGENTS.md.
+ */
+val generatedResources: File = rootProject.file("src/main/generated/${sc.current.version}")
+
+fabricApi.configureDataGeneration {
+    outputDirectory.set(generatedResources)
+    // Its own source set and its own small mod, like the gametests and the dev tools, so none of the
+    // generator code can reach the published jar.
+    createSourceSet = true
+    modId = "thirstwastaken2-datagen"
+    // The item model providers live in net.minecraft.client.data, so datagen runs as a client.
+    client = true
+    // Every advancement the mod awards by id is `minecraft:impossible`, which strict validation
+    // reads as an unreachable advancement.
+    strictValidation = false
+}
+
+// Loom adds the datagen output to `main`'s resources by reading the source directories back and
+// setting them again, which flattens them to plain files and loses the task dependency Stonecutter
+// had attached to the one it generates. Without this, building any node other than the active one
+// fails: the tasks that read those resources have not been told to wait for them.
+tasks.named("processResources") { dependsOn("stonecutterGenerate") }
 
 // The gametests and the dev tools compile and run against the mod itself and against everything the
 // mod uses.
@@ -162,9 +192,13 @@ tasks.withType<ProcessResources>().configureEach {
     exclude("**/AGENTS.md", "**/*.bak")
 }
 
-// Registered lazily: withSourcesJar() below adds the task after this block is evaluated.
+// Registered lazily: withSourcesJar() below adds the task after this block is evaluated. The
+// dependency is the one described above, which the sources jar needs for the same reason
+// processResources does; `.cache` is datagen's hash cache, which Loom keeps out of the mod jar but
+// not out of this one.
 tasks.withType<Jar>().matching { it.name.endsWith("sourcesJar") }.configureEach {
-    exclude("**/AGENTS.md", "**/*.bak")
+    dependsOn("stonecutterGenerate")
+    exclude("**/AGENTS.md", "**/*.bak", "**/.cache/**")
 }
 
 tasks.withType<JavaCompile>().configureEach {
@@ -186,6 +220,36 @@ java {
 tasks.jar {
     from(rootProject.file("LICENSE")) {
         rename { "${it}_$modId" }
+    }
+}
+
+/**
+ * Regenerates the datapack and asset JSON and fails when the result differs from what is committed.
+ * This is the check that keeps `src/datagen` and `src/main/generated` from drifting apart: editing a
+ * generated file by hand, or a generator without regenerating, both fail here.
+ *
+ * It asks git rather than diffing trees itself, because git already knows which files are committed
+ * and which are new, and datagen writes in place.
+ */
+tasks.register("checkDatagen") {
+    group = "verification"
+    description = "Fails when the committed generated resources do not match what the generators produce"
+    dependsOn("runDatagen")
+
+    val root = rootProject.projectDir
+    val generated = generatedResources
+
+    doLast {
+        val relative = root.toPath().relativize(generated.toPath()).toString().replace('\\', '/')
+        val process = ProcessBuilder("git", "status", "--porcelain", "--", relative)
+            .directory(root)
+            .redirectErrorStream(true)
+            .start()
+        val changes = process.inputStream.bufferedReader().readText().trim()
+        check(process.waitFor() == 0) { "git status failed:\n$changes" }
+        check(changes.isEmpty()) {
+            "Generated resources are out of date. Run \":${project.name}:runDatagen\" and commit:\n$changes"
+        }
     }
 }
 

@@ -1,0 +1,26 @@
+{
+  "criteria": {
+    "thirst": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "background": "minecraft:block/terracotta",
+    "description": {
+      "translate": "advancements.thirstwastaken2.root.description"
+    },
+    "icon": {
+      "id": "thirstwastaken2:waterskin"
+    },
+    "show_toast": false,
+    "title": {
+      "translate": "advancements.thirstwastaken2.root.title"
+    }
+  },
+  "requirements": [
+    [
+      "thirst"
+    ]
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "entries": [
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "thirstwastaken2:item/waterskin_1"
+        },
+        "threshold": 1.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "thirstwastaken2:item/waterskin_2"
+        },
+        "threshold": 2.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "thirstwastaken2:item/waterskin_3"
+        },
+        "threshold": 3.0
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "thirstwastaken2:item/waterskin_0"
+    },
+    "property": "minecraft:custom_model_data"
+  }
+}

@@ -47,6 +47,18 @@ build on a failed assertion. CI runs it for every version. See
 [src/gametest/java/AGENTS.md](src/gametest/java/AGENTS.md) before adding to it, including what it
 deliberately does not cover.
 
+Regenerate every datapack and asset JSON the mod ships:
+
+```bash
+./gradlew ":26.1.x:runDatagen"
+```
+
+Recipes, advancements, tags, the damage type and the item models are all written by `src/datagen`
+into `src/main/generated/<minecraft version>/`, never edited by hand. `":<version>:checkDatagen"`
+regenerates and then fails if the result differs from what is committed; CI runs it for every
+version. See [src/datagen/java/AGENTS.md](src/datagen/java/AGENTS.md), including why the three
+versions produce different bytes from one body of code.
+
 Measure what the mod costs a server, in time and memory, without anyone joining:
 
 ```bash
@@ -234,7 +246,8 @@ Each area of the tree carries its own `AGENTS.md` with rules and conventions loc
 | Automated in-game tests | [src/gametest/java/AGENTS.md](src/gametest/java/AGENTS.md) |
 | Performance and memory benchmark, dev-only tooling | [src/dev/java/AGENTS.md](src/dev/java/AGENTS.md) |
 | Client HUD element rendering & config screen contract | [src/client/java/com/thirstwastaken2/client/AGENTS.md](src/client/java/com/thirstwastaken2/client/AGENTS.md) |
-| Manifests, recipes, tags, models, fonts, lang keys | [src/main/resources/AGENTS.md](src/main/resources/AGENTS.md) |
+| Manifests, textures, fonts, lang keys, and what the generated JSON means | [src/main/resources/AGENTS.md](src/main/resources/AGENTS.md) |
+| The generators for every recipe, advancement, tag and model | [src/datagen/java/AGENTS.md](src/datagen/java/AGENTS.md) |
 | End-user documentation site (VitePress) | [docs/AGENTS.md](docs/AGENTS.md) |
 
 ### Layout
@@ -290,12 +303,19 @@ src/dev/java/com/thirstwastaken2/dev/   dev-only tools mod, never packaged
   ThirstDev.java                       entrypoint: /thirst benchmark and the runBenchmark autorun
   benchmark/                           simulated players, tick and interaction scenarios, JSON report
 
-src/main/resources/
+src/datagen/java/com/thirstwastaken2/datagen/  datagen-only mod, never packaged
+  ThirstDatagen.java                   entrypoint: every provider has to be listed here
+  Thirst*Provider.java                 recipes, advancements, tags, damage type, models
+
+src/main/resources/                     the hand-written assets only
   fabric.mod.json                      entrypoints (main, client, modmenu); templated per version
   thirstwastaken2.mixins.json           mixin registry
-  assets/thirstwastaken2/               textures, models, lang (9 locales)
+  assets/thirstwastaken2/               textures, lang (9 locales), icon.png
   assets/thirstwastaken2/font/          droplets.json: tooltip droplet glyphs (U+E000..U+E007)
-  data/thirstwastaken2/                 recipes, advancements, damage type
+
+src/main/generated/<minecraft version>/  written by src/datagen, a resource root of main
+  assets/thirstwastaken2/               item models and model definitions
+  data/thirstwastaken2/                 recipes, advancements, damage type, biome tag
   data/minecraft/tags/                 bypasses_armor
 ```
 
