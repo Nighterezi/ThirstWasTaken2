@@ -81,6 +81,15 @@ below full.
 
 Default `2`, clean. Used for any water the mod cannot grade, including drinks added by other mods.
 
+### rainwaterPurity
+
+Default `2`, clean. The grade a cauldron gets when rain fills it.
+
+### dripstonePurity
+
+Default `3`, pure. The grade a cauldron gets when a pointed dripstone drips into it. See
+[cauldrons](/docs/features/water-purity#mixing-and-cauldrons).
+
 ### quenchWhenDebuffed
 
 Default `true`. Water that poisons you still fills the bar. Turn it off to make bad water a pure

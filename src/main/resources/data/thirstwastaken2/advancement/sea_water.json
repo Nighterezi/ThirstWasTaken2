@@ -1,0 +1,25 @@
+{
+  "parent": "thirstwastaken2:first_drink",
+  "criteria": {
+    "thirst": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "thirst"
+    ]
+  ],
+  "display": {
+    "icon": {
+      "id": "minecraft:kelp"
+    },
+    "title": {
+      "translate": "advancements.thirstwastaken2.sea_water.title"
+    },
+    "description": {
+      "translate": "advancements.thirstwastaken2.sea_water.description"
+    },
+    "frame": "goal"
+  }
+}

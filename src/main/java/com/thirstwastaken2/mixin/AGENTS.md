@@ -25,7 +25,8 @@ Vanilla hooks. Everything the mod cannot do through a Fabric API event lands her
 | `ItemStackMixin` | `use` (HEAD), `finishUsingItem` (HEAD), `addDetailsToTooltip` (TAIL) | block plain water at full thirst; grant hydration on consume; append waterskin, purity and droplet lines |
 | `BottleItemMixin` | `BottleItem#use` | stamp sampled quality onto a bottle filled from a water block |
 | `BucketItemMixin` | `BucketItem#use` | stamp sampled quality onto a bucket filled from a water block |
-| `LayeredCauldronBlockMixin` | `createBlockStateDefinition` | add purity and salinity properties |
+| `LayeredCauldronBlockMixin` | `createBlockStateDefinition`, `handlePrecipitation`, `receiveStalactiteDrip` | add the quality property; grade water that rain or a dripstone added |
+| `CauldronBlockMixin` | `handlePrecipitation`, `receiveStalactiteDrip` | the same two fills, on the empty cauldron they turn into a water cauldron |
 
 ## The fragile ones
 
@@ -35,6 +36,10 @@ view (`ClipContext.Fluid.SOURCE_ONLY`) and stores the sampled quality, then a `@
 resulting stack. They depend on an exact target descriptor, and the bucket one also on `ordinal = 1`
 of `ItemUtils#createFilledResult` — the first call is the empty-bucket branch. Both break on a
 vanilla refactor rather than misbehaving, which is the intent.
+
+The two cauldron fill hooks inject at `RETURN`, not `TAIL`: vanilla returns early when the roll
+fails, and only `RETURN` covers every exit. Both call into `WaterInteractions`, which decides from
+the before and after blockstates whether any water was actually added.
 
 `FoodDataMixin` uses `@Redirect` with `ordinal = 0` (saturation-driven regen) and `ordinal = 1`
 (hunger-driven regen). Redirecting means vanilla's `heal` is *not* called unless the mixin calls it, so

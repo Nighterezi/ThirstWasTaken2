@@ -17,6 +17,7 @@ thirst, and the client only receives it through the attachment sync.
 | A vanilla behaviour hook | `mixin/` (has its own AGENTS.md) |
 | Loot, optional mod integrations | `compat/` (has its own AGENTS.md) |
 | Any line the mod adds to a tooltip | `tooltip/ThirstTooltip` (see the rules below) |
+| An advancement the mod awards | `advancement/ThirstAdvancements`, plus its JSON in `data/thirstwastaken2/advancement/` |
 | `/thirst` | `command/ThirstCommands` |
 | Dev-only tooling such as `/thirst benchmark` | `src/dev/java` (own AGENTS.md), gated on `ThirstWasTaken2.DEV` |
 

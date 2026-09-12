@@ -14,7 +14,9 @@ khung.
 | Vật phẩm | Độ khát | Đã khát |
 |---|---|---|
 | Mọi loại thuốc, kể cả chai nước | 6 | 8 |
+| Xô sữa | 6 | 8 |
 | Súp củ dền | 5 | 7 |
+| Chai mật ong | 4 | 6 |
 | Lát dưa hấu | 4 | 5 |
 | Bát đất nung đựng nước | 4 | 5 |
 | Túi da đựng nước, mỗi lần uống | 4 | 5 |
@@ -45,6 +47,9 @@ Mod thêm một loại bát chịu được việc đựng nước.
    bạn không cần khối nguồn.
 
 Uống xong bạn cầm lại chiếc bát đất nung rỗng.
+
+Mọi công thức mod thêm vào đều hiện trong sách công thức ngay khi bạn nhặt được một nguyên liệu của
+nó, nên không cần tra cứu gì bên ngoài trò chơi.
 
 Còn một công thức chế tạo nữa, bát đất nung cộng xô nước, và xô rỗng được trả lại. Nước làm theo cách
 đó bị tính là bẩn, vì không có gì cho công thức biết chiếc xô đã đi qua đâu. Múc thẳng từ thế giới vừa
@@ -80,3 +85,18 @@ Chai nước tự xuất hiện, ở mức có thể uống hoặc đã tinh l�
 - Đổi đồ với Piglin, tuy hiếm hơn nhiều so với trong rương
 
 Chừng đó đủ để giữ mạng một người chơi ở Nether, nơi múc nước từ mặt đất không phải là một lựa chọn.
+
+## Thành tựu
+
+Mod có mục thành tựu riêng. Đây là một chuyến đi qua hệ thống nước chứ không phải danh sách việc phải
+làm, nên phần lớn thành tựu có được nhờ uống nước.
+
+| Thành tựu | Cách đạt được |
+|---|---|
+| Thirst Was Taken | Nhận ngay khi bắt đầu chơi |
+| Ngụm đầu tiên | Uống ngụm nước đầu tiên |
+| Ngụm nước đắng | Uống nước bẩn |
+| Đun sôi | Lọc sạch một bình nước trong lò nung |
+| Trong vắt | Uống nước ở mức tinh khiết nhất |
+| Mặn chát | Uống nước biển |
+| Nóng khô | Uống nước ở Nether, hoặc chiều không gian nào làm nước bốc hơi |

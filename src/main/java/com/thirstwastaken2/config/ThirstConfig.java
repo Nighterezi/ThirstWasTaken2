@@ -49,6 +49,13 @@ public final class ThirstConfig {
 
     // ---- water purity -----------------------------------------------------
     public int defaultPurity = 2;
+    /**
+     * Grade a cauldron is given when rain fills it. Chosen here rather than left to
+     * {@link #defaultPurity}, so that collecting rain is a decision with a known outcome.
+     */
+    public int rainwaterPurity = 2;
+    /** Grade a cauldron is given when a pointed dripstone drips into it, having filtered it. */
+    public int dripstonePurity = 3;
     public boolean quenchWhenDebuffed = true;
     public int[] nauseaChance = {100, 50, 5, 0};
     public int[] poisonChance = {30, 10, 0, 0};
@@ -129,6 +136,10 @@ public final class ThirstConfig {
         if (drinks == null) drinks = defaultDrinks();
         // Existing config files predate the waterskin, so merge its required built-in value once.
         drinks.putIfAbsent("thirstwastaken2:waterskin", new int[]{4, 5});
+        // Same for milk and honey, added later still. A player who does not want them can set both
+        // values to zero or list the item in itemBlacklist; only a missing key is filled in.
+        drinks.putIfAbsent("minecraft:milk_bucket", new int[]{6, 8});
+        drinks.putIfAbsent("minecraft:honey_bottle", new int[]{4, 6});
         if (foods == null) foods = defaultFoods();
         if (itemBlacklist == null) itemBlacklist = new LinkedHashSet<>();
         if (nauseaChance == null || nauseaChance.length != 4) nauseaChance = new int[]{100, 50, 5, 0};
@@ -141,6 +152,8 @@ public final class ThirstConfig {
             poisonChance[i] = clamp(poisonChance[i], 0, 100);
         }
         defaultPurity = clamp(defaultPurity, 0, 3);
+        rainwaterPurity = clamp(rainwaterPurity, 0, 3);
+        dripstonePurity = clamp(dripstonePurity, 0, 3);
         fireResistanceDehydrationPercent = clamp(fireResistanceDehydrationPercent, 0, 100);
         handDrinkingHydration = clamp(handDrinkingHydration, 0, 20);
         handDrinkingQuenched = clamp(handDrinkingQuenched, 0, 20);
@@ -172,6 +185,10 @@ public final class ThirstConfig {
     private static Map<String, int[]> defaultDrinks() {
         Map<String, int[]> values = new LinkedHashMap<>();
         put(values, 6, 8, "minecraft:potion");
+        // Milk is as good as a bottle of water and never needs purifying, but it costs a bucket and
+        // a cow. Honey is half the drink and lingers a little longer than its size suggests.
+        put(values, 6, 8, "minecraft:milk_bucket");
+        put(values, 4, 6, "minecraft:honey_bottle");
         put(values, 4, 5, "thirstwastaken2:terracotta_water_bowl");
         put(values, 4, 5, "thirstwastaken2:waterskin");
         put(values, 10, 14, "farmersrespite:green_tea", "farmersrespite:yellow_tea", "farmersrespite:black_tea");

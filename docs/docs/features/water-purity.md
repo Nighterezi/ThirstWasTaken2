@@ -45,6 +45,18 @@ pure drinks and one dirty drink come out clean, so one good mouthful cannot resc
 A cauldron keeps the worse of what it holds and what is poured in. Water drawn back out into a
 bottle, bucket or waterskin keeps that grade.
 
+A cauldron also fills on its own, and each way of filling has a grade of its own.
+
+| How the cauldron filled | Grade |
+|---|---|
+| Rain | Clean, set by [rainwaterPurity](/docs/configuration#rainwaterpurity) |
+| A pointed dripstone dripping into it | Pure, set by [dripstonePurity](/docs/configuration#dripstonepurity) |
+
+Rain is free and needs nothing built, so it is good but not the best water in the game. A dripstone
+has to be placed under a water source with the cauldron below it, and it fills slowly, but the water
+has been through the stone and comes out as clean as boiling would make it. Neither improves what is
+already in the cauldron: rain falling into dirty water leaves it dirty.
+
 ## Drinking bad water
 
 Fresh water always quenches thirst, whatever its grade. The risk is what changes.

@@ -68,6 +68,10 @@ public final class ThirstConfigScreen extends OptionsSubScreen {
         list.addHeader(Component.translatable("thirstwastaken2.config.category.purity"));
         list.addSmall(
                 slider("default_purity", config.defaultPurity, 0, 3, value -> config.defaultPurity = value),
+                slider("rainwater_purity", config.rainwaterPurity, 0, 3,
+                        value -> config.rainwaterPurity = value),
+                slider("dripstone_purity", config.dripstonePurity, 0, 3,
+                        value -> config.dripstonePurity = value),
                 toggle("quench_when_debuffed", config.quenchWhenDebuffed,
                         value -> config.quenchWhenDebuffed = value));
 

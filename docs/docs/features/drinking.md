@@ -14,7 +14,9 @@ These are the values the mod ships with for vanilla and its own items:
 | Item | Hydration | Quenched |
 |---|---|---|
 | Any potion, water bottles included | 6 | 8 |
+| Milk bucket | 6 | 8 |
 | Beetroot soup | 5 | 7 |
+| Honey bottle | 4 | 6 |
 | Melon slice | 4 | 5 |
 | Terracotta water bowl | 4 | 5 |
 | Waterskin, per drink | 4 | 5 |
@@ -46,6 +48,9 @@ The mod adds a bowl that survives being filled with water.
    works, you do not need a source block.
 
 Drinking one leaves you holding the empty terracotta bowl again.
+
+Every recipe the mod adds appears in the recipe book once you pick up an ingredient for it, so there
+is nothing to look up outside the game.
 
 There is also a crafting recipe, a terracotta bowl plus a water bucket, which returns the empty
 bucket. Water made that way counts as dirty, because nothing tells the recipe where the bucket had
@@ -82,3 +87,18 @@ Water bottles turn up on their own, at acceptable or purified quality, one to th
 
 That is enough to keep a player alive in the Nether, where filling anything from the ground is not
 an option.
+
+## Advancements
+
+The mod has its own advancement tab. It is a guided tour of the water system rather than a
+checklist, so most of it is earned by drinking.
+
+| Advancement | How to earn it |
+|---|---|
+| Thirst Was Taken | Given when you start playing |
+| Wet Your Whistle | Take your first drink of water |
+| A Bitter Sip | Drink dirty water |
+| Rolling Boil | Purify a container of water in a furnace |
+| Crystal Clear | Drink water of the purest grade |
+| Salt of the Earth | Drink sea water |
+| Dry Heat | Drink in the Nether, or any dimension that boils water away |

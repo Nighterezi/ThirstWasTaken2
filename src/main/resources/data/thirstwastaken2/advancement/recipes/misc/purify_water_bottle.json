@@ -1,0 +1,48 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "thirstwastaken2:purify_water_bottle_0_smelting"
+      }
+    },
+    "has_glass_bottle": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:glass_bottle"
+          }
+        ]
+      }
+    },
+    "has_potion": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:potion"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_glass_bottle",
+      "has_potion"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "thirstwastaken2:purify_water_bottle_0_smelting",
+      "thirstwastaken2:purify_water_bottle_0_campfire",
+      "thirstwastaken2:purify_water_bottle_1_smelting",
+      "thirstwastaken2:purify_water_bottle_1_campfire",
+      "thirstwastaken2:purify_water_bottle_2_smelting",
+      "thirstwastaken2:purify_water_bottle_2_campfire"
+    ]
+  }
+}

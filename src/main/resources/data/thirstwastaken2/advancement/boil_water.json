@@ -1,0 +1,83 @@
+{
+  "parent": "thirstwastaken2:dirty_water",
+  "criteria": {
+    "bottle_0": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_bottle_0_smelting"
+      }
+    },
+    "bottle_1": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_bottle_1_smelting"
+      }
+    },
+    "bottle_2": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_bottle_2_smelting"
+      }
+    },
+    "bowl_0": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_bowl_0_smelting"
+      }
+    },
+    "bowl_1": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_bowl_1_smelting"
+      }
+    },
+    "bowl_2": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_bowl_2_smelting"
+      }
+    },
+    "bucket_0": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_bucket_0_smelting"
+      }
+    },
+    "bucket_1": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_bucket_1_smelting"
+      }
+    },
+    "bucket_2": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_bucket_2_smelting"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "bottle_0",
+      "bottle_1",
+      "bottle_2",
+      "bowl_0",
+      "bowl_1",
+      "bowl_2",
+      "bucket_0",
+      "bucket_1",
+      "bucket_2"
+    ]
+  ],
+  "display": {
+    "icon": {
+      "id": "minecraft:furnace"
+    },
+    "title": {
+      "translate": "advancements.thirstwastaken2.boil_water.title"
+    },
+    "description": {
+      "translate": "advancements.thirstwastaken2.boil_water.description"
+    }
+  }
+}

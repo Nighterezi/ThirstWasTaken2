@@ -5,6 +5,7 @@
   "mixins": [
     "BottleItemMixin",
     "BucketItemMixin",
+    "CauldronBlockMixin",
     "FoodDataMixin",
     "LayeredCauldronBlockMixin",
     "ItemStackMixin",

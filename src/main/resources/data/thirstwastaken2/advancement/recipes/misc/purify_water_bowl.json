@@ -1,0 +1,48 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "thirstwastaken2:purify_water_bowl_0_smelting"
+      }
+    },
+    "has_terracotta_bowl": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "thirstwastaken2:terracotta_bowl"
+          }
+        ]
+      }
+    },
+    "has_terracotta_water_bowl": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "thirstwastaken2:terracotta_water_bowl"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_terracotta_bowl",
+      "has_terracotta_water_bowl"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "thirstwastaken2:purify_water_bowl_0_smelting",
+      "thirstwastaken2:purify_water_bowl_0_campfire",
+      "thirstwastaken2:purify_water_bowl_1_smelting",
+      "thirstwastaken2:purify_water_bowl_1_campfire",
+      "thirstwastaken2:purify_water_bowl_2_smelting",
+      "thirstwastaken2:purify_water_bowl_2_campfire"
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "thirstwastaken2:terracotta_water_bowl"
+      }
+    },
+    "has_terracotta_bowl": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "thirstwastaken2:terracotta_bowl"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_terracotta_bowl"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "thirstwastaken2:terracotta_water_bowl"
+    ]
+  }
+}

@@ -10,6 +10,9 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+
+import java.util.List;
 
 /**
  * What drinking water of a given quality does to the player.
@@ -66,6 +69,26 @@ public final class WaterEffectsGameTest {
         int thirst = ThirstManager.get(player).thirst();
         TestFixtures.check(helper, thirst > 4,
                 "drinking a purified water bowl should raise thirst above 4, got " + thirst);
+        helper.succeed();
+    }
+
+    /**
+     * Milk and honey are the two drinks vanilla has that are not water, and both used to be worth
+     * nothing. Their values live in the config, which merges them into files written before they
+     * existed, so this asks the API rather than the defaults.
+     */
+    @GameTest
+    public void milkAndHoneyQuenchThirst(GameTestHelper helper) {
+        for (ItemStack drink : List.of(new ItemStack(Items.MILK_BUCKET), new ItemStack(Items.HONEY_BOTTLE))) {
+            ServerPlayer player = helper.makeMockServerPlayerInLevel();
+            ThirstManager.set(player, ThirstManager.get(player).withLevels(4, 0));
+
+            ThirstManager.drinkItem(player, drink);
+
+            int thirst = ThirstManager.get(player).thirst();
+            TestFixtures.check(helper, thirst > 4,
+                    drink.getItem() + " should raise thirst above 4, got " + thirst);
+        }
         helper.succeed();
     }
 

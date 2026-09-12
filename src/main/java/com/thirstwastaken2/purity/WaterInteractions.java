@@ -1,5 +1,6 @@
 package com.thirstwastaken2.purity;
 
+import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.item.WaterskinItem;
 import net.minecraft.core.BlockPos;
@@ -19,6 +20,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -137,6 +140,48 @@ public final class WaterInteractions {
                 ? () -> storeInCauldron(level, pos, transferred)
                 : () -> stampDrawnContainer(player, hand, transferred));
         return InteractionResult.PASS;
+    }
+
+    /**
+     * A cauldron vanilla filled from the sky. Rain is clean but open to whatever it falls through,
+     * so it lands on its own configured grade rather than inheriting {@code defaultPurity}.
+     */
+    public static void filledByRain(BlockState before, Level level, BlockPos pos) {
+        naturallyFilled(before, level, pos, ThirstConfig.get().rainwaterPurity);
+    }
+
+    /**
+     * A cauldron a pointed dripstone dripped into. The water has seeped through stone to get there,
+     * which is slow, needs a build to arrange, and is the cleanest water the world hands out for
+     * free. Dripstone also drips lava, which reaches no cauldron this mod grades.
+     */
+    public static void filledByDripstone(BlockState before, Level level, BlockPos pos, Fluid fluid) {
+        // Identity, not the water tag: vanilla's own drip check compares against this instance, and
+        // Fluid#is(TagKey) is deprecated.
+        if (fluid == Fluids.WATER) {
+            naturallyFilled(before, level, pos, ThirstConfig.get().dripstonePurity);
+        }
+    }
+
+    /**
+     * Stores the grade of water that arrived on its own, with nobody pouring anything in.
+     *
+     * <p>Both hooks run whether or not vanilla decided to add a layer - rain only fills a cauldron
+     * on a fraction of its chances, and a full one never fills - so the block having changed at all
+     * is the only proof water was added. The cauldron then keeps the worse of what it already held
+     * and what fell into it, exactly like pouring a container in.
+     */
+    private static void naturallyFilled(BlockState before, Level level, BlockPos pos, int grade) {
+        if (level.isClientSide()) return;
+        BlockState after = level.getBlockState(pos);
+        // Blockstates are canonical instances, so an unchanged block is the same object.
+        if (after == before || !after.hasProperty(WaterPurity.BLOCK_PURITY)) return;
+
+        WaterQuality stored = WaterPurity.storedQuality(after);
+        WaterQuality quality = WaterQuality.fresh(grade);
+        if (stored != null) quality = worse(stored, quality);
+        if (quality.equals(stored)) return;
+        storeInCauldron(level, pos, quality);
     }
 
     public static void tick(MinecraftServer server) {

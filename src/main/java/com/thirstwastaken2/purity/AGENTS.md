@@ -50,6 +50,12 @@ that know the encoding.
   up a grade. Salt is not averaged at all: a single salty serving turns the whole skin into sea
   water. Cauldrons cannot average, because their blockstate has room for one value, so they keep the
   worse of what they hold and what is poured in.
+- **Water that arrives on its own is graded where it lands.** Rain and pointed dripstones fill
+  cauldrons with nobody pouring anything in, so `filledByRain` and `filledByDripstone` stamp
+  `ThirstConfig.rainwaterPurity` and `dripstonePurity` rather than letting the cauldron fall through
+  to `defaultPurity`. Both keep the worse of what the cauldron held and what fell in, like pouring,
+  and both check that the blockstate actually changed: the vanilla hooks run whether or not a layer
+  was added.
 - **Sampling is interaction-only and server-only.** The fixed 5x3x5 block inspection must never move
   into a tick or tooltip path. Ocean and beach biomes return `Salt` before that scan runs. Bottle and
   bucket mixins skip sampling on the prediction client.

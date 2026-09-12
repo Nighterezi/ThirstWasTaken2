@@ -8,6 +8,7 @@ more notes here.
 fabric.mod.json              entrypoints (main, client, modmenu), deps, mixin config list
 thirstwastaken2.mixins.json  every mixin class must be listed here
 assets/thirstwastaken2/
+  icon.png                   the Mod Menu icon, 512x512
   items/                     item model *definitions* (26.2 style: range_dispatch, select, …)
   models/item/               the actual models the definitions point at
   textures/                  item, gui and font sheets
@@ -15,6 +16,7 @@ assets/thirstwastaken2/
   lang/                      9 locales
 data/thirstwastaken2/
   recipe/                    18 purify recipes + 4 crafting/smelting
+  advancement/               the mod's own tab, plus recipes/misc/ recipe-book unlocks
   damage_type/dehydrate.json the dehydration damage type
 data/minecraft/tags/         additions to vanilla tags
 ```
@@ -44,6 +46,29 @@ Purity 3 has no recipe because it is already clean.
   additionally write custom model data index 1 so their sprite is right without runtime work.
 - Changing the purity table means editing all 18 files consistently, and the recipes carry it
   independently of `WaterPurity` — the Java side has no idea these exist.
+
+## Advancements
+
+`advancement/` holds two unrelated things.
+
+`advancement/*.json` is the mod's own tab, rooted at `root`. Every one of them except `root` and
+`boil_water` has a single `minecraft:impossible` criterion named `thirst` and is granted from
+`com.thirstwastaken2.advancement.ThirstAdvancements` by id. That is a deliberate trade: a custom
+trigger would be the idiomatic answer, but the trigger classes moved package twice across the three
+supported Minecraft versions, and awarding by id uses one API that is the same on all of them. The
+cost is that datapacks cannot write their own conditions against these events.
+
+Renaming one of those files means renaming the constant in `ThirstAdvancements` with it, or the
+advancement silently stops being awarded. `AdvancementGameTest` is what catches that.
+
+`boil_water` is the exception: a furnace credits the player who takes the result, so it uses
+vanilla's `minecraft:recipe_crafted` with one criterion per smelting recipe and a single `requirements`
+list, which makes them an OR. The nine campfire recipes cannot be in it, because a campfire has no
+player to credit.
+
+`advancement/recipes/misc/*.json` are ordinary recipe-book unlocks with no `display`, one per
+craftable plus one per container for the purify recipes, six at a time. Without them the mod's
+recipes never appear in the recipe book at all.
 
 ## Tags
 
@@ -80,6 +105,15 @@ player's resource pack gives potions. The bucket has no tinted overlay layer to 
 `textures/item/salt_water_bucket.png` is a one-off recolour of vanilla's water bucket: same bucket,
 sea-coloured water.
 
+## The mod icon
+
+`icon.png` is the one asset the mod list shows, and it draws it at 32 pixels, which the wordmark
+logo could not survive. It is the full droplet frame of `textures/gui/thirst_icons.png` scaled up 32
+times on a padded 400x400 canvas, by `tools/generate_mod_icon.py`, which writes the identical file to
+`docs/public/logo-small.png` in the same run. Recolouring the thirst bar therefore means rerunning
+that script, or the mod list keeps the old droplet. The wordmark stays the docs hero and Modrinth
+artwork, where there is room to read it.
+
 ## Fonts and GUI sheets
 
 `font/droplets.json` maps `U+E000..U+E007` onto `textures/font/droplets.png` at height 9, ascent 8.
@@ -106,6 +140,7 @@ Key families, and who reads them:
 | `tooltip.thirstwastaken2.*` | `ThirstTooltip`: waterskin contents and the clay bowl hint |
 | `item.thirstwastaken2.*`, `block.thirstwastaken2.*`, `itemGroup.thirstwastaken2` | registration |
 | `command.thirstwastaken2.*` | `ThirstCommands` |
+| `advancements.thirstwastaken2.*` | the `title` and `description` of every advancement in `data/thirstwastaken2/advancement/` |
 | `death.attack.dehydrate*` | the `dehydrate` damage type's `message_id` |
 
 Player-facing wording in `vi_vn.json` is the source of truth for the Vietnamese docs site, so keep the

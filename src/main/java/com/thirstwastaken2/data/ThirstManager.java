@@ -1,11 +1,13 @@
 package com.thirstwastaken2.data;
 
+import com.thirstwastaken2.advancement.ThirstAdvancements;
 import com.thirstwastaken2.api.ThirstApi;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.damage.ThirstDamageTypes;
 import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.platform.Vanilla;
 import com.thirstwastaken2.purity.WaterPurity;
+import com.thirstwastaken2.purity.WaterQuality;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -98,7 +100,13 @@ public final class ThirstManager {
 
     public static void drinkItem(Player player, ItemStack stack) {
         int[] value = ThirstApi.hydration(stack);
-        if (value != null && WaterPurity.applyEffects(player, stack)) drink(player, value[0], value[1]);
+        if (value == null) return;
+        boolean quenches = WaterPurity.applyEffects(player, stack);
+        // Salt water is drunk without quenching anything, and still counts as having been drunk.
+        if (WaterPurity.isWaterContainer(stack)) {
+            ThirstAdvancements.drank(player, WaterPurity.quality(stack));
+        }
+        if (quenches) drink(player, value[0], value[1]);
     }
 
     public static void tick(MinecraftServer server) {
@@ -181,11 +189,13 @@ public final class ThirstManager {
             if (!level.getFluidState(pos).is(FluidTags.WATER)) return InteractionResult.PASS;
         }
 
+        WaterQuality quality = WaterPurity.sampleAt(level, pos);
         ItemStack sample = WaterPurity.setQuality(
-                new ItemStack(ThirstItems.TERRACOTTA_WATER_BOWL), WaterPurity.sampleAt(level, pos));
+                new ItemStack(ThirstItems.TERRACOTTA_WATER_BOWL), quality);
         if (WaterPurity.applyEffects(player, sample)) {
             drink(player, config.handDrinkingHydration, config.handDrinkingQuenched);
         }
+        ThirstAdvancements.drank(player, quality);
         // Player#playSound routes through Level#playSound with itself as the excluded listener, so a
         // server-side call is heard by everyone *except* the drinker. Vanilla gets away with it
         // because consumption effects also run client-side; hand drinking is server-only, so the

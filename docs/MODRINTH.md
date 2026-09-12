@@ -23,8 +23,8 @@ droplets. At zero, thirst starts taking health.
 
 ## Drinking
 
-Almost anything wet works. Potions, soups, juices and drinks from other mods all restore thirst, and
-a plain water bottle is the simplest of them. Sneaking and using an empty hand on water drinks
+Almost anything wet works. Potions, soups, juices, milk, honey and drinks from other mods all restore
+thirst, and a plain water bottle is the simplest of them. Sneaking and using an empty hand on water drinks
 straight from the source, which costs nothing and is rarely clean.
 
 Every container remembers where its water came from, and every tooltip says so.
@@ -62,6 +62,9 @@ A furnace or a campfire raises the grade of anything drinkable, bottles, buckets
 | Murky | Pure |
 | Clean | Pure |
 
+A cauldron left out in the rain fills with clean water. A pointed dripstone dripping into one fills
+it with pure water, slowly, and without any fuel.
+
 ## Carrying it
 
 Clay is the early answer. Three clay balls make four Clay Bowls, a furnace turns each one into a
@@ -75,6 +78,9 @@ purity, and mixes what is poured into it, which makes three leather and a piece 
 trade.
 
 ![The waterskin recipe, three leather and one string in a crafting table](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/waterskin-recipe.png)
+
+Every recipe shows up in the recipe book, and the mod has an advancement tab that walks through the
+water system as it is discovered.
 
 ## Settings
 

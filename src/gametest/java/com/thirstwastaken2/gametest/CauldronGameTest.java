@@ -2,6 +2,7 @@ package com.thirstwastaken2.gametest;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
+import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.purity.WaterInteractions;
 import com.thirstwastaken2.purity.WaterPurity;
@@ -10,12 +11,15 @@ import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -135,6 +139,111 @@ public final class CauldronGameTest {
         TestFixtures.check(helper, sampled.equals(poured),
                 "drawing from the cauldron should report " + poured + ", got " + sampled);
         helper.succeed();
+    }
+
+    /**
+     * Rain grades itself. An empty cauldron that fills with rain is a water cauldron nobody poured
+     * anything into, which used to fall back to {@code defaultPurity} by accident.
+     *
+     * <p>This one drives vanilla for real: {@code handlePrecipitation} is public, and only fills the
+     * cauldron on a twentieth of its chances, so it is called until the block changes.
+     */
+    @GameTest
+    public void rainGradesTheWaterItLeavesBehind(GameTestHelper helper) {
+        helper.setBlock(CAULDRON, Blocks.CAULDRON);
+        BlockPos pos = helper.absolutePos(CAULDRON);
+
+        rainOn(helper, pos);
+
+        BlockState after = helper.getLevel().getBlockState(pos);
+        WaterQuality stored = WaterPurity.storedQuality(after);
+        WaterQuality expected = WaterQuality.fresh(ThirstConfig.get().rainwaterPurity);
+        TestFixtures.check(helper, after.is(Blocks.WATER_CAULDRON),
+                "rain should have filled the cauldron, got " + after);
+        TestFixtures.check(helper, expected.equals(stored),
+                "rainwater should be graded " + expected + ", got " + stored);
+        helper.succeed();
+    }
+
+    /** A cauldron rain did not fill has gained no water, so it must still hold no grade at all. */
+    @GameTest
+    public void rainThatFillsNothingStampsNothing(GameTestHelper helper) {
+        helper.setBlock(CAULDRON, Blocks.WATER_CAULDRON);
+        BlockPos pos = helper.absolutePos(CAULDRON);
+        BlockState before = helper.getLevel().getBlockState(pos);
+
+        WaterInteractions.filledByRain(before, helper.getLevel(), pos);
+
+        BlockState after = helper.getLevel().getBlockState(pos);
+        TestFixtures.check(helper, after.getValue(WaterPurity.BLOCK_PURITY) == UNSET,
+                "a cauldron that gained no water should still store nothing, got "
+                        + after.getValue(WaterPurity.BLOCK_PURITY));
+        helper.succeed();
+    }
+
+    /** Rain adds water; it does not clean what is already in the cauldron. */
+    @GameTest
+    public void rainKeepsTheWorseOfTheTwoQualities(GameTestHelper helper) {
+        WaterQuality dirty = WaterQuality.fresh(0);
+        BlockPos pos = pour(helper, dirty);
+
+        rainOn(helper, pos);
+
+        WaterQuality stored = WaterPurity.storedQuality(helper.getLevel().getBlockState(pos));
+        TestFixtures.check(helper, dirty.equals(stored),
+                "rain falling into dirty water should leave it dirty, got " + stored);
+        helper.succeed();
+    }
+
+    /**
+     * Water that seeped through stone is the cleanest the world gives away for free. The drip itself
+     * cannot be called from here - {@code receiveStalactiteDrip} is protected - so this stands the
+     * cauldron where vanilla would have left it and runs the hook the mixin runs.
+     */
+    @GameTest
+    public void dripstoneWaterIsGradedOnItsOwn(GameTestHelper helper) {
+        helper.setBlock(CAULDRON, Blocks.CAULDRON);
+        BlockPos pos = helper.absolutePos(CAULDRON);
+        BlockState before = helper.getLevel().getBlockState(pos);
+        helper.setBlock(CAULDRON, Blocks.WATER_CAULDRON);
+
+        WaterInteractions.filledByDripstone(before, helper.getLevel(), pos, Fluids.WATER);
+
+        WaterQuality stored = WaterPurity.storedQuality(helper.getLevel().getBlockState(pos));
+        WaterQuality expected = WaterQuality.fresh(ThirstConfig.get().dripstonePurity);
+        TestFixtures.check(helper, expected.equals(stored),
+                "dripstone water should be graded " + expected + ", got " + stored);
+        helper.succeed();
+    }
+
+    /** Dripstone drips lava as well, and a lava cauldron holds nothing this mod grades. */
+    @GameTest
+    public void drippedLavaIsNotWater(GameTestHelper helper) {
+        helper.setBlock(CAULDRON, Blocks.CAULDRON);
+        BlockPos pos = helper.absolutePos(CAULDRON);
+        BlockState before = helper.getLevel().getBlockState(pos);
+        helper.setBlock(CAULDRON, Blocks.WATER_CAULDRON);
+
+        WaterInteractions.filledByDripstone(before, helper.getLevel(), pos, Fluids.LAVA);
+
+        BlockState after = helper.getLevel().getBlockState(pos);
+        TestFixtures.check(helper, after.getValue(WaterPurity.BLOCK_PURITY) == UNSET,
+                "a lava drip should grade nothing, got " + after.getValue(WaterPurity.BLOCK_PURITY));
+        helper.succeed();
+    }
+
+    /**
+     * Rains on the cauldron until vanilla actually fills it. Each call has a one in twenty chance,
+     * so the loop is long enough that failing it by luck is not a thing that happens.
+     */
+    private static void rainOn(GameTestHelper helper, BlockPos pos) {
+        ServerLevel level = helper.getLevel();
+        for (int attempt = 0; attempt < 500; attempt++) {
+            BlockState before = level.getBlockState(pos);
+            before.getBlock().handlePrecipitation(before, level, pos, Biome.Precipitation.RAIN);
+            if (level.getBlockState(pos) != before) return;
+        }
+        TestFixtures.check(helper, false, "rain never filled the cauldron in 500 tries");
     }
 
     /** Places a water cauldron and pours one container of the given quality into it. */

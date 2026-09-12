@@ -69,10 +69,11 @@ jar. Verify that with `unzip -l build/libs/<jar> | grep gametest` after a releas
 | `WaterskinGameTest` | mixing, salinity, capacity, emptying |
 | `TooltipGameTest` | the lines the mod adds to a tooltip, droplet row arithmetic, and that cached lines are handed out as copies |
 | `PlayerStateGameTest` | the sprint gate, exhaustion mirroring waiting for the tick, small exhaustion being carried until it crosses a sync step, the Hunger effect cancelling out, and that riding does not dehydrate |
-| `CauldronGameTest` | the cauldron blockstate property (water cauldron only, old powder snow saves still load, a fresh cauldron is not sea water) and the deferred quality transfer |
+| `CauldronGameTest` | the cauldron blockstate property (water cauldron only, old powder snow saves still load, a fresh cauldron is not sea water), the deferred quality transfer, and the grades rain and dripstone leave behind |
 | `PurificationGameTest` | which water the furnace accepts: looted bottles yes, salt water never |
 | `EnvironmentGameTest` | the datapack damage type and tag, and the version-forked environment call |
 | `CreativeTabGameTest` | the creative tab is registered, has the right icon, and holds every item the mod adds |
+| `AdvancementGameTest` | the mod's advancement tab loads, hangs off one root, and its recipe advancements unlock recipes that exist |
 
 ## Known limits of the harness
 

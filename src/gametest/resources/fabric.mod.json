@@ -16,7 +16,8 @@
       "com.thirstwastaken2.gametest.CauldronGameTest",
       "com.thirstwastaken2.gametest.PurificationGameTest",
       "com.thirstwastaken2.gametest.EnvironmentGameTest",
-      "com.thirstwastaken2.gametest.CreativeTabGameTest"
+      "com.thirstwastaken2.gametest.CreativeTabGameTest",
+      "com.thirstwastaken2.gametest.AdvancementGameTest"
     ]
   },
   "depends": {

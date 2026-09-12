@@ -4,6 +4,13 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 
 ## [1.0.3] - 2026-09-12
 
+### Added
+
+- Milk buckets and honey bottles restore thirst.
+- An advancement tab for the mod, from the first drink of water to drinking in the Nether.
+- Rain and pointed dripstones fill cauldrons with a quality of their own. Rain is clean and
+  dripstone water is pure, where both used to fall back to the default quality.
+
 ### Changed
 
 - Sea water is no longer a grade of fresh water. Bottles, buckets and bowls of it look different
@@ -21,6 +28,8 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 
 ### Fixed
 
+- Recipes added by the mod never appeared in the recipe book, so the clay bowl, the bowls, the
+  waterskin and the purification recipes had to be looked up outside the game.
 - Water from structure chests and Piglin bartering could not be boiled.
 - Sea water could report a grade, so water from a frozen ocean read as the cleanest water in the
   game while still being undrinkable.
@@ -29,7 +38,8 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 
 - Servers and players must run the same version. A mismatch shows the wrong blocks in the world.
 - Existing worlds and config files need no action. Sea water left in a cauldron in an older world
-  becomes fresh water of that cauldron's grade; sea water in containers is unaffected.
+  becomes fresh water of that cauldron's grade; sea water in containers is unaffected. Two settings,
+  `rainwaterPurity` and `dripstonePurity`, are added to the config file on first launch.
 
 ## [1.0.2] - 2026-09-10
 

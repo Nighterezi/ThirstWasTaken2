@@ -5,11 +5,11 @@
   "name": "ThirstWasTaken2",
   "description": "Adds a survival thirst bar, drinking, and water purity.",
   "authors": [
-    "ghen (original author)",
-    "Nighter (fork)"
+    "Nighter",
+    "ghen (original ThirstWasTaken)"
   ],
   "contributors": [
-    "Thirst Was Taken contributors"
+    "https://github.com/Nighterezi/ThirstWasTaken2/graphs/contributors"
   ],
   "contact": {
     "homepage": "https://github.com/Nighterezi/ThirstWasTaken2",

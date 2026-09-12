@@ -21,6 +21,7 @@ và độ tinh khiết của nước cho Minecraft, đồng thời mở rộng m
 - Bát đất sét và bát đất nung, cùng công thức lọc cho chai, bát và xô
 - Chai nước xuất hiện trong rương công trình và khi đổi đồ với Piglin
 - Giá trị nước cho một danh sách dài vật phẩm của các mod đồ ăn, mà không cần cài mod nào
+- Mục thành tựu riêng, dẫn bạn qua hệ thống nước trong lúc chơi
 - Hơn ba mươi tùy chỉnh, đổi được ngay trong game
 
 ## Đi tiếp

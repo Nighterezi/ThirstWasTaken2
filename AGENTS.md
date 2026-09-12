@@ -242,6 +242,7 @@ Each area of the tree carries its own `AGENTS.md` with rules and conventions loc
 ```
 src/main/java/com/thirstwastaken2/      common (client + server)
   ThirstWasTaken2.java                  ModInitializer: wiring and event registration
+  advancement/ThirstAdvancements.java  awards the mod's advancements by id from the drinking code
   api/ThirstApi.java                   item -> {hydration, quenched}, memoised per Item
   command/ThirstCommands.java          /thirst query|set|enable
   config/ThirstConfig.java             config/thirstwastaken2.json, compiled patterns, generation counter
@@ -283,6 +284,7 @@ src/gametest/java/com/thirstwastaken2/gametest/
   WaterskinGameTest.java               mixing, capacity, emptying
   PurificationGameTest.java            which water the furnace recipes accept
   TooltipGameTest.java                 the lines the mod adds to a tooltip
+  AdvancementGameTest.java             the advancements load, and unlock recipes that exist
 
 src/dev/java/com/thirstwastaken2/dev/   dev-only tools mod, never packaged
   ThirstDev.java                       entrypoint: /thirst benchmark and the runBenchmark autorun
@@ -293,7 +295,7 @@ src/main/resources/
   thirstwastaken2.mixins.json           mixin registry
   assets/thirstwastaken2/               textures, models, lang (9 locales)
   assets/thirstwastaken2/font/          droplets.json: tooltip droplet glyphs (U+E000..U+E007)
-  data/thirstwastaken2/                 recipes, damage type
+  data/thirstwastaken2/                 recipes, advancements, damage type
   data/minecraft/tags/                 bypasses_armor
 ```
 
@@ -333,7 +335,8 @@ Brewin' and Chewin' / Collector's Reap support stays dependency-free.
 | `ItemStackMixin` | `#finishUsingItem`, `#addDetailsToTooltip` | grant hydration, render purity + thirst/quenched rows |
 | `BottleItemMixin` | `BottleItem#use` | stamp purity on a bottle filled from a water block |
 | `BucketItemMixin` | `BucketItem#use` | stamp purity on a bucket filled from a water block |
-| `LayeredCauldronBlockMixin` | `#createBlockStateDefinition` | add the stored-quality property |
+| `LayeredCauldronBlockMixin` | `#createBlockStateDefinition`, `#handlePrecipitation`, `#receiveStalactiteDrip` | add the stored-quality property; grade the water rain or a dripstone added |
+| `CauldronBlockMixin` | `#handlePrecipitation`, `#receiveStalactiteDrip` | the same, for the empty cauldron those two turn into a water cauldron |
 
 ## HUD
 

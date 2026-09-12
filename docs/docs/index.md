@@ -21,6 +21,7 @@ Minecraft and further extends the original mod.
 - Clay and terracotta bowls, plus purification recipes for bottles, bowls and buckets
 - Water bottles in structure chests and Piglin barters
 - Hydration values for a long list of food mod items, with none of them required
+- An advancement tab that teaches the water system as you play
 - More than thirty settings, all editable in game
 
 ## Where to go next

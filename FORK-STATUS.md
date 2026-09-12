@@ -2,7 +2,7 @@
 
 ThirstWasTaken2 is a fork of [Thirst Was Taken](https://github.com/ghen-git/Thirst-Mod) by
 [ghen](https://github.com/ghen-git), originally a Forge mod for Minecraft 1.19.2. It was rebuilt for
-Fabric on Minecraft 26.2, then improved and changed. It now also builds for 26.1.x and 1.21.11. It is published on
+Fabric on Minecraft 26.2, 26.1.x and 1.21.11 then improved and changed. It is published on
 [Modrinth](https://modrinth.com/mod/thirst-was-taken-2). This page lists what carried over, what the fork
 changes, and what is still missing.
 
@@ -64,6 +64,11 @@ it adds a dithered thirst-exhaustion strip that follows AppleSkin's exhaustion-u
 - Settings are stored in `config/thirstwastaken2.json` if you prefer to edit them by hand.
 - The thirst bar can be moved anywhere on the screen.
 - An optional setting requiring both hands to be empty before drinking by hand.
+- Milk buckets and honey bottles restore thirst, like any other drink.
+- Every recipe the mod adds appears in the recipe book, and the mod has an advancement tab of its
+  own covering the water system.
+- A cauldron filled by rain holds clean water, and one filled by a pointed dripstone holds pure
+  water. Both grades are settings.
 - A dedicated **ThirstWasTaken2** creative inventory tab collecting every item from the mod.
 
   ![The ThirstWasTaken2 creative inventory tab, collecting every item from the mod](docs/public/screenshots/creative-tab.png)

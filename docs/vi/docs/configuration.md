@@ -82,6 +82,15 @@ thiếu điểm.
 Mặc định `2`, tức nước sạch. Dùng cho mọi loại nước mà mod không tự xếp hạng được, kể cả đồ uống của
 mod khác.
 
+### rainwaterPurity
+
+Mặc định `2`, tức nước sạch. Mức độ sạch của nước mưa hứng được trong vạc.
+
+### dripstonePurity
+
+Mặc định `3`, tức tinh khiết. Mức độ sạch của nước nhỏ từ nhũ đá nhọn xuống vạc. Xem
+[trang độ sạch của nước](/vi/docs/features/water-purity).
+
 ### quenchWhenDebuffed
 
 Mặc định `true`. Nước gây trúng độc vẫn hồi thanh khát. Tắt đi để nước xấu trở thành lỗ vốn hoàn toàn.

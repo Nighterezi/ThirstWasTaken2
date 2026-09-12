@@ -46,6 +46,18 @@ Hai phần nước tinh khiết trộn với một phần nước bẩn cho ra n
 Vạc giữ mức tệ hơn giữa phần đang chứa và phần đổ vào. Nước múc lại ra chai, xô hoặc túi da vẫn mang
 mức đó.
 
+Vạc cũng tự đầy lên, và mỗi cách đầy có mức độ sạch riêng.
+
+| Cách vạc đầy nước | Mức độ sạch |
+|---|---|
+| Nước mưa | Sạch, đặt bằng [rainwaterPurity](/vi/docs/configuration#rainwaterpurity) |
+| Nhũ đá nhọn nhỏ nước xuống | Tinh khiết, đặt bằng [dripstonePurity](/vi/docs/configuration#dripstonepurity) |
+
+Nước mưa là thứ miễn phí và không cần xây gì, nên nó tốt nhưng chưa phải loại tốt nhất. Nhũ đá thì
+phải đặt dưới một nguồn nước với vạc ở bên dưới, và nó chảy rất chậm, nhưng nước đã thấm qua đá nên
+sạch ngang với việc đun sôi. Cả hai đều không làm sạch phần nước đã có trong vạc: mưa rơi vào nước bẩn
+thì nước vẫn bẩn.
+
 ## Uống nước xấu
 
 Nước ngọt luôn giải khát, bất kể mức độ sạch. Chỉ có rủi ro là thay đổi.
