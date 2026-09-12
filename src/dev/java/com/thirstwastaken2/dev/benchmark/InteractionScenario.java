@@ -142,8 +142,8 @@ final class InteractionScenario implements Stage {
         BlockPos cauldron = world.cauldron();
         BlockHitResult waterHit = new BlockHitResult(Vec3.atCenterOf(water), Direction.UP, water, false);
         BlockHitResult cauldronHit = new BlockHitResult(Vec3.atCenterOf(cauldron), Direction.UP, cauldron, false);
-        WaterQuality acceptable = WaterQuality.fromPurity(2, false);
-        WaterQuality dirty = WaterQuality.fromPurity(0, false);
+        WaterQuality acceptable = WaterQuality.fresh(2);
+        WaterQuality dirty = WaterQuality.fresh(0);
         ItemStack waterBottle = WaterPurity.setQuality(PotionContents.createItemStack(Items.POTION, Potions.WATER), acceptable);
         ItemStack fullWaterskin = new ItemStack(ThirstItems.WATERSKIN);
         WaterskinItem.addWater(fullWaterskin, acceptable, WaterskinItem.CAPACITY);
@@ -168,7 +168,7 @@ final class InteractionScenario implements Stage {
                     player.setItemInHand(HAND, new ItemStack(Items.GLASS_BOTTLE));
                 },
                 () -> sink = player.gameMode.useItem(player, level, player.getMainHandItem(), HAND),
-                () -> player.getMainHandItem().has(ThirstComponents.WATER_CONTAMINATION));
+                () -> player.getMainHandItem().has(ThirstComponents.WATER_PURITY));
         single("fill_bucket", "Bucket used on water: vanilla BucketItem#use plus the purity capture and stamp",
                 () -> {
                     world.refillWater();
@@ -177,7 +177,7 @@ final class InteractionScenario implements Stage {
                 },
                 () -> sink = player.gameMode.useItem(player, level, player.getMainHandItem(), HAND),
                 () -> player.getMainHandItem().is(Items.WATER_BUCKET)
-                        && player.getMainHandItem().has(ThirstComponents.WATER_CONTAMINATION));
+                        && player.getMainHandItem().has(ThirstComponents.WATER_PURITY));
         single("fill_bowl", "Terracotta bowl scooping water (WaterInteractions.fillFromWater)",
                 () -> {
                     world.refillWater();

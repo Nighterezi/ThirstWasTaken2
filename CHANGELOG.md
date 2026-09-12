@@ -2,19 +2,34 @@
 
 All notable changes to ThirstWasTaken2 are documented in this file.
 
-## [1.0.3] - 2026-09-11
+## [1.0.3] - 2026-09-12
 
 ### Changed
 
-- Thirst uses less server time and memory and sends players far fewer updates, which matters most on
-  servers with many players.
-- The partly drained droplet and AppleSkin's exhaustion strip behind the thirst bar now move in small
-  steps instead of every tick.
+- Sea water is no longer a grade of fresh water. Bottles, buckets and bowls of it look different
+  from fresh ones, its tooltip reads Salty where fresh water shows a grade, and it shows no
+  hydration droplets, because it restores nothing.
+- The grades of fresh water are now Dirty, Murky, Clean and Pure, in all nine languages, with
+  tooltip colours that are easier to tell apart.
+- A waterskin now averages the grades of the drinks inside it, rounded down. One salty drink still
+  turns all of it into sea water, and cauldrons still keep the worse of the two.
+- The clay bowl now says it has to be smelted before it can hold water.
+- Thirst uses less server time and memory and sends far fewer updates, which matters most on busy
+  servers.
+- The partly drained droplet and AppleSkin's exhaustion strip behind the thirst bar now move in
+  small steps instead of every tick.
+
+### Fixed
+
+- Water from structure chests and Piglin bartering could not be boiled.
+- Sea water could report a grade, so water from a frozen ocean read as the cleanest water in the
+  game while still being undrinkable.
 
 ### Notes
 
 - Servers and players must run the same version. A mismatch shows the wrong blocks in the world.
-- No action is needed for existing worlds or config files.
+- Existing worlds and config files need no action. Sea water left in a cauldron in an older world
+  becomes fresh water of that cauldron's grade; sea water in containers is unaffected.
 
 ## [1.0.2] - 2026-09-10
 

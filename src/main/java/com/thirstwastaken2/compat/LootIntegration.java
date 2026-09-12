@@ -56,6 +56,9 @@ public final class LootIntegration {
         return LootItem.lootTableItem(Items.POTION)
                 .apply(SetPotionFunction.setPotion(Potions.WATER))
                 .apply(SetComponentsFunction.setComponent(ThirstComponents.WATER_PURITY, purity))
+                // Fresh, and stamped as such: the purification recipes match on this component, so a
+                // looted bottle that left it out could never be boiled.
+                .apply(SetComponentsFunction.setComponent(ThirstComponents.WATER_SALTY, false))
                 .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 3)));
     }
 }

@@ -16,7 +16,7 @@ thirst, and the client only receives it through the attachment sync.
 | Anything about water cleanliness | `purity/` (has its own AGENTS.md) |
 | A vanilla behaviour hook | `mixin/` (has its own AGENTS.md) |
 | Loot, optional mod integrations | `compat/` (has its own AGENTS.md) |
-| The thirst and quenched droplet rows on tooltips | `tooltip/ThirstTooltip` |
+| Any line the mod adds to a tooltip | `tooltip/ThirstTooltip` (see the rules below) |
 | `/thirst` | `command/ThirstCommands` |
 | Dev-only tooling such as `/thirst benchmark` | `src/dev/java` (own AGENTS.md), gated on `ThirstWasTaken2.DEV` |
 
@@ -71,6 +71,33 @@ Events registered there, in registration order per event:
 - **Sounds from a server-only path need `level.playSound(null, ...)`.** `Player#playSound` excludes the
   player themselves, so the drinker would hear nothing — see the comment in
   `ThirstManager.drinkByHand`.
+
+## Tooltip lines
+
+Every line the mod adds to an item tooltip goes through `tooltip/ThirstTooltip.appendTo`, and they
+are grouped in three tiers. A new item follows the same tiers, so that a tooltip stays scannable no
+matter how many lines it grows.
+
+| Tier | Colour | Answers | Examples |
+|---|---|---|---|
+| What the item is | `ChatFormatting.GRAY` | how it works, what state it is in | `Contains 3/3 drinks`, `Smelt to hold water` |
+| What it holds | `WaterPurity.purityColor`, salt's cream | is this worth drinking | `Murky`, `Salty` |
+| What drinking does | the droplet font, no colour of its own | how much it restores | the thirst and quenched rows |
+
+- **Grey is for describing the item, never for a value the player weighs.** A grade or a restored
+  amount has to stand out from the grey; if a new line is something the player compares between two
+  stacks, it belongs in the second or third tier, with a colour of its own.
+- **Keep a grey line shorter than the item's name.** A hint that widens the tooltip box drags the eye
+  away from the name and the grade. `Smelt to hold water` replaced a line twice that long for exactly
+  this reason.
+- **Do not invent a second palette.** Water colours live in `WaterPurity.purityColor` and salt's line
+  colour next to it. Anything about water quality reuses those.
+- **Tiers keep their order, and a tier may cancel the ones below it.** Salt water prints its own line
+  and returns, because droplet rows under it would promise hydration it does not give.
+- **Lines are rebuilt every frame a stack is hovered.** Build a constant once and hand out `copy()`,
+  as `CLAY_BOWL_HINT` and the droplet rows do; other mods are free to restyle a line they receive.
+- **A new line means a new `tooltip.thirstwastaken2.*` key in all nine lang files.** `en_us` and
+  `vi_vn` are mandatory; see `src/main/resources/AGENTS.md`.
 
 ## Divergences from upstream live as comments
 

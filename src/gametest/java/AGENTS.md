@@ -52,6 +52,9 @@ jar. Verify that with `unzip -l build/libs/<jar> | grep gametest` after a releas
 - **Pair a negative assertion with a positive control.** `dehydratedPlayerDoesNotRegenerate` only
   means something next to `hydratedPlayerStillRegenerates`; without it the first would pass even if
   regeneration never triggered.
+- **Datapack behaviour needs a test, because the compiler has no opinion about it.** The 18
+  purification recipes match on components from a JSON file; nothing fails to build when a container
+  stops carrying what they look for. `PurificationGameTest` asks the real recipe manager instead.
 - **Only assert what the config makes deterministic.** Purity tiers 0 and 3 have nausea chances of
   100 and 0 in the default config and are safe to assert. Tiers 1 and 2 are dice rolls and are
   deliberately left alone.
@@ -61,12 +64,13 @@ jar. Verify that with `unzip -l build/libs/<jar> | grep gametest` after a releas
 | Class | Covers |
 |---|---|
 | `WaterFillingGameTest` | bottle and bucket filling, that each fill resamples the water, that an abandoned fill leaves nothing behind |
-| `WaterEffectsGameTest` | salt water, dirty water, purified water, drinking, purity surviving boiling |
+| `WaterEffectsGameTest` | salt water, dirty water, purified water, drinking, boiling not desalinating |
 | `HealthRegenGameTest` | dehydration halting regeneration and the food refund that has to accompany it |
 | `WaterskinGameTest` | mixing, salinity, capacity, emptying |
 | `TooltipGameTest` | the lines the mod adds to a tooltip, droplet row arithmetic, and that cached lines are handed out as copies |
 | `PlayerStateGameTest` | the sprint gate, exhaustion mirroring waiting for the tick, small exhaustion being carried until it crosses a sync step, the Hunger effect cancelling out, and that riding does not dehydrate |
-| `CauldronGameTest` | the cauldron blockstate properties (water cauldron only, old powder snow saves still load) and the deferred quality transfer |
+| `CauldronGameTest` | the cauldron blockstate property (water cauldron only, old powder snow saves still load, a fresh cauldron is not sea water) and the deferred quality transfer |
+| `PurificationGameTest` | which water the furnace accepts: looted bottles yes, salt water never |
 | `EnvironmentGameTest` | the datapack damage type and tag, and the version-forked environment call |
 | `CreativeTabGameTest` | the creative tab is registered, has the right icon, and holds every item the mod adds |
 

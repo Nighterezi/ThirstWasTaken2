@@ -1,63 +1,60 @@
-# Water Quality
+# Water quality
 
-Every collected container stores the water's contamination and whether it is salty. The tooltip and
-item sprite summarize contamination as one of four familiar grades.
+Water comes in two kinds. **Fresh water** has a grade, from dirty to pure. **Salt water** has no
+grade at all: it cannot be cleaned, and it never quenches thirst. Every container remembers which of
+the two it holds, and says so in its tooltip.
 
-![Water bottle tooltips showing Dirty, Slightly Dirty, Acceptable and Purified](/screenshots/water-purity.png)
+![Water bottle tooltips showing the grades of fresh water](/screenshots/water-purity.png)
 
-| Contamination | Grade |
-|---:|---|
-| 0 to 15 | Purified |
-| 16 to 35 | Acceptable |
-| 36 to 65 | Slightly dirty |
-| 66 to 100 | Dirty |
+## The four grades
 
-## Sampling a source
+From worst to best: **Dirty**, **Murky**, **Clean**, **Pure**. The grade is set once, when the water
+is collected or drunk from the world, and it travels with the container after that.
 
-Water is sampled once, when it is collected or drunk directly. The mod does not scan water every
-tick. Biome tags choose the baseline, then a few local conditions make small adjustments.
+| Where the water comes from | Usual grade |
+|---|---|
+| Swamp or mangrove swamp | Dirty |
+| Jungle, savanna or badlands | Dirty |
+| Most other biomes | Murky |
+| River | Murky |
+| Mountain | Clean |
+| Cold peaks | Pure |
 
-| Source | Baseline contamination | Typical grade |
-|---|---:|---|
-| Ocean or beach | 25, salty | Acceptable, but not drinkable |
-| Swamp or mangrove swamp | 85 | Dirty |
-| River | 42 | Slightly dirty |
-| Mountain | 28 | Acceptable |
-| Jungle, savanna or badlands | 70 | Dirty |
-| Other biomes | 55 | Slightly dirty |
+Very hot biomes make water worse and very cold biomes make it better. Water above y 100 or below
+y 32 is a little cleaner, and so is flowing water, so a waterfall is not automatically safe. Mud,
+mangrove roots, farmland or a composter within two blocks make water worse.
 
-Very hot biomes add 10 contamination and very cold biomes remove 10. Water above y 100 or below y
-32 removes 5. Flowing water removes only 5, so a waterfall is not automatically safe. Mud,
-mangrove roots, farmland or a composter within two blocks can add contamination.
-
-Modpacks can add biomes to `thirstwastaken2:stagnant_water` without changing code. A container that
-has no sampled quality, such as an unknown modded drink, still uses `defaultPurity`.
+Modpacks can add biomes to `thirstwastaken2:stagnant_water` without changing code. Water that carries
+no grade of its own, such as an unknown modded drink, uses
+[defaultPurity](/docs/configuration#defaultpurity).
 
 ## Salt water
 
-Salinity is separate from cleanliness. Ocean water can look acceptable while still being unsafe to
-drink. A salty drink restores no thirst, adds thirst exhaustion and causes five seconds of Nausea.
-Furnaces and campfires do not remove salt.
+Oceans and beaches give salt water. It has its own icon and its own tooltip line, so it can be told
+apart from fresh water at a glance, and it shows no hydration droplets because it restores nothing.
+
+Drinking it costs thirst instead of restoring it and causes five seconds of Nausea. A furnace or a
+campfire will not take it, so there is no way to make it drinkable. One salty drink poured into a
+waterskin or a cauldron turns everything in there into salt water.
 
 ## Mixing and cauldrons
 
-A waterskin mixes contamination by the number of servings already inside it. If either side is
-dirty, the result receives 10 extra contamination, so one clean serving cannot cheaply neutralize a
-dirty batch. Adding any salt water makes the mixed waterskin salty.
+A waterskin averages the grades of the drinks inside it, by how many there are, and rounds down. Two
+pure drinks and one dirty drink come out clean, so one good mouthful cannot rescue a bad batch.
 
-Cauldrons retain the worse grade when water is poured together and remember salinity. Water drawn
-back into a bottle, bucket or waterskin keeps that stored quality.
+A cauldron keeps the worse of what it holds and what is poured in. Water drawn back out into a
+bottle, bucket or waterskin keeps that grade.
 
-## Drinking contaminated water
+## Drinking bad water
 
-Contaminated fresh water still hydrates you. The existing sickness roll remains unchanged.
+Fresh water always quenches thirst, whatever its grade. The risk is what changes.
 
 | Grade | Nausea and Hunger | Poison |
 |---|---|---|
 | Dirty | 100% | 30% |
-| Slightly dirty | 50% | 10% |
-| Acceptable | 5% | none |
-| Purified | none | none |
+| Murky | 50% | 10% |
+| Clean | 5% | none |
+| Pure | none | none |
 
 Nausea lasts five seconds, Hunger lasts thirty seconds and Poison lasts ten seconds. A longer-term
 infection system is not part of this release.
@@ -68,9 +65,8 @@ Put a fresh water bottle, terracotta water bowl or water bucket in a furnace or 
 
 | In | Out |
 |---|---|
-| Dirty | Acceptable |
-| Slightly dirty | Purified |
-| Acceptable | Purified |
+| Dirty | Clean |
+| Murky | Pure |
+| Clean | Pure |
 
-A furnace takes ten seconds and a campfire takes thirty. Dirty water needs two passes to become
-purified. Salty containers are rejected instead of being silently desalinated.
+A furnace takes ten seconds and a campfire takes thirty. Dirty water needs two passes to become pure.

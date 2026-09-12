@@ -91,8 +91,7 @@ export default defineConfig({
       themeConfig: {
         nav: [
           { text: 'Home', link: '/', activeMatch: '^/$' },
-          { text: 'Docs', link: '/docs/', activeMatch: '^/docs/' },
-          { text: 'Modrinth', link: MODRINTH }
+          { text: 'Docs', link: '/docs/', activeMatch: '^/docs/' }
         ],
         sidebar: {
           '/docs/': enManualSidebar
@@ -125,8 +124,7 @@ export default defineConfig({
       themeConfig: {
         nav: [
           { text: 'Trang chủ', link: '/vi/', activeMatch: '^/vi/$' },
-          { text: 'Tài liệu', link: '/vi/docs/', activeMatch: '^/vi/docs/' },
-          { text: 'Modrinth', link: MODRINTH }
+          { text: 'Tài liệu', link: '/vi/docs/', activeMatch: '^/vi/docs/' }
         ],
         sidebar: {
           '/vi/docs/': viManualSidebar

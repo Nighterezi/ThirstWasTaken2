@@ -28,7 +28,6 @@ public final class ThirstItems {
     public static final Item TERRACOTTA_WATER_BOWL = register("terracotta_water_bowl", Item::new,
             new Item.Properties().stacksTo(1).usingConvertsTo(TERRACOTTA_BOWL)
                     .component(ThirstComponents.WATER_PURITY, 3)
-                    .component(ThirstComponents.WATER_CONTAMINATION, 5)
                     .component(ThirstComponents.WATER_SALTY, false)
                     .component(DataComponents.CUSTOM_MODEL_DATA,
                             new CustomModelData(List.of(0.0F, 3.0F), List.of(), List.of(), List.of()))

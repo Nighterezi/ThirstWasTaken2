@@ -79,8 +79,7 @@ below full.
 
 ### defaultPurity
 
-Default `2`, acceptable. Used for any water the mod cannot place, including drinks added by other
-mods.
+Default `2`, clean. Used for any water the mod cannot grade, including drinks added by other mods.
 
 ### quenchWhenDebuffed
 
@@ -89,7 +88,7 @@ loss.
 
 ### nauseaChance and poisonChance
 
-Two lists of four percentages, one per grade, from dirty to purified. The defaults are in
+Two lists of four percentages, one per grade, from dirty to pure. The defaults are in
 [Drinking bad water](/docs/features/water-purity#drinking-bad-water). The config screen shows them as
 eight separate sliders.
 

@@ -1,5 +1,6 @@
 package com.thirstwastaken2.purity;
 
+import com.thirstwastaken2.ThirstWasTaken2;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.data.ThirstManager;
 import com.thirstwastaken2.item.ThirstItems;
@@ -30,7 +31,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 
 import java.util.List;
@@ -40,17 +40,37 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class WaterPurity {
     public static final int MIN = 0;
     public static final int MAX = 3;
-    /** Zero means unset; stored values 1-4 correspond to purity 0-3. */
-    public static final IntegerProperty BLOCK_PURITY = IntegerProperty.create("purity", 0, 4);
-    public static final BooleanProperty BLOCK_SALTY = BooleanProperty.create("salty");
+    /**
+     * What a cauldron holds, as one value rather than a grade plus a flag: {@link #BLOCK_UNSET} for
+     * a cauldron nothing has been poured into, 1-4 for the four grades, and {@link #BLOCK_SALT} for
+     * sea water. A separate boolean could not work, because vanilla hands a freshly placed block the
+     * first value of every property it has, and for a boolean that value is {@code true}.
+     */
+    public static final IntegerProperty BLOCK_PURITY = IntegerProperty.create("purity", 0, 5);
+    public static final int BLOCK_UNSET = 0;
+    public static final int BLOCK_SALT = 5;
     /** Vanilla's description id for {@code Blocks.WATER_CAULDRON}, see {@link #addCauldronProperties}. */
     private static final String WATER_CAULDRON = "block.minecraft.water_cauldron";
 
     private static final TagKey<Biome> STAGNANT_WATER = TagKey.create(
-            Registries.BIOME, com.thirstwastaken2.ThirstWasTaken2.id("stagnant_water"));
+            Registries.BIOME, ThirstWasTaken2.id("stagnant_water"));
     private static final int SURFACE_MOUNTAIN_Y = 100;
     private static final int DEEP_AQUIFER_Y = 32;
     private static final int SALTY_EXHAUSTION = 8;
+
+    /** Bounds of the contamination score a sample is graded from. It is never stored on an item. */
+    private static final int MIN_SCORE = 0;
+    private static final int MAX_SCORE = 100;
+
+    /**
+     * Vanilla containers cannot be given a model of ours at registration, so salt water swaps their
+     * whole item model through {@code minecraft:item_model}. The mod's own bowl has custom model
+     * data for the same job.
+     */
+    private static final Identifier SALT_WATER_BOTTLE_MODEL = ThirstWasTaken2.id("salt_water_bottle");
+    private static final Identifier SALT_WATER_BUCKET_MODEL = ThirstWasTaken2.id("salt_water_bucket");
+    /** The bowl's model variant for salt water, one past the four grades. */
+    private static final float SALT_BOWL_MODEL = 4.0F;
 
     /** Purity that has to be looked up from the config instead of being baked into the item. */
     private static final int PURITY_FROM_CONFIG = -1;
@@ -81,6 +101,10 @@ public final class WaterPurity {
         return info(stack.getItem()).plainWater();
     }
 
+    /**
+     * The grade of the fresh water in {@code stack}. Salt water has no grade, so unless salinity has
+     * already been ruled out, ask {@link #quality(ItemStack)} instead of this.
+     */
     public static int get(ItemStack stack) {
         Integer purity = stack.get(ThirstComponents.WATER_PURITY);
         if (purity != null) return purity;
@@ -88,41 +112,48 @@ public final class WaterPurity {
         return staticPurity == PURITY_FROM_CONFIG ? ThirstConfig.get().defaultPurity : staticPurity;
     }
 
-    public static ItemStack set(ItemStack stack, int purity) {
-        return setQuality(stack, WaterQuality.fromPurity(purity, isSalty(stack)));
-    }
-
     public static WaterQuality quality(ItemStack stack) {
-        Integer contamination = stack.get(ThirstComponents.WATER_CONTAMINATION);
-        return contamination == null
-                ? WaterQuality.fromPurity(get(stack), isSalty(stack))
-                : new WaterQuality(contamination, isSalty(stack));
+        return isSalty(stack) ? WaterQuality.SALT : WaterQuality.fresh(get(stack));
     }
 
     public static boolean isSalty(ItemStack stack) {
         return stack.getOrDefault(ThirstComponents.WATER_SALTY, false);
     }
 
+    /** Whether a container already carries a sampled quality of its own. */
+    public static boolean isStamped(ItemStack stack) {
+        return stack.has(ThirstComponents.WATER_PURITY) || isSalty(stack);
+    }
+
+    public static ItemStack set(ItemStack stack, int purity) {
+        return setQuality(stack, WaterQuality.fresh(purity));
+    }
+
     public static ItemStack setQuality(ItemStack stack, WaterQuality quality) {
-        stack.set(ThirstComponents.WATER_PURITY, quality.purity());
-        stack.set(ThirstComponents.WATER_CONTAMINATION, quality.contamination());
-        stack.set(ThirstComponents.WATER_SALTY, quality.salty());
-        syncModel(stack, quality.purity());
+        switch (quality) {
+            case WaterQuality.Salt ignored -> {
+                // Salt water stores no grade at all, so nothing can read one off it by accident and
+                // the purification recipes, which all match on a grade, cannot match it either.
+                stack.remove(ThirstComponents.WATER_PURITY);
+                stack.set(ThirstComponents.WATER_SALTY, true);
+            }
+            case WaterQuality.Fresh fresh -> {
+                stack.set(ThirstComponents.WATER_PURITY, fresh.purity());
+                // Written even though false is the default: the purification recipes match on it, and
+                // a container that left it out would silently stop being cookable.
+                stack.set(ThirstComponents.WATER_SALTY, false);
+            }
+        }
+        syncModel(stack, quality);
         return stack;
     }
 
+    /** Raises the grade of fresh water. Salt water has no grade to raise and comes back unchanged. */
     public static ItemStack purify(ItemStack stack, int levels) {
-        if (isWaterContainer(stack)) {
-            WaterQuality quality = quality(stack);
-            int targetPurity = Math.min(MAX, quality.purity() + levels);
-            setQuality(stack, WaterQuality.fromPurity(targetPurity, quality.salty()));
+        if (isWaterContainer(stack) && quality(stack) instanceof WaterQuality.Fresh fresh) {
+            setQuality(stack, WaterQuality.fresh(fresh.purity() + levels));
         }
         return stack;
-    }
-
-    /** Player-facing tier for the full environmental sample at {@code pos}. */
-    public static int at(Level level, BlockPos pos) {
-        return sampleAt(level, pos).purity();
     }
 
     /**
@@ -131,66 +162,67 @@ public final class WaterPurity {
      */
     public static WaterQuality sampleAt(Level level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
-        if (state.hasProperty(BLOCK_PURITY)) {
-            int stored = state.getValue(BLOCK_PURITY);
-            if (stored > 0) {
-                boolean salty = state.hasProperty(BLOCK_SALTY) && state.getValue(BLOCK_SALTY);
-                return WaterQuality.fromPurity(stored - 1, salty);
-            }
-        }
+        WaterQuality stored = storedQuality(state);
+        if (stored != null) return stored;
 
         ThirstConfig config = ThirstConfig.get();
         FluidState fluid = state.getFluidState();
-        if (!fluid.is(FluidTags.WATER)) return WaterQuality.fromPurity(config.defaultPurity, false);
+        if (!fluid.is(FluidTags.WATER)) return WaterQuality.fresh(config.defaultPurity);
 
         var biome = level.getBiome(pos);
-        boolean salty = biome.is(BiomeTags.IS_OCEAN) || biome.is(BiomeTags.IS_BEACH);
-        int contamination;
-        if (salty) contamination = 25;
-        else if (biome.is(STAGNANT_WATER)) contamination = 85;
-        else if (biome.is(BiomeTags.IS_RIVER)) contamination = 42;
-        else if (biome.is(BiomeTags.IS_MOUNTAIN)) contamination = 28;
+        // The sea is not a grade of fresh water, so it never reaches the scoring below. This also
+        // spares the neighbourhood scan on every coastline.
+        if (biome.is(BiomeTags.IS_OCEAN) || biome.is(BiomeTags.IS_BEACH)) return WaterQuality.SALT;
+
+        int score;
+        if (biome.is(STAGNANT_WATER)) score = 85;
+        else if (biome.is(BiomeTags.IS_RIVER)) score = 42;
+        else if (biome.is(BiomeTags.IS_MOUNTAIN)) score = 28;
         else if (biome.is(BiomeTags.IS_JUNGLE) || biome.is(BiomeTags.IS_SAVANNA)
-                || biome.is(BiomeTags.IS_BADLANDS)) contamination = 70;
-        else contamination = 55;
+                || biome.is(BiomeTags.IS_BADLANDS)) score = 70;
+        else score = 55;
 
         float temperature = biome.value().getBaseTemperature();
-        if (temperature >= 1.5F) contamination += 10;
-        else if (temperature <= 0.15F) contamination -= 10;
-        if (pos.getY() > SURFACE_MOUNTAIN_Y || pos.getY() < DEEP_AQUIFER_Y) contamination -= 5;
-        if (!fluid.isSource()) contamination -= 5;
-        contamination += nearbyPollution(level, pos);
-        return new WaterQuality(contamination, salty);
+        if (temperature >= 1.5F) score += 10;
+        else if (temperature <= 0.15F) score -= 10;
+        if (pos.getY() > SURFACE_MOUNTAIN_Y || pos.getY() < DEEP_AQUIFER_Y) score -= 5;
+        if (!fluid.isSource()) score -= 5;
+        score += nearbyPollution(level, pos);
+        return WaterQuality.fresh(grade(score));
     }
 
-    /** Applies the original four-tier sickness table and returns whether hydration should be granted. */
+    /** Applies the four-grade sickness table and returns whether hydration should be granted. */
     public static boolean applyEffects(Player player, ItemStack stack) {
         if (!(player instanceof ServerPlayer) || !isWaterContainer(stack)) return true;
-        int purity = Math.max(MIN, Math.min(MAX, get(stack)));
         ThirstConfig config = ThirstConfig.get();
-        if (isSalty(stack)) {
-            ThirstManager.addExhaustion(player, SALTY_EXHAUSTION);
-            player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 20 * 5));
-            return false;
+        switch (quality(stack)) {
+            case WaterQuality.Salt ignored -> {
+                ThirstManager.addExhaustion(player, SALTY_EXHAUSTION);
+                player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 20 * 5));
+                return false;
+            }
+            case WaterQuality.Fresh fresh -> {
+                // A single roll drives both effects, exactly like the original mod.
+                float roll = player.getRandom().nextFloat() * 100.0F;
+                if (roll < config.nauseaChance[fresh.purity()]) {
+                    player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 20 * 5));
+                    player.addEffect(new MobEffectInstance(MobEffects.HUNGER, 20 * 30));
+                }
+                boolean poisoned = roll < config.poisonChance[fresh.purity()];
+                if (poisoned) player.addEffect(new MobEffectInstance(MobEffects.POISON, 20 * 10));
+                return config.quenchWhenDebuffed || !poisoned;
+            }
         }
-        // A single roll drives both effects, exactly like the original mod.
-        float roll = player.getRandom().nextFloat() * 100.0F;
-        if (roll < config.nauseaChance[purity]) {
-            player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 20 * 5));
-            player.addEffect(new MobEffectInstance(MobEffects.HUNGER, 20 * 30));
-        }
-        boolean poisoned = roll < config.poisonChance[purity];
-        if (poisoned) player.addEffect(new MobEffectInstance(MobEffects.POISON, 20 * 10));
-        return config.quenchWhenDebuffed || !poisoned;
     }
 
-    /** @return a fresh copy of the purity line, see {@link TooltipLines}. */
+    /** @return a fresh copy of the grade line, see {@link TooltipLines}. */
     public static Component tooltip(int purity) {
-        return TooltipLines.PURITY[Math.max(MIN, Math.min(MAX, purity))].copy();
+        return TooltipLines.PURITY[Math.clamp(purity, MIN, MAX)].copy();
     }
 
-    public static Component salinityTooltip() {
-        return TooltipLines.SALTY.copy();
+    /** The one line salt water gets. It replaces the grade line rather than joining it. */
+    public static Component saltTooltip() {
+        return TooltipLines.SALT.copy();
     }
 
     /**
@@ -202,7 +234,30 @@ public final class WaterPurity {
      * block is registered, so its description id is the only identity available.
      */
     public static void addCauldronProperties(Block block, StateDefinition.Builder<Block, BlockState> builder) {
-        if (WATER_CAULDRON.equals(block.getDescriptionId())) builder.add(BLOCK_PURITY, BLOCK_SALTY);
+        if (WATER_CAULDRON.equals(block.getDescriptionId())) builder.add(BLOCK_PURITY);
+    }
+
+    /** What a cauldron holds, or {@code null} when nothing has been poured into it yet. */
+    public static WaterQuality storedQuality(BlockState state) {
+        if (!state.hasProperty(BLOCK_PURITY)) return null;
+        int stored = state.getValue(BLOCK_PURITY);
+        if (stored == BLOCK_UNSET) return null;
+        return stored == BLOCK_SALT ? WaterQuality.SALT : WaterQuality.fresh(stored - 1);
+    }
+
+    /** The blockstate value that stores {@code quality} in a cauldron. */
+    public static int storedValue(WaterQuality quality) {
+        // Grades are offset by one so that zero can act as "unset".
+        return quality instanceof WaterQuality.Fresh fresh ? fresh.purity() + 1 : BLOCK_SALT;
+    }
+
+    /** The grade a sampled contamination score falls into. */
+    private static int grade(int score) {
+        int clamped = Math.clamp(score, MIN_SCORE, MAX_SCORE);
+        if (clamped <= 15) return 3;
+        if (clamped <= 35) return 2;
+        if (clamped <= 65) return 1;
+        return 0;
     }
 
     private static String purityKey(int purity) {
@@ -214,12 +269,16 @@ public final class WaterPurity {
         };
     }
 
+    /**
+     * The grade ramp runs warm to cool so that all four stay apart on a dark tooltip. Salt sits off
+     * that ramp on purpose: on this tooltip, blue means drinkable.
+     */
     private static int purityColor(int purity) {
         return switch (purity) {
-            case 0 -> 0xA84825;
-            case 1 -> 0x796C71;
-            case 2 -> 0x5D829D;
-            default -> 0x21B1FF;
+            case 0 -> 0xB0632E;
+            case 1 -> 0xC2A878;
+            case 2 -> 0x74B8E0;
+            default -> 0x4FD6FF;
         };
     }
 
@@ -231,7 +290,7 @@ public final class WaterPurity {
      */
     private static final class TooltipLines {
         static final Component[] PURITY = new Component[MAX + 1];
-        static final Component SALTY = Component.translatable("thirst.water.salty").withColor(0x55C8E8);
+        static final Component SALT = Component.translatable("thirst.water.salty").withColor(0xE6DFC8);
 
         static {
             for (int purity = MIN; purity <= MAX; purity++) {
@@ -261,11 +320,29 @@ public final class WaterPurity {
         return (muddy ? 15 : 0) + (agricultural ? 10 : 0);
     }
 
-    private static void syncModel(ItemStack stack, int purity) {
+    /** Keeps the sprite in step with the contents, so that salt water never looks drinkable. */
+    private static void syncModel(ItemStack stack, WaterQuality quality) {
         if (stack.is(ThirstItems.TERRACOTTA_WATER_BOWL)) {
+            float variant = quality instanceof WaterQuality.Fresh fresh ? fresh.purity() : SALT_BOWL_MODEL;
             stack.set(DataComponents.CUSTOM_MODEL_DATA,
-                    new CustomModelData(List.of(0.0F, (float) purity), List.of(), List.of(), List.of()));
+                    new CustomModelData(List.of(0.0F, variant), List.of(), List.of(), List.of()));
+            return;
         }
+        Identifier saltModel = saltModel(stack);
+        if (saltModel == null) return;
+        if (quality.salty()) {
+            stack.set(DataComponents.ITEM_MODEL, saltModel);
+        } else if (saltModel.equals(stack.get(DataComponents.ITEM_MODEL))) {
+            // Only ever clears a model this mod set, so a modded container keeps its own.
+            stack.remove(DataComponents.ITEM_MODEL);
+        }
+    }
+
+    /** The salt-water sprite for a vanilla container, or {@code null} for anything else. */
+    private static Identifier saltModel(ItemStack stack) {
+        if (stack.is(Items.POTION)) return SALT_WATER_BOTTLE_MODEL;
+        if (stack.is(Items.WATER_BUCKET)) return SALT_WATER_BUCKET_MODEL;
+        return null;
     }
 
     private static ItemInfo info(Item item) {

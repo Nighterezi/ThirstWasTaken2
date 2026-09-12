@@ -1,66 +1,64 @@
 # Chất lượng nước
 
-Mỗi vật chứa lưu mức nhiễm bẩn và việc nước có mặn hay không. Dòng mô tả và sprite của vật phẩm tóm
-tắt mức nhiễm bẩn thành bốn cấp quen thuộc.
+Nước có hai loại. **Nước ngọt** có mức độ sạch, từ bẩn đến tinh khiết. **Nước mặn** không có mức độ
+sạch nào cả: không thể làm sạch được, và không bao giờ giải khát. Mỗi vật chứa đều nhớ nó đang đựng
+loại nào, và ghi rõ trong dòng mô tả.
 
-![Dòng mô tả chai nước hiển thị Bẩn, Hơi bẩn, Có thể uống và Đã tinh lọc](/screenshots/water-purity.png)
+![Dòng mô tả chai nước hiển thị các mức độ sạch của nước ngọt](/screenshots/water-purity.png)
 
-| Điểm nhiễm bẩn | Mức sạch |
-|---:|---|
-| 0 đến 15 | Đã tinh lọc |
-| 16 đến 35 | Có thể uống |
-| 36 đến 65 | Hơi bẩn |
-| 66 đến 100 | Bẩn |
+## Bốn mức độ sạch
 
-## Lấy mẫu nguồn nước
+Từ tệ đến tốt: **Bẩn**, **Đục**, **Sạch**, **Tinh khiết**. Mức này được xác định một lần, khi nước
+được múc hoặc uống trực tiếp, và đi theo vật chứa từ đó.
 
-Nước chỉ được đánh giá một lần khi được múc hoặc uống trực tiếp. Mod không quét môi trường mỗi tick.
-Tag biome quyết định điểm nền, sau đó một vài điều kiện tại chỗ điều chỉnh nhẹ kết quả.
+| Nguồn nước | Mức thường gặp |
+|---|---|
+| Đầm lầy hoặc đầm lầy ngập mặn | Bẩn |
+| Rừng rậm, xavan hoặc badlands | Bẩn |
+| Phần lớn biome khác | Đục |
+| Sông | Đục |
+| Núi | Sạch |
+| Đỉnh núi lạnh | Tinh khiết |
 
-| Nguồn | Điểm nhiễm nền | Mức thường gặp |
-|---|---:|---|
-| Biển hoặc bãi biển | 25, có mặn | Có thể uống về độ sạch, nhưng không giải khát |
-| Đầm lầy hoặc đầm lầy ngập mặn | 85 | Bẩn |
-| Sông | 42 | Hơi bẩn |
-| Núi | 28 | Có thể uống |
-| Rừng rậm, xavan hoặc badlands | 70 | Bẩn |
-| Biome khác | 55 | Hơi bẩn |
+Biome rất nóng làm nước xấu hơn, biome rất lạnh làm nước tốt hơn. Nước trên y 100 hoặc dưới y 32 sạch
+hơn một chút, nước chảy cũng vậy, nên thác nước không tự động an toàn. Bùn, rễ đước, đất trồng hoặc
+composter trong phạm vi hai block làm nước xấu đi.
 
-Biome rất nóng cộng 10 điểm, còn biome rất lạnh trừ 10. Nước trên y 100 hoặc dưới y 32 được trừ 5.
-Nước chảy chỉ trừ 5, vì vậy thác nước không tự động an toàn. Bùn, rễ đước, đất trồng hoặc composter
-trong phạm vi hai block có thể làm nước bẩn hơn.
-
-Modpack có thể thêm biome vào tag `thirstwastaken2:stagnant_water` mà không sửa code. Đồ uống từ mod
-khác chưa mang mẫu chất lượng vẫn sử dụng `defaultPurity`.
+Modpack có thể thêm biome vào tag `thirstwastaken2:stagnant_water` mà không cần sửa code. Nước không
+mang mức độ sạch riêng, ví dụ đồ uống từ mod khác, sẽ dùng
+[defaultPurity](/vi/docs/configuration#defaultpurity).
 
 ## Nước mặn
 
-Độ mặn tách biệt với độ sạch. Nước biển có thể trông sạch nhưng vẫn không uống được. Uống nước mặn
-không hồi độ khát, làm tăng exhaustion của thanh khát và gây Buồn nôn trong năm giây. Lò nung và lửa
-trại không loại bỏ muối.
+Biển và bãi biển cho nước mặn. Nước mặn có biểu tượng riêng và dòng mô tả riêng, nên nhìn là phân
+biệt được với nước ngọt, và không hiển thị giọt nước nào vì nó không hồi gì cả.
+
+Uống nước mặn còn làm tụt độ khát thay vì hồi, kèm theo Buồn nôn trong năm giây. Lò nung và lửa trại
+không nhận nước mặn, nên không có cách nào làm nó uống được. Chỉ cần một lần nước mặn đổ vào túi da
+hoặc vạc là toàn bộ chỗ nước trong đó thành nước mặn.
 
 ## Trộn nước và vạc
 
-Waterskin tính trung bình điểm nhiễm theo số phần nước đang có. Nếu một trong hai phía là nước Bẩn,
-hỗn hợp bị cộng thêm 10 điểm. Vì vậy một phần nước sạch không thể dễ dàng vô hiệu hóa cả mẻ nước bẩn.
-Chỉ cần thêm nước mặn thì cả waterskin sẽ được tính là mặn.
+Túi da tính trung bình mức độ sạch của những lần uống đang chứa, theo số lượng, rồi làm tròn xuống.
+Hai phần nước tinh khiết trộn với một phần nước bẩn cho ra nước sạch, nên một ngụm nước tốt không cứu
+được cả mẻ nước xấu.
 
-Vạc giữ mức tệ hơn khi trộn hai nguồn và ghi nhớ độ mặn. Nước được múc lại vào chai, xô hoặc
-waterskin vẫn mang chất lượng đã lưu.
+Vạc giữ mức tệ hơn giữa phần đang chứa và phần đổ vào. Nước múc lại ra chai, xô hoặc túi da vẫn mang
+mức đó.
 
-## Uống nước nhiễm bẩn
+## Uống nước xấu
 
-Nước ngọt nhiễm bẩn vẫn giải khát. Cơ chế quay hiệu ứng hiện tại không thay đổi.
+Nước ngọt luôn giải khát, bất kể mức độ sạch. Chỉ có rủi ro là thay đổi.
 
 | Mức | Buồn nôn và Đói | Trúng độc |
 |---|---|---|
 | Bẩn | 100% | 30% |
-| Hơi bẩn | 50% | 10% |
-| Có thể uống | 5% | không |
-| Đã tinh lọc | không | không |
+| Đục | 50% | 10% |
+| Sạch | 5% | không |
+| Tinh khiết | không | không |
 
-Buồn nôn kéo dài năm giây, Đói kéo dài ba mươi giây và Trúng độc kéo dài mười giây. Cơ chế nhiễm
-bệnh dài hạn chưa nằm trong bản này.
+Buồn nôn kéo dài năm giây, Đói kéo dài ba mươi giây và Trúng độc kéo dài mười giây. Cơ chế nhiễm bệnh
+dài hạn chưa nằm trong bản này.
 
 ## Làm sạch nước ngọt
 
@@ -68,9 +66,8 @@ Bỏ chai nước ngọt, bát đất nung đựng nước hoặc xô nước v�
 
 | Trước | Sau |
 |---|---|
-| Bẩn | Có thể uống |
-| Hơi bẩn | Đã tinh lọc |
-| Có thể uống | Đã tinh lọc |
+| Bẩn | Sạch |
+| Đục | Tinh khiết |
+| Sạch | Tinh khiết |
 
-Lò nung mất mười giây và lửa trại mất ba mươi giây. Nước Bẩn cần qua hai lượt để thành Đã tinh lọc.
-Vật chứa nước mặn không vào được công thức, thay vì bị khử mặn ngoài ý muốn.
+Lò nung mất mười giây và lửa trại mất ba mươi giây. Nước bẩn cần qua hai lượt để thành tinh khiết.

@@ -16,6 +16,7 @@ public final class ThirstComponents {
                     .networkSynchronized(ByteBufCodecs.VAR_INT)
                     .build());
 
+    /** The grade of the fresh water inside. Salt water carries {@link #WATER_SALTY} instead. */
     public static final DataComponentType<Integer> WATER_PURITY = Registry.register(
             BuiltInRegistries.DATA_COMPONENT_TYPE,
             ThirstWasTaken2.id("water_purity"),
@@ -24,16 +25,10 @@ public final class ThirstComponents {
                     .networkSynchronized(ByteBufCodecs.VAR_INT)
                     .build());
 
-    /** Exact sampled contamination. Purity remains the compact, player-facing four-tier value. */
-    public static final DataComponentType<Integer> WATER_CONTAMINATION = Registry.register(
-            BuiltInRegistries.DATA_COMPONENT_TYPE,
-            ThirstWasTaken2.id("water_contamination"),
-            DataComponentType.<Integer>builder()
-                    .persistent(Codec.intRange(WaterQuality.MIN_CONTAMINATION, WaterQuality.MAX_CONTAMINATION))
-                    .networkSynchronized(ByteBufCodecs.VAR_INT)
-                    .build());
-
-    /** Salinity is independent of cleanliness: boiling unsafe fresh water must not desalinate it. */
+    /**
+     * Sea water. It is not a grade: a salty container carries no {@link #WATER_PURITY} at all, so
+     * nothing can read a grade off water that has none, and no purification recipe can match it.
+     */
     public static final DataComponentType<Boolean> WATER_SALTY = Registry.register(
             BuiltInRegistries.DATA_COMPONENT_TYPE,
             ThirstWasTaken2.id("water_salty"),

@@ -37,9 +37,11 @@ Purity 3 has no recipe because it is already clean.
   `{"fabric:type": "fabric:components", "base": …, "components": {"thirstwastaken2:water_purity": N}}`.
   Water bottles must also match `"minecraft:potion_contents": "minecraft:water"` on top of the
   `minecraft:potion` base.
-- Every cooking ingredient also requires `water_salty: false`, and every result writes matching
-  purity, representative contamination and fresh salinity. Bowl results additionally write custom
-  model data index 1 so their purity sprite is correct without runtime rendering work.
+- Every cooking ingredient also requires `water_salty: false`, and every result writes back the new
+  purity and `water_salty: false`. That requirement is what keeps sea water out of the furnace, since
+  salt water carries no `water_purity` at all — but it also means **anything that hands out water has
+  to stamp both components**, loot included, or its bottles can never be boiled. Bowl results
+  additionally write custom model data index 1 so their sprite is right without runtime work.
 - Changing the purity table means editing all 18 files consistently, and the recipes carry it
   independently of `WaterPurity` — the Java side has no idea these exist.
 
@@ -60,10 +62,23 @@ holds the model it points at.
 a float (and removes the component at zero) — the two must always be set together, which is why
 nothing outside that helper writes `WATER_SERVINGS`.
 
-`items/terracotta_water_bowl.json` dispatches custom model data float index 1 to four pixel-art water
-colors. `WaterPurity.setQuality` writes that value for sampled bowls; cooking recipes write it in the
-result. The PNG variants are reproducibly derived from the original sprite by
-`tools/generate_water_sprites.py`. Waterskins deliberately do not display purity in their sprite.
+`items/terracotta_water_bowl.json` dispatches custom model data float index 1 to five pixel-art water
+colors: `0..3` for the grades and `4` for sea water. `WaterPurity.setQuality` writes that value for
+sampled bowls; cooking recipes write it in the result. The PNG variants are reproducibly derived from
+the original sprite by `tools/generate_water_sprites.py`, salt included. Waterskins deliberately do
+not display quality in their sprite, only in their durability-bar colour.
+
+`items/salt_water_bottle.json` and `items/salt_water_bucket.json` exist for vanilla's containers,
+which cannot be given a model of ours at registration. `WaterPurity.setQuality` points the
+`minecraft:item_model` component at them when the water is salty and clears it when it is not, so a
+sea-water bottle never looks like a drinkable one.
+
+The bottle one is worth copying rather than reinventing: it reuses **vanilla's own**
+`minecraft:item/potion` model and only replaces the tint, `minecraft:potion` becoming a
+`minecraft:constant` of the sea colour. It ships no texture, so the bottle keeps whatever shape the
+player's resource pack gives potions. The bucket has no tinted overlay layer to borrow, so
+`textures/item/salt_water_bucket.png` is a one-off recolour of vanilla's water bucket: same bucket,
+sea-coloured water.
 
 ## Fonts and GUI sheets
 
@@ -87,7 +102,8 @@ Key families, and who reads them:
 |---|---|
 | `thirstwastaken2.config.*` (+ `.tooltip`, `.category.*`) | `ThirstConfigScreen`, derived from the snake_case widget key |
 | `thirst.purity.*` | `WaterPurity.tooltip` and the chance sliders |
-| `tooltip.thirstwastaken2.waterskin.*` | `ItemStackMixin` |
+| `thirst.water.salty` | `WaterPurity.saltTooltip`, the one line salt water gets instead of a grade |
+| `tooltip.thirstwastaken2.*` | `ThirstTooltip`: waterskin contents and the clay bowl hint |
 | `item.thirstwastaken2.*`, `block.thirstwastaken2.*`, `itemGroup.thirstwastaken2` | registration |
 | `command.thirstwastaken2.*` | `ThirstCommands` |
 | `death.attack.dehydrate*` | the `dehydrate` damage type's `message_id` |

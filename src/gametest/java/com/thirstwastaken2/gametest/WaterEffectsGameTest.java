@@ -2,6 +2,7 @@ package com.thirstwastaken2.gametest;
 
 import com.thirstwastaken2.data.ThirstManager;
 import com.thirstwastaken2.item.ThirstItems;
+import com.thirstwastaken2.purity.ThirstComponents;
 import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.purity.WaterQuality;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
@@ -21,7 +22,7 @@ public final class WaterEffectsGameTest {
     @GameTest
     public void saltWaterCausesNauseaAndDoesNotHydrate(GameTestHelper helper) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        ItemStack salty = bowl(25, true);
+        ItemStack salty = bowl(WaterQuality.SALT);
 
         boolean hydrates = WaterPurity.applyEffects(player, salty);
 
@@ -34,7 +35,7 @@ public final class WaterEffectsGameTest {
     public void dirtyWaterCausesNauseaAndHunger(GameTestHelper helper) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
 
-        WaterPurity.applyEffects(player, bowl(WaterQuality.fromPurity(0, false)));
+        WaterPurity.applyEffects(player, bowl(WaterQuality.fresh(0)));
 
         TestFixtures.check(helper, player.hasEffect(MobEffects.NAUSEA),
                 "purity 0 has a 100 percent nausea chance in the default config");
@@ -47,7 +48,7 @@ public final class WaterEffectsGameTest {
     public void purifiedWaterHasNoSideEffects(GameTestHelper helper) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
 
-        boolean hydrates = WaterPurity.applyEffects(player, bowl(WaterQuality.fromPurity(3, false)));
+        boolean hydrates = WaterPurity.applyEffects(player, bowl(WaterQuality.fresh(3)));
 
         TestFixtures.check(helper, hydrates, "purified water must grant hydration");
         TestFixtures.check(helper, !player.hasEffect(MobEffects.NAUSEA) && !player.hasEffect(MobEffects.POISON),
@@ -60,7 +61,7 @@ public final class WaterEffectsGameTest {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         ThirstManager.set(player, ThirstManager.get(player).withLevels(4, 0));
 
-        ThirstManager.drinkItem(player, bowl(WaterQuality.fromPurity(3, false)));
+        ThirstManager.drinkItem(player, bowl(WaterQuality.fresh(3)));
 
         int thirst = ThirstManager.get(player).thirst();
         TestFixtures.check(helper, thirst > 4,
@@ -68,21 +69,21 @@ public final class WaterEffectsGameTest {
         helper.succeed();
     }
 
+    /**
+     * Salt water has no grade, so there is nothing for boiling to raise. It must come back out of
+     * the fire as salt water, without having picked up a grade on the way.
+     */
     @GameTest
-    public void saltinessSurvivesBoiling(GameTestHelper helper) {
-        ItemStack salty = bowl(80, true);
+    public void boilingCannotDesalinate(GameTestHelper helper) {
+        ItemStack salty = bowl(WaterQuality.SALT);
 
         WaterPurity.purify(salty, WaterPurity.MAX);
 
-        TestFixtures.check(helper, WaterPurity.isSalty(salty),
-                "purifying salt water must not desalinate it");
-        TestFixtures.check(helper, WaterPurity.get(salty) == WaterPurity.MAX,
-                "purifying should still raise the purity tier, got " + WaterPurity.get(salty));
+        TestFixtures.check(helper, WaterPurity.quality(salty) instanceof WaterQuality.Salt,
+                "purifying salt water must leave it salt water, got " + WaterPurity.quality(salty));
+        TestFixtures.check(helper, !salty.has(ThirstComponents.WATER_PURITY),
+                "salt water must not end up carrying a grade");
         helper.succeed();
-    }
-
-    private static ItemStack bowl(int contamination, boolean salty) {
-        return bowl(new WaterQuality(contamination, salty));
     }
 
     private static ItemStack bowl(WaterQuality quality) {

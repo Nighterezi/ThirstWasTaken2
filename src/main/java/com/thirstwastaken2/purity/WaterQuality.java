@@ -1,28 +1,32 @@
 package com.thirstwastaken2.purity;
 
-/** A sampled body of water. Contamination and salinity deliberately remain independent. */
-public record WaterQuality(int contamination, boolean salty) {
-    public static final int MIN_CONTAMINATION = 0;
-    public static final int MAX_CONTAMINATION = 100;
+/**
+ * What a container holds.
+ *
+ * <p>Sealed on purpose. Salt water is a different kind of water, not a low purity tier: cooking
+ * cannot improve it, one salty serving spoils a whole batch, and it never hydrates. Making it its
+ * own case means every consumer - tooltips, sickness, mixing, sprites - has to say what it does
+ * with salt water instead of quietly treating it as a grade.
+ */
+public sealed interface WaterQuality {
+    /** Sea water is stateless, so one instance serves every caller. */
+    WaterQuality SALT = new Salt();
 
-    public WaterQuality {
-        contamination = Math.max(MIN_CONTAMINATION, Math.min(MAX_CONTAMINATION, contamination));
+    static WaterQuality fresh(int purity) {
+        return new Fresh(purity);
     }
 
-    public int purity() {
-        if (contamination <= 15) return 3;
-        if (contamination <= 35) return 2;
-        if (contamination <= 65) return 1;
-        return 0;
+    default boolean salty() {
+        return this instanceof Salt;
     }
 
-    public static WaterQuality fromPurity(int purity, boolean salty) {
-        int representative = switch (Math.max(WaterPurity.MIN, Math.min(WaterPurity.MAX, purity))) {
-            case 0 -> 80;
-            case 1 -> 50;
-            case 2 -> 25;
-            default -> 5;
-        };
-        return new WaterQuality(representative, salty);
+    /** Drinkable water, graded {@code 0..3}: dirty, murky, clean, pure. */
+    record Fresh(int purity) implements WaterQuality {
+        public Fresh {
+            purity = Math.clamp(purity, WaterPurity.MIN, WaterPurity.MAX);
+        }
     }
+
+    /** Sea water. It carries no grade, because no grade of it can be drunk. */
+    record Salt() implements WaterQuality { }
 }

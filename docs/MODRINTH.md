@@ -33,22 +33,22 @@ Every container remembers where its water came from, and every tooltip says so.
 
 ## Not all water is safe
 
-The biome sets the grade.
+Fresh water is graded by the biome it came from.
 
 | Where the water comes from | Usual grade |
 |---|---|
-| Mountains | Acceptable |
-| Rivers | Slightly dirty |
-| Most other biomes | Slightly dirty |
+| Mountains | Clean |
+| Rivers | Murky |
+| Most other biomes | Murky |
 | Swamps, jungles, savannas and badlands | Dirty |
-| Oceans and beaches | Salty |
 
 Hot biomes, and mud, farmland or a composter within a couple of blocks, make water worse. Cold
 biomes and water that is high up or deep underground make it better.
 
-Dirty water still quenches thirst, but it can bring Nausea, Hunger or Poison with it. Salt water is
-the exception that catches people out: it restores nothing, causes Nausea, and boiling will not fix
-it.
+Dirty water still quenches thirst, but it can bring Nausea, Hunger or Poison with it.
+
+Oceans and beaches are not a grade of fresh water at all. Sea water has its own icon and its own
+tooltip line, restores nothing, causes Nausea, and no fire will make it drinkable.
 
 ## Making it safe
 
@@ -58,9 +58,9 @@ A furnace or a campfire raises the grade of anything drinkable, bottles, buckets
 
 | Into the fire | Out of the fire |
 |---|---|
-| Dirty | Acceptable |
-| Slightly dirty | Purified |
-| Acceptable | Purified |
+| Dirty | Clean |
+| Murky | Pure |
+| Clean | Pure |
 
 ## Carrying it
 

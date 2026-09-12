@@ -1,6 +1,6 @@
 package com.thirstwastaken2.gametest;
 
-import com.thirstwastaken2.purity.ThirstComponents;
+import com.thirstwastaken2.purity.WaterPurity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
@@ -80,7 +80,7 @@ final class TestFixtures {
         Inventory inventory = player.getInventory();
         for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
             ItemStack stack = inventory.getItem(slot);
-            if (stack.has(ThirstComponents.WATER_CONTAMINATION)) return stack;
+            if (WaterPurity.isStamped(stack)) return stack;
         }
         return ItemStack.EMPTY;
     }

@@ -40,8 +40,8 @@ values, sickness chances, purity by location) live on the `docs/features/` page 
 
 Vietnamese pages are a full mirror, and their links are absolute with the prefix:
 `/vi/docs/commands`, not `/docs/commands`. In-game wording comes from
-`src/main/resources/assets/thirstwastaken2/lang/vi_vn.json`, so purity levels are Bẩn, Hơi bẩn, Có thể
-uống and Đã tinh lọc, and "quenched" is "đã khát".
+`src/main/resources/assets/thirstwastaken2/lang/vi_vn.json`, so the grades of fresh water are Bẩn,
+Đục, Sạch and Tinh khiết, salt water is "nước mặn", and "quenched" is "đã khát".
 
 ## Keeping it true
 

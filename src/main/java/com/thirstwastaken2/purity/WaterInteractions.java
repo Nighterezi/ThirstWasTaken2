@@ -127,15 +127,9 @@ public final class WaterInteractions {
         if (!filling && !draining) return InteractionResult.PASS;
 
         WaterQuality quality = filling ? WaterPurity.quality(held) : WaterPurity.sampleAt(level, pos);
-        if (filling && before.hasProperty(WaterPurity.BLOCK_PURITY)) {
-            int stored = before.getValue(WaterPurity.BLOCK_PURITY);
-            if (stored > 0) {
-                boolean storedSalty = before.hasProperty(WaterPurity.BLOCK_SALTY)
-                        && before.getValue(WaterPurity.BLOCK_SALTY);
-                WaterQuality storedQuality = WaterQuality.fromPurity(stored - 1, storedSalty);
-                quality = new WaterQuality(Math.max(quality.contamination(), storedQuality.contamination()),
-                        quality.salty() || storedQuality.salty());
-            }
+        if (filling) {
+            WaterQuality stored = WaterPurity.storedQuality(before);
+            if (stored != null) quality = worse(quality, stored);
         }
 
         WaterQuality transferred = quality;
@@ -150,15 +144,22 @@ public final class WaterInteractions {
         while ((action = END_OF_TICK.poll()) != null) action.run();
     }
 
+    /**
+     * A cauldron keeps the worse of what it holds and what is poured in. Unlike the waterskin it
+     * cannot average two grades, because its blockstate only has room for one of the four.
+     */
+    private static WaterQuality worse(WaterQuality left, WaterQuality right) {
+        if (left instanceof WaterQuality.Fresh held && right instanceof WaterQuality.Fresh poured) {
+            return WaterQuality.fresh(Math.min(held.purity(), poured.purity()));
+        }
+        return WaterQuality.SALT;
+    }
+
     private static void storeInCauldron(Level level, BlockPos pos, WaterQuality quality) {
         BlockState after = level.getBlockState(pos);
         if (!after.hasProperty(WaterPurity.BLOCK_PURITY)) return;
-        // Stored purity is offset by one so that zero can act as "unset".
-        BlockState stamped = after.setValue(WaterPurity.BLOCK_PURITY, quality.purity() + 1);
-        if (stamped.hasProperty(WaterPurity.BLOCK_SALTY)) {
-            stamped = stamped.setValue(WaterPurity.BLOCK_SALTY, quality.salty());
-        }
-        level.setBlock(pos, stamped, BLOCK_UPDATE_FLAGS);
+        level.setBlock(pos, after.setValue(WaterPurity.BLOCK_PURITY, WaterPurity.storedValue(quality)),
+                BLOCK_UPDATE_FLAGS);
     }
 
     /**
@@ -175,7 +176,7 @@ public final class WaterInteractions {
     }
 
     private static boolean stamp(ItemStack stack, WaterQuality quality) {
-        if (stack.isEmpty() || stack.has(ThirstComponents.WATER_PURITY) || !WaterPurity.isWaterContainer(stack)) {
+        if (stack.isEmpty() || WaterPurity.isStamped(stack) || !WaterPurity.isWaterContainer(stack)) {
             return false;
         }
         WaterPurity.setQuality(stack, quality);

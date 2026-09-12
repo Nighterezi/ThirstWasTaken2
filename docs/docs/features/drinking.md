@@ -62,9 +62,9 @@ inventory, right-click a waterskin with a water bottle to add one drink, or with
 fill every remaining drink; the empty bottle or bucket is returned. Sneak and use a filled waterskin
 on a block to pour away all of its water.
 
-Mixing water always keeps the lowest purity. Adding dirty water to purified water makes the whole
-waterskin dirty, and adding cleaner water afterwards does not purify it. Each drink restores 4
-hydration and 5 quenched, and the empty waterskin is kept for refilling.
+Mixing averages the grades of the drinks inside, rounded down, so adding one dirty drink drags the
+whole waterskin down. Salt water is the exception: one salty drink makes all of it salt water. Each
+drink restores 4 hydration and 5 quenched, and the empty waterskin is kept for refilling.
 
 ## Straight from the source
 

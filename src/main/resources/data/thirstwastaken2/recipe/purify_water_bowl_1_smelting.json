@@ -15,7 +15,6 @@
                    "id":  "thirstwastaken2:terracotta_water_bowl",
                    "components":  {
                                       "thirstwastaken2:water_purity":  3,
-                                      "thirstwastaken2:water_contamination":  5,
                                       "thirstwastaken2:water_salty":  false,
                                       "minecraft:custom_model_data":  {
                                                                           "floats":  [

@@ -1,7 +1,7 @@
 package com.thirstwastaken2.gametest;
 
-import com.thirstwastaken2.purity.ThirstComponents;
 import com.thirstwastaken2.purity.WaterPurity;
+import com.thirstwastaken2.purity.WaterQuality;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -23,17 +23,21 @@ import net.minecraft.world.level.block.Blocks;
 public final class WaterFillingGameTest {
     /** Mud inside the sampling neighbourhood is the cheapest way to change the water's quality. */
     private static final BlockPos MUD = new BlockPos(4, TestFixtures.WATER.getY(), 2);
+    /** Farmland adds to mud, which is what takes the sample a whole grade down rather than a little. */
+    private static final BlockPos FARMLAND = new BlockPos(4, TestFixtures.WATER.getY(), 3);
 
     @GameTest
-    public void sampledContaminationReflectsSurroundings(GameTestHelper helper) {
+    public void sampledGradeReflectsSurroundings(GameTestHelper helper) {
         BlockPos water = TestFixtures.water(helper);
 
-        int clean = WaterPurity.sampleAt(helper.getLevel(), water).contamination();
-        helper.setBlock(MUD, Blocks.MUD);
-        int polluted = WaterPurity.sampleAt(helper.getLevel(), water).contamination();
+        WaterQuality clean = WaterPurity.sampleAt(helper.getLevel(), water);
+        pollute(helper);
+        WaterQuality polluted = WaterPurity.sampleAt(helper.getLevel(), water);
 
-        TestFixtures.check(helper, polluted > clean,
-                "mud beside the water should raise contamination, got " + clean + " then " + polluted);
+        TestFixtures.check(helper, clean instanceof WaterQuality.Fresh fresh
+                        && polluted instanceof WaterQuality.Fresh dirtied
+                        && dirtied.purity() < fresh.purity(),
+                "mud and farmland beside the water should lower its grade, got " + clean + " then " + polluted);
         helper.succeed();
     }
 
@@ -41,16 +45,15 @@ public final class WaterFillingGameTest {
     public void bottleFillStampsSampledQuality(GameTestHelper helper) {
         BlockPos water = TestFixtures.water(helper);
         ServerPlayer player = TestFixtures.playerAboveWater(helper);
-        int expected = WaterPurity.sampleAt(helper.getLevel(), water).contamination();
+        WaterQuality expected = WaterPurity.sampleAt(helper.getLevel(), water);
 
         fill(player, Items.GLASS_BOTTLE);
 
         ItemStack filled = TestFixtures.findSampledWater(player);
         TestFixtures.check(helper, !filled.isEmpty(),
                 "using a glass bottle on water should produce a container carrying water quality");
-        TestFixtures.check(helper, filled.getOrDefault(ThirstComponents.WATER_CONTAMINATION, -1) == expected,
-                "bottle should carry the sampled contamination " + expected + ", got "
-                        + filled.get(ThirstComponents.WATER_CONTAMINATION));
+        TestFixtures.check(helper, WaterPurity.quality(filled).equals(expected),
+                "bottle should carry the sampled " + expected + ", got " + WaterPurity.quality(filled));
         helper.succeed();
     }
 
@@ -58,16 +61,15 @@ public final class WaterFillingGameTest {
     public void bucketFillStampsSampledQuality(GameTestHelper helper) {
         BlockPos water = TestFixtures.water(helper);
         ServerPlayer player = TestFixtures.playerAboveWater(helper);
-        int expected = WaterPurity.sampleAt(helper.getLevel(), water).contamination();
+        WaterQuality expected = WaterPurity.sampleAt(helper.getLevel(), water);
 
         fill(player, Items.BUCKET);
 
         ItemStack filled = TestFixtures.findSampledWater(player);
         TestFixtures.check(helper, !filled.isEmpty(),
                 "using a bucket on water should produce a water bucket carrying water quality");
-        TestFixtures.check(helper, filled.getOrDefault(ThirstComponents.WATER_CONTAMINATION, -1) == expected,
-                "bucket should carry the sampled contamination " + expected + ", got "
-                        + filled.get(ThirstComponents.WATER_CONTAMINATION));
+        TestFixtures.check(helper, WaterPurity.quality(filled).equals(expected),
+                "bucket should carry the sampled " + expected + ", got " + WaterPurity.quality(filled));
         helper.succeed();
     }
 
@@ -83,22 +85,21 @@ public final class WaterFillingGameTest {
         fill(player, Items.GLASS_BOTTLE);
         ItemStack first = TestFixtures.findSampledWater(player);
         TestFixtures.check(helper, !first.isEmpty(), "the first fill should have produced a water bottle");
-        int before = first.getOrDefault(ThirstComponents.WATER_CONTAMINATION, -1);
+        WaterQuality before = WaterPurity.quality(first);
         // Take the bottle back out of the inventory so the second one is unambiguous.
         first.setCount(0);
 
-        helper.setBlock(MUD, Blocks.MUD);
-        int expected = WaterPurity.sampleAt(helper.getLevel(), water).contamination();
-        TestFixtures.check(helper, expected > before,
+        pollute(helper);
+        WaterQuality expected = WaterPurity.sampleAt(helper.getLevel(), water);
+        TestFixtures.check(helper, !expected.equals(before),
                 "the fixture should have made the water dirtier, got " + before + " then " + expected);
 
         fill(player, Items.GLASS_BOTTLE);
         ItemStack second = TestFixtures.findSampledWater(player);
         TestFixtures.check(helper, !second.isEmpty(), "the second fill should have produced a water bottle");
-        TestFixtures.check(helper,
-                second.getOrDefault(ThirstComponents.WATER_CONTAMINATION, -1) == expected,
+        TestFixtures.check(helper, WaterPurity.quality(second).equals(expected),
                 "the second fill should resample the water and report " + expected + ", got "
-                        + second.get(ThirstComponents.WATER_CONTAMINATION));
+                        + WaterPurity.quality(second));
         helper.succeed();
     }
 
@@ -127,6 +128,12 @@ public final class WaterFillingGameTest {
         TestFixtures.check(helper, stale.isEmpty(),
                 "filling with no water in reach must not stamp a quality, got " + stale);
         helper.succeed();
+    }
+
+    /** Drops the sampled grade of the test's water source by putting pollution next to it. */
+    private static void pollute(GameTestHelper helper) {
+        helper.setBlock(MUD, Blocks.MUD);
+        helper.setBlock(FARMLAND, Blocks.FARMLAND);
     }
 
     /** Runs the real server-side right-click path so the mixins see exactly what vanilla sees. */

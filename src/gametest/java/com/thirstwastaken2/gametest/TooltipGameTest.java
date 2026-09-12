@@ -25,22 +25,43 @@ import java.util.List;
 public final class TooltipGameTest {
     @GameTest
     public void waterContainerShowsPurity(GameTestHelper helper) {
-        List<Component> lines = linesFor(bowl(WaterQuality.fromPurity(3, false)));
+        List<Component> lines = linesFor(bowl(WaterQuality.fresh(3)));
 
         TestFixtures.check(helper, hasKeyStartingWith(lines, "thirst.purity."),
                 "a water container should get a purity line, got " + keys(lines));
         helper.succeed();
     }
 
+    /**
+     * Salt water is not a grade of fresh water, and it restores nothing. Its tooltip has to say that
+     * once, instead of pairing a grade it does not have with droplets it does not give.
+     */
     @GameTest
-    public void saltWaterShowsSalinity(GameTestHelper helper) {
-        List<Component> salty = linesFor(bowl(new WaterQuality(25, true)));
-        List<Component> fresh = linesFor(bowl(new WaterQuality(25, false)));
+    public void saltWaterReplacesTheGradeAndTheDroplets(GameTestHelper helper) {
+        List<Component> salty = linesFor(bowl(WaterQuality.SALT));
+        List<Component> fresh = linesFor(bowl(WaterQuality.fresh(2)));
 
         TestFixtures.check(helper, hasKey(salty, "thirst.water.salty"),
                 "salt water should get a salinity line, got " + keys(salty));
-        TestFixtures.check(helper, !hasKey(fresh, "thirst.water.salty"),
-                "fresh water should not, got " + keys(fresh));
+        TestFixtures.check(helper, !hasKeyStartingWith(salty, "thirst.purity."),
+                "salt water has no grade to report, got " + keys(salty));
+        TestFixtures.check(helper, salty.stream().allMatch(line -> line.getContents() instanceof TranslatableContents),
+                "salt water restores nothing, so it should get no droplet rows, got " + keys(salty));
+        TestFixtures.check(helper, hasKeyStartingWith(fresh, "thirst.purity.")
+                        && !hasKey(fresh, "thirst.water.salty"),
+                "fresh water should report a grade and no salinity, got " + keys(fresh));
+        helper.succeed();
+    }
+
+    @GameTest
+    public void theClayBowlSaysItHasToBeFired(GameTestHelper helper) {
+        List<Component> clay = linesFor(new ItemStack(ThirstItems.CLAY_BOWL));
+        List<Component> terracotta = linesFor(new ItemStack(ThirstItems.TERRACOTTA_BOWL));
+
+        TestFixtures.check(helper, hasKey(clay, "tooltip.thirstwastaken2.clay_bowl"),
+                "the clay bowl should say it needs firing first, got " + keys(clay));
+        TestFixtures.check(helper, !hasKey(terracotta, "tooltip.thirstwastaken2.clay_bowl"),
+                "the fired bowl should not still ask to be fired, got " + keys(terracotta));
         helper.succeed();
     }
 
@@ -48,7 +69,7 @@ public final class TooltipGameTest {
     public void waterskinShowsItsServings(GameTestHelper helper) {
         ItemStack empty = new ItemStack(ThirstItems.WATERSKIN);
         ItemStack filled = new ItemStack(ThirstItems.WATERSKIN);
-        WaterskinItem.addWater(filled, new WaterQuality(10, false), 2);
+        WaterskinItem.addWater(filled, WaterQuality.fresh(3), 2);
 
         TestFixtures.check(helper,
                 hasKey(linesFor(empty), "tooltip.thirstwastaken2.waterskin.empty"),
@@ -62,7 +83,7 @@ public final class TooltipGameTest {
     @GameTest
     public void hydrationRowsAreRendered(GameTestHelper helper) {
         // The bowl restores 4 thirst and 5 quenched in the default config, so both rows appear.
-        List<Component> lines = linesFor(bowl(WaterQuality.fromPurity(3, false)));
+        List<Component> lines = linesFor(bowl(WaterQuality.fresh(3)));
 
         long droplets = lines.stream().filter(line -> !(line.getContents() instanceof TranslatableContents)).count();
         TestFixtures.check(helper, droplets >= 2,

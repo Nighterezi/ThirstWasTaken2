@@ -35,27 +35,30 @@ public final class WaterskinItem extends Item {
     }
 
     public static boolean addWater(ItemStack stack, int purity, int amount) {
-        return addWater(stack, WaterQuality.fromPurity(purity, false), amount);
+        return addWater(stack, WaterQuality.fresh(purity), amount);
     }
 
-    public static boolean addWater(ItemStack stack, WaterQuality addedQuality, int amount) {
+    public static boolean addWater(ItemStack stack, WaterQuality added, int amount) {
         int current = servings(stack);
         if (!stack.is(ThirstItems.WATERSKIN) || current >= CAPACITY || amount <= 0) return false;
 
-        int added = Math.min(amount, CAPACITY - current);
-        WaterQuality mixed = addedQuality;
-        if (current > 0) {
-            WaterQuality existing = WaterPurity.quality(stack);
-            int contamination = Math.round((existing.contamination() * current
-                    + addedQuality.contamination() * added) / (float) (current + added));
-            // A small dirty-water penalty prevents trivial dilution while still allowing realistic
-            // volume-weighted mixing instead of permanently taking the worst whole tier.
-            if (existing.contamination() > 65 || addedQuality.contamination() > 65) contamination += 10;
-            mixed = new WaterQuality(contamination, existing.salty() || addedQuality.salty());
-        }
-        setServings(stack, current + added);
+        int poured = Math.min(amount, CAPACITY - current);
+        WaterQuality mixed = current == 0 ? added : mix(WaterPurity.quality(stack), current, added, poured);
+        setServings(stack, current + poured);
         WaterPurity.setQuality(stack, mixed);
         return true;
+    }
+
+    /**
+     * Serving-weighted mixing, rounded down, so that one clean mouthful cannot talk a whole batch up
+     * a grade. Salt is not averaged at all: a single salty serving turns the skin into sea water,
+     * which is what keeps the sea worth avoiding.
+     */
+    private static WaterQuality mix(WaterQuality existing, int held, WaterQuality added, int poured) {
+        if (existing instanceof WaterQuality.Fresh inside && added instanceof WaterQuality.Fresh pouring) {
+            return WaterQuality.fresh((inside.purity() * held + pouring.purity() * poured) / (held + poured));
+        }
+        return WaterQuality.SALT;
     }
 
     /** Removes stored drinks, clearing their quality once the waterskin becomes empty. */
@@ -130,11 +133,14 @@ public final class WaterskinItem extends Item {
 
     @Override
     public int getBarColor(ItemStack stack) {
-        return switch (WaterPurity.get(stack)) {
-            case 0 -> 0x8A5A2B;
-            case 1 -> 0x7086A0;
-            case 2 -> 0x3F76E4;
-            default -> 0x42C8F5;
+        return switch (WaterPurity.quality(stack)) {
+            case WaterQuality.Salt ignored -> 0xD8D2BE;
+            case WaterQuality.Fresh fresh -> switch (fresh.purity()) {
+                case 0 -> 0x8A5A2B;
+                case 1 -> 0xB09A63;
+                case 2 -> 0x3F76E4;
+                default -> 0x42C8F5;
+            };
         };
     }
 
@@ -156,7 +162,6 @@ public final class WaterskinItem extends Item {
 
     private static void clearWaterQuality(ItemStack stack) {
         stack.remove(ThirstComponents.WATER_PURITY);
-        stack.remove(ThirstComponents.WATER_CONTAMINATION);
         stack.remove(ThirstComponents.WATER_SALTY);
     }
 

@@ -226,7 +226,7 @@ Each area of the tree carries its own `AGENTS.md` with rules and conventions loc
 
 | Task / Area | Location |
 |---|---|
-| Common code: init order, state invariants, caching rules | [src/main/java/com/thirstwastaken2/AGENTS.md](src/main/java/com/thirstwastaken2/AGENTS.md) |
+| Common code: init order, state invariants, caching rules, tooltip line tiers | [src/main/java/com/thirstwastaken2/AGENTS.md](src/main/java/com/thirstwastaken2/AGENTS.md) |
 | Vanilla behaviour hooks & fragile injections | [.../mixin/AGENTS.md](src/main/java/com/thirstwastaken2/mixin/AGENTS.md) |
 | Water purity carriers, environmental sampling, cauldrons | [.../purity/AGENTS.md](src/main/java/com/thirstwastaken2/purity/AGENTS.md) |
 | Loot injection & optional-integration rules | [.../compat/AGENTS.md](src/main/java/com/thirstwastaken2/compat/AGENTS.md) |
@@ -252,8 +252,8 @@ src/main/java/com/thirstwastaken2/      common (client + server)
   data/HealthRegen.java                whether a dehydrated player may still regenerate
   item/ThirstItems.java                bowl and waterskin registration + creative tab
   item/WaterskinItem.java              three-drink storage, consumption and inventory transfers
-  purity/ThirstComponents.java         quality, salinity, purity and serving data components
-  purity/WaterQuality.java             contamination score, salinity and tier thresholds
+  purity/ThirstComponents.java         purity, salinity and serving data components
+  purity/WaterQuality.java             sealed Fresh(grade) | Salt
   purity/WaterPurity.java              environmental sampling, effects and container detection
   purity/WaterInteractions.java        bowl/waterskin filling, cauldron purity transfer
   purity/FillCapture.java              sample-then-stamp shared by the bottle and bucket mixins
@@ -281,6 +281,7 @@ src/gametest/java/com/thirstwastaken2/gametest/
   WaterEffectsGameTest.java            salt, dirty and purified water, drinking
   HealthRegenGameTest.java             dehydration halting regen, and the food refund
   WaterskinGameTest.java               mixing, capacity, emptying
+  PurificationGameTest.java            which water the furnace recipes accept
   TooltipGameTest.java                 the lines the mod adds to a tooltip
 
 src/dev/java/com/thirstwastaken2/dev/   dev-only tools mod, never packaged
@@ -296,20 +297,28 @@ src/main/resources/
   data/minecraft/tags/                 bypasses_armor
 ```
 
-## Water purity
+## Water quality
 
-Purity is an integer 0-3 (dirty, slightly dirty, acceptable, purified).
+`WaterQuality` is a sealed interface with two cases: `Fresh(purity)`, graded 0-3 (dirty, murky,
+clean, pure), and `Salt`. Salt water is not a grade, because cooking cannot improve it, one salty
+serving spoils a whole batch and it never hydrates. Sealing it means every consumer - tooltip,
+sickness, mixing, sprite - has to answer for salt water or fail to compile.
 
 | Carrier | Storage |
 |---|---|
-| Items | contamination, purity and salinity data components |
-| Cauldrons | offset `purity` and boolean `salty` blockstate properties |
+| Items | `water_purity` for a grade, `water_salty` for sea water; salt water carries no grade at all |
+| Cauldrons | one `purity` blockstate value: 0 unset, 1-4 the grades, 5 salt |
 | Anything else | `ThirstConfig.defaultPurity` |
 
-`WaterPurity.sampleAt(level, pos)` samples contamination and salinity only when water is collected or
-drunk. Biome tags choose the baseline; temperature, altitude, flow and nearby mud or agriculture
-apply small fixed modifiers. The result is stored on the container, so no environmental scan runs
-on tick or tooltip paths.
+The cauldron deliberately uses one property rather than a grade plus a boolean: vanilla gives a
+freshly placed block the first value of every property it has, and for a boolean that is `true`, so
+a separate salinity flag makes every new cauldron read as sea water.
+
+`WaterPurity.sampleAt(level, pos)` runs only when water is collected or drunk. Ocean and beach
+biomes return `Salt` immediately; everything else is scored - biome tag baseline, then temperature,
+altitude, flow and nearby mud or agriculture - and the score is graded on the spot. The score itself
+is never stored, so nothing carries a number a player cannot see, and no environmental scan runs on
+a tick or tooltip path.
 
 `WaterPurity.INFO` caches, per `Item`, whether it counts as a water container and what static purity
 it carries — this is how the optional Tough As Nails / Farmer's Delight / Farmer's Respite /
@@ -324,7 +333,7 @@ Brewin' and Chewin' / Collector's Reap support stays dependency-free.
 | `ItemStackMixin` | `#finishUsingItem`, `#addDetailsToTooltip` | grant hydration, render purity + thirst/quenched rows |
 | `BottleItemMixin` | `BottleItem#use` | stamp purity on a bottle filled from a water block |
 | `BucketItemMixin` | `BucketItem#use` | stamp purity on a bucket filled from a water block |
-| `LayeredCauldronBlockMixin` | `#createBlockStateDefinition` | add purity and salinity properties |
+| `LayeredCauldronBlockMixin` | `#createBlockStateDefinition` | add the stored-quality property |
 
 ## HUD
 
@@ -378,4 +387,5 @@ server.
   installed, its exhaustion-underlay setting also controls a thirst exhaustion strip drawn from the
   `v = 18` row of `appleskin_icons.png`.
 - Water quality is sampled from biome and a fixed local neighborhood only when water is collected.
-  Salinity is separate from the four player-facing purity tiers.
+  Sea water is its own kind of water rather than a fifth grade, and shows one line and one sprite of
+  its own instead of a grade it cannot have.

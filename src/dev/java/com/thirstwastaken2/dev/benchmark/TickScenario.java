@@ -56,7 +56,7 @@ final class TickScenario implements Stage {
     /** Each player fills a bowl and, half a cycle later, drinks one, once per this many ticks. */
     private static final int INTERACTION_INTERVAL = 600;
     private static final int TICK_BUDGET_NANOS = 50_000_000;
-    private static final WaterQuality PURIFIED = WaterQuality.fromPurity(WaterPurity.MAX, false);
+    private static final WaterQuality PURIFIED = WaterQuality.fresh(WaterPurity.MAX);
 
     private final BenchmarkWorld world;
     private final int count;

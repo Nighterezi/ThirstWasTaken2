@@ -17,7 +17,6 @@
                    "components":  {
                                       "minecraft:potion_contents":  "minecraft:water",
                                       "thirstwastaken2:water_purity":  3,
-                                      "thirstwastaken2:water_contamination":  5,
                                       "thirstwastaken2:water_salty":  false
                                   }
                }

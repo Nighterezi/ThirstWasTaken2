@@ -15,7 +15,8 @@ changes, and what is still missing.
 - On Peaceful, thirst slowly refills instead of draining.
 - Drink from potions, modded drinks, watery foods and the water bowl.
 - Optionally drink straight from a water source by sneaking with an empty hand.
-- Four levels of water purity. Dirty water can make you nauseous or poison you.
+- Four grades of fresh water. Dirty water can make you nauseous or poison you, and sea water is a
+  kind of its own that never quenches thirst.
 - Purify water in a furnace or on a campfire, in bottles, bowls and buckets.
 - Cauldrons remember how clean the water poured into them was.
 - Clay bowl, terracotta bowl and terracotta water bowl. The clay bowl must be smelted before it can scoop water; hold the resulting terracotta bowl and use it on any water block, including flowing water.

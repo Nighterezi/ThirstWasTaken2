@@ -28,19 +28,27 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class CauldronGameTest {
     private static final BlockPos CAULDRON = new BlockPos(2, 2, 2);
-    /** Stored purity is offset by one so that zero can mean "nothing stored yet". */
-    private static final int UNSET = 0;
+    /** Stored grades are offset by one so that zero can mean "nothing stored yet". */
+    private static final int UNSET = WaterPurity.BLOCK_UNSET;
 
+    /**
+     * A cauldron nobody has poured into holds plain water, and the quality has to be stored in one
+     * property for it to say so. Vanilla gives a freshly placed block the first value of every
+     * property it carries, and for a boolean that is {@code true}, so a separate salinity flag would
+     * make every new cauldron read as sea water.
+     */
     @GameTest
-    public void waterCauldronsCarryQualityProperties(GameTestHelper helper) {
+    public void aFreshWaterCauldronHoldsNothingInParticular(GameTestHelper helper) {
         BlockState state = Blocks.WATER_CAULDRON.defaultBlockState();
 
         TestFixtures.check(helper, state.hasProperty(WaterPurity.BLOCK_PURITY),
-                "the water cauldron should have a purity property");
-        TestFixtures.check(helper, state.hasProperty(WaterPurity.BLOCK_SALTY),
-                "the water cauldron should have a salinity property");
+                "the water cauldron should have a quality property");
         TestFixtures.check(helper, state.getValue(WaterPurity.BLOCK_PURITY) == UNSET,
-                "a fresh water cauldron should store no quality yet");
+                "a fresh water cauldron should store no quality yet, got "
+                        + state.getValue(WaterPurity.BLOCK_PURITY));
+        TestFixtures.check(helper, WaterPurity.storedQuality(state) == null,
+                "a fresh water cauldron must not read as salt water, got "
+                        + WaterPurity.storedQuality(state));
         helper.succeed();
     }
 
@@ -48,10 +56,9 @@ public final class CauldronGameTest {
     public void powderSnowCauldronsStayPlain(GameTestHelper helper) {
         BlockState state = Blocks.POWDER_SNOW_CAULDRON.defaultBlockState();
 
-        TestFixtures.check(helper,
-                !state.hasProperty(WaterPurity.BLOCK_PURITY) && !state.hasProperty(WaterPurity.BLOCK_SALTY),
+        TestFixtures.check(helper, !state.hasProperty(WaterPurity.BLOCK_PURITY),
                 "powder snow never holds water, so its cauldron should not multiply its states with "
-                        + "the quality properties");
+                        + "the quality property");
         helper.succeed();
     }
 
@@ -76,26 +83,40 @@ public final class CauldronGameTest {
     }
 
     @GameTest
-    public void pouringStoresTheQualityInTheCauldron(GameTestHelper helper) {
-        WaterQuality poured = new WaterQuality(80, true);
+    public void pouringStoresTheGradeInTheCauldron(GameTestHelper helper) {
+        WaterQuality.Fresh poured = new WaterQuality.Fresh(0);
         BlockPos pos = pour(helper, poured);
 
         BlockState after = helper.getLevel().getBlockState(pos);
         TestFixtures.check(helper, after.getValue(WaterPurity.BLOCK_PURITY) == poured.purity() + 1,
-                "the cauldron should store purity " + poured.purity() + ", got "
+                "the cauldron should store grade " + poured.purity() + ", got "
                         + (after.getValue(WaterPurity.BLOCK_PURITY) - 1));
-        TestFixtures.check(helper, after.getValue(WaterPurity.BLOCK_SALTY),
-                "the cauldron should remember that the water was salty");
+        TestFixtures.check(helper, after.getValue(WaterPurity.BLOCK_PURITY) != WaterPurity.BLOCK_SALT,
+                "fresh water should not make the cauldron salty");
+        helper.succeed();
+    }
+
+    /** Salt water has no grade, so the cauldron stores the salinity alone and leaves grade unset. */
+    @GameTest
+    public void pouringSaltWaterStoresNoGrade(GameTestHelper helper) {
+        BlockPos pos = pour(helper, WaterQuality.SALT);
+
+        BlockState after = helper.getLevel().getBlockState(pos);
+        TestFixtures.check(helper, after.getValue(WaterPurity.BLOCK_PURITY) == WaterPurity.BLOCK_SALT,
+                "the cauldron should remember that the water was salty, got "
+                        + after.getValue(WaterPurity.BLOCK_PURITY));
+        TestFixtures.check(helper, WaterPurity.sampleAt(helper.getLevel(), pos) instanceof WaterQuality.Salt,
+                "drawing from a salty cauldron should give salt water back");
         helper.succeed();
     }
 
     @GameTest
     public void pouringKeepsTheWorseOfTheTwoQualities(GameTestHelper helper) {
         // Fill the cauldron with clean water first, then pour dirty water in on top of it.
-        BlockPos pos = pour(helper, WaterQuality.fromPurity(WaterPurity.MAX, false));
+        BlockPos pos = pour(helper, WaterQuality.fresh(WaterPurity.MAX));
         int clean = helper.getLevel().getBlockState(pos).getValue(WaterPurity.BLOCK_PURITY);
 
-        pourInto(helper, pos, new WaterQuality(90, false));
+        pourInto(helper, pos, WaterQuality.fresh(0));
 
         int mixed = helper.getLevel().getBlockState(pos).getValue(WaterPurity.BLOCK_PURITY);
         TestFixtures.check(helper, mixed < clean,
@@ -106,14 +127,13 @@ public final class CauldronGameTest {
 
     @GameTest
     public void sampledCauldronWaterMatchesWhatWasPoured(GameTestHelper helper) {
-        WaterQuality poured = WaterQuality.fromPurity(0, false);
+        WaterQuality poured = WaterQuality.fresh(0);
         BlockPos pos = pour(helper, poured);
 
         WaterQuality sampled = WaterPurity.sampleAt(helper.getLevel(), pos);
 
-        TestFixtures.check(helper, sampled.purity() == poured.purity(),
-                "drawing from the cauldron should report purity " + poured.purity() + ", got "
-                        + sampled.purity());
+        TestFixtures.check(helper, sampled.equals(poured),
+                "drawing from the cauldron should report " + poured + ", got " + sampled);
         helper.succeed();
     }
 

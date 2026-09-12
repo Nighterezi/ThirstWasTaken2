@@ -79,7 +79,7 @@ thiếu điểm.
 
 ### defaultPurity
 
-Mặc định `2`, tức có thể uống. Dùng cho mọi loại nước mà mod không tự xếp hạng được, kể cả đồ uống của
+Mặc định `2`, tức nước sạch. Dùng cho mọi loại nước mà mod không tự xếp hạng được, kể cả đồ uống của
 mod khác.
 
 ### quenchWhenDebuffed
@@ -88,7 +88,7 @@ Mặc định `true`. Nước gây trúng độc vẫn hồi thanh khát. Tắt 
 
 ### nauseaChance và poisonChance
 
-Hai danh sách bốn phần trăm, mỗi mức sạch một giá trị, từ bẩn đến đã tinh lọc. Giá trị mặc định nằm ở
+Hai danh sách bốn phần trăm, mỗi mức sạch một giá trị, từ bẩn đến tinh khiết. Giá trị mặc định nằm ở
 [Uống nước xấu](/vi/docs/features/water-purity#uong-nuoc-xau). Màn hình cấu hình chia chúng thành tám thanh
 trượt riêng.
 

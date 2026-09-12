@@ -5,6 +5,8 @@ import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.item.WaterskinItem;
 import com.thirstwastaken2.platform.Vanilla;
 import com.thirstwastaken2.purity.WaterPurity;
+import com.thirstwastaken2.purity.WaterQuality;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
@@ -39,26 +41,43 @@ public final class ThirstTooltip {
      */
     private static final Component[] THIRST_ROWS = rows(THIRST_FULL, THIRST_HALF);
     private static final Component[] QUENCHED_ROWS = rows(QUENCHED_FULL, QUENCHED_HALF);
+    /**
+     * The clay bowl is the one item whose purpose is not obvious from holding it: it has to be fired
+     * before it can hold water, and using it on water does nothing until then.
+     */
+    private static final Component CLAY_BOWL_HINT =
+            Component.translatable("tooltip.thirstwastaken2.clay_bowl").withStyle(ChatFormatting.GRAY);
 
     private ThirstTooltip() { }
 
     /**
-     * Appends every line the mod contributes to an item tooltip: waterskin fill, water purity and
-     * salinity, then the two droplet rows.
+     * Appends every line the mod contributes to an item tooltip: the clay bowl hint, waterskin fill,
+     * the water's grade or salinity, then the two droplet rows.
      *
      * <p>Called once per frame per hovered stack, so both lookups it makes are memoised.
      */
     public static void appendTo(ItemStack stack, Consumer<Component> tooltip) {
+        if (stack.is(ThirstItems.CLAY_BOWL)) tooltip.accept(CLAY_BOWL_HINT.copy());
         if (stack.is(ThirstItems.WATERSKIN)) {
             int servings = WaterskinItem.servings(stack);
-            tooltip.accept(servings == 0
+            // Grey, like the clay bowl hint: how full the skin is describes the item, while the grade
+            // and the droplet rows below say what drinking it does.
+            tooltip.accept((servings == 0
                     ? Component.translatable("tooltip.thirstwastaken2.waterskin.empty")
                     : Component.translatable("tooltip.thirstwastaken2.waterskin.servings",
-                            servings, WaterskinItem.CAPACITY));
+                            servings, WaterskinItem.CAPACITY))
+                    .withStyle(ChatFormatting.GRAY));
         }
         if (WaterPurity.isWaterContainer(stack)) {
-            tooltip.accept(WaterPurity.tooltip(WaterPurity.get(stack)));
-            if (WaterPurity.isSalty(stack)) tooltip.accept(WaterPurity.salinityTooltip());
+            switch (WaterPurity.quality(stack)) {
+                case WaterQuality.Salt ignored -> {
+                    // Salt water has no grade to report and restores nothing, so it gets one line of
+                    // its own and no droplet rows to contradict it.
+                    tooltip.accept(WaterPurity.saltTooltip());
+                    return;
+                }
+                case WaterQuality.Fresh fresh -> tooltip.accept(WaterPurity.tooltip(fresh.purity()));
+            }
         }
         int[] hydration = ThirstApi.hydration(stack);
         if (hydration == null) return;

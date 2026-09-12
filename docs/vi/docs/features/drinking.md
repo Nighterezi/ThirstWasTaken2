@@ -61,9 +61,9 @@ nhấp chuột phải vào túi da bằng chai nước để thêm một lần u
 thiếu; chai hay xô rỗng sẽ được trả lại. Ngồi xuống và dùng túi có nước lên một block để đổ bỏ
 toàn bộ nước trong túi.
 
-Khi trộn, túi luôn giữ cấp độ sạch thấp nhất. Thêm nước bẩn vào nước đã tinh lọc sẽ làm toàn bộ túi
-thành nước bẩn; thêm nước sạch hơn sau đó không thể tinh lọc túi. Mỗi lần uống hồi 4 độ khát và 5 đã
-khát, còn túi rỗng được giữ lại để nạp tiếp.
+Khi trộn, túi lấy trung bình mức độ sạch của những lần uống bên trong rồi làm tròn xuống, nên thêm một
+phần nước bẩn sẽ kéo cả túi đi xuống. Nước mặn là ngoại lệ: chỉ một phần nước mặn là cả túi thành nước
+mặn. Mỗi lần uống hồi 4 độ khát và 5 đã khát, còn túi rỗng được giữ lại để nạp tiếp.
 
 ## Uống thẳng từ nguồn
 

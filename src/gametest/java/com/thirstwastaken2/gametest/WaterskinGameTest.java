@@ -11,23 +11,23 @@ import net.minecraft.world.item.ItemStack;
 
 /** Storing, mixing and emptying the three servings a waterskin holds. */
 public final class WaterskinGameTest {
-    private static final int CLEAN = 10;
-    private static final int DIRTY = 50;
+    private static final WaterQuality CLEAN = WaterQuality.fresh(WaterPurity.MAX);
+    private static final WaterQuality DIRTY = WaterQuality.fresh(WaterPurity.MIN);
 
     @GameTest
     public void mixingLandsBetweenTheTwoSources(GameTestHelper helper) {
         ItemStack skin = new ItemStack(ThirstItems.WATERSKIN);
 
-        WaterskinItem.addWater(skin, new WaterQuality(CLEAN, false), 1);
+        WaterskinItem.addWater(skin, CLEAN, 1);
         TestFixtures.check(helper, WaterskinItem.servings(skin) == 1,
                 "one serving added, got " + WaterskinItem.servings(skin));
-        WaterskinItem.addWater(skin, new WaterQuality(DIRTY, false), 1);
+        WaterskinItem.addWater(skin, DIRTY, 1);
         TestFixtures.check(helper, WaterskinItem.servings(skin) == 2,
                 "two servings stored, got " + WaterskinItem.servings(skin));
 
-        int mixed = WaterPurity.quality(skin).contamination();
-        TestFixtures.check(helper, mixed > CLEAN && mixed < DIRTY,
-                "mixing should land between " + CLEAN + " and " + DIRTY + ", got " + mixed);
+        int mixed = WaterPurity.get(skin);
+        TestFixtures.check(helper, mixed > WaterPurity.MIN && mixed < WaterPurity.MAX,
+                "mixing a pure and a dirty serving should land between the two, got " + mixed);
         helper.succeed();
     }
 
@@ -35,8 +35,8 @@ public final class WaterskinGameTest {
     public void oneSaltyServingMakesTheWholeSkinSalty(GameTestHelper helper) {
         ItemStack skin = new ItemStack(ThirstItems.WATERSKIN);
 
-        WaterskinItem.addWater(skin, new WaterQuality(CLEAN, false), 1);
-        WaterskinItem.addWater(skin, new WaterQuality(CLEAN, true), 1);
+        WaterskinItem.addWater(skin, CLEAN, 1);
+        WaterskinItem.addWater(skin, WaterQuality.SALT, 1);
 
         TestFixtures.check(helper, WaterPurity.isSalty(skin),
                 "salinity must not be diluted away by mixing");
@@ -47,12 +47,12 @@ public final class WaterskinGameTest {
     public void fillingStopsAtCapacity(GameTestHelper helper) {
         ItemStack skin = new ItemStack(ThirstItems.WATERSKIN);
 
-        boolean filled = WaterskinItem.addWater(skin, new WaterQuality(CLEAN, false), 99);
+        boolean filled = WaterskinItem.addWater(skin, CLEAN, 99);
         TestFixtures.check(helper, filled, "filling an empty waterskin should succeed");
         TestFixtures.check(helper, WaterskinItem.servings(skin) == WaterskinItem.CAPACITY,
                 "should hold exactly " + WaterskinItem.CAPACITY + ", got " + WaterskinItem.servings(skin));
 
-        boolean again = WaterskinItem.addWater(skin, new WaterQuality(CLEAN, false), 1);
+        boolean again = WaterskinItem.addWater(skin, CLEAN, 1);
         TestFixtures.check(helper, !again, "a full waterskin should refuse more water");
         helper.succeed();
     }
@@ -60,15 +60,19 @@ public final class WaterskinGameTest {
     @GameTest
     public void emptyingClearsTheStoredQuality(GameTestHelper helper) {
         ItemStack skin = new ItemStack(ThirstItems.WATERSKIN);
-        WaterskinItem.addWater(skin, new WaterQuality(DIRTY, true), WaterskinItem.CAPACITY);
+        WaterskinItem.addWater(skin, DIRTY, WaterskinItem.CAPACITY);
 
         WaterskinItem.removeWater(skin, WaterskinItem.CAPACITY);
 
         TestFixtures.check(helper, WaterskinItem.servings(skin) == 0,
                 "the waterskin should be empty, got " + WaterskinItem.servings(skin));
-        TestFixtures.check(helper, !skin.has(ThirstComponents.WATER_CONTAMINATION),
+        TestFixtures.check(helper, !skin.has(ThirstComponents.WATER_PURITY),
                 "an empty waterskin must not remember the water it held");
-        TestFixtures.check(helper, !WaterPurity.isSalty(skin),
+
+        ItemStack saltySkin = new ItemStack(ThirstItems.WATERSKIN);
+        WaterskinItem.addWater(saltySkin, WaterQuality.SALT, WaterskinItem.CAPACITY);
+        WaterskinItem.removeWater(saltySkin, WaterskinItem.CAPACITY);
+        TestFixtures.check(helper, !WaterPurity.isSalty(saltySkin),
                 "an empty waterskin must not stay salty");
         helper.succeed();
     }
@@ -95,7 +99,7 @@ public final class WaterskinGameTest {
 
         TestFixtures.check(helper, !WaterPurity.isWaterContainer(skin),
                 "an empty waterskin holds no water");
-        WaterskinItem.addWater(skin, new WaterQuality(CLEAN, false), 1);
+        WaterskinItem.addWater(skin, CLEAN, 1);
         TestFixtures.check(helper, WaterPurity.isWaterContainer(skin),
                 "a filled waterskin holds water");
         helper.succeed();
