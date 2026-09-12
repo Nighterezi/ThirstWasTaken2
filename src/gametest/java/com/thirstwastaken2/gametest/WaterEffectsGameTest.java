@@ -24,7 +24,7 @@ import java.util.List;
 public final class WaterEffectsGameTest {
     @GameTest
     public void saltWaterCausesNauseaAndDoesNotHydrate(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = TestFixtures.mockPlayer(helper);
         ItemStack salty = bowl(WaterQuality.SALT);
 
         boolean hydrates = WaterPurity.applyEffects(player, salty);
@@ -36,7 +36,7 @@ public final class WaterEffectsGameTest {
 
     @GameTest
     public void dirtyWaterCausesNauseaAndHunger(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = TestFixtures.mockPlayer(helper);
 
         WaterPurity.applyEffects(player, bowl(WaterQuality.fresh(0)));
 
@@ -49,7 +49,7 @@ public final class WaterEffectsGameTest {
 
     @GameTest
     public void purifiedWaterHasNoSideEffects(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = TestFixtures.mockPlayer(helper);
 
         boolean hydrates = WaterPurity.applyEffects(player, bowl(WaterQuality.fresh(3)));
 
@@ -61,7 +61,7 @@ public final class WaterEffectsGameTest {
 
     @GameTest
     public void drinkingRaisesThirst(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = TestFixtures.mockPlayer(helper);
         ThirstManager.set(player, ThirstManager.get(player).withLevels(4, 0));
 
         ThirstManager.drinkItem(player, bowl(WaterQuality.fresh(3)));
@@ -80,7 +80,7 @@ public final class WaterEffectsGameTest {
     @GameTest
     public void milkAndHoneyQuenchThirst(GameTestHelper helper) {
         for (ItemStack drink : List.of(new ItemStack(Items.MILK_BUCKET), new ItemStack(Items.HONEY_BOTTLE))) {
-            ServerPlayer player = helper.makeMockServerPlayerInLevel();
+            ServerPlayer player = TestFixtures.mockPlayer(helper);
             ThirstManager.set(player, ThirstManager.get(player).withLevels(4, 0));
 
             ThirstManager.drinkItem(player, drink);

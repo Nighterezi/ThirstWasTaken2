@@ -44,6 +44,21 @@ final class TestFixtures {
     }
 
     /**
+     * A mock server player that has joined the test level.
+     *
+     * <p>{@code makeMockServerPlayerInLevel} is deprecated for removal, but it is the only call
+     * that exists on every supported version and the only one that puts the player through the
+     * player list, which the tests rely on. 26.2 added {@code makeMockServerPlayer(GameType)},
+     * which builds a player without joining it to the level, so it is not a drop-in replacement,
+     * and 1.21.11 and 26.1 do not have it at all. Funnelling every test through here suppresses
+     * the warning once and makes the eventual migration a single edit.
+     */
+    @SuppressWarnings("removal")
+    static ServerPlayer mockPlayer(GameTestHelper helper) {
+        return helper.makeMockServerPlayerInLevel();
+    }
+
+    /**
      * A survival player standing above the water and looking straight down at it.
      *
      * <p>Survival matters: {@code ItemUtils.createFilledResult} hands the filled container back
@@ -51,7 +66,7 @@ final class TestFixtures {
      * the wrong thing. Gravity is off because nothing ticks during a test body.
      */
     static ServerPlayer playerAboveWater(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = mockPlayer(helper);
         player.setGameMode(GameType.SURVIVAL);
         player.setNoGravity(true);
         BlockPos water = helper.absolutePos(WATER);

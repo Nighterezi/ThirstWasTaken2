@@ -23,7 +23,7 @@ public final class HealthRegenGameTest {
 
     @GameTest
     public void dehydrationBlocksTheSaturationHeal(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = TestFixtures.mockPlayer(helper);
 
         setThirst(player, 10);
         TestFixtures.check(helper, HealthRegen.blocksSaturationHeal(player),
@@ -37,7 +37,7 @@ public final class HealthRegenGameTest {
 
     @GameTest
     public void nearlyHydratedPlayerHealsSlowly(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = TestFixtures.mockPlayer(helper);
 
         setThirst(player, 19);
         TestFixtures.check(helper, HealthRegen.blocksSaturationHeal(player),
@@ -55,7 +55,7 @@ public final class HealthRegenGameTest {
 
     @GameTest
     public void hungerHealIsBlockedOnlyWhileDehydrated(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = TestFixtures.mockPlayer(helper);
 
         setThirst(player, 18);
         TestFixtures.check(helper, HealthRegen.blocksHungerHeal(player),
@@ -100,7 +100,7 @@ public final class HealthRegenGameTest {
 
     /** A hurt player with enough food and saturation for vanilla's saturated regeneration branch. */
     private static ServerPlayer readyToRegenerate(GameTestHelper helper, int thirst) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = TestFixtures.mockPlayer(helper);
         player.setHealth(START_HEALTH);
         player.getFoodData().setFoodLevel(20);
         player.getFoodData().setSaturation(20.0F);

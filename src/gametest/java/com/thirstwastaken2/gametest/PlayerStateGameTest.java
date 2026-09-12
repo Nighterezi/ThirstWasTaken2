@@ -151,7 +151,7 @@ public final class PlayerStateGameTest {
 
     /** Survival with a full hunger bar, so vanilla allows sprinting and charges exhaustion. */
     private static ServerPlayer survivalPlayer(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = TestFixtures.mockPlayer(helper);
         player.setGameMode(GameType.SURVIVAL);
         player.getFoodData().setFoodLevel(20);
         return player;

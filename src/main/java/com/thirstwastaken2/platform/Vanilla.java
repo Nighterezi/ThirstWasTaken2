@@ -2,6 +2,7 @@ package com.thirstwastaken2.platform;
 
 import com.thirstwastaken2.ThirstWasTaken2;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
@@ -24,7 +25,7 @@ public final class Vanilla {
 
     /** The registry id of a built-in or modded item. */
     public static Identifier itemId(Item item) {
-        return item.builtInRegistryHolder().key().identifier();
+        return BuiltInRegistries.ITEM.getKey(item);
     }
 
     /**

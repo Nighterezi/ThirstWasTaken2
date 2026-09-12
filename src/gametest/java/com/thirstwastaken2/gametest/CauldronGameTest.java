@@ -255,7 +255,7 @@ public final class CauldronGameTest {
     }
 
     private static void pourInto(GameTestHelper helper, BlockPos pos, WaterQuality quality) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = TestFixtures.mockPlayer(helper);
         ItemStack container = WaterPurity.setQuality(
                 new ItemStack(ThirstItems.TERRACOTTA_WATER_BOWL), quality);
         player.setItemInHand(InteractionHand.MAIN_HAND, container);

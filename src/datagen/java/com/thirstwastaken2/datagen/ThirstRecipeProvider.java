@@ -170,13 +170,25 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
          */
         private AdvancementHolder purifyUnlock(Container container) {
             ResourceKey<Recipe<?>> representative = recipe(purifyName(container, 0, Heat.SMELTING));
-            Advancement.Builder builder = Advancement.Builder.recipeAdvancement()
-                    .parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT)
+            Advancement.Builder builder = rootedRecipeAdvancement()
                     .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(representative))
                     .rewards(purifyRewards(container))
                     .requirements(AdvancementRequirements.Strategy.OR);
             purifyUnlockItems(container).forEach((name, item) -> builder.addCriterion(name, has(item)));
             return builder.build(ThirstWasTaken2.id("recipes/misc/purify_water_" + container.name()));
+        }
+
+        /**
+         * A recipe advancement hanging off the recipe root.
+         *
+         * <p>{@code parent(Identifier)} is deprecated for removal, but the root is only published
+         * as an identifier, and the overload that survives wants an {@link AdvancementHolder} that
+         * nothing here can produce. Vanilla's own recipe builders make the same call, so this is
+         * kept in one place until the root is exposed as a holder.
+         */
+        @SuppressWarnings("removal")
+        private static Advancement.Builder rootedRecipeAdvancement() {
+            return Advancement.Builder.recipeAdvancement().parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT);
         }
 
         /** All six recipes for the container, so the recipe book learns the whole family at once. */
