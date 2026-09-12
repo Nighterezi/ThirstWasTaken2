@@ -65,8 +65,10 @@ export default defineConfig({
   head: [
     ['link', { rel: 'icon', type: 'image/png', href: `${BASE}logo-small.png` }]
   ],
-  // Notes and paste sources for maintainers, not pages on the site.
-  srcExclude: ['AGENTS.md', 'MODRINTH.md'],
+  // Notes, paste sources and developer planning for maintainers, not pages on the site.
+  // 'dev/**' keeps docs/dev out of the build: those pages link into src/ and the repo root,
+  // which the dead-link check cannot follow.
+  srcExclude: ['AGENTS.md', 'MODRINTH.md', 'dev/**'],
   themeConfig: {
     logo: '/logo-small.png',
     externalLinkIcon: true,
