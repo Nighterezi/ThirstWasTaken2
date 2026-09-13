@@ -33,7 +33,9 @@ are identical on every version.
 ### What 1.21.1 costs
 
 1.21.1 is the one old version, and most of the conditionals here exist for it. What it lacks, and
-what stands in:
+what stands in, for this package. The full list for every version, including datagen, mixins and
+tests, is [docs/dev/VERSION-DIFFERENCES.md](../../../../../../docs/dev/VERSION-DIFFERENCES.md); a new
+seam gets a row there too.
 
 | Missing on 1.21.1 | Seam | What 1.21.1 does instead |
 |---|---|---|

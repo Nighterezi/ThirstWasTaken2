@@ -116,7 +116,8 @@ The server owns thirst. These are the checks that the client is told.
 
 ## Per version
 
-What differs between the nodes, and so what has to be looked at on that node in particular.
+What differs between the nodes, and so what has to be looked at on that node in particular. Why
+each one differs is in [VERSION-DIFFERENCES.md](VERSION-DIFFERENCES.md).
 
 ### 26.2
 
