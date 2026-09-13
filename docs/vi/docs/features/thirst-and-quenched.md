@@ -1,6 +1,6 @@
 # Khát và Đã khát
 
-![Thanh khát nằm trên thanh đói, đã vơi một phần, có viền đã khát phủ lên](/screenshots/thirst-bar.png)
+![Thanh khát nằm trên thanh đói, đã vơi một phần](/screenshots/thirst-bar.png)
 
 ## Hai con số
 

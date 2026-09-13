@@ -1,6 +1,6 @@
 # Thirst and Quenched
 
-![The thirst bar above the food bar, part drained, with the quenched outline over it](/screenshots/thirst-bar.png)
+![The thirst bar above the food bar, part drained](/screenshots/thirst-bar.png)
 
 ## The two numbers
 

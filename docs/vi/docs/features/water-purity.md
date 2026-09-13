@@ -77,7 +77,7 @@ dài hạn chưa nằm trong bản này.
 
 Bỏ chai nước ngọt, bát đất nung đựng nước hoặc xô nước vào lò nung hay đặt lên lửa trại.
 
-![Bát nước bẩn ra khỏi lò nung thành nước sạch](/screenshots/furnace-clean-water.png)
+![Chai nước bẩn ra khỏi lò nung thành nước sạch](/screenshots/furnace-clean-water.png)
 
 | Trước | Sau |
 |---|---|
