@@ -35,11 +35,11 @@ public final class PlayerStateGameTest {
         ServerPlayer player = survivalPlayer(helper);
 
         setThirst(player, SPRINT_CUTOFF + 1);
-        TestFixtures.check(helper, player.canSprint(),
+        TestFixtures.check(helper, TestFixtures.canSprint(player),
                 "thirst " + (SPRINT_CUTOFF + 1) + " is above the cut-off and should allow sprinting");
 
         setThirst(player, SPRINT_CUTOFF);
-        TestFixtures.check(helper, !player.canSprint(),
+        TestFixtures.check(helper, !TestFixtures.canSprint(player),
                 "thirst " + SPRINT_CUTOFF + " should block sprinting");
         helper.succeed();
     }
@@ -53,7 +53,7 @@ public final class PlayerStateGameTest {
         boolean original = config.preventSprintingWhenThirsty;
         try {
             config.preventSprintingWhenThirsty = false;
-            TestFixtures.check(helper, player.canSprint(),
+            TestFixtures.check(helper, TestFixtures.canSprint(player),
                     "prevent_sprinting_when_thirsty is off, so thirst should not block sprinting");
         } finally {
             config.preventSprintingWhenThirsty = original;
@@ -68,7 +68,7 @@ public final class PlayerStateGameTest {
         setThirst(player, SPRINT_CUTOFF);
         ThirstManager.set(player, ThirstManager.get(player).withEnabled(false));
 
-        TestFixtures.check(helper, player.canSprint(),
+        TestFixtures.check(helper, TestFixtures.canSprint(player),
                 "a player with thirst disabled should sprint regardless of the value");
         helper.succeed();
     }

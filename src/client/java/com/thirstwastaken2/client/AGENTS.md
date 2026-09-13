@@ -30,6 +30,7 @@ the build on a loader import in this directory:
 | `client/platform/ClientLoader` | HUD layer and status bar height registration, per loader |
 | `client/compat/ModMenuIntegration` | the `modmenu` entrypoint; Mod Menu is a Fabric-only mod |
 | `fabric/mixin/GuiMixin` | 1.21.1 only: the status bar registry Fabric API gained in 1.21.6 |
+| `fabric/mixin/LocalPlayerMixin` | 1.21.1 only: the thirst sprint gate, on the client player's own food check |
 
 `ClientVanilla` is the client half of `com.thirstwastaken2.platform.Vanilla` and follows the same
 rules — plumbing only, one signature on every version. A Stonecutter `//?` branch anywhere else in

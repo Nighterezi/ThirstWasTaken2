@@ -320,6 +320,7 @@ src/client/fabric/java/com/thirstwastaken2/client/   Fabric only, compiled into 
   platform/ClientLoader.java           HUD layer and status bar height registration
   compat/ModMenuIntegration.java       modmenu entrypoint
 src/client/fabric/java/com/thirstwastaken2/fabric/mixin/GuiMixin.java  the 1.21.1 HUD hook
+src/client/fabric/java/com/thirstwastaken2/fabric/mixin/LocalPlayerMixin.java  the 1.21.1 sprint gate
 src/client/fabric/resources/thirstwastaken2.fabric.client.mixins.json  its mixin config
 
 settings.gradle.kts                    the list of supported Minecraft versions
@@ -387,7 +388,7 @@ Brewin' and Chewin' / Collector's Reap support stays dependency-free.
 
 | Mixin | Target | Purpose |
 |---|---|---|
-| `PlayerMixin` | `Player#causeFoodExhaustion`, `#canSprint` | mirror exhaustion, block sprinting at thirst <= 6 |
+| `PlayerMixin` | `Player#causeFoodExhaustion`, `#hasEnoughFoodToDoExhaustiveManoeuvres` | mirror exhaustion, block sprinting at thirst <= 6 |
 | `FoodDataMixin` | `FoodData#tick` (both `heal` call sites) | dehydration halts natural regen and refunds the food cost |
 | `ItemStackMixin` | `#finishUsingItem`, `#addDetailsToTooltip` | restore thirst, render purity + thirst/quenched rows |
 | `BottleItemMixin` | `BottleItem#use` | stamp purity on a bottle filled from a water block |
@@ -395,6 +396,7 @@ Brewin' and Chewin' / Collector's Reap support stays dependency-free.
 | `LayeredCauldronBlockMixin` | `#createBlockStateDefinition`, `#handlePrecipitation`, `#receiveStalactiteDrip` | add the stored-quality property; grade the water rain or a dripstone added |
 | `CauldronBlockMixin` | `#handlePrecipitation`, `#receiveStalactiteDrip` | the same, for the empty cauldron those two turn into a water cauldron |
 | `BlocksMixin` | `Blocks` static init, 1.21.1 only | mark the water cauldron's construction, which cannot be identified from inside its constructor there |
+| `LocalPlayerMixin` (Fabric, client) | `LocalPlayer#hasEnoughFoodToStartSprinting`, 1.21.1 only | the sprint gate, where 1.21.1 keeps that check on the client player |
 | `GuiMixin` (Fabric, client) | `Gui#renderPlayerHealth`, 1.21.1 only | draw the thirst bar after the food bar and move the air bubbles up, which Fabric API's HUD registry does from 1.21.6 |
 
 ## HUD

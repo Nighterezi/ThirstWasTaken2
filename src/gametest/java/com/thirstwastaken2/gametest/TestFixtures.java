@@ -83,6 +83,28 @@ final class TestFixtures {
         return player;
     }
 
+    /**
+     * Whether {@code player} passes the food check vanilla's client asks before sprinting, with the
+     * mod's thirst gate applied. That check is protected, so it is called reflectively; dev runs use
+     * Mojang's names on every version. On 1.21.1 the check is private to the client's LocalPlayer, which
+     * a server test cannot reach, so there it answers from vanilla's rule and the mod's gate directly.
+     */
+    static boolean canSprint(ServerPlayer player) {
+        //? if >1.21.1 {
+        try {
+            java.lang.reflect.Method check = net.minecraft.world.entity.player.Player.class
+                    .getDeclaredMethod("hasEnoughFoodToDoExhaustiveManoeuvres");
+            check.setAccessible(true);
+            return (boolean) check.invoke(player);
+        } catch (ReflectiveOperationException exception) {
+            throw new IllegalStateException("Player#hasEnoughFoodToDoExhaustiveManoeuvres is missing", exception);
+        }
+        //?} else {
+        /*return player.getFoodData().getFoodLevel() > 6
+                && com.thirstwastaken2.data.ThirstManager.allowsSprinting(player);
+        *///?}
+    }
+
     /** A vanilla water bottle: a potion whose contents are plain water. */
     static ItemStack waterBottle() {
         ItemStack bottle = new ItemStack(Items.POTION);

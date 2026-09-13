@@ -42,43 +42,45 @@ Useful commands while testing:
 
 ### HUD
 
-- [ ] The thirst bar sits above the hunger bar on the right, ten droplets wide, the same width as hunger.
-- [ ] `/thirst set @s 13 0`: six and a half droplets, the half droplet on the left end.
+- [x] The thirst bar sits above the hunger bar on the right, ten droplets wide, the same width as hunger.
+- [x] `/thirst set @s 13 0`: six and a half droplets, the half droplet on the left end.
 - [ ] With quenched at 0, sprinting makes the next droplet drain through the quarter and three-quarter
       frames before a point is spent, and the bar shakes the way hunger does at zero saturation.
-- [ ] `/thirst set @s 20 20`: the quenched outline is drawn over every droplet, cyan by default.
+- [x] `/thirst set @s 20 20`: the quenched outline is drawn over every droplet, cyan by default.
 - [ ] Mod Menu → ThirstWasTaken2 → HUD & AppleSkin: Quenched Outline reads "Quenched Outline: Diamond"
       (the name once) and cycles Diamond, Ice, Gold, AppleSkin and Off. The preview and the real bar
       change at once. Off removes the outline from the bar; the tooltip row falls back to the plain
       blue outline.
-- [ ] The bar is hidden with F1, in creative and spectator, and while riding a horse, pig or strider
+- [x] The bar is hidden with F1, in creative and spectator, and while riding a horse, pig or strider
       (a living mount's hearts take its place). It stays while in a boat or minecart.
-- [ ] Underwater, the air bubbles sit **above** the thirst bar, not on top of it.
-- [ ] Mod Menu → ThirstWasTaken2 → HUD & AppleSkin: the X and Y offsets move the bar live.
+- [x] Underwater, the air bubbles sit **above** the thirst bar, not on top of it.
+- [x] Mod Menu → ThirstWasTaken2 → HUD & AppleSkin: the X and Y offsets move the bar live.
 - [ ] With AppleSkin's exhaustion underlay on, a translucent strip grows under the thirst bar while
       sprinting; turning the AppleSkin option off removes it. Nothing drawn after it (air bubbles,
       the hotbar) is left tinted.
-- [ ] `/thirst enable @s false` hides the bar; `true` brings it back.
+- [x] `/thirst enable @s false` hides the bar; `true` brings it back.
 
 ### Sync to the client
 
 The server owns thirst. These are the checks that the client is told.
 
-- [ ] `/thirst set @s 6 0` updates the bar immediately, and sprinting is refused at 6.
+- [x] `/thirst set @s 6 0` updates the bar immediately, and sprinting is refused at 6. Hold sprint and
+      walk: at 7 the player runs, at 6 they walk. A gametest cannot see this, because the client decides
+      sprinting.
 - [ ] Quit to the title screen and rejoin: the bar shows the value it had.
-- [ ] Die and respawn: the bar is full again.
+- [x] Die and respawn: the bar is full again.
 - [ ] Go through a Nether portal and back: the bar is still correct on both sides.
 - [ ] Open the world to LAN or use `runServer` with a second client: each player sees only their own bar,
       and it is right for each.
 
 ### Tooltips
 
-- [ ] A water bottle, a filled bowl and a filled waterskin show a coloured grade line (Dirty, Murky,
+- [x] A water bottle, a filled bowl and a filled waterskin show a coloured grade line (Dirty, Murky,
       Clean, Pure) and two rows of droplet glyphs, not boxes or letters.
 - [ ] Turning Tooltip Droplets off removes both droplet rows and keeps the grade line.
-- [ ] A sea-water bottle shows a single "Salty" line and no droplet rows.
-- [ ] A waterskin says how many drinks it holds, or that it is empty. A clay bowl says it has to be fired.
-- [ ] Milk, honey and an apple show droplet rows; stone shows nothing.
+- [x] A sea-water bottle shows a single "Salty" line and no droplet rows.
+- [x] A waterskin says how many drinks it holds, or that it is empty. A clay bowl says it has to be fired.
+- [x] Milk, honey and an apple show droplet rows; stone shows nothing.
 - [ ] The lines look the same in JEI, EMI or REI if one of them is installed.
 
 ### Sprites and sounds
@@ -89,23 +91,23 @@ The server owns thirst. These are the checks that the client is told.
       as a potion. The bowl leaves an empty terracotta bowl; the waterskin stays in hand.
 - [ ] Crouch with an empty hand and use water at less than full thirst: the drinking sound is heard
       by the drinker.
-- [ ] Scooping with a bowl plays the bucket sound, with a waterskin the bottle sound.
+- [x] Scooping with a bowl plays the bucket sound, with a waterskin the bottle sound.
 
 ### Config screen
 
-- [ ] Mod Menu → ThirstWasTaken2 → Configure opens the root screen: the animated preview (tooltip on
+- [x] Mod Menu → ThirstWasTaken2 → Configure opens the root screen: the animated preview (tooltip on
       the left, thirst bar above the food bar on the right), five page buttons with hover text, the
       server note, and Cancel and Done.
-- [ ] Every page opens, every slider and toggle has a tooltip, and no slider can go outside its range.
-- [ ] Reset to Defaults puts that page back and leaves the other pages alone.
-- [ ] Item Values → "Open thirstwastaken2.json" opens the file.
-- [ ] Change a value, Done, relaunch: it is kept. Change a value, Cancel: it is back, in the HUD too.
-- [ ] Resize the window with a page open and after returning to the root screen: nothing is drawn
+- [x] Every page opens, every slider and toggle has a tooltip, and no slider can go outside its range.
+- [x] Reset to Defaults puts that page back and leaves the other pages alone.
+- [x] Item Values → "Open thirstwastaken2.json" opens the file.
+- [x] Change a value, Done, relaunch: it is kept. Change a value, Cancel: it is back, in the HUD too.
+- [x] Resize the window with a page open and after returning to the root screen: nothing is drawn
       twice and the preview stays centred.
 
 ### Damage and the world
 
-- [ ] `/thirst set @s 0 0` on Normal: one heart of damage every two seconds, down to death; the death
+- [ ] `/thirst set @s 0 0` on Normal: half a heart of damage every two seconds, down to death; the death
       message names dehydration. On Easy it stops at five hearts. Armour does not reduce it.
 - [ ] Natural regeneration stops below full thirst and resumes once it is full again.
 - [ ] Standing still in a desert drains faster than in a snowy biome; in the Nether faster again.
@@ -131,9 +133,9 @@ each one differs is in [VERSION-DIFFERENCES.md](VERSION-DIFFERENCES.md).
 
 ### 26.2
 
-- [ ] F1 hides the bar. 26.2 moved the "HUD hidden" state into the HUD object itself, so this is a
+- [x] F1 hides the bar. 26.2 moved the "HUD hidden" state into the HUD object itself, so this is a
       separate code path from every other version.
-- [ ] The config screen's "Open thirstwastaken2.json" button is one full-width row, and Done and
+- [x] The config screen's "Open thirstwastaken2.json" button is one full-width row, and Done and
       Cancel close the screen (26.2 opens screens through a different call).
 - [ ] A sea-water bottle is drawn in the sea colour, and a sea-water bucket with its recoloured water.
 
@@ -155,6 +157,8 @@ each one differs is in [VERSION-DIFFERENCES.md](VERSION-DIFFERENCES.md).
 The version with the most of its own code, and the only one where several things are known to look
 different on purpose. Check all of these on every release that ships a 1.21.1 jar.
 
+- [ ] **Sprinting is gated by a client mixin** (`LocalPlayerMixin`), because 1.21.1 keeps the food
+      check a sprint needs on LocalPlayer. At thirst 6 holding sprint must walk, at 7 it must run.
 - [ ] **Sync first.** Fabric API's attachment sync on 1.21.1 is a backport the gametests cannot reach.
       Run the whole "Sync to the client" section on this version before anything else.
 - [ ] **The HUD is drawn by a mixin**, not by Fabric API's HUD registry, which 1.21.1 does not have.

@@ -54,6 +54,8 @@ public final class ThirstManager {
      * step of exhaustion, a sixteenth of a point.
      */
     private static final float SYNC_STEP = 0.25F;
+    /** Vanilla's sprint gate is foodLevel > 6; the original mod applied the same cut-off to thirst. */
+    private static final int SPRINT_THIRST_THRESHOLD = 6;
 
     private ThirstManager() { }
 
@@ -90,6 +92,17 @@ public final class ThirstManager {
 
     public static void drink(Player player, int thirst, int quenched) {
         if (!player.level().isClientSide()) set(player, get(player).drink(thirst, quenched));
+    }
+
+    /**
+     * Whether thirst lets {@code player} sprint, mirroring vanilla's food cut-off of more than 6. Vanilla's
+     * own food check is only asked when this holds, so a player needs both. The client decides sprinting,
+     * so this runs on the synced state of the local player.
+     */
+    public static boolean allowsSprinting(Player player) {
+        if (!ThirstConfig.get().preventSprintingWhenThirsty) return true;
+        ThirstData data = get(player);
+        return !data.enabled() || data.thirst() > SPRINT_THIRST_THRESHOLD;
     }
 
     /** Plain water follows vanilla food rules: it cannot be consumed while the visible bar is full. */

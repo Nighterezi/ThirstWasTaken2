@@ -25,6 +25,7 @@ All notable changes to ThirstWasTaken2 are documented in this file.
   experiment.
 - The quenched outline had stray pixels outside the droplet at a quarter, half and three quarters
   full.
+- Low thirst did not stop sprinting. Players can no longer sprint at 6 thirst or below, as intended.
 
 ### Notes
 
