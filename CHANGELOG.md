@@ -7,15 +7,24 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 ### Added
 
 - Support for Minecraft 1.21 and 1.21.1.
+- The quenched outline on the thirst bar now comes in four colours: Diamond, Ice, Gold and
+  AppleSkin's own gold. It can also be turned off.
+- A setting to hide the thirst and quenched droplets in item tooltips.
+- The config screen is split into pages, shows a live preview of the thirst bar and a drink's
+  tooltip, and has Cancel and Reset to Defaults buttons.
 
 ### Changed
 
 - Chests and Piglin bartering that a data pack replaced now get the mod's water bottles as well.
+- The quenched outline and the tooltip droplets now appear only with AppleSkin installed, the same
+  way AppleSkin shows saturation and food values. The outline is cyan by default.
 
 ### Fixed
 
 - Mineshaft chests held no water bottles in worlds created with the Villager Trade Rebalance
   experiment.
+- The quenched outline had stray pixels outside the droplet at a quarter, half and three quarters
+  full.
 
 ### Notes
 
@@ -23,6 +32,14 @@ All notable changes to ThirstWasTaken2 are documented in this file.
   the droplets in tooltips have a shadow. The Salty tooltip line and the sea-coloured bowl are
   unchanged.
 - No action is needed for existing worlds or config files.
+
+<details>
+<summary>Configuration file details</summary>
+
+- New `appleskinQuenchedOverlay`: `DIAMOND` (default), `ICE`, `GOLD`, `APPLESKIN` or `OFF`.
+- New `appleskinTooltipDroplets`: `true` by default.
+
+</details>
 
 ## [1.0.3] - 2026-09-12
 

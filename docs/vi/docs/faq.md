@@ -18,8 +18,8 @@ hoàn lại để bạn không vừa khát vừa đói.
 ## Tôi đổi cấu hình mà không thấy gì thay đổi
 
 Nếu bạn sửa file bằng tay, hãy khởi động lại game hoặc máy chủ. Nếu bạn dùng màn hình Mod Menu trong
-lúc đang chơi trên máy chủ của người khác, chỉ bốn mục Giao diện có tác dụng, phần còn lại do máy chủ
-quyết định.
+lúc đang chơi trên máy chủ của người khác, chỉ trang Giao diện & AppleSkin có tác dụng, phần còn lại do
+máy chủ quyết định. Thay đổi trên màn hình chỉ được giữ khi bạn thoát bằng nút **Xong**.
 
 ## Tắt độ khát cho một người chơi được không?
 

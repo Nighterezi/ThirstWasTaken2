@@ -1,183 +1,81 @@
 package com.thirstwastaken2.client.config;
 
-import com.mojang.serialization.Codec;
 import com.thirstwastaken2.client.platform.ClientVanilla;
-import com.thirstwastaken2.compat.AppleSkin;
-import com.thirstwastaken2.config.QuenchedOverlay;
 import com.thirstwastaken2.config.ThirstConfig;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.OptionInstance;
-import net.minecraft.client.Options;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.layouts.GridLayout;
+import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
+import net.minecraft.client.gui.layouts.LayoutSettings;
+import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.options.OptionsSubScreen;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Util;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.function.Consumer;
-import java.util.function.DoubleConsumer;
-import java.util.function.IntConsumer;
 
 /**
- * Vanilla-styled editor for {@code config/thirstwastaken2.json}.
+ * The editor for {@code config/thirstwastaken2.json}: a live preview of the display settings, a
+ * button per {@link ConfigCategory}, and Cancel or Done.
  *
- * <p>Only scalar settings are exposed here. The per-item thirst maps and keyword patterns stay in
- * the JSON file, which the footer button opens directly.
+ * <p>Pages write straight into the live config, so the HUD and tooltips follow every change while the
+ * screen is open. Done (or Escape) saves; Cancel puts back the copy taken when the screen opened.
  */
-public final class ThirstConfigScreen extends OptionsSubScreen {
-    /** Doubles are edited as integer percentages so they can use the vanilla slider widget. */
-    private static final int PERCENT = 100;
+public final class ThirstConfigScreen extends Screen {
+    private static final int BUTTON_WIDTH = 150;
+    private static final int SPACING = 8;
+
+    private final Screen parent;
+    private final ThirstConfig snapshot = ThirstConfig.snapshot();
+    private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
 
     public ThirstConfigScreen(Screen parent) {
-        super(parent, Minecraft.getInstance().options, Component.translatable("thirstwastaken2.config.title"));
+        super(Component.translatable("thirstwastaken2.config.title"));
+        this.parent = parent;
     }
 
     @Override
-    protected void addOptions() {
-        ThirstConfig config = ThirstConfig.get();
+    protected void init() {
+        layout.addTitleHeader(title, font);
 
-        // Everything except the HUD section is server-authoritative, so editing it on a client that
-        // is connected to a remote server has no effect there.
-        ClientVanilla.addHeader(list, Component.translatable("thirstwastaken2.config.note"));
-        ClientVanilla.addHeader(list, Component.translatable("thirstwastaken2.config.category.depletion"));
-        list.addSmall(
-                percentSlider("thirst_depletion_modifier", config.thirstDepletionModifier, 0, 1000,
-                        value -> config.thirstDepletionModifier = value),
-                percentSlider("nether_thirst_depletion_modifier", config.netherThirstDepletionModifier, 0, 1000,
-                        value -> config.netherThirstDepletionModifier = value),
-                slider("fire_resistance_dehydration_percent", config.fireResistanceDehydrationPercent, 0, 100,
-                        value -> config.fireResistanceDehydrationPercent = value),
-                toggle("thirst_depletion_in_peaceful", config.thirstDepletionInPeaceful,
-                        value -> config.thirstDepletionInPeaceful = value),
-                toggle("depletes_when_nauseous", config.depletesWhenNauseous,
-                        value -> config.depletesWhenNauseous = value),
-                toggle("dehydration_halts_health_regen", config.dehydrationHaltsHealthRegen,
-                        value -> config.dehydrationHaltsHealthRegen = value),
-                toggle("prevent_sprinting_when_thirsty", config.preventSprintingWhenThirsty,
-                        value -> config.preventSprintingWhenThirsty = value));
+        LinearLayout contents = layout.addToContents(LinearLayout.vertical().spacing(SPACING));
+        contents.addChild(ConfigPreview.widget(), LayoutSettings::alignHorizontallyCenter);
 
-        ClientVanilla.addHeader(list, Component.translatable("thirstwastaken2.config.category.drinking"));
-        list.addSmall(
-                toggle("can_drink_by_hand", config.canDrinkByHand, value -> config.canDrinkByHand = value),
-                toggle("drink_by_hand_needs_both_hands_empty", config.drinkByHandNeedsBothHandsEmpty,
-                        value -> config.drinkByHandNeedsBothHandsEmpty = value),
-                toggle("extra_thirst_converts_to_quenched", config.extraThirstConvertsToQuenched,
-                        value -> config.extraThirstConvertsToQuenched = value),
-                slider("hand_drinking_thirst", config.handDrinkingThirst, 0, 20,
-                        value -> config.handDrinkingThirst = value),
-                slider("hand_drinking_quenched", config.handDrinkingQuenched, 0, 20,
-                        value -> config.handDrinkingQuenched = value));
-
-        ClientVanilla.addHeader(list, Component.translatable("thirstwastaken2.config.category.purity"));
-        list.addSmall(
-                slider("default_purity", config.defaultPurity, 0, 3, value -> config.defaultPurity = value),
-                slider("rainwater_purity", config.rainwaterPurity, 0, 3,
-                        value -> config.rainwaterPurity = value),
-                slider("dripstone_purity", config.dripstonePurity, 0, 3,
-                        value -> config.dripstonePurity = value),
-                toggle("quench_when_debuffed", config.quenchWhenDebuffed,
-                        value -> config.quenchWhenDebuffed = value));
-
-        ClientVanilla.addHeader(list, Component.translatable("thirstwastaken2.config.category.purity_chances"));
-        for (int purity = 0; purity < 4; purity++) {
-            int index = purity;
-            list.addSmall(
-                    chanceSlider("nausea_chance", index, config.nauseaChance[index],
-                            value -> config.nauseaChance[index] = value),
-                    chanceSlider("poison_chance", index, config.poisonChance[index],
-                            value -> config.poisonChance[index] = value));
+        GridLayout grid = new GridLayout().columnSpacing(SPACING).rowSpacing(4);
+        GridLayout.RowHelper rows = grid.createRowHelper(2);
+        for (ConfigCategory category : ConfigCategory.values()) {
+            String key = "thirstwastaken2.config.category." + category.key();
+            rows.addChild(Button.builder(Component.translatable(key),
+                            button -> ClientVanilla.setScreen(minecraft, new ThirstCategoryScreen(this, category)))
+                    .tooltip(Tooltip.create(Component.translatable(key + ".tooltip")))
+                    .width(BUTTON_WIDTH).build());
         }
+        contents.addChild(grid, LayoutSettings::alignHorizontallyCenter);
+        contents.addChild(new StringWidget(Component.translatable("thirstwastaken2.config.note")
+                .withStyle(ChatFormatting.GRAY), font), LayoutSettings::alignHorizontallyCenter);
 
-        ClientVanilla.addHeader(list, Component.translatable("thirstwastaken2.config.category.hud"));
-        list.addSmall(
-                slider("thirst_bar_x_offset", config.thirstBarXOffset, -200, 200,
-                        value -> config.thirstBarXOffset = value),
-                slider("thirst_bar_y_offset", config.thirstBarYOffset, -200, 200,
-                        value -> config.thirstBarYOffset = value));
+        LinearLayout footer = layout.addToFooter(LinearLayout.horizontal().spacing(SPACING));
+        footer.addChild(Button.builder(CommonComponents.GUI_CANCEL, button -> cancel()).width(BUTTON_WIDTH).build());
+        footer.addChild(Button.builder(CommonComponents.GUI_DONE, button -> onClose()).width(BUTTON_WIDTH).build());
 
-        // Both settings only show anything alongside AppleSkin, so the section says so when it is missing
-        // rather than offering switches that appear to do nothing.
-        ClientVanilla.addHeader(list, Component.translatable("thirstwastaken2.config.category.appleskin"));
-        if (!AppleSkin.isLoaded()) {
-            ClientVanilla.addHeader(list, Component.translatable("thirstwastaken2.config.appleskin_missing"));
-        }
-        list.addSmall(
-                cycle("appleskin_quenched_overlay", QuenchedOverlay.values(), config.appleskinQuenchedOverlay,
-                        value -> config.appleskinQuenchedOverlay = value),
-                toggle("appleskin_tooltip_droplets", config.appleskinTooltipDroplets,
-                        value -> config.appleskinTooltipDroplets = value));
-
-        ClientVanilla.addHeader(list, Component.translatable("thirstwastaken2.config.category.items"));
-        list.addSmall(
-                toggle("enable_keyword_matching", config.enableKeywordMatching,
-                        value -> config.enableKeywordMatching = value));
-        ClientVanilla.addFullWidthRow(list, Button.builder(
-                        Component.translatable("thirstwastaken2.config.open_file"),
-                        button -> Util.getPlatform().openPath(ThirstConfig.path()))
-                .build());
+        layout.visitWidgets(this::addRenderableWidget);
+        repositionElements();
     }
 
+    @Override
+    protected void repositionElements() {
+        layout.arrangeElements();
+    }
+
+    /** Done and Escape both keep the edits. */
     @Override
     public void onClose() {
-        // Values are written straight into the live config, so this only re-validates and persists.
         ThirstConfig.commit();
-        super.onClose();
+        ClientVanilla.setScreen(minecraft, parent);
     }
 
-    private static OptionInstance<Boolean> toggle(String key, boolean initial, Consumer<Boolean> setter) {
-        return OptionInstance.createBoolean(translationKey(key),
-                OptionInstance.cachedConstantTooltip(Component.translatable(translationKey(key) + ".tooltip")),
-                initial, setter::accept);
-    }
-
-    private static OptionInstance<Integer> slider(String key, int initial, int min, int max, IntConsumer setter) {
-        return new OptionInstance<>(translationKey(key),
-                OptionInstance.cachedConstantTooltip(Component.translatable(translationKey(key) + ".tooltip")),
-                (caption, value) -> Options.genericValueLabel(caption, value),
-                new OptionInstance.IntRange(min, max), initial, setter::accept);
-    }
-
-    /** A button that steps through {@code values}, labelled by {@code <key>.<value in lower case>}. */
-    private static <T extends Enum<T>> OptionInstance<T> cycle(String key, T[] values, T initial, Consumer<T> setter) {
-        return new OptionInstance<>(translationKey(key),
-                OptionInstance.cachedConstantTooltip(Component.translatable(translationKey(key) + ".tooltip")),
-                (caption, value) -> Options.genericValueLabel(caption, Component.translatable(
-                        translationKey(key) + "." + value.name().toLowerCase(Locale.ROOT))),
-                // The codec is only used by vanilla's options.txt, which this option is never saved to.
-                new OptionInstance.Enum<>(List.of(values), Codec.INT.xmap(i -> values[i], Enum::ordinal)),
-                initial, setter::accept);
-    }
-
-    private static OptionInstance<Integer> chanceSlider(String key, int purity, int initial, IntConsumer setter) {
-        Component label = Component.translatable(translationKey(key),
-                Component.translatable("thirst.purity." + purityName(purity)));
-        return new OptionInstance<>(translationKey(key),
-                OptionInstance.cachedConstantTooltip(Component.translatable(translationKey(key) + ".tooltip")),
-                (caption, value) -> Component.translatable("options.generic_value", label, value + "%"),
-                new OptionInstance.IntRange(0, 100), initial, setter::accept);
-    }
-
-    private static OptionInstance<Integer> percentSlider(String key, double initial, int min, int max,
-                                                         DoubleConsumer setter) {
-        return new OptionInstance<>(translationKey(key),
-                OptionInstance.cachedConstantTooltip(Component.translatable(translationKey(key) + ".tooltip")),
-                (caption, value) -> Component.translatable("options.generic_value", caption, value + "%"),
-                new OptionInstance.IntRange(min, max), (int) Math.round(initial * PERCENT),
-                value -> setter.accept(value / (double) PERCENT));
-    }
-
-    private static String purityName(int purity) {
-        return switch (purity) {
-            case 0 -> "dirty";
-            case 1 -> "slightly_dirty";
-            case 2 -> "acceptable";
-            default -> "purified";
-        };
-    }
-
-    private static String translationKey(String key) {
-        return "thirstwastaken2.config." + key;
+    private void cancel() {
+        ThirstConfig.restore(snapshot);
+        ClientVanilla.setScreen(minecraft, parent);
     }
 }

@@ -89,7 +89,7 @@ how harsh dirty water is, where the bar sits on screen, and which items count as
 The server decides the gameplay settings. Each player decides their own HUD settings.
 
 AppleSkin is supported. With it installed, quenched is drawn as an outline over the thirst bar in
-diamond, ice or gold, item tooltips show how much thirst and quenched each item restores, and the
+diamond, ice, gold or AppleSkin's own gold, item tooltips show how much thirst and quenched each item restores, and the
 thirst bar gets the same exhaustion underlay the hunger bar has.
 
 ## Languages

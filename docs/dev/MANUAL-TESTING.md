@@ -47,13 +47,14 @@ Useful commands while testing:
 - [ ] With quenched at 0, sprinting makes the next droplet drain through the quarter and three-quarter
       frames before a point is spent, and the bar shakes the way hunger does at zero saturation.
 - [ ] `/thirst set @s 20 20`: the quenched outline is drawn over every droplet, cyan by default.
-- [ ] Mod Menu → ThirstWasTaken2 → AppleSkin: Quenched Outline cycles Diamond, Ice, Gold and Off, and
-      the bar and the tooltip quenched row change colour on closing the screen. Off removes the
-      outline from the bar; the tooltip row falls back to the plain blue outline.
+- [ ] Mod Menu → ThirstWasTaken2 → HUD & AppleSkin: Quenched Outline reads "Quenched Outline: Diamond"
+      (the name once) and cycles Diamond, Ice, Gold, AppleSkin and Off. The preview and the real bar
+      change at once. Off removes the outline from the bar; the tooltip row falls back to the plain
+      blue outline.
 - [ ] The bar is hidden with F1, in creative and spectator, and while riding a horse, pig or strider
       (a living mount's hearts take its place). It stays while in a boat or minecart.
 - [ ] Underwater, the air bubbles sit **above** the thirst bar, not on top of it.
-- [ ] Mod Menu → ThirstWasTaken2: the X and Y offsets move the bar live.
+- [ ] Mod Menu → ThirstWasTaken2 → HUD & AppleSkin: the X and Y offsets move the bar live.
 - [ ] With AppleSkin's exhaustion underlay on, a translucent strip grows under the thirst bar while
       sprinting; turning the AppleSkin option off removes it. Nothing drawn after it (air bubbles,
       the hotbar) is left tinted.
@@ -92,10 +93,15 @@ The server owns thirst. These are the checks that the client is told.
 
 ### Config screen
 
-- [ ] Mod Menu → ThirstWasTaken2 → Configure opens the screen, with a note and one heading per section.
-- [ ] Every slider and toggle has a tooltip, and no slider can go outside its range.
-- [ ] "Open config file" opens `config/thirstwastaken2.json`.
-- [ ] Change a value, close, relaunch: it is kept.
+- [ ] Mod Menu → ThirstWasTaken2 → Configure opens the root screen: the animated preview (tooltip on
+      the left, thirst bar above the food bar on the right), five page buttons with hover text, the
+      server note, and Cancel and Done.
+- [ ] Every page opens, every slider and toggle has a tooltip, and no slider can go outside its range.
+- [ ] Reset to Defaults puts that page back and leaves the other pages alone.
+- [ ] Item Values → "Open thirstwastaken2.json" opens the file.
+- [ ] Change a value, Done, relaunch: it is kept. Change a value, Cancel: it is back, in the HUD too.
+- [ ] Resize the window with a page open and after returning to the root screen: nothing is drawn
+      twice and the preview stays centred.
 
 ### Damage and the world
 
@@ -127,7 +133,8 @@ each one differs is in [VERSION-DIFFERENCES.md](VERSION-DIFFERENCES.md).
 
 - [ ] F1 hides the bar. 26.2 moved the "HUD hidden" state into the HUD object itself, so this is a
       separate code path from every other version.
-- [ ] The config screen's "Open config file" button is one full-width row.
+- [ ] The config screen's "Open thirstwastaken2.json" button is one full-width row, and Done and
+      Cancel close the screen (26.2 opens screens through a different call).
 - [ ] A sea-water bottle is drawn in the sea colour, and a sea-water bucket with its recoloured water.
 
 ### 26.1.x
@@ -165,6 +172,8 @@ different on purpose. Check all of these on every release that ships a 1.21.1 ja
       still changes to the sea colour.
 - [ ] **The config screen's headings are text rows**, not vanilla headings, which 1.21.1 lacks. Check
       that they are centred and readable and that the list still scrolls.
+- [ ] The config preview's food icons and droplet outlines have transparent corners, not black ones
+      (1.21.1 needs blending turned on around each draw).
 - [ ] The water cauldron's name is "Water Cauldron" in the F3 target and in `/give` suggestions. On
       1.21.1 the mod has to identify the cauldron before its name exists, and a mistake there would
       rename it.

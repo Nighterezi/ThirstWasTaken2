@@ -108,8 +108,8 @@ cached.
 - **Mixins live in `com.thirstwastaken2.mixin`**, are package-private, `abstract`, and prefix every
   injected member with `thirst$`. New mixins must be listed in `thirstwastaken2.mixins.json`.
 - **Config is a plain POJO** serialized by Gson (`ThirstConfig`). Adding a field means: add it to the
-  POJO, clamp it in `sanitize()`, and — if it is user-facing — add a widget in `ThirstConfigScreen`
-  plus `en_us`/`vi_vn` keys.
+  POJO, clamp it in `sanitize()`, and — if it is user-facing — add a widget and a reset line to its
+  page in `client/config/ConfigCategory` plus `en_us`/`vi_vn` keys.
 - **Per-item lookups are cached** keyed by `Item` identity (`ThirstApi.CACHE`, `WaterPurity.INFO`).
   Never do registry-name string building or regex compilation on a per-call path; the tooltip
   renderer calls into both once per frame.
@@ -308,7 +308,9 @@ src/main/fabric/                        Fabric only, compiled into main
 src/client/java/com/thirstwastaken2/client/
   ThirstWasTaken2Client.java            initialize(): HUD row registration
   ThirstHud.java                       thirst bar rendering
-  config/ThirstConfigScreen.java       vanilla-styled options screen
+  config/ThirstConfigScreen.java       options screen: preview, one button per page, Cancel and Done
+  config/ThirstCategoryScreen.java     one page of options; ConfigCategory lists them all
+  config/ConfigPreview.java            live thirst bar, food bar and tooltip preview
   platform/ClientVanilla.java          client vanilla calls that differ between versions
   platform/StatusBarRenderer.java      the shape ClientLoader draws a HUD row through
   compat/AppleSkinIntegration.java     reads AppleSkin's own exhaustion-underlay setting
@@ -418,9 +420,9 @@ neither registry, so there `GuiMixin` draws the bar at the same place and moves 
 on every load or commit; `ThirstApi` watches it to drop its per-item cache.
 
 The Mod Menu screen (`ThirstConfigScreen`) writes straight into the live instance through
-`OptionInstance` listeners and calls `ThirstConfig.commit()` on close. Only the HUD section is
-client-side — the rest is server-authoritative and takes effect in singleplayer or when edited on the
-server.
+`OptionInstance` listeners, calls `ThirstConfig.commit()` on Done and `ThirstConfig.restore` on
+Cancel. Only the HUD and AppleSkin settings are client-side — the rest is server-authoritative and
+takes effect in singleplayer or when edited on the server.
 
 ## Optional integrations
 

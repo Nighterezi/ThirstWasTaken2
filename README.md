@@ -29,7 +29,7 @@ Minecraft and further extends the original mod.
 - Four water-purity levels with negative effects from unsafe water
 - Water purification using furnaces and campfires
 - Purity information in item tooltips
-- Optional AppleSkin support: a quenched outline in three colours, thirst and quenched droplet rows in
+- Optional AppleSkin support: a quenched outline in four colours, thirst and quenched droplet rows in
   item tooltips, and the exhaustion underlay on the thirst bar
 - Configurable HUD position and gameplay settings
 - Mod Menu configuration screen

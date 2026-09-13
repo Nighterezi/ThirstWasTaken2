@@ -18,8 +18,8 @@ you is refunded so you do not starve while you look for water.
 ## I changed the config and nothing happened
 
 If you edited the file by hand, restart the game or the server. If you used the Mod Menu screen
-while connected to someone else's server, only the four HUD settings applied, because the rest come
-from the server.
+while connected to someone else's server, only the HUD & AppleSkin page applied, because the rest
+comes from the server. Changes made on the screen are only kept when you leave it with **Done**.
 
 ## Can I turn thirst off for one player?
 

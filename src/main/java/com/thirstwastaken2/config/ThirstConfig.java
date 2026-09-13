@@ -136,6 +136,23 @@ public final class ThirstConfig {
         save();
     }
 
+    /** A detached copy of the active config, for a screen that may throw its edits away. */
+    public static synchronized ThirstConfig snapshot() {
+        ThirstConfig copy = GSON.fromJson(GSON.toJson(get()), ThirstConfig.class);
+        copy.sanitize();
+        return copy;
+    }
+
+    /**
+     * Makes a {@link #snapshot()} the active config again, without saving: edits are only written by
+     * {@link #commit()}, so the file on disk still holds what the snapshot does.
+     */
+    public static synchronized void restore(ThirstConfig snapshot) {
+        snapshot.sanitize();
+        INSTANCE = snapshot;
+        generation++;
+    }
+
     public Pattern keywordBlacklistPattern() { return keywordBlacklistPattern; }
     public Pattern drinkKeywordPattern() { return drinkKeywordPattern; }
     public Pattern soupKeywordPattern() { return soupKeywordPattern; }

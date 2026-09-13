@@ -5,14 +5,16 @@ outline: [2, 3]
 # Cấu hình
 
 `config/thirstwastaken2.json` được tạo ở lần chạy đầu tiên. Nếu có Mod Menu, bạn sửa được ngay trong
-game tại **Mods > ThirstWasTaken2 > Config**, và màn hình đó tự lưu khi bạn đóng lại. Nút cuối cùng
-mở thẳng file, dành cho vài mục quá dài để nhét vừa một thanh trượt.
+game tại **Mods > ThirstWasTaken2 > Config**. Màn hình chia mỗi phần bên dưới thành một trang, có bản
+xem trước trực tiếp của thanh khát và dòng mô tả một đồ uống, và trang nào cũng có nút **Đặt lại mặc
+định**. **Xong** lưu thay đổi, còn **Hủy** bỏ hết thay đổi. Trang Giá trị vật phẩm có nút mở thẳng
+file, dành cho các mục không nhét vừa một thanh trượt.
 
 ![ThirstWasTaken2 trong danh sách Mod Menu](/screenshots/mod-menu.png)
 
 ::: tip
-Chỉ mục Giao diện và AppleSkin được đọc từ file của chính bạn. Phần còn lại lấy từ máy đang chạy thế giới, nên với
-máy chủ riêng thì đó là file của máy chủ. Sửa file bằng tay thì lần khởi động sau mới có hiệu lực.
+Chỉ mục Giao diện và AppleSkin được đọc từ file của chính bạn. Phần còn lại lấy từ máy đang chạy thế
+giới, nên với máy chủ riêng thì đó là file của máy chủ. Sửa file bằng tay thì lần khởi động sau mới có hiệu lực.
 :::
 
 ## Tiêu hao khát nước
@@ -123,7 +125,8 @@ AppleSkin điều khiển dải tiêu hao dạng hạt phía sau thanh khát.
 ### appleskinQuenchedOverlay
 
 Mặc định `DIAMOND`. Màu viền đã khát trên thanh khát và trong dòng mô tả: `DIAMOND` (kim cương), `ICE`
-(băng) hoặc `GOLD` (vàng). `OFF` bỏ viền khỏi thanh, còn dòng mô tả giữ viền xanh thường.
+(băng), `GOLD` (vàng), hoặc `APPLESKIN` là đúng màu vàng AppleSkin dùng cho thanh đói. `OFF` bỏ viền
+khỏi thanh, còn dòng mô tả giữ viền xanh thường.
 
 ### appleskinTooltipDroplets
 

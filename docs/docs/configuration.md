@@ -5,14 +5,16 @@ outline: [2, 3]
 # Configuration
 
 `config/thirstwastaken2.json` is written on first launch. With Mod Menu installed you can edit it in
-game from **Mods > ThirstWasTaken2 > Config**, and the screen saves when you close it. Its last
-button opens the file itself, for the few settings that are too long to fit on a slider.
+game from **Mods > ThirstWasTaken2 > Config**. The screen has one page per section below, a live
+preview of the thirst bar and a drink's tooltip, and a **Reset to Defaults** button on every page.
+**Done** saves your changes and **Cancel** throws them away. The Item Values page opens the file
+itself, for the settings that do not fit on a slider.
 
 ![ThirstWasTaken2 listed in Mod Menu](/screenshots/mod-menu.png)
 
 ::: tip
-Only the HUD and AppleSkin sections are read from your own copy. Everything else comes from the copy on the machine
-running the world, so on a dedicated server that is the server's file. Editing the file by hand
+Only the HUD and AppleSkin sections are read from your own copy. Everything else comes from the copy
+on the machine running the world, so on a dedicated server that is the server's file. Editing the file by hand
 takes effect the next time the game or server starts.
 :::
 
@@ -123,7 +125,8 @@ Underlay** option controls the dithered exhaustion strip behind the thirst bar.
 ### appleskinQuenchedOverlay
 
 Default `DIAMOND`. The colour of the quenched outline on the thirst bar and in tooltips: `DIAMOND`,
-`ICE` or `GOLD`. `OFF` removes the outline from the bar, and tooltips keep a plain blue one.
+`ICE`, `GOLD`, or `APPLESKIN` for the exact gold AppleSkin outlines hunger in. `OFF` removes the
+outline from the bar, and tooltips keep a plain blue one.
 
 ### appleskinTooltipDroplets
 

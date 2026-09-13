@@ -35,7 +35,7 @@ public final class ThirstHud {
     private static final int OVERLAY_TEXTURE_SIZE = 256;
     /** Four frames across, one row per coloured {@link QuenchedOverlay}. */
     private static final int QUENCHED_TEXTURE_WIDTH = 36;
-    private static final int QUENCHED_TEXTURE_HEIGHT = 27;
+    private static final int QUENCHED_TEXTURE_HEIGHT = 36;
     private static final int OPAQUE = 0xFFFFFFFF;
     private static final int EXHAUSTION_TINT = 0xBFFFFFFF;
     private static final int BAR_WIDTH = 81;
@@ -62,19 +62,26 @@ public final class ThirstHud {
         int right = graphics.guiWidth() / 2 + 91 + config.thirstBarXOffset;
         int top = stackTop + config.thirstBarYOffset;
 
-        renderExhaustion(graphics, right, top, data.exhaustion());
-
         // Vanilla shakes the hunger bar once saturation runs out; the thirst bar mirrors that.
-        boolean shake = quenched <= 0;
-        int shakePeriod = thirst * 3 + 1;
+        boolean shake = quenched <= 0 && player.tickCount % (thirst * 3 + 1) == 0;
 
-        float level = thirst - drainedFraction(data);
-        QuenchedOverlay overlay = AppleSkin.quenchedOverlay();
+        drawBar(graphics, right, top, thirst, quenched, data.exhaustion(), AppleSkin.quenchedOverlay(),
+                AppleSkinIntegration.shouldShowExhaustion(), shake);
+    }
 
+    /**
+     * Draws the bar for any state, with its right edge at {@code right}. The HUD passes the player's
+     * synced state; the config screen's preview passes a made-up one.
+     */
+    public static void drawBar(GuiGraphicsExtractor graphics, int right, int top, int thirst, int quenched,
+                               float exhaustion, QuenchedOverlay overlay, boolean exhaustionStrip, boolean shake) {
+        if (exhaustionStrip) renderExhaustion(graphics, right, top, exhaustion);
+
+        float level = thirst - drainedFraction(quenched, exhaustion);
         for (int i = 0; i < 10; i++) {
             int x = right - i * 8 - ICON_SIZE;
             int y = top;
-            if (shake && player.tickCount % shakePeriod == 0) y += RANDOM.nextInt(3) - 1;
+            if (shake) y += RANDOM.nextInt(3) - 1;
 
             icon(graphics, x, y, U_EMPTY);
             int fill = fillFrame(level - i * 2);
@@ -90,9 +97,9 @@ public final class ThirstHud {
      * How much of the next thirst point has already been eaten by exhaustion, as a 0..1 fraction.
      * Exhaustion only reaches thirst once quenched is gone, so a quenched player never drains.
      */
-    private static float drainedFraction(ThirstData data) {
-        if (data.quenched() > 0) return 0.0F;
-        return Math.min(Math.max(data.exhaustion(), 0.0F), MAX_EXHAUSTION) / MAX_EXHAUSTION;
+    private static float drainedFraction(int quenched, float exhaustion) {
+        if (quenched > 0) return 0.0F;
+        return Math.min(Math.max(exhaustion, 0.0F), MAX_EXHAUSTION) / MAX_EXHAUSTION;
     }
 
     /** Texture u of the wettest frame this droplet has earned, or -1 when it is dry. */
@@ -108,10 +115,8 @@ public final class ThirstHud {
                 ICONS_TEXTURE_WIDTH, ICONS_TEXTURE_HEIGHT, OPAQUE);
     }
 
-    /** Draws AppleSkin's dithered exhaustion underlay beneath the thirst icons when enabled. */
+    /** Draws AppleSkin's dithered exhaustion underlay beneath the thirst icons. */
     private static void renderExhaustion(GuiGraphicsExtractor graphics, int right, int top, float exhaustion) {
-        if (!AppleSkinIntegration.shouldShowExhaustion()) return;
-
         float ratio = Math.min(1.0F, Math.max(0.0F, exhaustion / MAX_EXHAUSTION));
         int width = (int) (ratio * BAR_WIDTH);
         if (width <= 0) return;

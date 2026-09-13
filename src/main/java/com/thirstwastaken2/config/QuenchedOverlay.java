@@ -13,6 +13,8 @@ public enum QuenchedOverlay {
     DIAMOND,
     ICE,
     GOLD,
+    /** The gold AppleSkin draws saturation in, filling in the same direction its drumstick does. */
+    APPLESKIN,
     /** No outline on the thirst bar; the tooltip row keeps the plain blue outline it always had. */
     OFF
 }

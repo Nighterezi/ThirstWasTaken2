@@ -121,14 +121,14 @@ artwork, where there is room to read it.
 
 ## Fonts and GUI sheets
 
-`font/droplets.json` maps `U+E000..U+E00D` onto `textures/font/droplets.png` at height 9, ascent 8.
+`font/droplets.json` maps `U+E000..U+E00F` onto `textures/font/droplets.png` at height 9, ascent 8.
 `ThirstTooltip` uses `U+E000/U+E001` for the filled thirst row. The quenched row uses `U+E004/U+E007`
 (plain blue outline) when the overlay is `OFF`, and a full/half pair from `U+E008` for each coloured
 `QuenchedOverlay`, in enum order. `U+E002`, `U+E003`, `U+E005` and `U+E006` remain on the sheet for
 compatibility but are not emitted. `tools/generate_quenched_overlay.py` writes the glyphs from `U+E008`.
 
 `textures/gui/thirst_icons.png` is 41x9 (five frames, 8px stride), `textures/gui/quenched_overlay.png`
-is 36x27 (four frames per row, one row per coloured `QuenchedOverlay`), and
+is 36x36 (four frames per row, one row per coloured `QuenchedOverlay`), and
 `textures/gui/appleskin_icons.png` is a 256x256 sheet whose only content is the `v = 18` AppleSkin
 exhaustion strip. `ThirstHud` documents the exact blits.
 
@@ -142,7 +142,7 @@ Key families, and who reads them:
 
 | Prefix | Written by |
 |---|---|
-| `thirstwastaken2.config.*` (+ `.tooltip`, `.category.*`) | `ThirstConfigScreen`, derived from the snake_case widget key |
+| `thirstwastaken2.config.*` (+ `.tooltip`, `.category.*`) | the config screens, derived from the snake_case widget key |
 | `thirst.purity.*` | `WaterPurity.tooltip` and the chance sliders |
 | `thirst.water.salty` | `WaterPurity.saltTooltip`, the one line salt water gets instead of a grade |
 | `tooltip.thirstwastaken2.*` | `ThirstTooltip`: waterskin contents and the clay bowl hint |

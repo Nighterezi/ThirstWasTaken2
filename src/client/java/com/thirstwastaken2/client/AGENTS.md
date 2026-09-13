@@ -13,7 +13,11 @@ except the HUD section.
 |---|---|
 | `ThirstWasTaken2Client` | `initialize`, called by the loader's client entrypoint: registers the HUD row |
 | `ThirstHud` | drawing the bar |
-| `config/ThirstConfigScreen` | the vanilla-styled options screen |
+| `config/ThirstConfigScreen` | the root options screen: preview, a button per page, Cancel and Done |
+| `config/ThirstCategoryScreen` | one page as a vanilla options list, with Reset to Defaults |
+| `config/ConfigCategory` | every page: its widgets and what its reset puts back |
+| `config/ConfigOptions` | the widget factories (`toggle`, `slider`, `cycle`, ...) and their lang keys |
+| `config/ConfigPreview` | the live thirst bar, food bar and tooltip drawn at the top of the screen |
 | `platform/ClientVanilla` | client vanilla calls whose shape differs between Minecraft versions |
 | `platform/StatusBarRenderer` | the shape `ClientLoader` draws a HUD row through |
 
@@ -68,7 +72,7 @@ Sprite geometry, which is easy to break:
   `appleskin_icons.png`, blitted with the 256x256 texture size.
 - The quenched outline is AppleSkin-only, like the strip: `compat/AppleSkin.quenchedOverlay()` (common
   code) returns `OFF` without AppleSkin, and otherwise the player's `appleskinQuenchedOverlay`. It comes
-  from `quenched_overlay.png`, 36x27, at `u = 0/9/18/27` by quarter and `v = ordinal * 9`, so
+  from `quenched_overlay.png`, 36x36, at `u = 0/9/18/27` by quarter and `v = ordinal * 9`, so
   `QuenchedOverlay`'s order is the sheet's row order. Every sheet here has its own texture size — do
   not copy blit arguments between them.
 - `tools/generate_quenched_overlay.py` draws `quenched_overlay.png` and the matching tooltip glyphs.
@@ -80,27 +84,47 @@ fill thresholds change here, change them there too.
 
 ## Config screen
 
-`OptionInstance` widgets write **straight into the live `ThirstConfig` instance**; `onClose` calls
-`ThirstConfig.commit()`, which re-sanitises, bumps the generation and saves. So a widget's range must
-not be wider than the clamp in `ThirstConfig.sanitize()`, or the value silently snaps back.
+`ThirstConfigScreen` is the page Mod Menu opens: `ConfigPreview` on top, a button per
+`ConfigCategory`, and Cancel and Done. Each button opens a `ThirstCategoryScreen`, a vanilla
+`OptionsSubScreen` whose list `ConfigCategory.addOptions` fills; the HUD page also puts the preview
+under its title, in a taller header.
 
-Adding a setting means: field in `ThirstConfig`, clamp in `sanitize()`, a widget here, and
-`thirstwastaken2.config.<key>` plus `thirstwastaken2.config.<key>.tooltip` in `en_us.json` and
-`vi_vn.json` (the other seven locales are best-effort). `translationKey()` builds the key from the
-snake_case string passed to `toggle`/`slider`, so that string is the lang key — keep it matching the
-Java field name.
+`OptionInstance` widgets write **straight into the live `ThirstConfig` instance**, so the HUD, the
+tooltips and the preview follow every change at once. Leaving a page saves nothing. Done or Escape on
+the root screen calls `ThirstConfig.commit()`, which re-sanitises, bumps the generation and saves;
+Cancel calls `ThirstConfig.restore` with the snapshot the root screen took when it was constructed.
+So a widget's range must not be wider than the clamp in `ThirstConfig.sanitize()`, or the value
+silently snaps back.
+
+A vanilla screen's `init()` runs once; coming back from a page only repositions it. That is why the
+root screen can keep its layout in a final field. Reset to Defaults copies the page's fields from a
+`new ThirstConfig()` through `ConfigCategory.reset` and opens a fresh page, because widgets keep the
+value they were built with.
+
+Adding a setting means: field in `ThirstConfig`, clamp in `sanitize()`, a widget and a reset line in
+its `ConfigCategory`, and `thirstwastaken2.config.<key>` plus `thirstwastaken2.config.<key>.tooltip`
+in `en_us.json` and `vi_vn.json` (the other seven locales are best-effort). `ConfigOptions` builds the
+key from the snake_case string passed to `toggle`/`slider`, so that string is the lang key — keep it
+matching the Java field name. A new page also needs `category.<key>` and `category.<key>.tooltip`.
 
 Enums use `cycle`, an `OptionInstance.Enum` labelled by `<key>.<value in lower case>`, so each value
-needs its own lang key as well. The AppleSkin section is always shown; without AppleSkin it adds a
-note saying the settings do nothing yet.
+needs its own lang key as well. The cycle button writes the option's name in front of the value
+itself, so the label function returns the value alone; returning `caption: value` there prints the
+name twice. The AppleSkin section is always shown; without AppleSkin it adds a note saying the
+settings do nothing yet.
 
 Doubles are edited as integer percentages (`percentSlider`, `PERCENT = 100`) because the vanilla
 slider is integer-only. Only scalars are exposed; maps and keyword patterns stay in the JSON, which
-the footer button opens with `Util.getPlatform().openPath`.
+the Item Values page opens with `Util.getPlatform().openPath`.
 
-Not every version of `OptionsList` takes a plain widget, so the footer button goes through
+Not every version of `OptionsList` takes a plain widget, so that button goes through
 `ClientVanilla.addFullWidthRow`, and 1.21.1 has no section headings, so those go through
-`ClientVanilla.addHeader`, which stands a centred text row in for one.
+`ClientVanilla.addHeader`, which stands a centred text row in for one. The preview draws through
+`ClientVanilla.canvas`, `text` and `blitSprite`, because 26.1 renamed the widget draw method and the
+text call, and 1.21.11 added the render pipeline to sprite draws. It never builds an `ItemStack`: Mod
+Menu opens the screen from the title screen, where 26.1 and later have not bound item components yet
+and constructing a stack crashes the game. 26.2 moved
+`setScreen` onto `Minecraft.gui`, hence `ClientVanilla.setScreen`.
 
 Mod Menu is `clientCompileOnly`. `ModMenuIntegration` (in `src/client/fabric/java`) is only ever
 class-loaded when Mod Menu itself resolves the entrypoint, so nothing else may reference it.
