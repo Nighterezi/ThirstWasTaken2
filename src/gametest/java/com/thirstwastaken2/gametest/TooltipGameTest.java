@@ -1,5 +1,7 @@
 package com.thirstwastaken2.gametest;
 
+import com.thirstwastaken2.compat.AppleSkin;
+import com.thirstwastaken2.config.QuenchedOverlay;
 import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.item.WaterskinItem;
 import com.thirstwastaken2.purity.WaterPurity;
@@ -14,13 +16,18 @@ import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The lines the mod contributes to an item tooltip.
  *
  * <p>Assertions look at translation keys rather than rendered text, because a dedicated server never
  * loads the mod's language files and would report every key as itself.
+ *
+ * <p>The droplet rows only appear alongside AppleSkin, which this server does not have, so the tests
+ * about them ask for the rows outright.
  */
 public final class TooltipGameTest {
     @GameTest
@@ -100,8 +107,40 @@ public final class TooltipGameTest {
                 "4 units is 2 droplets, got " + length(ThirstTooltip.thirst(4)));
         TestFixtures.check(helper, length(ThirstTooltip.thirst(5)) == 3,
                 "5 units rounds up to 3 droplets, got " + length(ThirstTooltip.thirst(5)));
-        TestFixtures.check(helper, length(ThirstTooltip.quenched(40)) == 10,
-                "the row is capped at 10 droplets, got " + length(ThirstTooltip.quenched(40)));
+        TestFixtures.check(helper, length(ThirstTooltip.quenched(40, QuenchedOverlay.DIAMOND)) == 10,
+                "the row is capped at 10 droplets, got " + length(ThirstTooltip.quenched(40, QuenchedOverlay.DIAMOND)));
+        helper.succeed();
+    }
+
+    /**
+     * Without AppleSkin the droplet rows are left out, the way vanilla says nothing about what food
+     * restores. The item's own lines and the water grade are not part of that and stay.
+     */
+    @GameTest
+    public void dropletRowsNeedAppleSkin(GameTestHelper helper) {
+        TestFixtures.check(helper, !AppleSkin.isLoaded(),
+                "this test expects the gametest server to run without AppleSkin");
+        List<Component> lines = new ArrayList<>();
+        ThirstTooltip.appendTo(bowl(WaterQuality.fresh(3)), lines::add);
+
+        TestFixtures.check(helper, hasKeyStartingWith(lines, "thirst.purity."),
+                "the grade does not depend on AppleSkin, got " + keys(lines));
+        TestFixtures.check(helper, lines.stream().allMatch(line -> line.getContents() instanceof TranslatableContents),
+                "without AppleSkin there should be no droplet rows, got " + keys(lines));
+        helper.succeed();
+    }
+
+    @GameTest
+    public void eachQuenchedOverlayHasItsOwnGlyphs(GameTestHelper helper) {
+        Set<String> rows = new HashSet<>();
+        for (QuenchedOverlay overlay : QuenchedOverlay.values()) {
+            rows.add(ThirstTooltip.quenched(3, overlay).getString());
+        }
+
+        TestFixtures.check(helper, rows.size() == QuenchedOverlay.values().length,
+                "every quenched overlay should draw its own droplets, got " + rows.size() + " distinct rows");
+        TestFixtures.check(helper, !rows.contains(ThirstTooltip.thirst(3).getString()),
+                "a quenched row should never look like the thirst row");
         helper.succeed();
     }
 
@@ -130,7 +169,7 @@ public final class TooltipGameTest {
 
     private static List<Component> linesFor(ItemStack stack) {
         List<Component> lines = new ArrayList<>();
-        ThirstTooltip.appendTo(stack, lines::add);
+        ThirstTooltip.appendTo(stack, lines::add, true);
         return lines;
     }
 

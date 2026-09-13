@@ -64,10 +64,15 @@ Sprite geometry, which is easy to break:
   partial frames change at 0 and 2, both on a step, and the AppleSkin strip moves about 5 px a step.
   Do not add a client feature that needs finer exhaustion without revisiting that step.
 - When AppleSkin is loaded and its exhaustion-underlay option is enabled, `AppleSkinIntegration`
-  exposes that setting and `ThirstHud` draws the synced exhaustion as the `v = 18` dither strip.
-- The quenched outline comes from `appleskin_icons.png` row `v = 0`, at `u = 0/9/18/27` by quarter,
-  blitted with the 256x256 texture size. That sheet is 256x256, unlike `thirst_icons.png` — do not
-  copy blit arguments between the two.
+  exposes that setting and `ThirstHud` draws the synced exhaustion as the `v = 18` dither strip of
+  `appleskin_icons.png`, blitted with the 256x256 texture size.
+- The quenched outline is AppleSkin-only, like the strip: `compat/AppleSkin.quenchedOverlay()` (common
+  code) returns `OFF` without AppleSkin, and otherwise the player's `appleskinQuenchedOverlay`. It comes
+  from `quenched_overlay.png`, 36x27, at `u = 0/9/18/27` by quarter and `v = ordinal * 9`, so
+  `QuenchedOverlay`'s order is the sheet's row order. Every sheet here has its own texture size — do
+  not copy blit arguments between them.
+- `tools/generate_quenched_overlay.py` draws `quenched_overlay.png` and the matching tooltip glyphs.
+  Edit the palettes there and rerun it rather than touching the PNGs.
 - The bar shakes when quenched hits zero, mirroring vanilla hunger (`shakePeriod = thirst * 3 + 1`).
 
 `ThirstTooltip` (common) uses the same two-units-per-droplet rule with its own bitmap font. If the
@@ -84,6 +89,10 @@ Adding a setting means: field in `ThirstConfig`, clamp in `sanitize()`, a widget
 `vi_vn.json` (the other seven locales are best-effort). `translationKey()` builds the key from the
 snake_case string passed to `toggle`/`slider`, so that string is the lang key — keep it matching the
 Java field name.
+
+Enums use `cycle`, an `OptionInstance.Enum` labelled by `<key>.<value in lower case>`, so each value
+needs its own lang key as well. The AppleSkin section is always shown; without AppleSkin it adds a
+note saying the settings do nothing yet.
 
 Doubles are edited as integer percentages (`percentSlider`, `PERCENT = 100`) because the vanilla
 slider is integer-only. Only scalars are exposed; maps and keyword patterns stay in the JSON, which

@@ -238,25 +238,27 @@ final class InteractionScenario implements Stage {
                 },
                 () -> sink = player.getMainHandItem().use(level, player, HAND),
                 () -> sink == InteractionResult.FAIL);
+        // The droplet rows are asked for outright: the benchmark server has no AppleSkin, and a player who
+        // has it pays for them on every hovered frame.
         batched("tooltip_water_bottle", "ThirstTooltip.appendTo for a water bottle: purity line and droplet rows",
                 NOTHING,
                 () -> {
                     lines.clear();
-                    ThirstTooltip.appendTo(waterBottle, collect);
+                    ThirstTooltip.appendTo(waterBottle, collect, true);
                 },
                 () -> !lines.isEmpty());
         batched("tooltip_waterskin", "ThirstTooltip.appendTo for a full waterskin: servings, purity and droplet rows",
                 NOTHING,
                 () -> {
                     lines.clear();
-                    ThirstTooltip.appendTo(fullWaterskin, collect);
+                    ThirstTooltip.appendTo(fullWaterskin, collect, true);
                 },
                 () -> !lines.isEmpty());
         batched("tooltip_food", "ThirstTooltip.appendTo for an apple: droplet rows only",
                 NOTHING,
                 () -> {
                     lines.clear();
-                    ThirstTooltip.appendTo(apple, collect);
+                    ThirstTooltip.appendTo(apple, collect, true);
                 },
                 () -> !lines.isEmpty());
         batched("thirst_lookup", "ThirstApi.thirstValues cycling through every registered item",

@@ -87,7 +87,7 @@ matter how many lines it grows.
 |---|---|---|---|
 | What the item is | `ChatFormatting.GRAY` | how it works, what state it is in | `Contains 3/3 drinks`, `Smelt to hold water` |
 | What it holds | `WaterPurity.purityColor`, salt's cream | is this worth drinking | `Murky`, `Salty` |
-| What drinking does | the droplet font, no colour of its own | how much it restores | the thirst and quenched rows |
+| What drinking does | the droplet font, no colour of its own | how much it restores | the thirst and quenched rows, AppleSkin only |
 
 - **Grey is for describing the item, never for a value the player weighs.** A grade or a restored
   amount has to stand out from the grey; if a new line is something the player compares between two
@@ -97,6 +97,9 @@ matter how many lines it grows.
   this reason.
 - **Do not invent a second palette.** Water colours live in `WaterPurity.purityColor` and salt's line
   colour next to it. Anything about water quality reuses those.
+- **The third tier needs AppleSkin.** It is the thirst half of AppleSkin's food rows, so without it
+  (or with `appleskinTooltipDroplets` off) `appendTo` stops after the second tier. Anything that must
+  see the rows regardless, such as a gametest or the benchmark, calls `appendTo(stack, tooltip, true)`.
 - **Tiers keep their order, and a tier may cancel the ones below it.** Salt water prints its own line
   and returns, because droplet rows under it would promise thirst it does not restore.
 - **Lines are rebuilt every frame a stack is hovered.** Build a constant once and hand out `copy()`,

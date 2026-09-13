@@ -28,8 +28,9 @@ Minecraft and further extends the original mod.
 - A reusable three-drink waterskin that preserves and mixes water purity
 - Four water-purity levels with negative effects from unsafe water
 - Water purification using furnaces and campfires
-- Two-row thirst and quenched sprites plus purity information in item tooltips
-- Optional AppleSkin exhaustion underlay on the thirst bar
+- Purity information in item tooltips
+- Optional AppleSkin support: a quenched outline in three colours, thirst and quenched droplet rows in
+  item tooltips, and the exhaustion underlay on the thirst bar
 - Configurable HUD position and gameplay settings
 - Mod Menu configuration screen
 - `/thirst` commands for server administrators

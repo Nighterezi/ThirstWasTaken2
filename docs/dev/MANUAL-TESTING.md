@@ -46,7 +46,10 @@ Useful commands while testing:
 - [ ] `/thirst set @s 13 0`: six and a half droplets, the half droplet on the left end.
 - [ ] With quenched at 0, sprinting makes the next droplet drain through the quarter and three-quarter
       frames before a point is spent, and the bar shakes the way hunger does at zero saturation.
-- [ ] `/thirst set @s 20 20`: the quenched outline is drawn over every droplet.
+- [ ] `/thirst set @s 20 20`: the quenched outline is drawn over every droplet, cyan by default.
+- [ ] Mod Menu → ThirstWasTaken2 → AppleSkin: Quenched Outline cycles Diamond, Ice, Gold and Off, and
+      the bar and the tooltip quenched row change colour on closing the screen. Off removes the
+      outline from the bar; the tooltip row falls back to the plain blue outline.
 - [ ] The bar is hidden with F1, in creative and spectator, and while riding a horse, pig or strider
       (a living mount's hearts take its place). It stays while in a boat or minecart.
 - [ ] Underwater, the air bubbles sit **above** the thirst bar, not on top of it.
@@ -71,6 +74,7 @@ The server owns thirst. These are the checks that the client is told.
 
 - [ ] A water bottle, a filled bowl and a filled waterskin show a coloured grade line (Dirty, Murky,
       Clean, Pure) and two rows of droplet glyphs, not boxes or letters.
+- [ ] Turning Tooltip Droplets off removes both droplet rows and keeps the grade line.
 - [ ] A sea-water bottle shows a single "Salty" line and no droplet rows.
 - [ ] A waterskin says how many drinks it holds, or that it is empty. A clay bowl says it has to be fired.
 - [ ] Milk, honey and an apple show droplet rows; stone shows nothing.
@@ -111,7 +115,7 @@ The server owns thirst. These are the checks that the client is told.
 ### Without the optional mods
 
 - [ ] Remove Mod Menu, AppleSkin and Cloth Config from the run: the game loads and the bar draws
-      without the exhaustion strip.
+      without the exhaustion strip or the quenched outline, and tooltips have no droplet rows.
 - [ ] A dedicated server (`runServer`) starts and a client joins it without a crash on either side.
 
 ## Per version

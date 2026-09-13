@@ -80,7 +80,17 @@
   "thirstwastaken2.config.thirst_bar_x_offset.tooltip": "Độ lệch ngang của thanh khát nước, tính bằng pixel.",
   "thirstwastaken2.config.thirst_bar_y_offset": "Lệch dọc thanh",
   "thirstwastaken2.config.thirst_bar_y_offset.tooltip": "Độ lệch dọc của thanh khát nước, tính bằng pixel.",
+  "thirstwastaken2.config.category.appleskin": "AppleSkin",
+  "thirstwastaken2.config.appleskin_missing": "Chưa cài AppleSkin nên các cài đặt này tạm thời chưa có tác dụng.",
+  "thirstwastaken2.config.appleskin_quenched_overlay": "Viền đã khát",
+  "thirstwastaken2.config.appleskin_quenched_overlay.tooltip": "Màu viền đã khát trên thanh khát nước và trong tooltip. Tắt sẽ bỏ viền khỏi thanh.",
+  "thirstwastaken2.config.appleskin_quenched_overlay.diamond": "Kim cương",
+  "thirstwastaken2.config.appleskin_quenched_overlay.ice": "Băng",
+  "thirstwastaken2.config.appleskin_quenched_overlay.gold": "Vàng",
+  "thirstwastaken2.config.appleskin_quenched_overlay.off": "Tắt",
+  "thirstwastaken2.config.appleskin_tooltip_droplets": "Giọt nước trong tooltip",
+  "thirstwastaken2.config.appleskin_tooltip_droplets.tooltip": "Hiện các hàng giọt độ khát và đã khát trong tooltip vật phẩm.",
   "thirstwastaken2.config.enable_keyword_matching": "Dò theo từ khóa",
   "thirstwastaken2.config.enable_keyword_matching.tooltip": "Đoán giá trị nước cho vật phẩm mod lạ dựa trên tên đăng ký của nó.",
-  "thirstwastaken2.config.note": "Chỉ mục Giao diện là phía client; phần còn lại áp dụng trên máy chủ."
+  "thirstwastaken2.config.note": "Chỉ mục Giao diện và AppleSkin là phía client; phần còn lại áp dụng trên máy chủ."
 }

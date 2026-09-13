@@ -1,6 +1,9 @@
 package com.thirstwastaken2.client.config;
 
+import com.mojang.serialization.Codec;
 import com.thirstwastaken2.client.platform.ClientVanilla;
+import com.thirstwastaken2.compat.AppleSkin;
+import com.thirstwastaken2.config.QuenchedOverlay;
 import com.thirstwastaken2.config.ThirstConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
@@ -11,6 +14,9 @@ import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Util;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.IntConsumer;
 
@@ -91,6 +97,18 @@ public final class ThirstConfigScreen extends OptionsSubScreen {
                 slider("thirst_bar_y_offset", config.thirstBarYOffset, -200, 200,
                         value -> config.thirstBarYOffset = value));
 
+        // Both settings only show anything alongside AppleSkin, so the section says so when it is missing
+        // rather than offering switches that appear to do nothing.
+        ClientVanilla.addHeader(list, Component.translatable("thirstwastaken2.config.category.appleskin"));
+        if (!AppleSkin.isLoaded()) {
+            ClientVanilla.addHeader(list, Component.translatable("thirstwastaken2.config.appleskin_missing"));
+        }
+        list.addSmall(
+                cycle("appleskin_quenched_overlay", QuenchedOverlay.values(), config.appleskinQuenchedOverlay,
+                        value -> config.appleskinQuenchedOverlay = value),
+                toggle("appleskin_tooltip_droplets", config.appleskinTooltipDroplets,
+                        value -> config.appleskinTooltipDroplets = value));
+
         ClientVanilla.addHeader(list, Component.translatable("thirstwastaken2.config.category.items"));
         list.addSmall(
                 toggle("enable_keyword_matching", config.enableKeywordMatching,
@@ -108,7 +126,7 @@ public final class ThirstConfigScreen extends OptionsSubScreen {
         super.onClose();
     }
 
-    private static OptionInstance<Boolean> toggle(String key, boolean initial, java.util.function.Consumer<Boolean> setter) {
+    private static OptionInstance<Boolean> toggle(String key, boolean initial, Consumer<Boolean> setter) {
         return OptionInstance.createBoolean(translationKey(key),
                 OptionInstance.cachedConstantTooltip(Component.translatable(translationKey(key) + ".tooltip")),
                 initial, setter::accept);
@@ -119,6 +137,17 @@ public final class ThirstConfigScreen extends OptionsSubScreen {
                 OptionInstance.cachedConstantTooltip(Component.translatable(translationKey(key) + ".tooltip")),
                 (caption, value) -> Options.genericValueLabel(caption, value),
                 new OptionInstance.IntRange(min, max), initial, setter::accept);
+    }
+
+    /** A button that steps through {@code values}, labelled by {@code <key>.<value in lower case>}. */
+    private static <T extends Enum<T>> OptionInstance<T> cycle(String key, T[] values, T initial, Consumer<T> setter) {
+        return new OptionInstance<>(translationKey(key),
+                OptionInstance.cachedConstantTooltip(Component.translatable(translationKey(key) + ".tooltip")),
+                (caption, value) -> Options.genericValueLabel(caption, Component.translatable(
+                        translationKey(key) + "." + value.name().toLowerCase(Locale.ROOT))),
+                // The codec is only used by vanilla's options.txt, which this option is never saved to.
+                new OptionInstance.Enum<>(List.of(values), Codec.INT.xmap(i -> values[i], Enum::ordinal)),
+                initial, setter::accept);
     }
 
     private static OptionInstance<Integer> chanceSlider(String key, int purity, int initial, IntConsumer setter) {

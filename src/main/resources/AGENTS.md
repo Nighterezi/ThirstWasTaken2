@@ -121,13 +121,16 @@ artwork, where there is room to read it.
 
 ## Fonts and GUI sheets
 
-`font/droplets.json` maps `U+E000..U+E007` onto `textures/font/droplets.png` at height 9, ascent 8.
-`ThirstTooltip` uses `U+E000/U+E001` for the filled thirst row and `U+E004/U+E007` for the outline
-quenched row. The combined glyphs remain on the sheet for compatibility but are not emitted.
+`font/droplets.json` maps `U+E000..U+E00D` onto `textures/font/droplets.png` at height 9, ascent 8.
+`ThirstTooltip` uses `U+E000/U+E001` for the filled thirst row. The quenched row uses `U+E004/U+E007`
+(plain blue outline) when the overlay is `OFF`, and a full/half pair from `U+E008` for each coloured
+`QuenchedOverlay`, in enum order. `U+E002`, `U+E003`, `U+E005` and `U+E006` remain on the sheet for
+compatibility but are not emitted. `tools/generate_quenched_overlay.py` writes the glyphs from `U+E008`.
 
-`textures/gui/thirst_icons.png` is 41x9 (five frames, 8px stride) and
-`textures/gui/appleskin_icons.png` is a 256x256 sheet: `v = 0` supplies quenched outlines and
-`v = 18` supplies the optional AppleSkin exhaustion strip. `ThirstHud` documents the exact blits.
+`textures/gui/thirst_icons.png` is 41x9 (five frames, 8px stride), `textures/gui/quenched_overlay.png`
+is 36x27 (four frames per row, one row per coloured `QuenchedOverlay`), and
+`textures/gui/appleskin_icons.png` is a 256x256 sheet whose only content is the `v = 18` AppleSkin
+exhaustion strip. `ThirstHud` documents the exact blits.
 
 ## Lang
 

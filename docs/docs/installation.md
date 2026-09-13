@@ -51,7 +51,7 @@ Versions tested are listed per Minecraft version, in the order 26.2, 26.1.x, 1.2
 |---|---|---|---|
 | [Fabric API](https://modrinth.com/mod/fabric-api) | 0.160.0+26.2, 0.155.3+26.1.2, 0.141.6+1.21.11, 0.116.17+1.21.1 | Required. Events, networking and the HUD hooks the mod is built on. | The mod will not load. |
 | [Mod Menu](https://modrinth.com/mod/modmenu) | 20.0.1, 18.0.0, 17.0.0, 11.0.4 | A Config button in the Mods list that opens the [settings screen](/docs/configuration). | Edit `config/thirstwastaken2.json` by hand. |
-| [AppleSkin](https://modrinth.com/mod/appleskin) | 3.0.10+mc26.2, 3.0.10+mc26.1.2, 3.0.8+mc1.21.11, 3.0.6+mc1.21 | A dithered thirst-exhaustion strip controlled by AppleSkin's HUD-underlay option. | The thirst bar renders normally without the strip. |
+| [AppleSkin](https://modrinth.com/mod/appleskin) | 3.0.10+mc26.2, 3.0.10+mc26.1.2, 3.0.8+mc1.21.11, 3.0.6+mc1.21 | The quenched outline on the thirst bar, droplet rows in item tooltips, and a dithered exhaustion strip that follows AppleSkin's HUD-underlay option. | Thirst works the same, but the bar shows no quenched outline or strip, and tooltips show no droplets. |
 | [Cloth Config](https://modrinth.com/mod/cloth-config) | 26.2.155, 26.1.154, 21.11.153, 15.0.140 | AppleSkin's configuration screen inside Mod Menu. | AppleSkin still works, but its Config button is unavailable. |
 
 Anything not listed simply coexists. Food mods usually work without a patch: an item whose name

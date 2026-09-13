@@ -279,6 +279,7 @@ src/main/java/com/thirstwastaken2/      common (client + server), loader indepen
   api/ThirstApi.java                   item -> {thirst, quenched}, memoised per Item
   command/ThirstCommands.java          /thirst query|set|enable
   config/ThirstConfig.java             config/thirstwastaken2.json, compiled patterns, generation counter
+  config/QuenchedOverlay.java          quenched outline colours; its order is the sprite and glyph order
   damage/ThirstDamageTypes.java        thirstwastaken2:dehydrate damage source
   data/ThirstData.java                 immutable player state + attachment type
   data/ThirstManager.java              tick loop, exhaustion maths, drink-by-hand
@@ -295,6 +296,7 @@ src/main/java/com/thirstwastaken2/      common (client + server), loader indepen
   platform/DrinkItem.java              an item that is drunk: a component from 1.21.2, overrides before
   platform/PlayerData.java, Use*Handler.java  types the per-loader Loader signatures share
   tooltip/ThirstTooltip.java           separate thirst/quenched tooltip rows (thirstwastaken2:droplets font)
+  compat/AppleSkin.java                AppleSkin presence, the quenched overlay and tooltip droplet gates
   compat/LootIntegration.java          structure chests + Piglin barter water
   mixin/                               vanilla hooks
 
@@ -309,7 +311,7 @@ src/client/java/com/thirstwastaken2/client/
   config/ThirstConfigScreen.java       vanilla-styled options screen
   platform/ClientVanilla.java          client vanilla calls that differ between versions
   platform/StatusBarRenderer.java      the shape ClientLoader draws a HUD row through
-  compat/AppleSkinIntegration.java     optional exhaustion-underlay setting bridge
+  compat/AppleSkinIntegration.java     reads AppleSkin's own exhaustion-underlay setting
 
 src/client/fabric/java/com/thirstwastaken2/client/   Fabric only, compiled into client
   fabric/ThirstWasTaken2FabricClient.java  client entrypoint

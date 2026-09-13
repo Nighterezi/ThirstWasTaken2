@@ -1,17 +1,19 @@
 package com.thirstwastaken2.client.compat;
 
-import com.thirstwastaken2.platform.Loader;
+import com.thirstwastaken2.compat.AppleSkin;
 import squeek.appleskin.ModConfig;
 
-/** Optional AppleSkin hooks kept outside the main HUD class so the mod remains safe without it. */
+/**
+ * Reads AppleSkin's own settings, which means naming its classes, so it stays out of the main HUD
+ * class and is only touched once {@link AppleSkin#isLoaded()} holds. Whether AppleSkin is there at
+ * all, and the settings the mod keeps for it, are in {@link AppleSkin}.
+ */
 public final class AppleSkinIntegration {
-    private static final boolean LOADED = Loader.isModLoaded("appleskin");
-
     private AppleSkinIntegration() { }
 
     /** Mirrors AppleSkin's own exhaustion-underlay toggle for the thirst bar. */
     public static boolean shouldShowExhaustion() {
-        if (!LOADED) return false;
+        if (!AppleSkin.isLoaded()) return false;
         return AppleSkinConfig.shouldShowExhaustion();
     }
 

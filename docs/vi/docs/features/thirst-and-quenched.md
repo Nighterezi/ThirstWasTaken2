@@ -7,12 +7,16 @@
 Độ khát chạy từ 0 đến 20 và được vẽ thành mười giọt nước, nên một giọt bằng hai điểm. Người chơi mới
 bắt đầu với thanh đầy.
 
-Mức đã khát là phần dự trữ nằm chồng lên trên, đúng như độ no nằm trên thanh đói. Nó được vẽ thành
-viền sáng phủ lên các giọt nước và bắt đầu ở mức 5. Mọi thứ lẽ ra trừ vào độ khát sẽ ăn vào phần dự
+Mức đã khát là phần dự trữ nằm chồng lên trên, đúng như độ no nằm trên thanh đói, và bắt đầu ở mức 5.
+Mọi thứ lẽ ra trừ vào độ khát sẽ ăn vào phần dự
 trữ trước, và đó là lý do một ngụm nước tốt trụ được lâu hơn ngụm nước xấu dù cả hai cùng làm đầy
 thanh.
 
 Khi phần dự trữ cạn, các giọt nước rung lên, đúng kiểu cảnh báo của thanh đói.
+
+Trò chơi gốc không vẽ độ no, nên thanh khát chỉ vẽ mức đã khát khi đã cài AppleSkin. Lúc đó nó hiện
+thành viền xanh ngọc phủ lên các giọt nước, giống viền vàng AppleSkin vẽ trên thanh đói. Có thể đổi màu
+hoặc tắt viền; xem [Cấu hình](/vi/docs/configuration#appleskinquenchedoverlay).
 
 ## Cái gì làm nó vơi đi
 
@@ -22,8 +26,7 @@ phần dự trữ đã cạn.
 
 Khi cài AppleSkin, phía sau các giọt của thanh khát còn có một dải tiêu hao dạng hạt. Dải này đầy dần
 từ phải sang trái khi mức tiêu hao tiến tới 4 và tuân theo tùy chọn **Food Exhaustion HUD Underlay**
-của AppleSkin. AppleSkin không bắt buộc; nếu không cài, độ khát và mức đã khát vẫn hoạt động và hiển
-thị bình thường.
+của AppleSkin. AppleSkin không bắt buộc; nếu không cài, độ khát và mức đã khát vẫn hoạt động y hệt.
 
 Ngồi trên ngựa, thuyền hay xe mỏ thì không tốn gì. Người chơi ở chế độ Sáng tạo và Khán giả được bỏ
 qua hoàn toàn.

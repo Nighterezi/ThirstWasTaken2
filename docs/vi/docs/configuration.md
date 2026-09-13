@@ -11,7 +11,7 @@ mở thẳng file, dành cho vài mục quá dài để nhét vừa một thanh 
 ![ThirstWasTaken2 trong danh sách Mod Menu](/screenshots/mod-menu.png)
 
 ::: tip
-Chỉ mục Giao diện được đọc từ file của chính bạn. Phần còn lại lấy từ máy đang chạy thế giới, nên với
+Chỉ mục Giao diện và AppleSkin được đọc từ file của chính bạn. Phần còn lại lấy từ máy đang chạy thế giới, nên với
 máy chủ riêng thì đó là file của máy chủ. Sửa file bằng tay thì lần khởi động sau mới có hiệu lực.
 :::
 
@@ -103,10 +103,8 @@ trượt riêng.
 
 ## Giao diện
 
-Hai mục này luôn đọc từ file cấu hình của chính bạn, kể cả khi chơi trên máy chủ. Viền dự trữ và
-kiểu vơi theo từng phần tư giọt luôn bật, không có tùy chọn trong ThirstWasTaken2. Nếu cài AppleSkin,
-tùy chọn **Food Exhaustion HUD Underlay** của nó cũng điều khiển dải tiêu hao dạng hạt phía sau thanh
-khát.
+Hai mục này luôn đọc từ file cấu hình của chính bạn, kể cả khi chơi trên máy chủ. Kiểu vơi theo từng
+phần tư giọt luôn bật, không có tùy chọn.
 
 ### thirstBarXOffset
 
@@ -116,6 +114,21 @@ Mặc định `0`. Dịch thanh khát sang ngang, tính bằng pixel, trong kho�
 
 Mặc định `0`. Dịch thanh khát lên xuống theo cách tương tự. Hữu ích khi một mod khác đã chiếm góc màn
 hình đó.
+
+## AppleSkin
+
+Hai mục này chỉ có tác dụng khi đã cài AppleSkin. Tùy chọn **Food Exhaustion HUD Underlay** của chính
+AppleSkin điều khiển dải tiêu hao dạng hạt phía sau thanh khát.
+
+### appleskinQuenchedOverlay
+
+Mặc định `DIAMOND`. Màu viền đã khát trên thanh khát và trong dòng mô tả: `DIAMOND` (kim cương), `ICE`
+(băng) hoặc `GOLD` (vàng). `OFF` bỏ viền khỏi thanh, còn dòng mô tả giữ viền xanh thường.
+
+### appleskinTooltipDroplets
+
+Mặc định `true`. Hiện các hàng giọt độ khát và đã khát trong dòng mô tả vật phẩm. Tắt đi để dòng mô tả
+gọn hơn.
 
 ## Giá trị vật phẩm
 

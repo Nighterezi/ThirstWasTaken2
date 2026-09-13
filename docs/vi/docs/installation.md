@@ -51,7 +51,7 @@ Phiên bản đã thử được liệt kê theo từng phiên bản Minecraft, 
 |---|---|---|---|
 | [Fabric API](https://modrinth.com/mod/fabric-api) | 0.160.0+26.2, 0.155.3+26.1.2, 0.141.6+1.21.11, 0.116.17+1.21.1 | Bắt buộc. Sự kiện, mạng và các móc HUD mà mod dựa trên. | Mod sẽ không nạp được. |
 | [Mod Menu](https://modrinth.com/mod/modmenu) | 20.0.1, 18.0.0, 17.0.0, 11.0.4 | Nút Config trong danh sách Mods, mở [màn hình tùy chỉnh](/vi/docs/configuration). | Sửa `config/thirstwastaken2.json` bằng tay. |
-| [AppleSkin](https://modrinth.com/mod/appleskin) | 3.0.10+mc26.2, 3.0.10+mc26.1.2, 3.0.8+mc1.21.11, 3.0.6+mc1.21 | Dải tiêu hao dạng hạt trên thanh khát, theo tùy chọn HUD underlay của AppleSkin. | Thanh khát vẫn hiển thị bình thường nhưng không có dải này. |
+| [AppleSkin](https://modrinth.com/mod/appleskin) | 3.0.10+mc26.2, 3.0.10+mc26.1.2, 3.0.8+mc1.21.11, 3.0.6+mc1.21 | Viền đã khát trên thanh khát, hàng giọt nước trong dòng mô tả vật phẩm, và dải tiêu hao dạng hạt theo tùy chọn HUD underlay của AppleSkin. | Độ khát vẫn hoạt động y hệt, nhưng thanh khát không có viền đã khát hay dải tiêu hao, và dòng mô tả không có giọt nước. |
 | [Cloth Config](https://modrinth.com/mod/cloth-config) | 26.2.155, 26.1.154, 21.11.153, 15.0.140 | Màn hình cấu hình AppleSkin bên trong Mod Menu. | AppleSkin vẫn chạy nhưng nút Config của nó không dùng được. |
 
 Những mod không nằm trong bảng thì cứ chạy song song bình thường. Mod đồ ăn thường không cần vá: món

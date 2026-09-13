@@ -77,7 +77,7 @@ The same 60 tests run on every node. Later nodes report 61 because their runner 
 | `WaterEffectsGameTest` | salt water, dirty water, purified water, drinking, boiling not desalinating |
 | `HealthRegenGameTest` | dehydration halting regeneration and the food refund that has to accompany it |
 | `WaterskinGameTest` | mixing, salinity, capacity, emptying |
-| `TooltipGameTest` | the lines the mod adds to a tooltip, droplet row arithmetic, and that cached lines are handed out as copies |
+| `TooltipGameTest` | the lines the mod adds to a tooltip, droplet row arithmetic, that the rows need AppleSkin, and that cached lines are handed out as copies |
 | `PlayerStateGameTest` | the sprint gate, exhaustion mirroring waiting for the tick, small exhaustion being carried until it crosses a sync step, the Hunger effect cancelling out, and that riding does not dehydrate |
 | `CauldronGameTest` | the cauldron blockstate property (water cauldron only, old powder snow saves still load, a fresh cauldron is not sea water), the deferred quality transfer, and the grades rain and dripstone leave behind |
 | `PurificationGameTest` | which water the furnace accepts: looted bottles yes, salt water never |

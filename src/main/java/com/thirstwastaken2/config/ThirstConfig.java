@@ -47,6 +47,10 @@ public final class ThirstConfig {
     public int thirstBarXOffset = 0;
     public int thirstBarYOffset = 0;
 
+    // ---- AppleSkin (client side, and only while AppleSkin is installed) ----
+    public QuenchedOverlay appleskinQuenchedOverlay = QuenchedOverlay.DIAMOND;
+    public boolean appleskinTooltipDroplets = true;
+
     // ---- water purity -----------------------------------------------------
     public int defaultPurity = 2;
     /**
@@ -164,6 +168,8 @@ public final class ThirstConfig {
         handDrinkingQuenched = clamp(handDrinkingQuenched, 0, 20);
         thirstBarXOffset = clamp(thirstBarXOffset, -200, 200);
         thirstBarYOffset = clamp(thirstBarYOffset, -200, 200);
+        // Gson reads a name it does not know, including a hand typo, as null.
+        if (appleskinQuenchedOverlay == null) appleskinQuenchedOverlay = QuenchedOverlay.DIAMOND;
         thirstDepletionModifier = clamp(thirstDepletionModifier, 0.0, 10.0);
         netherThirstDepletionModifier = clamp(netherThirstDepletionModifier, 0.0, 10.0);
 

@@ -7,12 +7,17 @@
 Thirst runs from 0 to 20 and is drawn as ten droplets, so one droplet is two points. New players
 start full.
 
-Quenched is a reserve that sits on top of it, exactly like saturation sits on top of hunger. It is
-drawn as a lighter outline over the droplets and starts at 5. Anything that would cost you thirst
+Quenched is a reserve that sits on top of it, exactly like saturation sits on top of hunger, and
+starts at 5. Anything that would cost you thirst
 eats the reserve first, which is why a good drink lasts longer than a bad one even when both fill
 the bar.
 
 When the reserve runs out the droplets shake, the same warning the hunger bar gives.
+
+Vanilla never draws saturation, so the thirst bar only draws quenched when AppleSkin is installed. It
+then appears as a cyan outline over the droplets, like AppleSkin's gold outline on the hunger bar. The
+colour can be changed or the outline turned off; see
+[Configuration](/docs/configuration#appleskinquenchedoverlay).
 
 ## What drains it
 
@@ -22,8 +27,7 @@ quenched, or one point of thirst once the reserve is empty.
 
 With AppleSkin installed, the thirst bar also gets a dithered exhaustion strip behind its droplets.
 It fills from right to left as exhaustion approaches 4 and follows AppleSkin's **Food Exhaustion HUD
-Underlay** setting. AppleSkin is optional; without it, thirst and quenched still work and render
-normally.
+Underlay** setting. AppleSkin is optional; without it, thirst and quenched work exactly the same.
 
 Sitting on a horse, a boat or a minecart costs nothing. Creative and spectator players are ignored
 entirely.

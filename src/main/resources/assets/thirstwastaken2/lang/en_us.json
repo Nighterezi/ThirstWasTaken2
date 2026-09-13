@@ -80,7 +80,17 @@
   "thirstwastaken2.config.thirst_bar_x_offset.tooltip": "Horizontal offset of the thirst bar, in pixels.",
   "thirstwastaken2.config.thirst_bar_y_offset": "Bar Y Offset",
   "thirstwastaken2.config.thirst_bar_y_offset.tooltip": "Vertical offset of the thirst bar, in pixels.",
+  "thirstwastaken2.config.category.appleskin": "AppleSkin",
+  "thirstwastaken2.config.appleskin_missing": "AppleSkin is not installed, so these settings do nothing for now.",
+  "thirstwastaken2.config.appleskin_quenched_overlay": "Quenched Outline",
+  "thirstwastaken2.config.appleskin_quenched_overlay.tooltip": "Colour of the quenched outline on the thirst bar and in tooltips. Off removes it from the bar.",
+  "thirstwastaken2.config.appleskin_quenched_overlay.diamond": "Diamond",
+  "thirstwastaken2.config.appleskin_quenched_overlay.ice": "Ice",
+  "thirstwastaken2.config.appleskin_quenched_overlay.gold": "Gold",
+  "thirstwastaken2.config.appleskin_quenched_overlay.off": "Off",
+  "thirstwastaken2.config.appleskin_tooltip_droplets": "Tooltip Droplets",
+  "thirstwastaken2.config.appleskin_tooltip_droplets.tooltip": "Show the thirst and quenched droplet rows in item tooltips.",
   "thirstwastaken2.config.enable_keyword_matching": "Keyword Matching",
   "thirstwastaken2.config.enable_keyword_matching.tooltip": "Guesses thirst values for unknown modded items from their registry name.",
-  "thirstwastaken2.config.note": "Only HUD settings are client-side; the rest apply on the server."
+  "thirstwastaken2.config.note": "Only HUD and AppleSkin settings are client-side; the rest apply on the server."
 }

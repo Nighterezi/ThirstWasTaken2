@@ -3,6 +3,8 @@ package com.thirstwastaken2.client;
 import com.thirstwastaken2.ThirstWasTaken2;
 import com.thirstwastaken2.client.compat.AppleSkinIntegration;
 import com.thirstwastaken2.client.platform.ClientVanilla;
+import com.thirstwastaken2.compat.AppleSkin;
+import com.thirstwastaken2.config.QuenchedOverlay;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.data.ThirstData;
 import com.thirstwastaken2.data.ThirstManager;
@@ -16,6 +18,7 @@ import net.minecraft.world.entity.player.Player;
 public final class ThirstHud {
     private static final Identifier ICONS = ThirstWasTaken2.id("textures/gui/thirst_icons.png");
     private static final Identifier OVERLAY_ICONS = ThirstWasTaken2.id("textures/gui/appleskin_icons.png");
+    private static final Identifier QUENCHED_ICONS = ThirstWasTaken2.id("textures/gui/quenched_overlay.png");
     private static final RandomSource RANDOM = RandomSource.create();
 
     private static final int ICON_SIZE = 9;
@@ -30,6 +33,9 @@ public final class ThirstHud {
     /** Units of thirst each entry of {@link #FILL_FRAMES} needs; one droplet holds two. */
     private static final float[] FILL_THRESHOLDS = {0.5F, 1.0F, 1.5F, 2.0F};
     private static final int OVERLAY_TEXTURE_SIZE = 256;
+    /** Four frames across, one row per coloured {@link QuenchedOverlay}. */
+    private static final int QUENCHED_TEXTURE_WIDTH = 36;
+    private static final int QUENCHED_TEXTURE_HEIGHT = 27;
     private static final int OPAQUE = 0xFFFFFFFF;
     private static final int EXHAUSTION_TINT = 0xBFFFFFFF;
     private static final int BAR_WIDTH = 81;
@@ -63,6 +69,7 @@ public final class ThirstHud {
         int shakePeriod = thirst * 3 + 1;
 
         float level = thirst - drainedFraction(data);
+        QuenchedOverlay overlay = AppleSkin.quenchedOverlay();
 
         for (int i = 0; i < 10; i++) {
             int x = right - i * 8 - ICON_SIZE;
@@ -75,7 +82,7 @@ public final class ThirstHud {
                 icon(graphics, x, y, fill);
             }
 
-            renderQuenched(graphics, x, y, quenched / 2.0F - i);
+            renderQuenched(graphics, overlay, x, y, quenched / 2.0F - i);
         }
     }
 
@@ -114,10 +121,13 @@ public final class ThirstHud {
                 OVERLAY_TEXTURE_SIZE, OVERLAY_TEXTURE_SIZE, EXHAUSTION_TINT);
     }
 
-    private static void renderQuenched(GuiGraphicsExtractor graphics, int x, int y, float effective) {
-        if (effective <= 0.0F) return;
+    /** AppleSkin's saturation outline, for quenched; {@link QuenchedOverlay#OFF} without AppleSkin. */
+    private static void renderQuenched(GuiGraphicsExtractor graphics, QuenchedOverlay overlay, int x, int y,
+                                       float effective) {
+        if (overlay == QuenchedOverlay.OFF || effective <= 0.0F) return;
         int u = effective >= 1.0F ? 27 : effective > 0.5F ? 18 : effective > 0.25F ? 9 : 0;
-        ClientVanilla.blit(graphics, OVERLAY_ICONS, x, y, u, 0, ICON_SIZE, ICON_SIZE,
-                OVERLAY_TEXTURE_SIZE, OVERLAY_TEXTURE_SIZE, OPAQUE);
+        int v = overlay.ordinal() * ICON_SIZE;
+        ClientVanilla.blit(graphics, QUENCHED_ICONS, x, y, u, v, ICON_SIZE, ICON_SIZE,
+                QUENCHED_TEXTURE_WIDTH, QUENCHED_TEXTURE_HEIGHT, OPAQUE);
     }
 }

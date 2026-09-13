@@ -8,6 +8,14 @@ Note that most third-party support is *not* in this package — food and drink v
 registry id in `ThirstConfig`, and container detection resolves by namespace in `WaterPurity.resolve`.
 Neither references a foreign class, so neither needs a gate. Prefer that approach.
 
+## AppleSkin
+
+`AppleSkin` is the presence check common code can ask without touching an AppleSkin class, and the two
+settings the mod keeps for it. The quenched outline on the thirst bar and the tooltip droplet rows are
+the thirst half of what AppleSkin adds for hunger, so both are only shown while it is loaded. Reading
+AppleSkin's own config names its classes, so that part stays client-side in
+`client/compat/AppleSkinIntegration`, which is only reached after `AppleSkin.isLoaded()`.
+
 ## LootIntegration
 
 `Loader.onLootTable` replacing the original's Forge global loot modifiers (Fabric's

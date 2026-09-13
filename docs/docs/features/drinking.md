@@ -2,8 +2,8 @@
 
 ## What is worth drinking
 
-Every item that restores thirst says so in its tooltip as two rows of droplets rather than numbers.
-Each droplet is worth two points. The upper row uses filled droplets for thirst; the lower row
+With AppleSkin installed, every item that restores thirst says so in its tooltip as two rows of
+droplets rather than numbers, the way AppleSkin shows what food restores. Each droplet is worth two points. The upper row uses filled droplets for thirst; the lower row
 uses outline droplets for quenched. A water bottle worth 6 thirst and 8 quenched therefore shows
 three filled droplets above four outline droplets.
 

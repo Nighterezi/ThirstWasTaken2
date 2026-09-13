@@ -12,9 +12,8 @@ way.
 
 ## Running out
 
-The bar has two parts, mirroring hunger and saturation. Filled droplets are thirst itself. Outlined
-droplets on the second row are quenched, a reserve that drains first and holds the bar
-steady while it lasts.
+The bar has two parts, mirroring hunger and saturation. Filled droplets are thirst itself. Quenched is
+a reserve that drains first and holds the bar steady while it lasts.
 
 Natural healing slows as soon as the bar is not full. Sprinting stops once it drops to three
 droplets. At zero, thirst starts taking health.
@@ -89,8 +88,9 @@ how harsh dirty water is, where the bar sits on screen, and which items count as
 
 The server decides the gameplay settings. Each player decides their own HUD settings.
 
-AppleSkin is supported. With it installed and its exhaustion underlay switched on, the thirst bar
-gets the same underlay the hunger bar has.
+AppleSkin is supported. With it installed, quenched is drawn as an outline over the thirst bar in
+diamond, ice or gold, item tooltips show how much thirst and quenched each item restores, and the
+thirst bar gets the same exhaustion underlay the hunger bar has.
 
 ## Languages
 

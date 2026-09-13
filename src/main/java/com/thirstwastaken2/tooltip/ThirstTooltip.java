@@ -1,6 +1,8 @@
 package com.thirstwastaken2.tooltip;
 
 import com.thirstwastaken2.api.ThirstApi;
+import com.thirstwastaken2.compat.AppleSkin;
+import com.thirstwastaken2.config.QuenchedOverlay;
 import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.item.WaterskinItem;
 import com.thirstwastaken2.platform.Vanilla;
@@ -17,6 +19,9 @@ import java.util.function.Consumer;
  * first row and quenched uses outline droplets on the second, matching the layout used by other
  * thirst integrations.
  *
+ * <p>The rows only appear alongside AppleSkin (see {@link AppleSkin}), which is what gives food the
+ * same kind of rows for hunger and saturation.
+ *
  * <p>The droplets are glyphs of the {@code thirstwastaken2:droplets} bitmap font rather than a
  * {@code ClientTooltipComponent}. That keeps each line an ordinary {@link Component}, so it survives
  * the whole tooltip pipeline unchanged in vanilla screens as well as REI, EMI and JEI.
@@ -31,8 +36,11 @@ public final class ThirstTooltip {
 
     private static final char THIRST_FULL = '\uE000';
     private static final char THIRST_HALF = '\uE001';
+    /** The plain blue outline, for when the quenched overlay is turned off. */
     private static final char QUENCHED_FULL = '\uE004';
     private static final char QUENCHED_HALF = '\uE007';
+    /** A full then a half glyph for each coloured {@link QuenchedOverlay}, in its order. */
+    private static final char FIRST_COLOURED_QUENCHED = '\uE008';
 
     /**
      * Every row that can be drawn, indexed by units. Tooltips are rebuilt every frame a stack is
@@ -40,7 +48,8 @@ public final class ThirstTooltip {
      * mods are free to do, must not leak into the next frame.
      */
     private static final Component[] THIRST_ROWS = rows(THIRST_FULL, THIRST_HALF);
-    private static final Component[] QUENCHED_ROWS = rows(QUENCHED_FULL, QUENCHED_HALF);
+    /** Indexed by {@link QuenchedOverlay#ordinal()}, then by units. */
+    private static final Component[][] QUENCHED_ROWS = quenchedRows();
     /**
      * The clay bowl is the one item whose purpose is not obvious from holding it: it has to be fired
      * before it can hold water, and using it on water does nothing until then.
@@ -52,11 +61,17 @@ public final class ThirstTooltip {
 
     /**
      * Appends every line the mod contributes to an item tooltip: the clay bowl hint, waterskin fill,
-     * the water's grade or salinity, then the two droplet rows.
+     * the water's grade or salinity, then the two droplet rows if AppleSkin is installed and the player
+     * has not turned them off.
      *
      * <p>Called once per frame per hovered stack, so both lookups it makes are memoised.
      */
     public static void appendTo(ItemStack stack, Consumer<Component> tooltip) {
+        appendTo(stack, tooltip, AppleSkin.showsTooltipDroplets());
+    }
+
+    /** {@link #appendTo(ItemStack, Consumer)}, with whether the droplet rows appear left to the caller. */
+    public static void appendTo(ItemStack stack, Consumer<Component> tooltip, boolean droplets) {
         if (stack.is(ThirstItems.CLAY_BOWL)) tooltip.accept(CLAY_BOWL_HINT.copy());
         if (stack.is(ThirstItems.WATERSKIN)) {
             int servings = WaterskinItem.servings(stack);
@@ -79,10 +94,11 @@ public final class ThirstTooltip {
                 case WaterQuality.Fresh fresh -> tooltip.accept(WaterPurity.tooltip(fresh.purity()));
             }
         }
+        if (!droplets) return;
         int[] values = ThirstApi.thirstValues(stack);
         if (values == null) return;
         Component thirst = thirst(values[0]);
-        Component quenched = quenched(values[1]);
+        Component quenched = quenched(values[1], AppleSkin.quenchedOverlay());
         if (thirst != null) tooltip.accept(thirst);
         if (quenched != null) tooltip.accept(quenched);
     }
@@ -93,12 +109,25 @@ public final class ThirstTooltip {
     }
 
     /** @return the outline quenched row, or {@code null} when the item restores no quenched. */
-    public static Component quenched(int quenched) {
-        return row(QUENCHED_ROWS, quenched);
+    public static Component quenched(int quenched, QuenchedOverlay overlay) {
+        return row(QUENCHED_ROWS[overlay.ordinal()], quenched);
     }
 
     private static Component row(Component[] rows, int units) {
         return units <= 0 ? null : rows[Math.min(units, MAX_UNITS)].copy();
+    }
+
+    private static Component[][] quenchedRows() {
+        QuenchedOverlay[] overlays = QuenchedOverlay.values();
+        Component[][] rows = new Component[overlays.length][];
+        for (QuenchedOverlay overlay : overlays) {
+            char full = overlay == QuenchedOverlay.OFF
+                    ? QUENCHED_FULL
+                    : (char) (FIRST_COLOURED_QUENCHED + 2 * overlay.ordinal());
+            char half = overlay == QuenchedOverlay.OFF ? QUENCHED_HALF : (char) (full + 1);
+            rows[overlay.ordinal()] = rows(full, half);
+        }
+        return rows;
     }
 
     private static Component[] rows(char full, char half) {

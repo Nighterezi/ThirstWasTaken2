@@ -2,8 +2,8 @@
 
 ## Thứ gì đáng uống
 
-Mọi vật phẩm hồi độ khát đều ghi rõ trong dòng mô tả bằng hai hàng giọt nước thay vì con số. Mỗi giọt
-đáng hai điểm. Hàng trên dùng giọt đầy để biểu thị độ khát được hồi; hàng dưới dùng giọt khung để biểu
+Khi đã cài AppleSkin, mọi vật phẩm hồi độ khát đều ghi rõ trong dòng mô tả bằng hai hàng giọt nước
+thay vì con số, giống cách AppleSkin cho biết thức ăn hồi bao nhiêu. Mỗi giọt đáng hai điểm. Hàng trên dùng giọt đầy để biểu thị độ khát được hồi; hàng dưới dùng giọt khung để biểu
 thị mức đã khát. Vì vậy chai nước hồi 6 độ khát và 8 đã khát sẽ hiện ba giọt đầy phía trên bốn giọt
 khung.
 

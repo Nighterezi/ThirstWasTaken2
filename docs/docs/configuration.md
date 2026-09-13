@@ -11,7 +11,7 @@ button opens the file itself, for the few settings that are too long to fit on a
 ![ThirstWasTaken2 listed in Mod Menu](/screenshots/mod-menu.png)
 
 ::: tip
-Only the HUD section is read from your own copy. Everything else comes from the copy on the machine
+Only the HUD and AppleSkin sections are read from your own copy. Everything else comes from the copy on the machine
 running the world, so on a dedicated server that is the server's file. Editing the file by hand
 takes effect the next time the game or server starts.
 :::
@@ -103,10 +103,8 @@ eight separate sliders.
 
 ## HUD
 
-These two are read from your own config file, even on a server. The quenched outline and the quarter
-step droplet drain are always on and have no ThirstWasTaken2 setting. If AppleSkin is installed, its
-**Food Exhaustion HUD Underlay** option also controls the dithered exhaustion strip behind the thirst
-bar.
+These two are read from your own config file, even on a server. The quarter step droplet drain is
+always on and has no setting.
 
 ### thirstBarXOffset
 
@@ -116,6 +114,21 @@ Default `0`. Moves the bar sideways, in pixels, between `-200` and `200`.
 
 Default `0`. Moves the bar up or down the same way. Useful when another mod already owns that corner
 of the screen.
+
+## AppleSkin
+
+These two only do something while AppleSkin is installed. AppleSkin's own **Food Exhaustion HUD
+Underlay** option controls the dithered exhaustion strip behind the thirst bar.
+
+### appleskinQuenchedOverlay
+
+Default `DIAMOND`. The colour of the quenched outline on the thirst bar and in tooltips: `DIAMOND`,
+`ICE` or `GOLD`. `OFF` removes the outline from the bar, and tooltips keep a plain blue one.
+
+### appleskinTooltipDroplets
+
+Default `true`. Shows the thirst and quenched droplet rows in item tooltips. Turn it off to keep
+tooltips short.
 
 ## Item values
 
