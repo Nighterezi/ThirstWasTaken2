@@ -109,12 +109,12 @@ The server owns thirst. These are the checks that the client is told.
 
 ### Damage and the world
 
-- [ ] `/thirst set @s 0 0` on Normal: half a heart of damage every two seconds, down to death; the death
+- [x] `/thirst set @s 0 0` on Normal: half a heart of damage every two seconds, down to death; the death
       message names dehydration. On Easy it stops at five hearts. Armour does not reduce it.
-- [ ] Natural regeneration stops below full thirst and resumes once it is full again.
+- [x] Natural regeneration stops below full thirst and resumes once it is full again.
 - [ ] Standing still in a desert drains faster than in a snowy biome; in the Nether faster again.
-- [ ] Drinking in the Nether earns "nether_drink".
-- [ ] On Peaceful, thirst does not drop and slowly refills.
+- [x] Drinking in the Nether earns "nether_drink".
+- [x] On Peaceful, thirst does not drop and slowly refills.
 - [ ] Rain on an empty cauldron in the open fills it; drawing a bottle from it gives water of the
       configured rain grade. A dripstone dripping into a cauldron gives pure water.
 - [ ] A dungeon, mineshaft or shipwreck supply chest sometimes holds water bottles; a piglin sometimes
@@ -139,20 +139,20 @@ each one differs is in [VERSION-DIFFERENCES.md](VERSION-DIFFERENCES.md).
       separate code path from every other version.
 - [x] The config screen's "Open thirstwastaken2.json" button is one full-width row, and Done and
       Cancel close the screen (26.2 opens screens through a different call).
-- [ ] A sea-water bottle is drawn in the sea colour, and a sea-water bucket with its recoloured water.
+- [x] A sea-water bottle is drawn in the sea colour, and a sea-water bucket with its recoloured water.
 
 ### 26.1.x
 
-- [ ] F1 hides the bar (read from the options, unlike 26.2).
-- [ ] The config file button is a row of its own, even though 26.1 has no full-width row call.
-- [ ] Sea-water bottle and bucket sprites, as on 26.2.
+- [x] F1 hides the bar (read from the options, unlike 26.2).
+- [x] The config file button is a row of its own, even though 26.1 has no full-width row call.
+- [x] Sea-water bottle and bucket sprites, as on 26.2.
 
 ### 1.21.11
 
-- [ ] F1 hides the bar, as on 26.1.
-- [ ] The config file button, as on 26.1.
-- [ ] Sea-water bottle and bucket sprites, as on 26.2.
-- [ ] The droplet glyphs have no shadow.
+- [x] F1 hides the bar, as on 26.1.
+- [x] The config file button, as on 26.1.
+- [x] Sea-water bottle and bucket sprites, as on 26.2.
+- [x] The droplet glyphs have no shadow.
 
 ### 1.21.1
 
@@ -178,7 +178,7 @@ different on purpose. Check all of these on every release that ships a 1.21.1 ja
       still changes to the sea colour.
 - [x] **The config screen's headings are text rows**, not vanilla headings, which 1.21.1 lacks. Check
       that they are centred and readable and that the list still scrolls.
-- [ ] The config preview's food icons and droplet outlines have transparent corners, not black ones
+- [x] The config preview's food icons and droplet outlines have transparent corners, not black ones
       (1.21.1 needs blending turned on around each draw).
 - [ ] The water cauldron's name is "Water Cauldron" in the F3 target and in `/give` suggestions. On
       1.21.1 the mod has to identify the cauldron before its name exists, and a mistake there would

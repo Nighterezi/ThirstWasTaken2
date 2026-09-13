@@ -65,6 +65,19 @@ public final class ThirstTickGameTest {
             TestFixtures.check(helper, ThirstManager.get(spending).thirst() == 10,
                     "exhaustion on peaceful should not cost thirst, got " + ThirstManager.get(spending));
 
+            // Leftover exhaustion is drawn against the last droplet, so a full bar that kept it would
+            // look one droplet short forever.
+            ServerPlayer leftover = player(helper, new ThirstData(ThirstData.MAX, 0, 1.0F, true));
+            leftover.causeFoodExhaustion(CHARGE);
+            ThirstManager.tickPlayer(leftover);
+            TestFixtures.check(helper, ThirstManager.get(leftover).exhaustion() == 0.0F,
+                    "peaceful with no quenched should drop exhaustion, got " + ThirstManager.get(leftover));
+
+            ServerPlayer quenched = player(helper, new ThirstData(ThirstData.MAX, 2, OVER_A_POINT, true));
+            ThirstManager.tickPlayer(quenched);
+            TestFixtures.check(helper, ThirstManager.get(quenched).quenched() == 1,
+                    "peaceful should still spend quenched, got " + ThirstManager.get(quenched));
+
             ServerPlayer refilling = player(helper, new ThirstData(10, 0, 0.0F, true));
             refilling.tickCount = REFILL_TICK;
             ThirstManager.tickPlayer(refilling);

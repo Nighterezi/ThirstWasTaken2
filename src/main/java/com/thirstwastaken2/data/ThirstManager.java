@@ -153,14 +153,19 @@ public final class ThirstManager {
         if (hunger != null) raw -= HUNGER_EXHAUSTION * (hunger.getAmplifier() + 1);
         if (config.depletesWhenNauseous && player.hasEffect(MobEffects.NAUSEA)) raw += NAUSEA_EXHAUSTION;
 
-        float added = unsynced + (raw == 0.0F ? 0.0F : raw * exhaustionModifier(player));
+        // On peaceful, exhaustion never reaches thirst, so once quenched is empty it has nothing left to
+        // spend and is dropped. Kept, it would sit below a point forever, and the HUD draws that against
+        // the last droplet as a drain the refill can never top up, so the bar looks stuck short of full.
+        boolean discards = peaceful && data.quenched() == 0;
+        float added = discards ? -data.exhaustion()
+                : unsynced + (raw == 0.0F ? 0.0F : raw * exhaustionModifier(player));
         boolean slowTick = player.tickCount % SLOW_TICK_INTERVAL == 0;
         boolean regenerates = peaceful && slowTick && data.thirst() < ThirstData.MAX;
         // The same clamp ThirstData#addExhaustion applies.
         float exhaustion = Math.max(0.0F, data.exhaustion() + added);
 
         int thirst = data.thirst();
-        if (!regenerates && exhaustion <= ThirstData.EXHAUSTION_PER_POINT
+        if (!regenerates && !discards && exhaustion <= ThirstData.EXHAUSTION_PER_POINT
                 && sameSyncStep(data.exhaustion(), exhaustion)) {
             // Nothing the client would draw differently: carry it rather than build a record and send it.
             tracker.unsynced = exhaustion - data.exhaustion();

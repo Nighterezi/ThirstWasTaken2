@@ -247,7 +247,8 @@ Drain chain, mirroring vanilla hunger:
    where water evaporates), Fire Resistance, Fire Protection. The modifier is cached on the tracker
    for 20 ticks, or until the dimension or the config changes.
 3. Once exhaustion passes 4, one point of `quenched` is spent; when quenched is empty, one point of
-   `thirst` goes instead (unless Peaceful and depletion in Peaceful is off).
+   `thirst` goes instead (unless Peaceful and depletion in Peaceful is off, where exhaustion is simply
+   dropped once quenched is empty, so the HUD never draws a drained droplet the refill cannot fill).
 4. At 0 thirst, 1 damage every 40 ticks via `thirstwastaken2:dehydrate`.
 
 ## Where to look
