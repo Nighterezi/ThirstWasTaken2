@@ -82,5 +82,5 @@
   "thirstwastaken2.config.appleskin_tooltip_droplets.tooltip": "아이템 툴팁에 갈증과 해갈 물방울 줄을 표시합니다.",
   "thirstwastaken2.config.enable_keyword_matching": "키워드 매칭",
   "thirstwastaken2.config.enable_keyword_matching.tooltip": "알 수 없는 모드 아이템의 수분 값을 등록 이름으로 추측합니다.",
-  "thirstwastaken2.config.note": "HUD 설정만 클라이언트 전용이며, 나머지는 서버에 적용됩니다."
+  "thirstwastaken2.config.note": "HUD 및 AppleSkin 설정만 클라이언트 전용이며, 나머지는 서버에 적용됩니다."
 }

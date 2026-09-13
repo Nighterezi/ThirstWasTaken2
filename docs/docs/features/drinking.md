@@ -7,7 +7,7 @@ droplets rather than numbers, the way AppleSkin shows what food restores. Each d
 uses outline droplets for quenched. A water bottle worth 6 thirst and 8 quenched therefore shows
 three filled droplets above four outline droplets.
 
-![A dirty water bottle tooltip showing thirst and quenched droplets](/screenshots/item-tooltip.png)
+![A murky terracotta water bowl tooltip showing two thirst droplets and three quenched droplets](/screenshots/item-tooltip.png)
 
 These are the values the mod ships with for vanilla and its own items:
 
@@ -29,6 +29,8 @@ bowl or waterskin cannot be used while the thirst bar is already full. Once even
 missing, drinking is allowed and any overflow can still become quenched. Potions and foods with
 other uses are not blocked by this rule.
 
+![Tooltips for a waterskin, a bottle of sea water, a clay bowl and an apple, which also shows AppleSkin's hunger rows](/screenshots/tooltips.png)
+
 Dozens of items from Farmer's Delight, Farmer's Respite, Brewin' and Chewin', Collector's Reap and
 Tough As Nails already have values too. None of those mods are required, the values just
 sit unused until the item exists. For anything else, see
@@ -36,9 +38,10 @@ sit unused until the item exists. For anything else, see
 
 ## Bowls
 
-Everything the mod adds lives in its own creative tab.
+Everything the mod adds lives in its own creative tab. Water containers change their look with the
+water inside them:
 
-![The ThirstWasTaken2 creative tab, holding the clay bowl, terracotta bowl, terracotta water bowl and waterskin](/screenshots/creative-tab.png)
+![Every item the mod adds: the clay and terracotta bowls, the water bowl at each grade and salty, the waterskin at each fill, and sea water in a bottle and a bucket](/screenshots/items.png)
 
 The mod adds a bowl that survives being filled with water.
 
@@ -46,6 +49,10 @@ The mod adds a bowl that survives being filled with water.
 2. Smelt a clay bowl into a **terracotta bowl**.
 3. Hold the terracotta bowl and use it on water to scoop a **terracotta water bowl**. Flowing water
    works, you do not need a source block.
+
+![Three clay balls in a bowl shape make four clay bowls](/screenshots/clay-bowl-recipe.png)
+
+![A clay bowl firing into a terracotta bowl in a furnace](/screenshots/furnace-terracotta-bowl.png)
 
 Drinking one leaves you holding the empty terracotta bowl again.
 

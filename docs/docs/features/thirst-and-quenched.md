@@ -1,6 +1,6 @@
 # Thirst and Quenched
 
-![The thirst bar above the hunger bar, part drained](/screenshots/thirst-bar.png)
+![The thirst bar above the food bar, part drained, with the quenched outline over it](/screenshots/thirst-bar.png)
 
 ## The two numbers
 
@@ -18,6 +18,8 @@ Vanilla never draws saturation, so the thirst bar only draws quenched when Apple
 then appears as a cyan outline over the droplets, like AppleSkin's gold outline on the hunger bar. The
 colour can be changed or the outline turned off; see
 [Configuration](/docs/configuration#appleskinquenchedoverlay).
+
+![The thirst and food bars without AppleSkin, then with each quenched outline colour](/screenshots/hud-appleskin.png)
 
 ## What drains it
 

@@ -7,7 +7,7 @@ thay vì con số, giống cách AppleSkin cho biết thức ăn hồi bao nhiê
 thị mức đã khát. Vì vậy chai nước hồi 6 độ khát và 8 đã khát sẽ hiện ba giọt đầy phía trên bốn giọt
 khung.
 
-![Dòng mô tả chai nước bẩn hiển thị các giọt độ khát và đã khát](/screenshots/item-tooltip.png)
+![Dòng mô tả bát đất nung đựng nước đục, có hai giọt độ khát và ba giọt đã khát](/screenshots/item-tooltip.png)
 
 Đây là các giá trị mod đặt sẵn cho vật phẩm gốc và vật phẩm của chính nó:
 
@@ -28,6 +28,8 @@ phí, nó chuyển thành dự trữ. Nước thuần tuân theo cách hoạt đ
 dùng chai nước, bát nước hay túi da khi thanh khát đã đầy. Chỉ cần thiếu một điểm là có thể uống, và
 phần hồi dư vẫn chuyển thành đã khát. Quy tắc này không chặn thuốc hay thức ăn có công dụng khác.
 
+![Dòng mô tả của túi da, chai nước biển, bát đất sét và quả táo, quả táo còn có các hàng độ đói của AppleSkin](/screenshots/tooltips.png)
+
 Hàng chục vật phẩm của Farmer's Delight, Farmer's Respite, Brewin' and Chewin', Collector's Reap và
 Tough As Nails cũng đã có sẵn giá trị. Không mod nào trong số đó là bắt buộc, các giá trị
 chỉ nằm im cho tới khi vật phẩm tồn tại. Với những thứ khác, xem
@@ -35,9 +37,10 @@ chỉ nằm im cho tới khi vật phẩm tồn tại. Với những thứ khác
 
 ## Các loại bát
 
-Mọi thứ mod thêm vào đều nằm trong mục sáng tạo riêng của nó.
+Mọi thứ mod thêm vào đều nằm trong mục sáng tạo riêng của nó. Vật đựng nước đổi hình theo loại nước
+bên trong:
 
-![Mục sáng tạo ThirstWasTaken2, chứa bát đất sét, bát đất nung, bát đất nung đựng nước và túi da đựng nước](/screenshots/creative-tab.png)
+![Mọi vật phẩm của mod: bát đất sét và bát đất nung, bát nước ở từng mức độ sạch và nước mặn, túi da ở từng mức đầy, và nước biển trong chai và xô](/screenshots/items.png)
 
 Mod thêm một loại bát chịu được việc đựng nước.
 
@@ -45,6 +48,10 @@ Mod thêm một loại bát chịu được việc đựng nước.
 2. Nung bát đất sét thành **bát đất nung**.
 3. Cầm bát đất nung và dùng lên mặt nước để múc thành **bát đất nung đựng nước**. Nước chảy cũng được,
    bạn không cần khối nguồn.
+
+![Ba cục đất sét xếp hình cái bát cho ra bốn bát đất sét](/screenshots/clay-bowl-recipe.png)
+
+![Bát đất sét đang được nung thành bát đất nung trong lò](/screenshots/furnace-terracotta-bowl.png)
 
 Uống xong bạn cầm lại chiếc bát đất nung rỗng.
 

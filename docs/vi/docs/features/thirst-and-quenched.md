@@ -1,6 +1,6 @@
 # Khát và Đã khát
 
-![Thanh khát nằm trên thanh đói, đã vơi một phần](/screenshots/thirst-bar.png)
+![Thanh khát nằm trên thanh đói, đã vơi một phần, có viền đã khát phủ lên](/screenshots/thirst-bar.png)
 
 ## Hai con số
 
@@ -17,6 +17,8 @@ Khi phần dự trữ cạn, các giọt nước rung lên, đúng kiểu cảnh
 Trò chơi gốc không vẽ độ no, nên thanh khát chỉ vẽ mức đã khát khi đã cài AppleSkin. Lúc đó nó hiện
 thành viền xanh ngọc phủ lên các giọt nước, giống viền vàng AppleSkin vẽ trên thanh đói. Có thể đổi màu
 hoặc tắt viền; xem [Cấu hình](/vi/docs/configuration#appleskinquenchedoverlay).
+
+![Thanh khát và thanh đói khi không có AppleSkin, rồi với từng màu viền đã khát](/screenshots/hud-appleskin.png)
 
 ## Cái gì làm nó vơi đi
 

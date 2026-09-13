@@ -82,5 +82,5 @@
   "thirstwastaken2.config.appleskin_tooltip_droplets.tooltip": "Affiche les rangées de gouttes de soif et de désaltération dans les infobulles des objets.",
   "thirstwastaken2.config.enable_keyword_matching": "Détection par mot-clé",
   "thirstwastaken2.config.enable_keyword_matching.tooltip": "Devine les valeurs d'hydratation des objets moddés inconnus d'après leur nom d'enregistrement.",
-  "thirstwastaken2.config.note": "Seuls les réglages d'interface sont côté client ; le reste s'applique sur le serveur."
+  "thirstwastaken2.config.note": "Seuls les réglages d'interface et AppleSkin sont côté client ; le reste s'applique sur le serveur."
 }

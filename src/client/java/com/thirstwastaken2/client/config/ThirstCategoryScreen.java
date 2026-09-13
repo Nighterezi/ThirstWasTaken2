@@ -43,9 +43,6 @@ final class ThirstCategoryScreen extends OptionsSubScreen {
 
     @Override
     protected void addOptions() {
-        if (category.gameplay()) {
-            ClientVanilla.addHeader(list, Component.translatable("thirstwastaken2.config.note"));
-        }
         category.addOptions(list, ThirstConfig.get());
     }
 

@@ -82,5 +82,5 @@
   "thirstwastaken2.config.appleskin_tooltip_droplets.tooltip": "Показывать ряды капель жажды и утоления в подсказках предметов.",
   "thirstwastaken2.config.enable_keyword_matching": "Поиск по ключевым словам",
   "thirstwastaken2.config.enable_keyword_matching.tooltip": "Угадывает значения воды для незнакомых модовых предметов по их регистрационному имени.",
-  "thirstwastaken2.config.note": "Клиентскими являются только настройки интерфейса; остальные применяются на сервере."
+  "thirstwastaken2.config.note": "Клиентскими являются только настройки интерфейса и AppleSkin; остальные применяются на сервере."
 }

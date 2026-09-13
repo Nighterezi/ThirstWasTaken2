@@ -21,7 +21,7 @@ import static com.thirstwastaken2.client.config.ConfigOptions.toggle;
  * file, which the Item Values page opens.
  */
 enum ConfigCategory {
-    DEPLETION("depletion", true, false) {
+    DEPLETION("depletion", false) {
         @Override
         void addOptions(OptionsList list, ThirstConfig config) {
             list.addSmall(
@@ -53,7 +53,7 @@ enum ConfigCategory {
         }
     },
 
-    DRINKING("drinking", true, false) {
+    DRINKING("drinking", false) {
         @Override
         void addOptions(OptionsList list, ThirstConfig config) {
             list.addSmall(
@@ -78,7 +78,7 @@ enum ConfigCategory {
         }
     },
 
-    PURITY("purity", true, false) {
+    PURITY("purity", false) {
         @Override
         void addOptions(OptionsList list, ThirstConfig config) {
             list.addSmall(
@@ -112,7 +112,7 @@ enum ConfigCategory {
         }
     },
 
-    HUD("hud", false, true) {
+    HUD("hud", true) {
         @Override
         void addOptions(OptionsList list, ThirstConfig config) {
             list.addSmall(
@@ -141,7 +141,7 @@ enum ConfigCategory {
         }
     },
 
-    ITEMS("items", true, false) {
+    ITEMS("items", false) {
         @Override
         void addOptions(OptionsList list, ThirstConfig config) {
             list.addSmall(
@@ -161,23 +161,16 @@ enum ConfigCategory {
     };
 
     private final String key;
-    /** Read from the machine running the world, so editing it on a client joined to a server does nothing there. */
-    private final boolean gameplay;
     private final boolean preview;
 
-    ConfigCategory(String key, boolean gameplay, boolean preview) {
+    ConfigCategory(String key, boolean preview) {
         this.key = key;
-        this.gameplay = gameplay;
         this.preview = preview;
     }
 
     /** The lang key suffix: {@code category.<key>} names it and {@code category.<key>.tooltip} describes it. */
     String key() {
         return key;
-    }
-
-    boolean gameplay() {
-        return gameplay;
     }
 
     boolean hasPreview() {

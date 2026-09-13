@@ -82,5 +82,5 @@
   "thirstwastaken2.config.appleskin_tooltip_droplets.tooltip": "在物品提示框中显示口渴和解渴的水滴行。",
   "thirstwastaken2.config.enable_keyword_matching": "关键词匹配",
   "thirstwastaken2.config.enable_keyword_matching.tooltip": "根据注册名猜测未知模组物品的水分数值。",
-  "thirstwastaken2.config.note": "只有界面设置属于客户端，其余设置在服务器上生效。"
+  "thirstwastaken2.config.note": "只有界面与 AppleSkin 设置属于客户端，其余设置在服务器上生效。"
 }

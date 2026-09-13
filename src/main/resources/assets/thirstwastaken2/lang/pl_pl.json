@@ -82,5 +82,5 @@
   "thirstwastaken2.config.appleskin_tooltip_droplets.tooltip": "Pokazuje rzędy kropli pragnienia i ugaszenia w podpowiedziach przedmiotów.",
   "thirstwastaken2.config.enable_keyword_matching": "Dopasowanie słów kluczowych",
   "thirstwastaken2.config.enable_keyword_matching.tooltip": "Zgaduje wartości nawodnienia nieznanych przedmiotów z modów na podstawie ich nazwy rejestrowej.",
-  "thirstwastaken2.config.note": "Tylko ustawienia interfejsu działają po stronie klienta; reszta obowiązuje na serwerze."
+  "thirstwastaken2.config.note": "Tylko ustawienia interfejsu i AppleSkin działają po stronie klienta; reszta obowiązuje na serwerze."
 }

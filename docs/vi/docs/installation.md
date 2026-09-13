@@ -71,6 +71,8 @@ không nên để tùy chọn.
 Mỗi client thấy mod theo đúng ngôn ngữ game của họ. Mod kèm sẵn chín thứ tiếng: Anh, Pháp, Nhật, Hàn,
 Ba Lan, Nga, Việt, Trung giản thể và Trung phồn thể. Máy chủ không cần cấu hình gì thêm.
 
+![Dòng mô tả vật phẩm khi game đặt tiếng Trung giản thể](/screenshots/chinese-tooltips.png)
+
 ## Lần chạy đầu tiên
 
 Chạy game hoặc máy chủ một lần. Mod sẽ ghi ra `config/thirstwastaken2.json` với giá trị mặc định và ghi

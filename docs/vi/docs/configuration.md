@@ -10,7 +10,7 @@ xem trước trực tiếp của thanh khát và dòng mô tả một đồ uố
 định**. **Xong** lưu thay đổi, còn **Hủy** bỏ hết thay đổi. Trang Giá trị vật phẩm có nút mở thẳng
 file, dành cho các mục không nhét vừa một thanh trượt.
 
-![ThirstWasTaken2 trong danh sách Mod Menu](/screenshots/mod-menu.png)
+![Màn hình cấu hình: bản xem trước dòng mô tả và các thanh, cùng một nút cho mỗi trang](/screenshots/config-screen.png)
 
 ::: tip
 Chỉ mục Giao diện và AppleSkin được đọc từ file của chính bạn. Phần còn lại lấy từ máy đang chạy thế
@@ -121,6 +121,8 @@ hình đó.
 
 Hai mục này chỉ có tác dụng khi đã cài AppleSkin. Tùy chọn **Food Exhaustion HUD Underlay** của chính
 AppleSkin điều khiển dải tiêu hao dạng hạt phía sau thanh khát.
+
+![Trang Giao diện & AppleSkin, có bản xem trước dưới tiêu đề](/screenshots/config-hud.png)
 
 ### appleskinQuenchedOverlay
 

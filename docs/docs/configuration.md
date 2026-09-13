@@ -10,7 +10,7 @@ preview of the thirst bar and a drink's tooltip, and a **Reset to Defaults** but
 **Done** saves your changes and **Cancel** throws them away. The Item Values page opens the file
 itself, for the settings that do not fit on a slider.
 
-![ThirstWasTaken2 listed in Mod Menu](/screenshots/mod-menu.png)
+![The config screen: a live preview of a tooltip and the bars, and one button per page](/screenshots/config-screen.png)
 
 ::: tip
 Only the HUD and AppleSkin sections are read from your own copy. Everything else comes from the copy
@@ -121,6 +121,8 @@ of the screen.
 
 These two only do something while AppleSkin is installed. AppleSkin's own **Food Exhaustion HUD
 Underlay** option controls the dithered exhaustion strip behind the thirst bar.
+
+![The HUD and AppleSkin page, with the preview under its title](/screenshots/config-hud.png)
 
 ### appleskinQuenchedOverlay
 

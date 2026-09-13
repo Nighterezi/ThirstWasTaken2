@@ -76,6 +76,8 @@ infection system is not part of this release.
 
 Put a fresh water bottle, terracotta water bowl or water bucket in a furnace or on a campfire.
 
+![A dirty terracotta water bowl comes out of the furnace clean](/screenshots/furnace-clean-water.png)
+
 | In | Out |
 |---|---|
 | Dirty | Clean |

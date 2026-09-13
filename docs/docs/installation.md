@@ -72,6 +72,8 @@ Each client sees the mod in whatever language their game is set to. Nine are bun
 French, Japanese, Korean, Polish, Russian, Vietnamese, Simplified Chinese and Traditional Chinese.
 There is nothing to configure on the server.
 
+![Item tooltips with the game set to Simplified Chinese](/screenshots/chinese-tooltips.png)
+
 ## First run
 
 Start the game or the server once. The mod writes `config/thirstwastaken2.json` with its defaults and

@@ -35,9 +35,17 @@ Minecraft and further extends the original mod.
 - Mod Menu configuration screen
 - `/thirst` commands for server administrators
 
-| Thirst bar | Water purity |
+| Thirst bar | With AppleSkin |
 |---|---|
-| ![Thirst bar above the hunger bar](docs/public/screenshots/thirst-bar.png) | ![Four water-purity levels shown in item tooltips](docs/public/screenshots/water-purity.png) |
+| ![Thirst bar above the hunger bar](docs/public/screenshots/thirst-bar.png) | ![The thirst and food bars without AppleSkin, then with each quenched outline colour](docs/public/screenshots/hud-appleskin.png) |
+
+| Water purity | Items |
+|---|---|
+| ![Four water-purity levels shown in item tooltips](docs/public/screenshots/water-purity.png) | ![Every item the mod adds and each look it has](docs/public/screenshots/items.png) |
+
+| Config screen | Simplified Chinese |
+|---|---|
+| ![The config screen with its live preview](docs/public/screenshots/config-screen.png) | ![Item tooltips in Simplified Chinese](docs/public/screenshots/chinese-tooltips.png) |
 
 ## Requirements
 
