@@ -30,9 +30,7 @@ phần hồi dư vẫn chuyển thành đã khát. Quy tắc này không chặn 
 
 ![Dòng mô tả của túi da, chai nước biển, bát đất sét và quả táo, quả táo còn có các hàng độ đói của AppleSkin](/screenshots/tooltips.png)
 
-Hàng chục vật phẩm của Farmer's Delight, Farmer's Respite, Brewin' and Chewin', Collector's Reap và
-Tough As Nails cũng đã có sẵn giá trị. Không mod nào trong số đó là bắt buộc, các giá trị
-chỉ nằm im cho tới khi vật phẩm tồn tại. Với những thứ khác, xem
+Vật phẩm của mod khác có thể được gán giá trị trong config. Xem
 [dò theo từ khóa](/vi/docs/configuration#enablekeywordmatching).
 
 ## Các loại bát

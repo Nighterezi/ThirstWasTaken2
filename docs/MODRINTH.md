@@ -2,20 +2,9 @@
 
 <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/.github/assets/banner.png" alt="ThirstWasTaken2 banner" width="420">
 
-[![modrinth](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/modrinth_64h.png)](https://modrinth.com/mod/thirst-was-taken-2)
-[![fabric](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/supported/fabric_64h.png)](https://fabricmc.net/)
-[![ghpages](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/documentation/ghpages_64h.png)](https://nighterezi.github.io/ThirstWasTaken2/)
-[![github](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/github_64h.png)](https://github.com/Nighterezi/ThirstWasTaken2)
-[![discord-plural](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/social/discord-plural_64h.png)](https://discord.gg/YwD9Xv7Beu)
-
 <br>
 
-### Why ThirstWasTaken2?
-
-A thirst bar sits above hunger and drains during play. Water has to be found, cleaned and carried, so
-every trip out needs a plan.
-
-**Works with:** Minecraft 26.2, 26.1.x, 1.21.11, 1.21.1 and 1.21 • Fabric • AppleSkin • Mod Menu
+#### Adds a survival thirst bar, drinking, and water purity to Minecraft. Available in 9 languages, with built-in support for AppleSkin and Mod Menu.
 
 <br>
 
@@ -45,7 +34,7 @@ Running, fighting and the Nether all make the bar empty faster.
 ### [Water Quality](https://nighterezi.github.io/ThirstWasTaken2/docs/features/water-purity)
 
 Water is graded Dirty, Murky, Clean or Pure by where it was collected. Bad water can cause Nausea,
-Hunger or Poison. Sea water never quenches thirst.
+Hunger or Poison. Sea water will be salty and never quenches thirst.
 
 </td>
 <td width="50%">
@@ -94,8 +83,7 @@ in one slot. Each container shows what it holds.
 
 ### [Better with AppleSkin](https://nighterezi.github.io/ThirstWasTaken2/docs/configuration#appleskin)
 
-Quenched gets an outline in Diamond, Ice, Gold or AppleSkin's own gold. Tooltips show how much thirst
-each item restores.
+Choose how Quenched looks on the thirst bar: a Diamond, Ice or Gold outline, AppleSkin's own gold, or no outline. Tooltips show how much thirst each item restores.
 
 </td>
 </tr>
@@ -122,11 +110,10 @@ result before saving.
 
 | Feature | Description |
 |:-------:|:------------|
-| **[Drink by Hand](https://nighterezi.github.io/ThirstWasTaken2/docs/features/drinking)** | Sneak and use an empty hand on water to drink straight from it. Free, but rarely clean. |
-| **[Food and Drinks](https://nighterezi.github.io/ThirstWasTaken2/docs/features/drinking)** | Potions, soups, milk, honey and fruit all restore thirst. Drinks from Farmer's Delight, Tough As Nails and other mods work too. |
+| **[Running Dry](https://nighterezi.github.io/ThirstWasTaken2/docs/features/thirst-and-quenched)** | Low thirst stops sprinting and natural healing. An empty bar deals damage until the player drinks. |
+| **[Food and Drinks](https://nighterezi.github.io/ThirstWasTaken2/docs/features/drinking)** | Potions, soups, milk, honey and fruit all restore thirst. Items from other mods can be given a thirst value in the config. |
 | **[Recipes](https://nighterezi.github.io/ThirstWasTaken2/docs/features/drinking)** | Every recipe shows in the recipe book, and an advancement tab guides new players through the water system. |
-| **[Server Friendly](https://nighterezi.github.io/ThirstWasTaken2/docs/configuration)** | The server controls gameplay settings. Each player keeps their own HUD settings. |
-| **[Commands](https://nighterezi.github.io/ThirstWasTaken2/docs/commands)** | `/thirst` lets admins check, set or turn off thirst for any player. |
+| **[Water in Chests](https://nighterezi.github.io/ThirstWasTaken2/docs/features/drinking)** | Water bottles turn up in dungeon, shipwreck and Nether chests, and from Piglin bartering. |
 
 </div>
 
@@ -169,9 +156,3 @@ Want to improve a translation? [Open a pull request](https://github.com/Nightere
 
 ThirstWasTaken2 is a fork of [Thirst Was Taken](https://modrinth.com/mod/thirst-was-taken) by
 [**ghen**](https://github.com/ghen-git), rebuilt for Fabric and extended since.
-
-<div align="center">
-
-### [Documentation](https://nighterezi.github.io/ThirstWasTaken2/) • [Changelog](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/CHANGELOG.md) • [What changed from the original](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/FORK-STATUS.md) • [Discord](https://discord.gg/YwD9Xv7Beu) • [Issues](https://github.com/Nighterezi/ThirstWasTaken2/issues)
-
-</div>

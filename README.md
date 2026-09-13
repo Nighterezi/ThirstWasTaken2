@@ -1,23 +1,17 @@
-<p align="center">
-  <img src=".github/assets/banner.png" alt="ThirstWasTaken2" width="420">
-</p>
+<div align="center">
 
-<p align="center">
-  <a href="https://github.com/Nighterezi/ThirstWasTaken2/actions/workflows/build.yml"><img src="https://github.com/Nighterezi/ThirstWasTaken2/actions/workflows/build.yml/badge.svg" alt="Build status"></a>
-  <a href="https://modrinth.com/mod/thirst-was-taken-2"><img src="https://img.shields.io/badge/Modrinth-thirst--was--taken--2-00AF5C?logo=modrinth&logoColor=white" alt="Modrinth"></a>
-  <img src="https://img.shields.io/badge/Minecraft-26.2%20%7C%2026.1%20%7C%201.21.11%20%7C%201.21.1-62B47A" alt="Minecraft 26.2, 26.1, 1.21.11 and 1.21.1">
-  <img src="https://img.shields.io/badge/Loader-Fabric-DBD0B4" alt="Fabric">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT license"></a>
-</p>
+<img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/.github/assets/banner.png" alt="ThirstWasTaken2 banner" width="420">
 
-ThirstWasTaken2 is a fork of the original
-[Thirst Was Taken](https://modrinth.com/mod/thirst-was-taken) by
-[**ghen**](https://github.com/ghen-git). It adds a survival thirst bar, drinking, and water purity to
-Minecraft and further extends the original mod.
+[![modrinth](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/modrinth_64h.png)](https://modrinth.com/mod/thirst-was-taken-2)
+[![ghpages](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/documentation/ghpages_64h.png)](https://nighterezi.github.io/ThirstWasTaken2/)
+[![github](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/github_64h.png)](https://github.com/Nighterezi/ThirstWasTaken2)
+[![discord-plural](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/social/discord-plural_64h.png)](https://discord.gg/YwD9Xv7Beu)
 
-[Modrinth](https://modrinth.com/mod/thirst-was-taken-2) ·
-[Documentation](https://nighterezi.github.io/ThirstWasTaken2/) ·
-[Fork changes](FORK-STATUS.md) · [Changelog](CHANGELOG.md)
+<br>
+
+#### Fabric port of the original [Thirst Was Taken](https://modrinth.com/mod/thirst-was-taken) by [**ghen**](https://github.com/ghen-git). It adds a survival thirst bar, drinking, and water purity to Minecraft. Available in 9 languages, with built-in support for AppleSkin, Mod Menu and drinks from other mods.
+
+</div>
 
 ## Features
 

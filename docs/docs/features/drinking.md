@@ -31,9 +31,7 @@ other uses are not blocked by this rule.
 
 ![Tooltips for a waterskin, a bottle of sea water, a clay bowl and an apple, which also shows AppleSkin's hunger rows](/screenshots/tooltips.png)
 
-Dozens of items from Farmer's Delight, Farmer's Respite, Brewin' and Chewin', Collector's Reap and
-Tough As Nails already have values too. None of those mods are required, the values just
-sit unused until the item exists. For anything else, see
+Items from other mods can be given values in the config. See
 [keyword matching](/docs/configuration#enablekeywordmatching).
 
 ## Bowls
