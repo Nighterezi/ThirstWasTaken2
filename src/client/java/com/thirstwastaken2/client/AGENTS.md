@@ -5,17 +5,26 @@ The split source set (`loom.splitEnvironmentSourceSets()`). Everything touching
 reference this package. The reverse is fine — this code reads `ThirstConfig`, `ThirstManager` and
 `ThirstData` directly.
 
-Nothing here is authoritative. The client renders the `ThirstData` attachment the server synced to it
-(`AttachmentSyncPredicate.targetOnly()`), and the config screen edits a config the server ignores for
-everything except the HUD section.
+Nothing here is authoritative. The client renders the `ThirstData` the server synced to its owner
+alone (`ThirstData.STORAGE`), and the config screen edits a config the server ignores for everything
+except the HUD section.
 
 | File | Owns |
 |---|---|
-| `ThirstWasTaken2Client` | the `client` entrypoint: HUD element + status-bar height registration |
+| `ThirstWasTaken2Client` | `initialize`, called by the loader's client entrypoint: registers the HUD row |
 | `ThirstHud` | drawing the bar |
 | `config/ThirstConfigScreen` | the vanilla-styled options screen |
-| `compat/ModMenuIntegration` | the `modmenu` entrypoint |
 | `platform/ClientVanilla` | client vanilla calls whose shape differs between Minecraft versions |
+| `platform/StatusBarRenderer` | the shape `ClientLoader` draws a HUD row through |
+
+Loader code for the client lives in `src/client/fabric/java`, never here, and `checkLoaderSeam` fails
+the build on a loader import in this directory:
+
+| File | Owns |
+|---|---|
+| `client/fabric/ThirstWasTaken2FabricClient` | the Fabric `client` entrypoint |
+| `client/platform/ClientLoader` | HUD layer and status bar height registration, per loader |
+| `client/compat/ModMenuIntegration` | the `modmenu` entrypoint; Mod Menu is a Fabric-only mod |
 
 `ClientVanilla` is the client half of `com.thirstwastaken2.platform.Vanilla` and follows the same
 rules — plumbing only, one signature on every version. A Stonecutter `//?` branch anywhere else in
@@ -25,10 +34,12 @@ uses untouched, so `stonecutter.gradle.kts` renames the type back for older vers
 
 ## HUD
 
-`HudElementRegistry.attachElementAfter(VanillaHudElements.FOOD_BAR, …)` places the bar, and
-`HudStatusBarHeightRegistry.addRight` reserves 10px so vanilla stacks around it — `ThirstHud.render`
-then reads that height back to find its own Y. Both use the same `thirstwastaken2:thirst_bar` id;
-changing it means changing all three sites.
+`ClientLoader.addRightStatusBar` places the bar after the food bar and reserves 10px of the right-hand
+stack while `ThirstHud.shouldRender` holds, so vanilla stacks around it. On Fabric that is
+`HudElementRegistry.attachElementAfter(VanillaHudElements.FOOD_BAR, …)` plus
+`HudStatusBarHeightRegistry.addRight`, under the one `thirstwastaken2:thirst_bar` id. The loader
+reads the stack height back and hands `ThirstHud.render` the row's `top`; the Y offset setting is
+added on top of that.
 
 Sprite geometry, which is easy to break:
 
@@ -72,5 +83,5 @@ the footer button opens with `Util.getPlatform().openPath`.
 Not every version of `OptionsList` takes a plain widget, so the footer button goes through
 `ClientVanilla.addFullWidthRow`.
 
-Mod Menu is `clientCompileOnly`. `ModMenuIntegration` is only ever class-loaded when Mod Menu itself
-resolves the entrypoint, so nothing else may reference it.
+Mod Menu is `clientCompileOnly`. `ModMenuIntegration` (in `src/client/fabric/java`) is only ever
+class-loaded when Mod Menu itself resolves the entrypoint, so nothing else may reference it.

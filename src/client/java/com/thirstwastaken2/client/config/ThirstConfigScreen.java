@@ -9,7 +9,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.network.chat.Component;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Util;
 
 import java.util.function.DoubleConsumer;
@@ -98,8 +97,7 @@ public final class ThirstConfigScreen extends OptionsSubScreen {
                         value -> config.enableKeywordMatching = value));
         ClientVanilla.addFullWidthRow(list, Button.builder(
                         Component.translatable("thirstwastaken2.config.open_file"),
-                        button -> Util.getPlatform().openPath(
-                                FabricLoader.getInstance().getConfigDir().resolve("thirstwastaken2.json")))
+                        button -> Util.getPlatform().openPath(ThirstConfig.path()))
                 .build());
     }
 

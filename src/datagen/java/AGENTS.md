@@ -34,9 +34,10 @@ validation is off: every advancement the mod awards by id has a single `minecraf
 criterion, which strict validation reads as unreachable.
 
 **The output directory is keyed by Minecraft version, not by build node**, and is a resource root of
-`main`, so the jar picks it up with no further wiring. Two nodes on the same Minecraft version
-produce byte-identical files and are meant to share one directory — that is what P2 needs when
-NeoForge arrives. The `.cache/` beside the output is datagen's own hash cache and is gitignored.
+`main`, so the jar picks it up with no further wiring. Every loader on one Minecraft version reads
+the same directory. Only the Fabric node writes it: the providers extend Fabric API's, and a second
+generator per loader would only be a second way for the files to drift. The `.cache/` beside the
+output is datagen's own hash cache and is gitignored.
 
 ## Why the three versions produce different bytes
 
@@ -90,8 +91,9 @@ nothing fails to tell you so.
 
 ## What is not generated
 
-Textures, `icon.png`, `font/droplets.json`, the nine `lang/` files, `fabric.mod.json` and
-`thirstwastaken2.mixins.json` all stay hand-written in `src/main/resources`. The lang files
+Textures, `icon.png`, `font/droplets.json`, the nine `lang/` files and
+`thirstwastaken2.mixins.json` all stay hand-written in `src/main/resources`, and `fabric.mod.json` in
+`src/main/fabric/resources`. The lang files
 deliberately so: eight of the nine are translations, and `en_us` is edited alongside them.
 
 ## Two rules that outlive this file

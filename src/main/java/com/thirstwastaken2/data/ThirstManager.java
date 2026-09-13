@@ -58,11 +58,11 @@ public final class ThirstManager {
     private ThirstManager() { }
 
     public static ThirstData get(Player player) {
-        return player.getAttachedOrCreate(ThirstData.TYPE);
+        return ThirstData.STORAGE.get(player);
     }
 
     public static void set(Player player, ThirstData data) {
-        player.setAttached(ThirstData.TYPE, data);
+        ThirstData.STORAGE.set(player, data);
     }
 
     /** Applies exhaustion straight away, for one-off sources such as drinking salt water. */

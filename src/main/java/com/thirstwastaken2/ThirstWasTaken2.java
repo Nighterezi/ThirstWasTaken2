@@ -6,19 +6,14 @@ import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.data.ThirstData;
 import com.thirstwastaken2.data.ThirstManager;
 import com.thirstwastaken2.item.ThirstItems;
+import com.thirstwastaken2.platform.Loader;
 import com.thirstwastaken2.purity.ThirstComponents;
 import com.thirstwastaken2.purity.WaterInteractions;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.fabricmc.fabric.api.event.player.UseItemCallback;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class ThirstWasTaken2 implements ModInitializer {
+public final class ThirstWasTaken2 {
     public static final String MOD_ID = "thirstwastaken2";
     /** The Minecraft version this jar was built against; substituted per version at build time. */
     public static final String MINECRAFT = /*$ minecraft*/ "26.2";
@@ -36,22 +31,24 @@ public final class ThirstWasTaken2 implements ModInitializer {
      */
     public static final boolean DEV = detectDev();
 
-    @Override
-    public void onInitialize() {
+    private ThirstWasTaken2() { }
+
+    /** Called once by the loader's entrypoint. Everything the mod registers and hooks starts here. */
+    public static void initialize() {
         ThirstConfig.load();
         ThirstData.register();
         ThirstComponents.register();
         ThirstItems.register();
         LootIntegration.register();
 
-        ServerTickEvents.END_SERVER_TICK.register(ThirstManager::tick);
-        ServerTickEvents.END_SERVER_TICK.register(WaterInteractions::tick);
-        UseBlockCallback.EVENT.register(ThirstManager::drinkByHand);
-        UseBlockCallback.EVENT.register(WaterInteractions::emptyWaterskinOnBlock);
-        UseBlockCallback.EVENT.register(WaterInteractions::fillWaterskinFromCauldron);
-        UseBlockCallback.EVENT.register(WaterInteractions::transferCauldronPurity);
-        UseItemCallback.EVENT.register(WaterInteractions::fillFromWater);
-        CommandRegistrationCallback.EVENT.register((dispatcher, access, environment) -> ThirstCommands.register(dispatcher));
+        Loader.onServerTickEnd(ThirstManager::tick);
+        Loader.onServerTickEnd(WaterInteractions::tick);
+        Loader.onUseBlock(ThirstManager::drinkByHand);
+        Loader.onUseBlock(WaterInteractions::emptyWaterskinOnBlock);
+        Loader.onUseBlock(WaterInteractions::fillWaterskinFromCauldron);
+        Loader.onUseBlock(WaterInteractions::transferCauldronPurity);
+        Loader.onUseItem(WaterInteractions::fillFromWater);
+        Loader.onRegisterCommands(ThirstCommands::register);
 
         LOGGER.info("ThirstWasTaken2 initialized for Minecraft {}{}", MINECRAFT, DEV ? " (dev)" : "");
     }
@@ -62,6 +59,6 @@ public final class ThirstWasTaken2 implements ModInitializer {
 
     private static boolean detectDev() {
         String forced = System.getProperty(DEV_PROPERTY);
-        return forced != null ? Boolean.parseBoolean(forced) : FabricLoader.getInstance().isDevelopmentEnvironment();
+        return forced != null ? Boolean.parseBoolean(forced) : Loader.isDevelopmentEnvironment();
     }
 }

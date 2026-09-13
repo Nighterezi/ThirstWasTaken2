@@ -2,7 +2,7 @@
 
 Runs on both sides but **must not reference `net.minecraft.client`**. Anything client-only belongs in
 `src/client/java` (see its own AGENTS.md). Gameplay here is server-authoritative: the server owns
-thirst, and the client only receives it through the attachment sync.
+thirst, and the client only receives it through the `PlayerData` sync.
 
 ## Where to change what
 
@@ -23,21 +23,25 @@ thirst, and the client only receives it through the attachment sync.
 
 ## Init order
 
-`ThirstWasTaken2.onInitialize` is the only entry point, and the order matters:
+`ThirstWasTaken2.initialize` is the only entry point, called by the loader's entrypoint class
+(`ThirstWasTaken2Fabric` in `src/main/fabric`), and the order matters:
 `ThirstConfig.load()` → `ThirstData.register()` → `ThirstComponents.register()` →
-`ThirstItems.register()` → `LootIntegration.register()` → events.
+`ThirstItems.register()` → `LootIntegration.register()` → events. Nothing in this source set may
+import a mod loader's API; it goes through `platform/Loader` (see `platform/AGENTS.md`).
 
 `ThirstItems` static fields reference `ThirstComponents`, and `WaterPurity.resolve` references
 `ThirstItems`, so registration cannot be reordered without checking those class-init chains.
 
 Events registered there, in registration order per event:
 
-- `END_SERVER_TICK` → `ThirstManager.tick`, then `WaterInteractions.tick` (drains the deferred queue).
-- `UseBlockCallback` → `ThirstManager.drinkByHand`, `WaterInteractions.emptyWaterskinOnBlock`,
+- `Loader.onServerTickEnd` → `ThirstManager.tick`, then `WaterInteractions.tick` (drains the deferred
+  queue).
+- `Loader.onUseBlock` → `ThirstManager.drinkByHand`, `WaterInteractions.emptyWaterskinOnBlock`,
   `WaterInteractions.fillWaterskinFromCauldron`, `WaterInteractions.transferCauldronPurity`. A
   handler that returns anything but `PASS` stops the rest, which is why `transferCauldronPurity`
   deliberately returns `PASS` and defers its work.
-- `UseItemCallback` → `WaterInteractions.fillFromWater`.
+- `Loader.onUseItem` → `WaterInteractions.fillFromWater`.
+- `Loader.onRegisterCommands` → `ThirstCommands.register`.
 
 ## Invariants worth not breaking
 

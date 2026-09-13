@@ -1,11 +1,11 @@
 package com.thirstwastaken2.client.compat;
 
-import net.fabricmc.loader.api.FabricLoader;
+import com.thirstwastaken2.platform.Loader;
 import squeek.appleskin.ModConfig;
 
 /** Optional AppleSkin hooks kept outside the main HUD class so the mod remains safe without it. */
 public final class AppleSkinIntegration {
-    private static final boolean LOADED = FabricLoader.getInstance().isModLoaded("appleskin");
+    private static final boolean LOADED = Loader.isModLoaded("appleskin");
 
     private AppleSkinIntegration() { }
 
@@ -15,7 +15,7 @@ public final class AppleSkinIntegration {
         return AppleSkinConfig.shouldShowExhaustion();
     }
 
-    /** Loaded only after Fabric Loader confirms AppleSkin is present. */
+    /** Loaded only after the loader confirms AppleSkin is present. */
     private static final class AppleSkinConfig {
         private static boolean shouldShowExhaustion() {
             ModConfig config = ModConfig.INSTANCE;

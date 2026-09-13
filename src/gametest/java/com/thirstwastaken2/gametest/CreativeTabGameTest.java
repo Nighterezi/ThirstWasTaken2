@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * The mod's creative tab.
  *
- * <p>Fabric API renamed the builder entrypoint in 26.1, so {@code Vanilla.creativeTabBuilder} is one
+ * <p>Fabric API renamed the builder entrypoint in 26.1, so {@code Loader.creativeTabBuilder} is one
  * of the few places where the mod compiles against a different class per version. A tab built
  * through the wrong entrypoint would still compile, which is exactly why it is worth asserting
  * rather than assuming.

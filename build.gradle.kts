@@ -101,6 +101,26 @@ loom {
 }
 
 /**
+ * The mod loader this node builds for. Loader code lives beside the source set it belongs to, in
+ * `src/main/<loader>` and `src/client/<loader>`, and only this loader's directories are compiled.
+ * Everything else in `src/main/java` and `src/client/java` is loader independent; `checkLoaderSeam`
+ * enforces it. Only Fabric exists so far. See src/main/java/com/thirstwastaken2/platform/AGENTS.md.
+ *
+ * The directories sit inside `src/main` and `src/client` rather than in a `src/<loader>` of their
+ * own because Stonecutter only rewrites versioned comments under `src/<source set>`: anywhere else,
+ * every node but the active one would compile an empty directory.
+ */
+val loader = "fabric"
+
+sourceSets.main {
+    java.srcDir("src/main/$loader/java")
+    resources.srcDir("src/main/$loader/resources")
+}
+sourceSets.named("client") {
+    java.srcDir("src/client/$loader/java")
+}
+
+/**
  * Every datapack and asset JSON the mod ships, written by `src/datagen`. The directory is keyed by
  * Minecraft version rather than by build node, because two nodes of the same Minecraft version on
  * different loaders produce byte-identical files and should share one directory. It is a resource
@@ -263,6 +283,37 @@ tasks.register("checkDatagen") {
         check(process.waitFor() == 0) { "git status failed:\n$changes" }
         check(changes.isEmpty()) {
             "Generated resources are out of date. Run \":${project.name}:runDatagen\" and commit:\n$changes"
+        }
+    }
+}
+
+/**
+ * Fails when loader independent code names a mod loader. `src/main/java` and `src/client/java` are
+ * compiled against Fabric API today, so the compiler cannot catch a Fabric import there; this can.
+ * It cannot see the methods Fabric API injects into vanilla classes, such as `getAttachedOrCreate`,
+ * which only the first NeoForge build will report.
+ */
+tasks.register("checkLoaderSeam") {
+    group = "verification"
+    description = "Fails when loader independent sources import a mod loader's API"
+
+    val roots = listOf("src/main/java", "src/client/java").map(rootProject::file)
+    val forbidden = Regex("""\b(net\.fabricmc|net\.neoforged)\.""")
+    inputs.files(roots.map { fileTree(it) { include("**/*.java") } })
+
+    doLast {
+        val offenders = roots.flatMap { root ->
+            root.walk().filter { it.extension == "java" }.flatMap { file ->
+                file.readLines().withIndex()
+                    .filter { (_, line) -> forbidden.containsMatchIn(line) }
+                    .map { (index, line) ->
+                        "${file.relativeTo(rootProject.projectDir).invariantSeparatorsPath}:${index + 1}: ${line.trim()}"
+                    }
+            }
+        }
+        check(offenders.isEmpty()) {
+            "Loader API in loader independent code. Route it through platform/Loader or " +
+                "client/platform/ClientLoader instead:\n" + offenders.joinToString("\n")
         }
     }
 }

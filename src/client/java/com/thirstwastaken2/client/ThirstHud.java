@@ -6,8 +6,6 @@ import com.thirstwastaken2.client.platform.ClientVanilla;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.data.ThirstData;
 import com.thirstwastaken2.data.ThirstManager;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.HudStatusBarHeightRegistry;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -19,7 +17,6 @@ import net.minecraft.world.entity.player.Player;
 public final class ThirstHud {
     private static final Identifier ICONS = ThirstWasTaken2.id("textures/gui/thirst_icons.png");
     private static final Identifier OVERLAY_ICONS = ThirstWasTaken2.id("textures/gui/appleskin_icons.png");
-    private static final Identifier BAR_ID = ThirstWasTaken2.id("thirst_bar");
     private static final RandomSource RANDOM = RandomSource.create();
 
     private static final int ICON_SIZE = 9;
@@ -47,7 +44,8 @@ public final class ThirstHud {
         return !ClientVanilla.isHudHidden(minecraft) && ThirstManager.get(player).enabled();
     }
 
-    public static void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+    /** {@code stackTop} is the y the loader assigned this row in the right-hand status bar stack. */
+    public static void render(GuiGraphicsExtractor graphics, int stackTop) {
         Player player = Minecraft.getInstance().player;
         if (!shouldRender(player)) return;
 
@@ -57,7 +55,7 @@ public final class ThirstHud {
         int quenched = data.quenched();
 
         int right = graphics.guiWidth() / 2 + 91 + config.thirstBarXOffset;
-        int top = graphics.guiHeight() - HudStatusBarHeightRegistry.getHeight(BAR_ID) + config.thirstBarYOffset;
+        int top = stackTop + config.thirstBarYOffset;
 
         renderExhaustion(graphics, right, top, data.exhaustion());
 

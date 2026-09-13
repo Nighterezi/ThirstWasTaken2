@@ -1,6 +1,6 @@
 # compat/
 
-Optional integrations. **No hard dependency ever lands here**: gate on `FabricLoader.isModLoaded`,
+Optional integrations. **No hard dependency ever lands here**: gate on `Loader.isModLoaded`,
 keep the touching classes off the load path, and let the mod run identically with none of them
 installed.
 
@@ -10,10 +10,11 @@ Neither references a foreign class, so neither needs a gate. Prefer that approac
 
 ## LootIntegration
 
-Fabric's `LootTableEvents.MODIFY` replacing the original's Forge global loot modifiers. One extra pool
-is appended to five vanilla chest tables (`SIMPLE_DUNGEON`, `ABANDONED_MINESHAFT`, `SHIPWRECK_SUPPLY`,
-`NETHER_BRIDGE`, `BASTION_OTHER`) and to `PIGLIN_BARTERING`, with different weights for each case. The
-`source.isBuiltin()` check keeps datapack overrides of those tables untouched.
+`Loader.onBuiltinLootTable` replacing the original's Forge global loot modifiers (Fabric's
+`LootTableEvents.MODIFY` underneath). One extra pool is appended to five vanilla chest tables
+(`SIMPLE_DUNGEON`, `ABANDONED_MINESHAFT`, `SHIPWRECK_SUPPLY`, `NETHER_BRIDGE`, `BASTION_OTHER`) and to
+`PIGLIN_BARTERING`, with different weights for each case. The loader skips tables a datapack
+replaced, so those overrides stay untouched.
 
 Water bottles are emitted as `minecraft:potion` + `SetPotionFunction` + a `SetComponentsFunction` that
 stamps `water_purity`, so loot water arrives already stamped rather than falling back to

@@ -1,15 +1,17 @@
 package com.thirstwastaken2.client;
 
 import com.thirstwastaken2.ThirstWasTaken2;
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.HudStatusBarHeightRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import com.thirstwastaken2.client.platform.ClientLoader;
 
-public final class ThirstWasTaken2Client implements ClientModInitializer {
-    @Override
-    public void onInitializeClient() {
-        HudElementRegistry.attachElementAfter(VanillaHudElements.FOOD_BAR, ThirstWasTaken2.id("thirst_bar"), ThirstHud::render);
-        HudStatusBarHeightRegistry.addRight(ThirstWasTaken2.id("thirst_bar"), player -> ThirstHud.shouldRender(player) ? 10 : 0);
+public final class ThirstWasTaken2Client {
+    /** One droplet row, as tall as vanilla's hunger bar. */
+    private static final int THIRST_BAR_HEIGHT = 10;
+
+    private ThirstWasTaken2Client() { }
+
+    /** Called once by the loader's client entrypoint. */
+    public static void initialize() {
+        ClientLoader.addRightStatusBar(ThirstWasTaken2.id("thirst_bar"), THIRST_BAR_HEIGHT,
+                ThirstHud::shouldRender, ThirstHud::render);
     }
 }

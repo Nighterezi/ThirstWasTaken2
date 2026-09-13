@@ -3,7 +3,7 @@ package com.thirstwastaken2.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.thirstwastaken2.ThirstWasTaken2;
-import net.fabricmc.loader.api.FabricLoader;
+import com.thirstwastaken2.platform.Loader;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  */
 public final class ThirstConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path PATH = FabricLoader.getInstance().getConfigDir().resolve("thirstwastaken2.json");
+    private static final Path PATH = Loader.configDir().resolve("thirstwastaken2.json");
     private static volatile ThirstConfig INSTANCE;
     private static volatile int generation;
 
@@ -81,6 +81,11 @@ public final class ThirstConfig {
     public static ThirstConfig get() {
         ThirstConfig config = INSTANCE;
         return config != null ? config : load();
+    }
+
+    /** The config file on disk. */
+    public static Path path() {
+        return PATH;
     }
 
     /** Bumped whenever {@link #load()} replaces the active instance. */

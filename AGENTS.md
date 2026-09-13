@@ -113,15 +113,21 @@ cached.
   Never do registry-name string building or regex compilation on a per-call path; the tooltip
   renderer calls into both once per frame.
 - **Optional mod integrations are soft**. Never add a hard dependency: gate on
-  `FabricLoader.isModLoaded`, plus a marker-class probe when the integration extends a foreign class,
+  `Loader.isModLoaded`, plus a marker-class probe when the integration extends a foreign class,
   and keep integration classes out of the load path otherwise.
-- Player thirst state is an **immutable record** (`ThirstData`) stored as a Fabric attachment. Mutate
+- **`src/main/java` and `src/client/java` never name a mod loader.** Loader calls go through
+  `platform/Loader` and `client/platform/ClientLoader`, whose code lives in `src/main/fabric` and
+  `src/client/fabric`; `checkLoaderSeam` fails the build otherwise. See
+  [platform/AGENTS.md](src/main/java/com/thirstwastaken2/platform/AGENTS.md).
+- Player thirst state is an **immutable record** (`ThirstData`) stored through `Loader.playerData`. Mutate
   by deriving a new record and calling `ThirstManager.set`; only write when the value actually
   changed, because every write costs a sync packet.
 
 ## Supporting several Minecraft versions
 
-The rule is that version differences stay in two places and nowhere else.
+The rule is that version differences stay in two places and nowhere else. Mod loader differences
+have a place of their own, `platform/Loader`, and the two never meet in one file; see
+[platform/AGENTS.md](src/main/java/com/thirstwastaken2/platform/AGENTS.md).
 
 **`platform/`** — `com.thirstwastaken2.platform.Vanilla` for common code and
 `com.thirstwastaken2.client.platform.ClientVanilla` for client code. Each is a thin wrapper over a
@@ -171,21 +177,23 @@ replacements {
 
 ## Architecture in one pass
 
-[ThirstWasTaken2.java](src/main/java/com/thirstwastaken2/ThirstWasTaken2.java) is the mod initializer:
-it loads configuration (`ThirstConfig.load()`), registers the player attachment (`ThirstData.register()`),
-registers items, commands, and server lifecycle/use callbacks.
+[ThirstWasTaken2.java](src/main/java/com/thirstwastaken2/ThirstWasTaken2.java) is the loader
+independent initializer, called by the Fabric entrypoint `ThirstWasTaken2Fabric`: it loads
+configuration (`ThirstConfig.load()`), registers the player data (`ThirstData.register()`), registers
+items, commands, and server tick/use callbacks through `Loader`.
 
 ```mermaid
 flowchart TD
-    Init[ThirstWasTaken2.onInitialize] --> Cfg[ThirstConfig.load]
+    Entry[ThirstWasTaken2Fabric.onInitialize] --> Init[ThirstWasTaken2.initialize]
+    Init --> Cfg[ThirstConfig.load]
     Init --> Attach[ThirstData.register]
     Init --> Events
 
-    subgraph Events [registered events]
-      Tick[END_SERVER_TICK -> ThirstManager.tick]
-      Flush[END_SERVER_TICK -> WaterInteractions.tick]
-      UseBlock[UseBlockCallback]
-      UseItem[UseItemCallback -> fillBowl]
+    subgraph Events [registered through Loader]
+      Tick[onServerTickEnd -> ThirstManager.tick]
+      Flush[onServerTickEnd -> WaterInteractions.tick]
+      UseBlock[onUseBlock]
+      UseItem[onUseItem -> fillFromWater]
     end
 
     Tick --> TickPlayer[tickPlayer per ServerPlayer]
@@ -204,14 +212,15 @@ flowchart TD
     DrinkItem --> Api[ThirstApi.thirstValues]
     DrinkItem --> Effects[WaterPurity.applyEffects]
 
-    Attach --> Sync[attachment sync to owning client]
+    Attach --> Sync[PlayerData sync to owning client]
     Sync --> Hud[ThirstHud.render]
 ```
 
 ### The player state model
 
 `ThirstData` is a record — `thirst` (0-20), `quenched` (0-20), `exhaustion` (float), `enabled` — held
-as a Fabric data attachment with `AttachmentSyncPredicate.targetOnly()`. Persistence uses `CODEC`;
+in `ThirstData.STORAGE`, a `Loader.playerData` synced to the owning player only (on Fabric, a data
+attachment with `AttachmentSyncPredicate.targetOnly()`). Persistence uses `CODEC`;
 the network uses `STREAM_CODEC`.
 
 Every mutation returns a new record, so `ThirstManager.set` is the only write point and
@@ -242,7 +251,7 @@ Each area of the tree carries its own `AGENTS.md` with rules and conventions loc
 | Vanilla behaviour hooks & fragile injections | [.../mixin/AGENTS.md](src/main/java/com/thirstwastaken2/mixin/AGENTS.md) |
 | Water purity carriers, environmental sampling, cauldrons | [.../purity/AGENTS.md](src/main/java/com/thirstwastaken2/purity/AGENTS.md) |
 | Loot injection & optional-integration rules | [.../compat/AGENTS.md](src/main/java/com/thirstwastaken2/compat/AGENTS.md) |
-| Minecraft version differences | [.../platform/AGENTS.md](src/main/java/com/thirstwastaken2/platform/AGENTS.md) |
+| Minecraft version and mod loader differences | [.../platform/AGENTS.md](src/main/java/com/thirstwastaken2/platform/AGENTS.md) |
 | Automated in-game tests | [src/gametest/java/AGENTS.md](src/gametest/java/AGENTS.md) |
 | Performance and memory benchmark, dev-only tooling | [src/dev/java/AGENTS.md](src/dev/java/AGENTS.md) |
 | Client HUD element rendering & config screen contract | [src/client/java/com/thirstwastaken2/client/AGENTS.md](src/client/java/com/thirstwastaken2/client/AGENTS.md) |
@@ -253,8 +262,8 @@ Each area of the tree carries its own `AGENTS.md` with rules and conventions loc
 ### Layout
 
 ```
-src/main/java/com/thirstwastaken2/      common (client + server)
-  ThirstWasTaken2.java                  ModInitializer: wiring and event registration
+src/main/java/com/thirstwastaken2/      common (client + server), loader independent
+  ThirstWasTaken2.java                  initialize(): wiring and event registration
   advancement/ThirstAdvancements.java  awards the mod's advancements by id from the drinking code
   api/ThirstApi.java                   item -> {thirst, quenched}, memoised per Item
   command/ThirstCommands.java          /thirst query|set|enable
@@ -272,16 +281,27 @@ src/main/java/com/thirstwastaken2/      common (client + server)
   purity/WaterInteractions.java        bowl/waterskin filling, cauldron purity transfer
   purity/FillCapture.java              sample-then-stamp shared by the bottle and bucket mixins
   platform/Vanilla.java                vanilla calls that differ between Minecraft versions
+  platform/PlayerData.java, Use*Handler.java  types the per-loader Loader signatures share
   tooltip/ThirstTooltip.java           separate thirst/quenched tooltip rows (thirstwastaken2:droplets font)
   compat/LootIntegration.java          structure chests + Piglin barter water
   mixin/                               vanilla hooks
 
+src/main/fabric/                        Fabric only, compiled into main
+  java/.../fabric/ThirstWasTaken2Fabric.java  main entrypoint, calls ThirstWasTaken2.initialize
+  java/.../platform/Loader.java        every call into Fabric Loader and Fabric API
+  resources/fabric.mod.json            entrypoints (main, client, modmenu); templated per version
+
 src/client/java/com/thirstwastaken2/client/
-  ThirstWasTaken2Client.java            HUD element registration
+  ThirstWasTaken2Client.java            initialize(): HUD row registration
   ThirstHud.java                       thirst bar rendering
   config/ThirstConfigScreen.java       vanilla-styled options screen
   platform/ClientVanilla.java          client vanilla calls that differ between versions
+  platform/StatusBarRenderer.java      the shape ClientLoader draws a HUD row through
   compat/AppleSkinIntegration.java     optional exhaustion-underlay setting bridge
+
+src/client/fabric/java/com/thirstwastaken2/client/   Fabric only, compiled into client
+  fabric/ThirstWasTaken2FabricClient.java  client entrypoint
+  platform/ClientLoader.java           HUD layer and status bar height registration
   compat/ModMenuIntegration.java       modmenu entrypoint
 
 settings.gradle.kts                    the list of supported Minecraft versions
@@ -307,8 +327,7 @@ src/datagen/java/com/thirstwastaken2/datagen/  datagen-only mod, never packaged
   ThirstDatagen.java                   entrypoint: every provider has to be listed here
   Thirst*Provider.java                 recipes, advancements, tags, damage type, models
 
-src/main/resources/                     the hand-written assets only
-  fabric.mod.json                      entrypoints (main, client, modmenu); templated per version
+src/main/resources/                     the hand-written assets only, shared by every loader
   thirstwastaken2.mixins.json           mixin registry
   assets/thirstwastaken2/               textures, lang (9 locales), icon.png
   assets/thirstwastaken2/font/          droplets.json: tooltip droplet glyphs (U+E000..U+E007)
@@ -360,8 +379,9 @@ Brewin' and Chewin' / Collector's Reap support stays dependency-free.
 
 ## HUD
 
-`ThirstWasTaken2Client` attaches `thirst_bar` after `VanillaHudElements.FOOD_BAR` and reserves 10px
-of right-stack height. `ThirstHud.render` draws, in order:
+`ThirstWasTaken2Client` adds `thirst_bar` through `ClientLoader.addRightStatusBar`, which on Fabric
+attaches it after `VanillaHudElements.FOOD_BAR` and reserves 10px of right-stack height.
+`ThirstHud.render` draws, in order:
 
 1. when AppleSkin is present and its exhaustion-underlay option is enabled, a right-to-left dither
    strip from `appleskin_icons.png` at v=18, proportional to the client's exhaustion (0..4);
@@ -388,7 +408,7 @@ server.
 | Integration | Gate | Notes |
 |---|---|---|
 | Mod Menu | `modmenu` entrypoint | class only loads if Mod Menu resolves it |
-| Loot | always | Fabric `LootTableEvents.MODIFY` on 5 vanilla chests + Piglin bartering |
+| Loot | always | `Loader.onBuiltinLootTable` on 5 vanilla chests + Piglin bartering |
 | Food mods | always | resolved by registry id in `ThirstConfig.drinks` / `foods`, no classes referenced |
 
 ## Porting rules of thumb

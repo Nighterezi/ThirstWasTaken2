@@ -21,8 +21,8 @@
   "icon": "assets/thirstwastaken2/icon.png",
   "environment": "*",
   "entrypoints": {
-    "main": ["com.thirstwastaken2.ThirstWasTaken2"],
-    "client": ["com.thirstwastaken2.client.ThirstWasTaken2Client"],
+    "main": ["com.thirstwastaken2.fabric.ThirstWasTaken2Fabric"],
+    "client": ["com.thirstwastaken2.client.fabric.ThirstWasTaken2FabricClient"],
     "modmenu": ["com.thirstwastaken2.client.compat.ModMenuIntegration"]
   },
   "mixins": [

@@ -7,7 +7,6 @@ import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.attribute.EnvironmentAttributes;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 
@@ -37,18 +36,6 @@ public final class Vanilla {
         // dimension that does not define the attribute, on the exhaustion path of every tick.
         return Boolean.TRUE.equals(
                 level.environmentAttributes().getValue(EnvironmentAttributes.WATER_EVAPORATES, pos));
-    }
-
-    /**
-     * Builder for the mod's creative tab. Fabric API renamed this entrypoint from
-     * {@code FabricItemGroup} to {@code FabricCreativeModeTab} in 26.1.
-     */
-    public static CreativeModeTab.Builder creativeTabBuilder() {
-        //? if >=26.1 {
-        return net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab.builder();
-        //?} else {
-        /*return net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup.builder();
-        *///?}
     }
 
     /** Switches a style to the mod's droplet bitmap font. */

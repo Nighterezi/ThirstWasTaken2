@@ -5,9 +5,8 @@ import com.thirstwastaken2.config.ThirstConfig;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.thirstwastaken2.ThirstWasTaken2;
-import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
-import net.fabricmc.fabric.api.attachment.v1.AttachmentSyncPredicate;
-import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
+import com.thirstwastaken2.platform.Loader;
+import com.thirstwastaken2.platform.PlayerData;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -32,10 +31,9 @@ public record ThirstData(int thirst, int quenched, float exhaustion, boolean ena
             ThirstData::new
     );
 
-    public static final AttachmentType<ThirstData> TYPE = AttachmentRegistry.create(ThirstWasTaken2.id("player_data"), builder -> builder
-            .initializer(ThirstData::full)
-            .persistent(CODEC)
-            .syncWith(STREAM_CODEC, AttachmentSyncPredicate.targetOnly()));
+    /** Saved with the player and synced to that player's own client only. Read and write it through {@link ThirstManager}. */
+    static final PlayerData<ThirstData> STORAGE =
+            Loader.playerData(ThirstWasTaken2.id("player_data"), ThirstData::full, CODEC, STREAM_CODEC);
 
     private static boolean registered;
 

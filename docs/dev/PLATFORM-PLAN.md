@@ -29,8 +29,11 @@ All seven nodes ship the same feature set under the same version number, so they
 trunk. Short lived feature branches and PRs stay exactly as they are. Revisit only if 1.21.1 stops
 receiving features, and prefer retiring it over branching it.
 
-**Loader axis is source sets, not comments.** `src/fabric/java` and `src/neoforge/java`, selected by
-a per node buildscript. Loader specific code stays real Java that the IDE compiles and refactors.
+**Loader axis is source directories, not comments.** `src/main/fabric` and `src/client/fabric`, later
+`src/main/neoforge` and `src/client/neoforge`, selected by the `loader` value in the buildscript.
+Loader specific code stays real Java that the IDE compiles and refactors. P2 moved these from the
+`src/fabric/java` first planned here: Stonecutter only rewrites versioned comments under
+`src/<source set>/`, so a loader directory anywhere else compiles empty on every inactive node.
 The alternative, commenting out the inactive loader the way
 [rotgruengelb/stonecutter-mod-template](https://github.com/rotgruengelb/stonecutter-mod-template)
 does, is fine for its 495 line example and wrong at this size.
@@ -54,8 +57,9 @@ platform/Loader                             loader axis       separate source se
 ```
 
 **The two axes never meet in one file.** A file is either version conditional and lives in
-`src/main`, or loader specific and lives in `src/fabric` or `src/neoforge`. A loader specific file
-may contain version conditionals. A `src/main` file may never contain a loader conditional.
+`src/main/java`, or loader specific and lives in `src/main/fabric` or `src/main/neoforge`. A loader
+specific file may contain version conditionals. A `src/main/java` file may never name a loader, and
+`checkLoaderSeam` fails the build when one does.
 
 ## Verified constraints
 
@@ -84,19 +88,19 @@ Checked 2026-09-12. Re-check before relying on any of it.
 
 ## Phases
 
-P0 and P1 are done. The remaining day counts are still estimates, but P0 re-anchored them against a
-real build; see [P0-SPIKE.md](P0-SPIKE.md).
+P0, P1 and P2 are done. The remaining day counts are still estimates, but P0 re-anchored them against
+a real build; see [P0-SPIKE.md](P0-SPIKE.md).
 
 | Phase | Work | Estimate | Gate to move on |
 |---|---|---|---|
 | ~~**P0**~~ | Spike: stand up a `1.21.1` node, run `:1.21.1:build`, record what actually breaks | 1 day | **Done.** [P0-SPIKE.md](P0-SPIKE.md): 23 of 58 Java files and 31 of 57 JSON files break; 4 structural forks; overlap with P1 and P2 is total |
 | ~~**P1**~~ | Move the 90 resource files to datagen, output keyed by Minecraft version | 2 to 3 days | **Done.** 58 of the 90 are generated into `src/main/generated/<minecraft version>/`; `:<version>:checkDatagen` runs in CI on all three nodes and 61 gametests pass on each |
-| **P2** | `platform/Loader`, written while there is still only one loader | 2 to 3 days | Existing nodes build and pass gametests |
+| ~~**P2**~~ | `platform/Loader`, written while there is still only one loader | 2 to 3 days | **Done.** No loader import left in `src/main/java` or `src/client/java`; `checkLoaderSeam` runs in CI; all three nodes build and pass gametests |
 | **P3** | 1.21.1 Fabric node: sync packet, HUD fork, drink item fork, asset overlay | 4 to 6 days | Gametests green on four nodes, then **release and stop for feedback** |
 | **P4** | NeoForge on 26.2 only | 8 to 15 days | Gametests green on five nodes |
 | **P5** | NeoForge across the remaining versions, starting with 1.21.1, plus publish automation | 4 to 8 days | Seven nodes green |
 
-Roughly 19 to 32 days of work left. Spread it over months, not weeks.
+Roughly 16 to 29 days of work left. Spread it over months, not weeks.
 
 P0 came first because the ordering of P1 and P2 against P3 rested on an unverified claim: that the
 1.21.1 port touches the same files datagen and the loader seam touch. The spike confirmed it in both
@@ -141,10 +145,30 @@ different bytes per version**, because a codec that omits a defaulted field chan
 defaults. That is expected and documented in [src/datagen/java/AGENTS.md](../../src/datagen/java/AGENTS.md);
 it is not drift.
 
-What is still open, for P2:
+P2 answered the last two, and left what the seam could not settle to P3 and P4.
 
-- Whether datagen stays in `src/datagen` shared by both loaders, or splits per loader. Fabric's
-  `DataGeneratorEntrypoint` is Fabric API; NeoForge has its own entrypoint over the same vanilla
-  providers. The generators themselves should not have to move either way.
-- Whether the two loaders on one Minecraft version really do produce byte-identical files. P1 set
-  the directory up for it but only one loader exists to test it with.
+**Datagen stays Fabric only.** The providers extend Fabric API's own (`FabricRecipeProvider`,
+`FabricTagsProvider`, and the components ingredient in every purify recipe), so "the generators
+should not have to move" does not hold for a NeoForge copy: it would be a second implementation.
+The output directory is already keyed by Minecraft version, so a NeoForge node reads what the Fabric
+node on its version wrote, and `checkDatagen` keeps running on Fabric nodes only. That also makes
+**byte-identical output across loaders moot**: there is one writer. What P4 still has to check is
+that NeoForge *reads* those files, and the one real risk is the `fabric:components` ingredient in
+the 22 recipes. NeoForge has its own components ingredient under a different type key, so either
+the recipes fork per loader or a NeoForge node registers a `fabric:components` alias. Decide there.
+
+What the seam looks like, so P3 and P4 know where they land
+([platform/AGENTS.md](../../src/main/java/com/thirstwastaken2/platform/AGENTS.md) has the rules):
+
+| Seam | P3 (1.21.1 Fabric) | P4 (NeoForge 26.2) |
+|---|---|---|
+| `Loader.playerData` | the hand written sync packet goes inside the Fabric copy, behind a version conditional | `AttachmentType` in a `DeferredRegister`, with `sync` |
+| `Loader.onUseBlock`, `onUseItem` | unchanged | cancellable `PlayerInteractEvent`s; a non-`PASS` result cancels |
+| `Loader.onBuiltinLootTable` | unchanged | `LootTableLoadEvent`, skipping datapack tables by hand |
+| `Loader.creativeTabBuilder` | `FabricItemGroup`, already branched | vanilla's `CreativeModeTab.builder()` |
+| `ClientLoader.addRightStatusBar` | the HUD fork: `HudRenderCallback`, reading the stack height by hand | `RegisterGuiLayersEvent` above the food layer, `Gui.rightHeight` |
+| item registration | still a direct `Registry.register` in `ThirstItems`, not behind the seam | needs registering during the registry event; the one P2 left alone |
+
+Item registration was left out on purpose. Fabric allows registering in the initializer, which is
+all one loader can test, and a seam written without a second loader to check it against would be a
+guess. P4 is where it gets one.

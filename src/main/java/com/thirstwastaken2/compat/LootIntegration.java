@@ -1,7 +1,7 @@
 package com.thirstwastaken2.compat;
 
+import com.thirstwastaken2.platform.Loader;
 import com.thirstwastaken2.purity.ThirstComponents;
-import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potions;
@@ -20,7 +20,7 @@ import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import java.util.Set;
 
 /**
- * Fabric replacement for the original Forge global loot modifiers, which seeded structure chests and
+ * Replacement for the original Forge global loot modifiers, which seeded structure chests and
  * Piglin barters with water bottles of varying purity.
  */
 public final class LootIntegration {
@@ -34,12 +34,11 @@ public final class LootIntegration {
     private LootIntegration() { }
 
     public static void register() {
-        LootTableEvents.MODIFY.register((key, table, source, registries) -> {
-            if (!source.isBuiltin()) return;
+        Loader.onBuiltinLootTable((key, addPool) -> {
             if (CHESTS.contains(key)) {
-                table.withPool(waterPool(true));
+                addPool.accept(waterPool(true));
             } else if (BuiltInLootTables.PIGLIN_BARTERING.equals(key)) {
-                table.withPool(waterPool(false));
+                addPool.accept(waterPool(false));
             }
         });
     }

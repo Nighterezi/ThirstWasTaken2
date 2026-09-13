@@ -1,10 +1,12 @@
 # src/main/resources
 
-The hand-written half of the mod's assets, plus the two manifests. This file is excluded from the
+The hand-written half of the mod's assets, plus the mixin config. This file is excluded from the
 built jar by `processResources` in `build.gradle.kts`; keep that exclude if you add more notes here.
 
+The loader's own manifest is loader code and lives beside the loader's Java, in
+`src/main/fabric/resources/fabric.mod.json`. Everything here is shared by every loader.
+
 ```
-fabric.mod.json              entrypoints (main, client, modmenu), deps, mixin config list
 thirstwastaken2.mixins.json  every mixin class must be listed here
 assets/thirstwastaken2/
   icon.png                   the Mod Menu icon, 512x512
@@ -23,8 +25,10 @@ that writes them.
 
 ## Manifests
 
-`fabric.mod.json` is templated: `${version}` is expanded by `processResources`, so it is not valid
-JSON to a strict parser until built. A new mixin class needs an entry in `thirstwastaken2.mixins.json`
+`src/main/fabric/resources/fabric.mod.json` is templated: `${version}` is expanded by
+`processResources`, so it is not valid JSON to a strict parser until built. Its entrypoints are the
+thin Fabric classes `ThirstWasTaken2Fabric` and `ThirstWasTaken2FabricClient`, not the loader
+independent `ThirstWasTaken2`. A new mixin class needs an entry in `thirstwastaken2.mixins.json`
 or it never applies; a new mixin *config* file needs an entry in `fabric.mod.json` too.
 
 ## Recipes
