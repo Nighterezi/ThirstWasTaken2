@@ -90,7 +90,7 @@
   "thirstwastaken2.config.category.appleskin": "AppleSkin",
   "thirstwastaken2.config.appleskin_missing": "未安装 AppleSkin，这些设置暂时不起作用。",
   "thirstwastaken2.config.appleskin_quenched_overlay": "解渴轮廓",
-  "thirstwastaken2.config.appleskin_quenched_overlay.tooltip": "口渴条和提示框中解渴轮廓的颜色。关闭后口渴条上不再显示。",
+  "thirstwastaken2.config.appleskin_quenched_overlay.tooltip": "口渴条和提示框中解渴轮廓的颜色。关闭后口渴条上不再显示轮廓和消耗条。",
   "thirstwastaken2.config.appleskin_quenched_overlay.diamond": "钻石",
   "thirstwastaken2.config.appleskin_quenched_overlay.ice": "冰",
   "thirstwastaken2.config.appleskin_quenched_overlay.gold": "金",

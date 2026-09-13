@@ -90,7 +90,7 @@
   "thirstwastaken2.config.category.appleskin": "AppleSkin",
   "thirstwastaken2.config.appleskin_missing": "AppleSkin n'est pas installé : ces réglages n'ont aucun effet pour l'instant.",
   "thirstwastaken2.config.appleskin_quenched_overlay": "Contour de désaltération",
-  "thirstwastaken2.config.appleskin_quenched_overlay.tooltip": "Couleur du contour de désaltération sur la barre de soif et dans les infobulles. Désactivé le retire de la barre.",
+  "thirstwastaken2.config.appleskin_quenched_overlay.tooltip": "Couleur du contour de désaltération sur la barre de soif et dans les infobulles. Désactivé retire le contour et la bande d'épuisement de la barre.",
   "thirstwastaken2.config.appleskin_quenched_overlay.diamond": "Diamant",
   "thirstwastaken2.config.appleskin_quenched_overlay.ice": "Glace",
   "thirstwastaken2.config.appleskin_quenched_overlay.gold": "Or",

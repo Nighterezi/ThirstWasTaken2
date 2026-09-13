@@ -90,7 +90,7 @@
   "thirstwastaken2.config.category.appleskin": "AppleSkin",
   "thirstwastaken2.config.appleskin_missing": "AppleSkin이 설치되어 있지 않아 지금은 이 설정이 적용되지 않습니다.",
   "thirstwastaken2.config.appleskin_quenched_overlay": "해갈 테두리",
-  "thirstwastaken2.config.appleskin_quenched_overlay.tooltip": "갈증 막대와 툴팁에 표시되는 해갈 테두리의 색입니다. 끄면 막대에서 사라집니다.",
+  "thirstwastaken2.config.appleskin_quenched_overlay.tooltip": "갈증 막대와 툴팁에 표시되는 해갈 테두리의 색입니다. 끄면 막대에서 테두리와 소모도 띠가 사라집니다.",
   "thirstwastaken2.config.appleskin_quenched_overlay.diamond": "다이아몬드",
   "thirstwastaken2.config.appleskin_quenched_overlay.ice": "얼음",
   "thirstwastaken2.config.appleskin_quenched_overlay.gold": "금",

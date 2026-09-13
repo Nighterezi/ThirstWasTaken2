@@ -70,8 +70,8 @@ Sprite geometry, which is easy to break:
 - The server syncs exhaustion in quarter-point steps (`ThirstManager.SYNC_STEP`), not every tick. The
   partial frames change at 0 and 2, both on a step, and the AppleSkin strip moves about 5 px a step.
   Do not add a client feature that needs finer exhaustion without revisiting that step.
-- When AppleSkin is loaded and its exhaustion-underlay option is enabled, `AppleSkinIntegration`
-  exposes that setting and `ThirstHud` draws the synced exhaustion as the `v = 18` dither strip of
+- When AppleSkin is loaded, its exhaustion-underlay option is enabled and the quenched outline is not
+  `OFF`, `AppleSkinIntegration` says so and `ThirstHud` draws the synced exhaustion as the `v = 18` dither strip of
   `appleskin_icons.png`, blitted with the 256x256 texture size.
 - The quenched outline is AppleSkin-only, like the strip: `compat/AppleSkin.quenchedOverlay()` (common
   code) returns `OFF` without AppleSkin, and otherwise the player's `appleskinQuenchedOverlay`. It comes

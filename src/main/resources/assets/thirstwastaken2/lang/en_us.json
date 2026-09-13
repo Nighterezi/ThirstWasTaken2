@@ -90,7 +90,7 @@
   "thirstwastaken2.config.category.appleskin": "AppleSkin",
   "thirstwastaken2.config.appleskin_missing": "AppleSkin is not installed, so these settings do nothing for now.",
   "thirstwastaken2.config.appleskin_quenched_overlay": "Quenched Outline",
-  "thirstwastaken2.config.appleskin_quenched_overlay.tooltip": "Colour of the quenched outline on the thirst bar and in tooltips. Off removes it from the bar.",
+  "thirstwastaken2.config.appleskin_quenched_overlay.tooltip": "Colour of the quenched outline on the thirst bar and in tooltips. Off removes the outline and the exhaustion strip from the bar.",
   "thirstwastaken2.config.appleskin_quenched_overlay.diamond": "Diamond",
   "thirstwastaken2.config.appleskin_quenched_overlay.ice": "Ice",
   "thirstwastaken2.config.appleskin_quenched_overlay.gold": "Gold",

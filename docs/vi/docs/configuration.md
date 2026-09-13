@@ -119,8 +119,8 @@ hình đó.
 
 ## AppleSkin
 
-Hai mục này chỉ có tác dụng khi đã cài AppleSkin. Tùy chọn **Food Exhaustion HUD Underlay** của chính
-AppleSkin điều khiển dải tiêu hao dạng hạt phía sau thanh khát.
+Hai mục này chỉ có tác dụng khi đã cài AppleSkin. Dải tiêu hao dạng hạt phía sau thanh khát theo tùy
+chọn **Food Exhaustion HUD Underlay** của chính AppleSkin.
 
 ![Trang Giao diện & AppleSkin, có bản xem trước dưới tiêu đề](/screenshots/config-hud.png)
 
@@ -128,7 +128,7 @@ AppleSkin điều khiển dải tiêu hao dạng hạt phía sau thanh khát.
 
 Mặc định `DIAMOND`. Màu viền đã khát trên thanh khát và trong dòng mô tả: `DIAMOND` (kim cương), `ICE`
 (băng), `GOLD` (vàng), hoặc `APPLESKIN` là đúng màu vàng AppleSkin dùng cho thanh đói. `OFF` bỏ viền
-khỏi thanh, còn dòng mô tả giữ viền xanh thường.
+và dải tiêu hao khỏi thanh, còn dòng mô tả giữ viền xanh thường.
 
 ### appleskinTooltipDroplets
 

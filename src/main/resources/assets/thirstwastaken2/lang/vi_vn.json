@@ -90,7 +90,7 @@
   "thirstwastaken2.config.category.appleskin": "AppleSkin",
   "thirstwastaken2.config.appleskin_missing": "Chưa cài AppleSkin nên các cài đặt này tạm thời chưa có tác dụng.",
   "thirstwastaken2.config.appleskin_quenched_overlay": "Viền đã khát",
-  "thirstwastaken2.config.appleskin_quenched_overlay.tooltip": "Màu viền đã khát trên thanh khát nước và trong tooltip. Tắt sẽ bỏ viền khỏi thanh.",
+  "thirstwastaken2.config.appleskin_quenched_overlay.tooltip": "Màu viền đã khát trên thanh khát nước và trong tooltip. Tắt sẽ bỏ viền và dải tiêu hao khỏi thanh.",
   "thirstwastaken2.config.appleskin_quenched_overlay.diamond": "Kim cương",
   "thirstwastaken2.config.appleskin_quenched_overlay.ice": "Băng",
   "thirstwastaken2.config.appleskin_quenched_overlay.gold": "Vàng",

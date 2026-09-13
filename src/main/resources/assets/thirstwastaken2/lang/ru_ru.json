@@ -90,7 +90,7 @@
   "thirstwastaken2.config.category.appleskin": "AppleSkin",
   "thirstwastaken2.config.appleskin_missing": "AppleSkin не установлен, поэтому эти настройки пока ни на что не влияют.",
   "thirstwastaken2.config.appleskin_quenched_overlay": "Контур утоления",
-  "thirstwastaken2.config.appleskin_quenched_overlay.tooltip": "Цвет контура утоления на шкале жажды и в подсказках. «Выкл.» убирает его со шкалы.",
+  "thirstwastaken2.config.appleskin_quenched_overlay.tooltip": "Цвет контура утоления на шкале жажды и в подсказках. «Выкл.» убирает со шкалы контур и полосу истощения.",
   "thirstwastaken2.config.appleskin_quenched_overlay.diamond": "Алмаз",
   "thirstwastaken2.config.appleskin_quenched_overlay.ice": "Лёд",
   "thirstwastaken2.config.appleskin_quenched_overlay.gold": "Золото",

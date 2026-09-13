@@ -28,7 +28,7 @@ phần dự trữ đã cạn.
 
 Khi cài AppleSkin, phía sau các giọt của thanh khát còn có một dải tiêu hao dạng hạt. Dải này đầy dần
 từ phải sang trái khi mức tiêu hao tiến tới 4 và tuân theo tùy chọn **Food Exhaustion HUD Underlay**
-của AppleSkin. AppleSkin không bắt buộc; nếu không cài, độ khát và mức đã khát vẫn hoạt động y hệt.
+của AppleSkin. Tắt viền đã khát thì dải này cũng ẩn theo. AppleSkin không bắt buộc; nếu không cài, độ khát và mức đã khát vẫn hoạt động y hệt.
 
 Ngồi trên ngựa, thuyền hay xe mỏ thì không tốn gì. Người chơi ở chế độ Sáng tạo và Khán giả được bỏ
 qua hoàn toàn.

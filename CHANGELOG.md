@@ -8,7 +8,7 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 
 - Support for Minecraft 1.21 and 1.21.1.
 - The quenched outline on the thirst bar now comes in four colours: Diamond, Ice, Gold and
-  AppleSkin's own gold. It can also be turned off.
+  AppleSkin's own gold. Turning it off also hides the exhaustion strip.
 - A setting to hide the thirst and quenched droplets in item tooltips.
 - The config screen is split into pages, shows a live preview of the thirst bar and a drink's
   tooltip, and has Cancel and Reset to Defaults buttons.

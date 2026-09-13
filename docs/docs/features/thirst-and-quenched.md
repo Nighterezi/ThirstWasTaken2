@@ -29,7 +29,7 @@ quenched, or one point of thirst once the reserve is empty.
 
 With AppleSkin installed, the thirst bar also gets a dithered exhaustion strip behind its droplets.
 It fills from right to left as exhaustion approaches 4 and follows AppleSkin's **Food Exhaustion HUD
-Underlay** setting. AppleSkin is optional; without it, thirst and quenched work exactly the same.
+Underlay** setting. Turning the quenched outline off hides the strip too. AppleSkin is optional; without it, thirst and quenched work exactly the same.
 
 Sitting on a horse, a boat or a minecart costs nothing. Creative and spectator players are ignored
 entirely.

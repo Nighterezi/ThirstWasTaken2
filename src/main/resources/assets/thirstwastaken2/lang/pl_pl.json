@@ -90,7 +90,7 @@
   "thirstwastaken2.config.category.appleskin": "AppleSkin",
   "thirstwastaken2.config.appleskin_missing": "AppleSkin nie jest zainstalowany, więc te ustawienia na razie nic nie robią.",
   "thirstwastaken2.config.appleskin_quenched_overlay": "Obrys ugaszenia",
-  "thirstwastaken2.config.appleskin_quenched_overlay.tooltip": "Kolor obrysu ugaszenia na pasku pragnienia i w podpowiedziach. Wyłączony znika z paska.",
+  "thirstwastaken2.config.appleskin_quenched_overlay.tooltip": "Kolor obrysu ugaszenia na pasku pragnienia i w podpowiedziach. Wyłączony usuwa z paska obrys i pasek wyczerpania.",
   "thirstwastaken2.config.appleskin_quenched_overlay.diamond": "Diament",
   "thirstwastaken2.config.appleskin_quenched_overlay.ice": "Lód",
   "thirstwastaken2.config.appleskin_quenched_overlay.gold": "Złoto",

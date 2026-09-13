@@ -89,9 +89,9 @@ The server owns thirst. These are the checks that the client is told.
 - [x] A waterskin's sprite shows 0, 1, 2 or 3 drinks, and its bar is coloured by grade.
 - [x] Drinking a bowl or a waterskin plays the drinking animation and sound, and takes about as long
       as a potion. The bowl leaves an empty terracotta bowl; the waterskin stays in hand.
-- [ ] Crouch with an empty hand and use water at less than full thirst: the drinking sound is heard
+- [x] Crouch with an empty hand and use water at less than full thirst: the drinking sound is heard
       by the drinker.
-- [ ] Crouch with an empty hand and use water whose floor is out of reach (deep water, a waterfall):
+- [x] Crouch with an empty hand and use water whose floor is out of reach (deep water, a waterfall):
       it is drunk all the same, once per click, and an item in the other hand is still used.
 - [x] Scooping with a bowl plays the bucket sound, with a waterskin the bottle sound.
 

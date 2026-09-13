@@ -1,6 +1,7 @@
 package com.thirstwastaken2.client.compat;
 
 import com.thirstwastaken2.compat.AppleSkin;
+import com.thirstwastaken2.config.QuenchedOverlay;
 import squeek.appleskin.ModConfig;
 
 /**
@@ -11,9 +12,12 @@ import squeek.appleskin.ModConfig;
 public final class AppleSkinIntegration {
     private AppleSkinIntegration() { }
 
-    /** Mirrors AppleSkin's own exhaustion-underlay toggle for the thirst bar. */
+    /**
+     * Whether the thirst bar gets the exhaustion strip: AppleSkin's own exhaustion-underlay toggle,
+     * unless the quenched outline is off. Off turns the AppleSkin look off the thirst bar as a whole.
+     */
     public static boolean shouldShowExhaustion() {
-        if (!AppleSkin.isLoaded()) return false;
+        if (!AppleSkin.isLoaded() || AppleSkin.quenchedOverlay() == QuenchedOverlay.OFF) return false;
         return AppleSkinConfig.shouldShowExhaustion();
     }
 

@@ -90,7 +90,7 @@
   "thirstwastaken2.config.category.appleskin": "AppleSkin",
   "thirstwastaken2.config.appleskin_missing": "AppleSkin がインストールされていないため、これらの設定は今は効果がありません。",
   "thirstwastaken2.config.appleskin_quenched_overlay": "潤いの輪郭",
-  "thirstwastaken2.config.appleskin_quenched_overlay.tooltip": "渇きバーとツールチップに表示する潤いの輪郭の色です。オフにするとバーから消えます。",
+  "thirstwastaken2.config.appleskin_quenched_overlay.tooltip": "渇きバーとツールチップに表示する潤いの輪郭の色です。オフにするとバーから輪郭と消耗度の帯が消えます。",
   "thirstwastaken2.config.appleskin_quenched_overlay.diamond": "ダイヤモンド",
   "thirstwastaken2.config.appleskin_quenched_overlay.ice": "氷",
   "thirstwastaken2.config.appleskin_quenched_overlay.gold": "金",

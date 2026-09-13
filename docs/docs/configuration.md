@@ -119,8 +119,8 @@ of the screen.
 
 ## AppleSkin
 
-These two only do something while AppleSkin is installed. AppleSkin's own **Food Exhaustion HUD
-Underlay** option controls the dithered exhaustion strip behind the thirst bar.
+These two only do something while AppleSkin is installed. The dithered exhaustion strip behind the
+thirst bar follows AppleSkin's own **Food Exhaustion HUD Underlay** option.
 
 ![The HUD and AppleSkin page, with the preview under its title](/screenshots/config-hud.png)
 
@@ -128,7 +128,7 @@ Underlay** option controls the dithered exhaustion strip behind the thirst bar.
 
 Default `DIAMOND`. The colour of the quenched outline on the thirst bar and in tooltips: `DIAMOND`,
 `ICE`, `GOLD`, or `APPLESKIN` for the exact gold AppleSkin outlines hunger in. `OFF` removes the
-outline from the bar, and tooltips keep a plain blue one.
+outline and the exhaustion strip from the bar, and tooltips keep a plain blue outline.
 
 ### appleskinTooltipDroplets
 
