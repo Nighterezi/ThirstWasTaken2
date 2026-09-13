@@ -1,7 +1,7 @@
 # ThirstWasTaken2
 
 A Fabric fork of [Thirst Was Taken](https://github.com/ghen-git/Thirst-Mod) (originally Forge,
-Minecraft 1.19.2) for **Minecraft 26.2, 26.1.x and 1.21.11** on **Fabric Loader 0.19.3**. It adds a
+Minecraft 1.19.2) for **Minecraft 26.2, 26.1.x, 1.21.11 and 1.21.1** on **Fabric Loader 0.19.3**. It adds a
 survival thirst bar, drinking, and water purity to Minecraft and further extends the original mod. It
 started as a port and has since diverged, so upstream is a reference, not a spec.
 
@@ -13,7 +13,8 @@ started as a port and has since diverged, so upstream is a reference, not a spec
 ## Build and run
 
 One source tree produces one jar per Minecraft version. Every version is a Gradle subproject named
-after its entry in `settings.gradle.kts`: `26.2.x`, `26.1.x`, `1.21.11`.
+after its entry in `settings.gradle.kts`: `26.2.x`, `26.1.x`, `1.21.11`, `1.21.1`. The `1.21.1` jar also covers 1.21, which nothing the mod
+touches differs from.
 
 Build every version and collect the jars in `build/libs/`:
 
@@ -88,8 +89,8 @@ cached.
 
 ## Stack and constraints
 
-- **Minecraft 26.2, 26.1.x and 1.21.11**, **Fabric Loader 0.19.3**, **Fabric Loom 1.17**. 26.1+ runs
-  on **Java 25**, 1.21.11 on **Java 21**; the build sets the toolchain and `--release` per version,
+- **Minecraft 26.2, 26.1.x, 1.21.11 and 1.21.1**, **Fabric Loader 0.19.3**, **Fabric Loom 1.17**. 26.1+
+  runs on **Java 25**, 1.21.x on **Java 21**; the build sets the toolchain and `--release` per version,
   so do not use a language feature newer than Java 21.
 - **Multi-version via [Stonecutter](https://stonecutter.kikugie.dev)**. `settings.gradle.kts` lists
   the versions, `stonecutter.properties.toml` holds every per-version value (dependency versions,
@@ -138,7 +139,8 @@ never learn which branch is live. Both have their own `AGENTS.md`.
 mixin is allowed to fork. Its body still stays one line; the logic it calls lives in a normal class.
 
 Everything else — `data/`, `purity/`, `config/`, `api/`, `item/` — should compile unchanged on every
-version. A versioned comment appearing there means a seam is missing from `platform/`.
+version. A versioned comment appearing there means a seam is missing from `platform/`, and
+`checkVersionSeam` fails the build in CI when one does.
 
 Version-specific branches are Stonecutter comments. The disabled branch is the commented one, and
 which branch is commented is rewritten when the active version changes:
@@ -161,6 +163,13 @@ replacements {
     }
 }
 ```
+Two things about Stonecutter that are easy to learn the hard way:
+
+- **Replacements do not chain.** Each one is applied to the original text, so a rule cannot rewrite
+  what another rule produced. When two differences meet in one string, pick the result in Kotlin
+  first; the `critereon` spelling in `stonecutter.gradle.kts` is the example.
+- **No block comments inside a `//?` block.** A disabled branch is itself one `/* */` comment, and a
+  `*/` inside it ends it early. Javadoc goes outside the block, or becomes line comments.
 
 ### Adding a Minecraft version
 
@@ -281,6 +290,7 @@ src/main/java/com/thirstwastaken2/      common (client + server), loader indepen
   purity/WaterInteractions.java        bowl/waterskin filling, cauldron purity transfer
   purity/FillCapture.java              sample-then-stamp shared by the bottle and bucket mixins
   platform/Vanilla.java                vanilla calls that differ between Minecraft versions
+  platform/DrinkItem.java              an item that is drunk: a component from 1.21.2, overrides before
   platform/PlayerData.java, Use*Handler.java  types the per-loader Loader signatures share
   tooltip/ThirstTooltip.java           separate thirst/quenched tooltip rows (thirstwastaken2:droplets font)
   compat/LootIntegration.java          structure chests + Piglin barter water
@@ -303,6 +313,8 @@ src/client/fabric/java/com/thirstwastaken2/client/   Fabric only, compiled into 
   fabric/ThirstWasTaken2FabricClient.java  client entrypoint
   platform/ClientLoader.java           HUD layer and status bar height registration
   compat/ModMenuIntegration.java       modmenu entrypoint
+src/client/fabric/java/com/thirstwastaken2/fabric/mixin/GuiMixin.java  the 1.21.1 HUD hook
+src/client/fabric/resources/thirstwastaken2.fabric.client.mixins.json  its mixin config
 
 settings.gradle.kts                    the list of supported Minecraft versions
 stonecutter.properties.toml            every per-version value
@@ -376,11 +388,14 @@ Brewin' and Chewin' / Collector's Reap support stays dependency-free.
 | `BucketItemMixin` | `BucketItem#use` | stamp purity on a bucket filled from a water block |
 | `LayeredCauldronBlockMixin` | `#createBlockStateDefinition`, `#handlePrecipitation`, `#receiveStalactiteDrip` | add the stored-quality property; grade the water rain or a dripstone added |
 | `CauldronBlockMixin` | `#handlePrecipitation`, `#receiveStalactiteDrip` | the same, for the empty cauldron those two turn into a water cauldron |
+| `BlocksMixin` | `Blocks` static init, 1.21.1 only | mark the water cauldron's construction, which cannot be identified from inside its constructor there |
+| `GuiMixin` (Fabric, client) | `Gui#renderPlayerHealth`, 1.21.1 only | draw the thirst bar after the food bar and move the air bubbles up, which Fabric API's HUD registry does from 1.21.6 |
 
 ## HUD
 
 `ThirstWasTaken2Client` adds `thirst_bar` through `ClientLoader.addRightStatusBar`, which on Fabric
-attaches it after `VanillaHudElements.FOOD_BAR` and reserves 10px of right-stack height.
+attaches it after `VanillaHudElements.FOOD_BAR` and reserves 10px of right-stack height. 1.21.1 has
+neither registry, so there `GuiMixin` draws the bar at the same place and moves the air bubbles up.
 `ThirstHud.render` draws, in order:
 
 1. when AppleSkin is present and its exhaustion-underlay option is enabled, a right-to-left dither
@@ -408,7 +423,7 @@ server.
 | Integration | Gate | Notes |
 |---|---|---|
 | Mod Menu | `modmenu` entrypoint | class only loads if Mod Menu resolves it |
-| Loot | always | `Loader.onBuiltinLootTable` on 5 vanilla chests + Piglin bartering |
+| Loot | always | `Loader.onLootTable` on 5 vanilla chests + Piglin bartering, including tables a data pack replaced |
 | Food mods | always | resolved by registry id in `ThirstConfig.drinks` / `foods`, no classes referenced |
 
 ## Porting rules of thumb

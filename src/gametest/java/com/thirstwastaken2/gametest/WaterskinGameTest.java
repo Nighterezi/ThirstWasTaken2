@@ -7,7 +7,13 @@ import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.purity.WaterQuality;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.SlotAccess;
+import net.minecraft.world.inventory.ClickAction;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 /** Storing, mixing and emptying the three servings a waterskin holds. */
 public final class WaterskinGameTest {
@@ -91,6 +97,53 @@ public final class WaterskinGameTest {
         TestFixtures.check(helper, new ItemStack(ThirstItems.TERRACOTTA_BOWL).isStackable(),
                 "the empty bowl is just a container and should still stack");
         helper.succeed();
+    }
+
+    @GameTest
+    public void aBottleOnTheCursorPoursOneServingIn(GameTestHelper helper) {
+        ItemStack skin = new ItemStack(ThirstItems.WATERSKIN);
+        ItemStack[] cursor = {WaterPurity.setQuality(TestFixtures.waterBottle(), WaterQuality.fresh(2))};
+
+        TestFixtures.check(helper, !clickWith(helper, skin, cursor, ClickAction.PRIMARY),
+                "a left click should not pour anything");
+        TestFixtures.check(helper, clickWith(helper, skin, cursor, ClickAction.SECONDARY),
+                "right-clicking a waterskin with a water bottle should pour it in");
+
+        TestFixtures.check(helper, WaterskinItem.servings(skin) == 1,
+                "a bottle is one serving, got " + WaterskinItem.servings(skin));
+        TestFixtures.check(helper, WaterPurity.quality(skin).equals(WaterQuality.fresh(2)),
+                "the serving keeps the bottle's grade, got " + WaterPurity.quality(skin));
+        TestFixtures.check(helper, cursor[0].is(Items.GLASS_BOTTLE),
+                "the cursor should be left holding the empty bottle, got " + cursor[0]);
+        helper.succeed();
+    }
+
+    @GameTest
+    public void aBucketOnTheCursorFillsTheSkin(GameTestHelper helper) {
+        ItemStack skin = new ItemStack(ThirstItems.WATERSKIN);
+        ItemStack[] cursor = {WaterPurity.setQuality(new ItemStack(Items.WATER_BUCKET), WaterQuality.fresh(1))};
+
+        clickWith(helper, skin, cursor, ClickAction.SECONDARY);
+
+        TestFixtures.check(helper, WaterskinItem.servings(skin) == WaterskinItem.CAPACITY,
+                "a bucket should fill every serving, got " + WaterskinItem.servings(skin));
+        TestFixtures.check(helper, cursor[0].is(Items.BUCKET), "the cursor should be left holding the empty bucket, got " + cursor[0]);
+
+        ItemStack[] another = {WaterPurity.setQuality(TestFixtures.waterBottle(), WaterQuality.fresh(2))};
+        TestFixtures.check(helper, !clickWith(helper, skin, another, ClickAction.SECONDARY),
+                "a full waterskin should refuse a bottle");
+        TestFixtures.check(helper, another[0].is(Items.POTION), "the refused bottle should stay full, got " + another[0]);
+        helper.succeed();
+    }
+
+    /** Right- or left-clicks a slotted waterskin with {@code cursor[0]}, which the click may replace. */
+    private static boolean clickWith(GameTestHelper helper, ItemStack skin, ItemStack[] cursor, ClickAction action) {
+        ServerPlayer player = TestFixtures.survivalPlayer(helper);
+        SimpleContainer container = new SimpleContainer(1);
+        container.setItem(0, skin);
+        Slot slot = new Slot(container, 0, 0, 0);
+        SlotAccess carried = SlotAccess.of(() -> cursor[0], stack -> cursor[0] = stack);
+        return skin.getItem().overrideOtherStackedOnMe(skin, cursor[0], slot, action, player, carried);
     }
 
     @GameTest

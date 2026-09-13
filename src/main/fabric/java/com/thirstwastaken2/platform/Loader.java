@@ -83,7 +83,14 @@ public final class Loader {
     }
 
     public static void onUseItem(UseItemHandler handler) {
+        //? if >=1.21.2 {
         UseItemCallback.EVENT.register(handler::use);
+        //?} else {
+        /*// Before 1.21.2 the callback also returns the stack left in the hand, which is whatever the
+        // handler put there.
+        UseItemCallback.EVENT.register((player, level, hand) -> new net.minecraft.world.InteractionResultHolder<>(
+                handler.use(player, level, hand), player.getItemInHand(hand)));
+        *///?}
     }
 
     /** Runs whenever the server builds its command tree, including on {@code /reload}. */
@@ -92,13 +99,15 @@ public final class Loader {
     }
 
     /**
-     * Runs for every loot table as it loads, handing over the table's id and a way to append a pool.
-     * Tables a datapack replaced are skipped, so a pack's own version is left exactly as written.
+     * Runs for every loot table as it loads, handing over the table's id and a way to append a pool,
+     * whoever wrote the table: vanilla, a mod, or a data pack that replaced it.
+     *
+     * <p>Fabric API does say where a table came from, but not which pack, so vanilla's own experiment
+     * packs cannot be told apart from a player's data pack, and its answer for them changed between
+     * versions. Taking every table is the one rule that holds on every version and every loader.
      */
-    public static void onBuiltinLootTable(BiConsumer<ResourceKey<LootTable>, Consumer<LootPool.Builder>> handler) {
-        LootTableEvents.MODIFY.register((key, table, source, registries) -> {
-            if (source.isBuiltin()) handler.accept(key, table::withPool);
-        });
+    public static void onLootTable(BiConsumer<ResourceKey<LootTable>, Consumer<LootPool.Builder>> handler) {
+        LootTableEvents.MODIFY.register((key, table, source, registries) -> handler.accept(key, table::withPool));
     }
 
     private record AttachmentPlayerData<T>(AttachmentType<T> type) implements PlayerData<T> {

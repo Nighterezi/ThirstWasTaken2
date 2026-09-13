@@ -39,7 +39,7 @@ the same directory. Only the Fabric node writes it: the providers extend Fabric 
 generator per loader would only be a second way for the files to drift. The `.cache/` beside the
 output is datagen's own hash cache and is gitignored.
 
-## Why the three versions produce different bytes
+## Why the versions produce different bytes
 
 The generators are one body of code; the serializers are not. A field whose value equals its codec's
 default is omitted, and which fields have defaults changed between versions, so the same generator
@@ -67,12 +67,35 @@ here, and they are handled differently:
   to `FabricTagsProvider` for 26.1, and 26.2 moved the advancement trigger classes out of
   `net.minecraft.advancements` into `triggers` and `predicates` without renaming one of them. The
   code names the newest spelling and the replacements supply the older one.
-- **A shape change** gets a `//?` block. There are seven, all for 1.21.11: six in
-  `ThirstRecipeProvider` for the result type and the cooking recipe constructors, and one in
-  `ThirstModelProvider` for the texture wrapper.
+- **A shape change** gets a `//?` block. Six in `ThirstRecipeProvider` are for 1.21.11's result
+  type and cooking recipe constructors, and one in `ThirstModelProvider` for its texture wrapper;
+  the rest are for 1.21.1, below.
 
-`builder(TagKey)` rather than `tag(TagKey)` is deliberate — it is Fabric's, exists on all three
-versions, and needs no conditional. Vanilla's `tag` only exists from 26.2.
+**No block comments inside a `//?` block**: a disabled branch is itself one block comment, and a
+nested `*/` ends it early. The 1.21.1 blocks use line comments for that reason.
+
+`builder(TagKey)` rather than `tag(TagKey)` is deliberate — it is Fabric's and needs no conditional
+from 1.21.11 on. Vanilla's `tag` only exists from 26.2. On 1.21.1 Fabric still called it
+`getOrCreateTagBuilder`, which is the one tag branch in each tag provider.
+
+## What 1.21.1 writes differently
+
+The generators are the same; the formats they write to are older.
+
+- **No item model definitions.** `assets/…/items/` arrived in 1.21.4, so on 1.21.1
+  `ThirstItemModelDefinitionProvider` holds no class at all and is not registered. The two items
+  that dispatch get an `overrides` list in their own `models/item/*.json` instead, one entry per
+  `custom_model_data` value from 1 up, with the first variant as the model's own texture. The game
+  takes the last override the value reaches, so the list is in rising order.
+- **Custom model data is one integer**, not a float list; `Vanilla.modelSelector` writes it, and the
+  recipe results carry it in that form.
+- **No sea-water bottle or bucket models**, since nothing on 1.21.1 could select them.
+- **The advancement background is a texture path**, `minecraft:textures/block/terracotta.png`.
+- **Ingredients are `{"item": …}` objects.** Nothing branches for this; the codec writes it.
+- **The filled-bowl crafting recipe is built by hand.** 1.21.1's shapeless builder cannot give its
+  result components, so the recipe and its unlock are written the way the builder would write them.
+  The unlock comes out byte-identical to 1.21.11's.
+- **Recipes are known by id, not by registry key**, so `recipe(name)` returns one or the other.
 
 ## The providers
 
@@ -84,7 +107,7 @@ versions, and needs no conditional. Vanilla's `tag` only exists from 26.2.
 | `ThirstDamageTypeTagProvider` | `data/minecraft/tags/damage_type/bypasses_armor.json` |
 | `ThirstBiomeTagProvider` | `data/…/tags/worldgen/biome/stagnant_water.json` |
 | `ThirstModelProvider` | `assets/…/models/item/`, and the definitions for the mod's own items |
-| `ThirstItemModelDefinitionProvider` | the two definitions in `assets/…/items/` that have no item |
+| `ThirstItemModelDefinitionProvider` | the two definitions in `assets/…/items/` that have no item; 1.21.4 and later |
 
 A new provider has to be added to `ThirstDatagen.onInitializeDataGenerator` or it never runs, and
 nothing fails to tell you so.

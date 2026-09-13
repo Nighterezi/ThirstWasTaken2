@@ -1,14 +1,26 @@
 package com.thirstwastaken2.platform;
 
 import com.thirstwastaken2.ThirstWasTaken2;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.FontDescription;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.attribute.EnvironmentAttributes;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+
+import java.util.function.Function;
 
 /**
  * Every vanilla call whose shape differs between the supported Minecraft versions.
@@ -17,10 +29,41 @@ import net.minecraft.world.level.Level;
  * nowhere else. Keep each method a one-liner over vanilla — game logic belongs in its own package.
  */
 public final class Vanilla {
-    private static final FontDescription DROPLET_FONT =
-            new FontDescription.Resource(ThirstWasTaken2.id("droplets"));
+    //? if >=1.21.9 {
+    private static final net.minecraft.network.chat.FontDescription DROPLET_FONT =
+            new net.minecraft.network.chat.FontDescription.Resource(ThirstWasTaken2.id("droplets"));
+    //?} else
+    /*private static final Identifier DROPLET_FONT = ThirstWasTaken2.id("droplets");*/
+
+    /** Vanilla's description id for the water cauldron, see {@link #isWaterCauldron}. */
+    private static final String WATER_CAULDRON = "block.minecraft.water_cauldron";
+    /** Set while {@code BlocksMixin} constructs the water cauldron, on 1.21.1 only. */
+    private static boolean buildingWaterCauldron;
 
     private Vanilla() { }
+
+    /**
+     * Whether a block that is still inside its own constructor is vanilla's water cauldron. From 1.21.2
+     * a block is handed its id before it is built, so its description id answers. On 1.21.1 the id only
+     * exists once the block is registered, and asking earlier caches the wrong name for good, so
+     * {@code BlocksMixin} marks the construction instead.
+     */
+    public static boolean isWaterCauldron(Block block) {
+        //? if >1.21.1 {
+        return WATER_CAULDRON.equals(block.getDescriptionId());
+        //?} else
+        /*return buildingWaterCauldron;*/
+    }
+
+    /** Runs a block construction marked as the water cauldron's, or not. Called by {@code BlocksMixin} on 1.21.1. */
+    public static <T> T buildingWaterCauldron(boolean waterCauldron, java.util.function.Supplier<T> construction) {
+        buildingWaterCauldron = waterCauldron;
+        try {
+            return construction.get();
+        } finally {
+            buildingWaterCauldron = false;
+        }
+    }
 
     /** The registry id of a built-in or modded item. */
     public static Identifier itemId(Item item) {
@@ -28,18 +71,112 @@ public final class Vanilla {
     }
 
     /**
-     * Whether the position is Nether-like, i.e. water placed there boils away. Replaced
-     * {@code DimensionType#ultraWarm} and moved to environment attributes in 26.1.
+     * Registers one of the mod's items. From 1.21.2 an item has to know its own id before it is
+     * built, so the properties are stamped with it first.
      */
-    public static boolean waterEvaporates(Level level, BlockPos pos) {
-        // getValue is generic and hands back a boxed Boolean; unboxing it directly would throw on a
-        // dimension that does not define the attribute, on the exhaustion path of every tick.
-        return Boolean.TRUE.equals(
-                level.environmentAttributes().getValue(EnvironmentAttributes.WATER_EVAPORATES, pos));
+    public static Item registerItem(String name, Function<Item.Properties, Item> factory, Item.Properties properties) {
+        ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, ThirstWasTaken2.id(name));
+        //? if >=1.21.2 {
+        Item item = factory.apply(properties.setId(key));
+        //?} else
+        /*Item item = factory.apply(properties);*/
+        return Registry.register(BuiltInRegistries.ITEM, key, item);
     }
 
-    /** Switches a style to the mod's droplet bitmap font. */
+    /**
+     * Whether the position is Nether-like, i.e. water placed there boils away. Replaced
+     * {@code DimensionType#ultraWarm} and moved to environment attributes in 1.21.9.
+     */
+    public static boolean waterEvaporates(Level level, BlockPos pos) {
+        //? if >=1.21.9 {
+        // getValue is generic and hands back a boxed Boolean; unboxing it directly would throw on a
+        // dimension that does not define the attribute, on the exhaustion path of every tick.
+        return Boolean.TRUE.equals(level.environmentAttributes().getValue(
+                net.minecraft.world.attribute.EnvironmentAttributes.WATER_EVAPORATES, pos));
+        //?} else
+        /*return level.dimensionType().ultraWarm();*/
+    }
+
+    /**
+     * Switches a style to the mod's droplet bitmap font, without a shadow: bitmap glyphs keep their own
+     * palette, and a shadow would smear their 1px outlines. Styles could only turn the shadow off from
+     * 1.21.4, so on 1.21.1 the droplets are drawn with one.
+     */
     public static Style dropletFont(Style style) {
-        return style.withFont(DROPLET_FONT);
+        //? if >=1.21.4 {
+        return style.withFont(DROPLET_FONT).withoutShadow();
+        //?} else
+        /*return style.withFont(DROPLET_FONT);*/
+    }
+
+    /** The sound of drinking a potion. A later release turned the constant into a registry holder. */
+    public static SoundEvent drinkSound() {
+        //? if >1.21.1 {
+        return SoundEvents.GENERIC_DRINK.value();
+        //?} else
+        /*return SoundEvents.GENERIC_DRINK;*/
+    }
+
+    /** Whether a command source may run operator commands: permission level 2, vanilla's game masters. */
+    public static boolean isGameMaster(CommandSourceStack source) {
+        //? if >=1.21.11 {
+        return net.minecraft.commands.Commands.LEVEL_GAMEMASTERS.check(source.permissions());
+        //?} else
+        /*return source.hasPermission(2);*/
+    }
+
+    /** Whether a command source may run owner-only commands: permission level 4. */
+    public static boolean isOwner(CommandSourceStack source) {
+        //? if >=1.21.11 {
+        return net.minecraft.commands.Commands.LEVEL_OWNERS.check(source.permissions());
+        //?} else
+        /*return source.hasPermission(4);*/
+    }
+
+    /** The level a server player is in. A release after 1.21.1 narrowed {@code level()} to return it. */
+    public static ServerLevel level(ServerPlayer player) {
+        //? if >1.21.1 {
+        return player.level();
+        //?} else
+        /*return player.serverLevel();*/
+    }
+
+    /** Damages a player from the server. 1.21.2 split a server-only {@code hurtServer} out of {@code hurt}. */
+    public static void hurt(ServerPlayer player, DamageSource source, float amount) {
+        //? if >=1.21.2 {
+        player.hurtServer(level(player), source, amount);
+        //?} else
+        /*player.hurt(source, amount);*/
+    }
+
+    /**
+     * Custom model data holding {@code value} at float index {@code index}, which is what the item
+     * models dispatch on. 1.21.4 turned custom model data into lists; before it the component was a
+     * single integer, which is enough because no item of this mod reads more than one index.
+     */
+    public static CustomModelData modelSelector(int index, int value) {
+        //? if >=1.21.4 {
+        Float[] floats = new Float[index + 1];
+        java.util.Arrays.fill(floats, 0.0F);
+        floats[index] = (float) value;
+        return new CustomModelData(java.util.List.of(floats), java.util.List.of(), java.util.List.of(), java.util.List.of());
+        //?} else
+        /*return new CustomModelData(value);*/
+    }
+
+    /**
+     * Points a stack at the item model {@code model} while {@code use} holds, and takes it away again
+     * once it does not, but only if this mod set it, so a modded container keeps its own. The
+     * {@code minecraft:item_model} component arrived in 1.21.2; before it a vanilla item's sprite
+     * cannot be swapped per stack, so this does nothing and the stack keeps its usual sprite.
+     */
+    public static void swapItemModel(ItemStack stack, Identifier model, boolean use) {
+        //? if >=1.21.2 {
+        if (use) {
+            stack.set(net.minecraft.core.component.DataComponents.ITEM_MODEL, model);
+        } else if (model.equals(stack.get(net.minecraft.core.component.DataComponents.ITEM_MODEL))) {
+            stack.remove(net.minecraft.core.component.DataComponents.ITEM_MODEL);
+        }
+        //?}
     }
 }

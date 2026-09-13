@@ -34,7 +34,10 @@ public final class LootIntegration {
     private LootIntegration() { }
 
     public static void register() {
-        Loader.onBuiltinLootTable((key, addPool) -> {
+        // Every table with one of these ids gets the pool, including one a data pack replaced: water
+        // bottles are an addition a pack can live with, and see Loader.onLootTable for why no pack
+        // can be excluded reliably.
+        Loader.onLootTable((key, addPool) -> {
             if (CHESTS.contains(key)) {
                 addPool.accept(waterPool(true));
             } else if (BuiltInLootTables.PIGLIN_BARTERING.equals(key)) {

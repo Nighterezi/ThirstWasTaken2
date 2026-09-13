@@ -25,6 +25,7 @@ the build on a loader import in this directory:
 | `client/fabric/ThirstWasTaken2FabricClient` | the Fabric `client` entrypoint |
 | `client/platform/ClientLoader` | HUD layer and status bar height registration, per loader |
 | `client/compat/ModMenuIntegration` | the `modmenu` entrypoint; Mod Menu is a Fabric-only mod |
+| `fabric/mixin/GuiMixin` | 1.21.1 only: the status bar registry Fabric API gained in 1.21.6 |
 
 `ClientVanilla` is the client half of `com.thirstwastaken2.platform.Vanilla` and follows the same
 rules — plumbing only, one signature on every version. A Stonecutter `//?` branch anywhere else in
@@ -40,6 +41,14 @@ stack while `ThirstHud.shouldRender` holds, so vanilla stacks around it. On Fabr
 `HudStatusBarHeightRegistry.addRight`, under the one `thirstwastaken2:thirst_bar` id. The loader
 reads the stack height back and hands `ThirstHud.render` the row's `top`; the Y offset setting is
 added on top of that.
+
+Fabric API has neither registry before 1.21.6. On 1.21.1 `ClientLoader` keeps the rows itself and
+`GuiMixin` (in `src/client/fabric`) draws them where vanilla is about to draw the air bubbles, 49px up
+from the bottom for the one row, then translates the bubbles up by the height it used. That also
+means the bar is only drawn when vanilla draws the health and food bars, as on later versions.
+
+Every blit goes through `ClientVanilla.blit`, because 1.21.1 has no render pipelines: the tint there
+is shader colour state, set before the draw and reset after it.
 
 Sprite geometry, which is easy to break:
 
@@ -81,7 +90,8 @@ slider is integer-only. Only scalars are exposed; maps and keyword patterns stay
 the footer button opens with `Util.getPlatform().openPath`.
 
 Not every version of `OptionsList` takes a plain widget, so the footer button goes through
-`ClientVanilla.addFullWidthRow`.
+`ClientVanilla.addFullWidthRow`, and 1.21.1 has no section headings, so those go through
+`ClientVanilla.addHeader`, which stands a centred text row in for one.
 
 Mod Menu is `clientCompileOnly`. `ModMenuIntegration` (in `src/client/fabric/java`) is only ever
 class-loaded when Mod Menu itself resolves the entrypoint, so nothing else may reference it.

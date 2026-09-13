@@ -5,7 +5,7 @@
 <p align="center">
   <a href="https://github.com/Nighterezi/ThirstWasTaken2/actions/workflows/build.yml"><img src="https://github.com/Nighterezi/ThirstWasTaken2/actions/workflows/build.yml/badge.svg" alt="Build status"></a>
   <a href="https://modrinth.com/mod/thirst-was-taken-2"><img src="https://img.shields.io/badge/Modrinth-thirst--was--taken--2-00AF5C?logo=modrinth&logoColor=white" alt="Modrinth"></a>
-  <img src="https://img.shields.io/badge/Minecraft-26.2%20%7C%2026.1%20%7C%201.21.11-62B47A" alt="Minecraft 26.2, 26.1 and 1.21.11">
+  <img src="https://img.shields.io/badge/Minecraft-26.2%20%7C%2026.1%20%7C%201.21.11%20%7C%201.21.1-62B47A" alt="Minecraft 26.2, 26.1, 1.21.11 and 1.21.1">
   <img src="https://img.shields.io/badge/Loader-Fabric-DBD0B4" alt="Fabric">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT license"></a>
 </p>
@@ -41,16 +41,16 @@ Minecraft and further extends the original mod.
 ## Requirements
 
 There is one download per Minecraft version, named after it, for example
-`ThirstWasTaken2-1.0.3+1.21.11.jar`.
+`ThirstWasTaken2-1.0.4+1.21.11.jar`. The `+1.21.1` download also runs on Minecraft 1.21.
 
-| Component | Minecraft 26.2 | Minecraft 26.1.x | Minecraft 1.21.11 |
-|---|---|---|---|
-| Java | 25 | 25 | 21 |
-| Fabric Loader | 0.19.3 or newer | 0.19.3 or newer | 0.19.3 or newer |
-| Fabric API | 0.160.0+26.2 | 0.155.3+26.1.2 | 0.141.6+1.21.11 |
-| Mod Menu | Optional, 20.0.1 tested | Optional, 18.0.0 tested | Optional, 17.0.0 tested |
-| AppleSkin | Optional, 3.0.10+mc26.2 tested | Optional, 3.0.10+mc26.1.2 tested | Optional, 3.0.8+mc1.21.11 tested |
-| Cloth Config | Optional, needed for AppleSkin's Mod Menu screen | Same | Same |
+| Component | Minecraft 26.2 | Minecraft 26.1.x | Minecraft 1.21.11 | Minecraft 1.21.1 |
+|---|---|---|---|---|
+| Java | 25 | 25 | 21 | 21 |
+| Fabric Loader | 0.19.3 or newer | 0.19.3 or newer | 0.19.3 or newer | 0.19.3 or newer |
+| Fabric API | 0.160.0+26.2 | 0.155.3+26.1.2 | 0.141.6+1.21.11 | 0.116.17+1.21.1 |
+| Mod Menu | Optional, 20.0.1 tested | Optional, 18.0.0 tested | Optional, 17.0.0 tested | Optional, 11.0.4 tested |
+| AppleSkin | Optional, 3.0.10+mc26.2 tested | Optional, 3.0.10+mc26.1.2 tested | Optional, 3.0.8+mc1.21.11 tested | Optional, 3.0.6+mc1.21 tested |
+| Cloth Config | Optional, needed for AppleSkin's Mod Menu screen | Same | Same | Same |
 
 Download ThirstWasTaken2 from [Modrinth](https://modrinth.com/mod/thirst-was-taken-2) and install it along with Fabric API on both the client and server. Put the downloaded JAR in the
 `mods` folder.
@@ -79,6 +79,8 @@ These commands require game master permission.
 - Create is not supported in this release. The Sand Filter and Builder's Tea were removed and will
   return in a future release.
 - Jade does not currently display water purity.
+- On Minecraft 1.21 and 1.21.1, sea water in bottles and buckets looks like ordinary water (its tooltip
+  still reads Salty), and the droplets in item tooltips have a shadow.
 - Cold Sweat, Farmer's Respite, Brewin' and Chewin', Tough As Nails, Supplementaries and Botania do
   not yet have compatible Fabric releases on Minecraft 26.x. Their items are already configured and
   start working as soon as those mods are available.

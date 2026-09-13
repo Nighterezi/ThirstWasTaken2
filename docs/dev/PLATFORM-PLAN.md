@@ -65,10 +65,10 @@ specific file may contain version conditionals. A `src/main/java` file may never
 
 Checked 2026-09-12. Re-check before relying on any of it.
 
-- **Attachment sync does not exist on 1.21.1.** `AttachmentRegistry.Builder#syncWith` arrived in the
-  Fabric API for 1.21.4. [ThirstData](../../src/main/java/com/thirstwastaken2/data/ThirstData.java)
-  relies on it, so the 1.21.1 node needs a hand written sync packet, including the join, respawn and
-  dimension change paths.
+- ~~**Attachment sync does not exist on 1.21.1.**~~ Wrong, found in P3: Fabric API 0.116.17+1.21.1
+  has `AttachmentRegistry.Builder#syncWith`, backported. `Loader.playerData` compiles unchanged on
+  1.21.1 and no sync packet was written. What sync still needs is a client check, because no
+  gametest sees a client.
 - **NeoForge exists for 26.1 and 26.2.** No blocker on the loader axis.
 - **Mixins are required.** [thirstwastaken2.mixins.json](../../src/main/resources/thirstwastaken2.mixins.json)
   sets `"required": true` and `defaultRequire: 1`, so a mixin that fails to apply is a hard crash at
@@ -96,7 +96,7 @@ a real build; see [P0-SPIKE.md](P0-SPIKE.md).
 | ~~**P0**~~ | Spike: stand up a `1.21.1` node, run `:1.21.1:build`, record what actually breaks | 1 day | **Done.** [P0-SPIKE.md](P0-SPIKE.md): 23 of 58 Java files and 31 of 57 JSON files break; 4 structural forks; overlap with P1 and P2 is total |
 | ~~**P1**~~ | Move the 90 resource files to datagen, output keyed by Minecraft version | 2 to 3 days | **Done.** 58 of the 90 are generated into `src/main/generated/<minecraft version>/`; `:<version>:checkDatagen` runs in CI on all three nodes and 61 gametests pass on each |
 | ~~**P2**~~ | `platform/Loader`, written while there is still only one loader | 2 to 3 days | **Done.** No loader import left in `src/main/java` or `src/client/java`; `checkLoaderSeam` runs in CI; all three nodes build and pass gametests |
-| **P3** | 1.21.1 Fabric node: sync packet, HUD fork, drink item fork, asset overlay | 4 to 6 days | Gametests green on four nodes, then **release and stop for feedback** |
+| **P3** | 1.21.1 Fabric node: sync packet, HUD fork, drink item fork, asset overlay | 4 to 6 days | Gametests green on four nodes, then **release and stop for feedback**. **Built, not released:** 115 of 115 mod gametests on all four nodes; the exit ramp was revised after P3 crossed the old one, see below; the manual pass in [MANUAL-TESTING.md](MANUAL-TESTING.md) is still to do |
 | **P4** | NeoForge on 26.2 only | 8 to 15 days | Gametests green on five nodes |
 | **P5** | NeoForge across the remaining versions, starting with 1.21.1, plus publish automation | 4 to 8 days | Seven nodes green |
 
@@ -114,9 +114,22 @@ at once. The users are on 1.21.1, so that is the first target of P5, not of P4.
 
 Decide by measurement, not by feel.
 
-- Version conditionals pass **50 blocks** (`grep -rn "//?" src`, currently 30 lines across 11
-  blocks; P1 added 7 of them, all in datagen and all for 1.21.11), or any single file forks past half
-  its body: stop and reconsider a branch for the 1.21.x family.
+- **A version conditional in core code**, which is `src/main/java` and `src/client/java` outside
+  `platform/` and `mixin/`: add the seam instead. `checkVersionSeam` fails CI on one. If the seam
+  cannot be added, the node that needs the fork is the one to reconsider.
+- **Any single file forks past half its body**: stop and reconsider.
+- **A feature cannot be written for 1.21.1 without forking core code**: retire 1.21.1 rather than branch
+  for it, as the support policy says. Its conditionals are written against its own thresholds
+  (`>=1.21.2`, `>1.21.1`, `>=1.21.4` and the like), so retiring it deletes them mechanically.
+
+The raw count, `grep -rn "//? if" src --include=*.java`, is a number to watch rather than a gate. It
+was a gate of 50 blocks until P3 crossed it with 59, up from 11: datagen 20, `platform/` 22, `mixin/`
+8, gametest 8, dev 1, core code 0, and 44 of the 59 only for 1.21.1. By then the count was mostly
+measuring the places differences are meant to live, while what a branch would actually save, core
+code staying version-free, was already at zero. Branching the 1.21.x family would instead double every
+feature from then on. So the gate moved to what hurts, and the count is written down at each phase:
+58 at the end of P3, after taking every loot table removed the one gametest branch the old loot rule
+needed.
 - P4 passes **20 days**: keep NeoForge on one version and drop P5.
 - Gametests cannot be made to run on a node: that node does not ship. No exceptions.
 - 1.21.1 starts shipping a different version number from the rest: it has frozen in practice.
@@ -164,7 +177,7 @@ What the seam looks like, so P3 and P4 know where they land
 |---|---|---|
 | `Loader.playerData` | the hand written sync packet goes inside the Fabric copy, behind a version conditional | `AttachmentType` in a `DeferredRegister`, with `sync` |
 | `Loader.onUseBlock`, `onUseItem` | unchanged | cancellable `PlayerInteractEvent`s; a non-`PASS` result cancels |
-| `Loader.onBuiltinLootTable` | unchanged | `LootTableLoadEvent`, skipping datapack tables by hand |
+| `Loader.onLootTable` | unchanged | `LootTableLoadEvent`, on every table; no pack filtering to reproduce |
 | `Loader.creativeTabBuilder` | `FabricItemGroup`, already branched | vanilla's `CreativeModeTab.builder()` |
 | `ClientLoader.addRightStatusBar` | the HUD fork: `HudRenderCallback`, reading the stack height by hand | `RegisterGuiLayersEvent` above the food layer, `Gui.rightHeight` |
 | item registration | still a direct `Registry.register` in `ThirstItems`, not behind the seam | needs registering during the registry event; the one P2 left alone |

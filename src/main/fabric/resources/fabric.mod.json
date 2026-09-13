@@ -26,7 +26,8 @@
     "modmenu": ["com.thirstwastaken2.client.compat.ModMenuIntegration"]
   },
   "mixins": [
-    "thirstwastaken2.mixins.json"
+    "thirstwastaken2.mixins.json",
+    { "config": "thirstwastaken2.fabric.client.mixins.json", "environment": "client" }
   ],
   "depends": {
     "fabricloader": ">=${loader}",

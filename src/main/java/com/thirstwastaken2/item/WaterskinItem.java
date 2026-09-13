@@ -1,33 +1,28 @@
 package com.thirstwastaken2.item;
 
+import com.thirstwastaken2.platform.DrinkItem;
+import com.thirstwastaken2.platform.Vanilla;
 import com.thirstwastaken2.purity.ThirstComponents;
 import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.purity.WaterQuality;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.item.component.Consumable;
-import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.level.Level;
 
-import java.util.List;
-
 /** A reusable leather water container holding three drinks of one mixed purity. */
-public final class WaterskinItem extends Item {
+public final class WaterskinItem extends DrinkItem {
     public static final int CAPACITY = 3;
 
     public WaterskinItem(Properties properties) {
-        super(properties);
+        super(properties, null);
     }
 
     public static int servings(ItemStack stack) {
@@ -73,20 +68,15 @@ public final class WaterskinItem extends Item {
     }
 
     @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        return servings(stack) == 0 ? InteractionResult.PASS : super.use(level, player, hand);
+    protected boolean canDrink(ItemStack stack) {
+        return servings(stack) > 0;
     }
 
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         int current = servings(stack);
-        Consumable consumable = stack.get(DataComponents.CONSUMABLE);
-        if (current > 0 && consumable != null) {
-            // Run vanilla sounds, game event, stat, criterion and component listeners against a
-            // disposable copy; Consumable#onConsume is otherwise hard-wired to shrink its input.
-            consumable.onConsume(level, entity, stack.copy());
-        }
+        // Vanilla's side effects only: a drink leaves the skin itself, one serving lighter.
+        if (current > 0) drinkEffects(stack, level, entity);
         boolean creativePlayer = entity instanceof Player player && player.getAbilities().instabuild;
         if (!level.isClientSide() && current > 0 && !creativePlayer) {
             removeWater(stack, 1);
@@ -156,7 +146,7 @@ public final class WaterskinItem extends Item {
             stack.remove(DataComponents.CUSTOM_MODEL_DATA);
         } else {
             stack.set(DataComponents.CUSTOM_MODEL_DATA,
-                    new CustomModelData(List.of((float) servings), List.of(), List.of(), List.of()));
+                    Vanilla.modelSelector(ThirstItems.WATERSKIN_MODEL_INDEX, servings));
         }
     }
 

@@ -26,7 +26,11 @@ public final class ThirstBiomeTagProvider extends FabricTagsProvider<Biome> {
 
     @Override
     protected void addTags(HolderLookup.Provider registries) {
+        // Fabric API's tag builder was called getOrCreateTagBuilder on 1.21.1.
+        //? if >1.21.1 {
         builder(STAGNANT_WATER)
+        //?} else
+        /*getOrCreateTagBuilder(STAGNANT_WATER)*/
                 .add(Biomes.SWAMP)
                 .add(Biomes.MANGROVE_SWAMP);
     }

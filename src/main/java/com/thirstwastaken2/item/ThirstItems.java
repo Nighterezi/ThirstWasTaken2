@@ -1,7 +1,9 @@
 package com.thirstwastaken2.item;
 
 import com.thirstwastaken2.ThirstWasTaken2;
+import com.thirstwastaken2.platform.DrinkItem;
 import com.thirstwastaken2.platform.Loader;
+import com.thirstwastaken2.platform.Vanilla;
 import com.thirstwastaken2.purity.ThirstComponents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
@@ -12,40 +14,32 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.Consumables;
-import net.minecraft.world.item.component.CustomModelData;
-
-import java.util.List;
-import java.util.function.Function;
 
 public final class ThirstItems {
-    public static final Item CLAY_BOWL = register("clay_bowl", Item::new, new Item.Properties().stacksTo(64));
-    public static final Item TERRACOTTA_BOWL = register("terracotta_bowl", Item::new, new Item.Properties().stacksTo(64));
+    /** Custom model data index the filled bowl's sprite dispatches on: its grade, with salt one past. */
+    public static final int BOWL_MODEL_INDEX = 1;
+    /** Custom model data index the waterskin's sprite dispatches on: servings left. */
+    public static final int WATERSKIN_MODEL_INDEX = 0;
+
+    public static final Item CLAY_BOWL = Vanilla.registerItem("clay_bowl", Item::new, new Item.Properties().stacksTo(64));
+    public static final Item TERRACOTTA_BOWL = Vanilla.registerItem("terracotta_bowl", Item::new, new Item.Properties().stacksTo(64));
     /**
      * A filled bowl does not stack, matching every vanilla drink container. Stacking it would put
      * dozens of drinks in one slot and leave the waterskin, which holds three, with no purpose.
      */
-    public static final Item TERRACOTTA_WATER_BOWL = register("terracotta_water_bowl", Item::new,
-            new Item.Properties().stacksTo(1).usingConvertsTo(TERRACOTTA_BOWL)
+    public static final Item TERRACOTTA_WATER_BOWL = Vanilla.registerItem("terracotta_water_bowl",
+            properties -> new DrinkItem(properties, TERRACOTTA_BOWL),
+            new Item.Properties().stacksTo(1)
                     .component(ThirstComponents.WATER_PURITY, 3)
                     .component(ThirstComponents.WATER_SALTY, false)
-                    .component(DataComponents.CUSTOM_MODEL_DATA,
-                            new CustomModelData(List.of(0.0F, 3.0F), List.of(), List.of(), List.of()))
-                    .component(DataComponents.CONSUMABLE, Consumables.DEFAULT_DRINK));
-    public static final Item WATERSKIN = register("waterskin", WaterskinItem::new,
+                    .component(DataComponents.CUSTOM_MODEL_DATA, Vanilla.modelSelector(BOWL_MODEL_INDEX, 3)));
+    public static final Item WATERSKIN = Vanilla.registerItem("waterskin", WaterskinItem::new,
             new Item.Properties().stacksTo(1)
-                    .component(ThirstComponents.WATER_SERVINGS, 0)
-                    .component(DataComponents.CONSUMABLE, Consumables.DEFAULT_DRINK));
+                    .component(ThirstComponents.WATER_SERVINGS, 0));
     public static final ResourceKey<CreativeModeTab> CREATIVE_TAB_KEY = ResourceKey.create(
             Registries.CREATIVE_MODE_TAB, ThirstWasTaken2.id("thirstwastaken2"));
 
     private ThirstItems() { }
-
-    private static Item register(String name, Function<Item.Properties, Item> factory, Item.Properties properties) {
-        ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, ThirstWasTaken2.id(name));
-        Item item = factory.apply(properties.setId(key));
-        return Registry.register(BuiltInRegistries.ITEM, key, item);
-    }
 
     public static void register() {
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, CREATIVE_TAB_KEY,

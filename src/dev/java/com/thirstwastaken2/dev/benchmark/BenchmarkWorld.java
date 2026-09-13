@@ -196,7 +196,12 @@ final class BenchmarkWorld {
         int z = centerZ();
         int surface = level.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
         BlockPos base = null;
-        for (int y = level.getMaxY() - 4; y > surface + 2; y--) {
+        // The highest buildable y. 1.21.1 only exposes the exclusive build limit, one above it.
+        //? if >1.21.1 {
+        int top = level.getMaxY();
+        //?} else
+        /*int top = level.getMaxBuildHeight() - 1;*/
+        for (int y = top - 4; y > surface + 2; y--) {
             if (isClear(x, y, z)) {
                 base = new BlockPos(x, y, z);
                 break;

@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.thirstwastaken2.data.ThirstManager;
+import com.thirstwastaken2.platform.Vanilla;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -14,7 +15,7 @@ public final class ThirstCommands {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("thirst")
-                .requires(source -> Commands.LEVEL_GAMEMASTERS.check(source.permissions()))
+                .requires(Vanilla::isGameMaster)
                 .then(Commands.literal("query")
                         .then(Commands.argument("player", EntityArgument.player())
                                 .executes(context -> {

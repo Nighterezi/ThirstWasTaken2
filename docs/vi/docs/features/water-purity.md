@@ -31,7 +31,8 @@ mang mức độ sạch riêng, ví dụ đồ uống từ mod khác, sẽ dùng
 ## Nước mặn
 
 Biển và bãi biển cho nước mặn. Nước mặn có biểu tượng riêng và dòng mô tả riêng, nên nhìn là phân
-biệt được với nước ngọt, và không hiển thị giọt nước nào vì nó không hồi gì cả.
+biệt được với nước ngọt, và không hiển thị giọt nước nào vì nó không hồi gì cả. Trên Minecraft 1.21 và
+1.21.1, chỉ bát nước mặn có biểu tượng riêng; xem [Cài đặt](/vi/docs/installation).
 
 Uống nước mặn còn làm tụt độ khát thay vì hồi, kèm theo Buồn nôn trong năm giây. Lò nung và lửa trại
 không nhận nước mặn, nên không có cách nào làm nó uống được. Chỉ cần một lần nước mặn đổ vào túi da

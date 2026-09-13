@@ -1,0 +1,129 @@
+package com.thirstwastaken2.gametest;
+
+import com.thirstwastaken2.purity.WaterPurity;
+import net.fabricmc.fabric.api.gametest.v1.GameTest;
+import net.minecraft.core.BlockPos;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.List;
+
+/**
+ * The water the mod adds to loot: one pool on five structure chests and on piglin bartering, graded
+ * clean or pure, and nothing added anywhere else.
+ */
+public final class LootGameTest {
+    private static final List<ResourceKey<LootTable>> CHESTS = List.of(
+            BuiltInLootTables.ABANDONED_MINESHAFT,
+            BuiltInLootTables.BASTION_OTHER,
+            BuiltInLootTables.NETHER_BRIDGE,
+            BuiltInLootTables.SHIPWRECK_SUPPLY,
+            BuiltInLootTables.SIMPLE_DUNGEON);
+    /** The chest pool yields water half the time, so this many rolls cannot all miss by chance. */
+    private static final int CHEST_ROLLS = 80;
+    /** Bartering yields water 3 times in 40, so this many rolls cannot all miss by chance. */
+    private static final int BARTER_ROLLS = 600;
+
+    @GameTest
+    public void everySeededChestCanHoldGradedWater(GameTestHelper helper) {
+        StringBuilder counts = new StringBuilder();
+        boolean everyChest = true;
+        for (ResourceKey<LootTable> chest : CHESTS) {
+            int water = countGradedWater(helper, table(helper, chest), chestParams(helper), CHEST_ROLLS);
+            counts.append(chest.identifier()).append('=').append(water).append(' ');
+            everyChest &= water > 0;
+        }
+        TestFixtures.check(helper, everyChest,
+                "every seeded chest should hold clean or pure water in " + CHEST_ROLLS + " rolls, got " + counts);
+        helper.succeed();
+    }
+
+    /**
+     * A table a data pack replaced still gets the water. Vanilla's Villager Trade Rebalance experiment
+     * is such a pack: it replaces the mineshaft chest, and the test server enables every experiment.
+     * The mod used to skip replaced tables, which left that chest dry on some versions and not on
+     * others, because Fabric API changed how it reports experiment packs.
+     */
+    @GameTest
+    public void aTableADataPackReplacedStillGetsWater(GameTestHelper helper) {
+        var packs = helper.getLevel().getServer().getPackRepository().getSelectedIds();
+        TestFixtures.check(helper, packs.contains("trade_rebalance"),
+                "this test relies on the test server enabling the trade rebalance pack, which replaces the "
+                        + "mineshaft chest; enabled packs are " + packs);
+
+        int water = countGradedWater(helper, table(helper, BuiltInLootTables.ABANDONED_MINESHAFT),
+                chestParams(helper), CHEST_ROLLS);
+        TestFixtures.check(helper, water > 0,
+                "the mineshaft chest the trade rebalance pack replaced should still hold water, got none");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void piglinsBarterGradedWater(GameTestHelper helper) {
+        Entity piglin = helper.spawn(TestFixtures.piglinType(), new BlockPos(1, 2, 1));
+        LootParams params = new LootParams.Builder(helper.getLevel())
+                .withParameter(LootContextParams.THIS_ENTITY, piglin)
+                .create(LootContextParamSets.PIGLIN_BARTER);
+
+        int water = countGradedWater(helper, table(helper, BuiltInLootTables.PIGLIN_BARTERING), params, BARTER_ROLLS);
+
+        TestFixtures.check(helper, water > 0, "piglins should barter water in " + BARTER_ROLLS + " rolls, got none");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void otherChestsAreLeftAlone(GameTestHelper helper) {
+        int water = countAnyStampedWater(table(helper, BuiltInLootTables.DESERT_PYRAMID), chestParams(helper), CHEST_ROLLS);
+
+        TestFixtures.check(helper, water == 0,
+                "a chest the mod does not seed should never hold its water, got " + water + " stacks");
+        helper.succeed();
+    }
+
+    /**
+     * Counts stacks that are stamped, fresh and clean or pure, and fails on any other water: loot water
+     * the furnace could not accept, or that came out dirty or salty, is a bug in the pool.
+     */
+    private static int countGradedWater(GameTestHelper helper, LootTable table, LootParams params, int rolls) {
+        int water = 0;
+        for (int roll = 0; roll < rolls; roll++) {
+            for (ItemStack stack : table.getRandomItems(params, roll)) {
+                if (!WaterPurity.isStamped(stack)) continue;
+                TestFixtures.check(helper, !WaterPurity.isSalty(stack) && WaterPurity.get(stack) >= 2,
+                        "loot water should be fresh and graded clean or pure, got " + WaterPurity.quality(stack));
+                water++;
+            }
+        }
+        return water;
+    }
+
+    private static int countAnyStampedWater(LootTable table, LootParams params, int rolls) {
+        int water = 0;
+        for (int roll = 0; roll < rolls; roll++) {
+            for (ItemStack stack : table.getRandomItems(params, roll)) {
+                if (WaterPurity.isStamped(stack)) water++;
+            }
+        }
+        return water;
+    }
+
+    private static LootTable table(GameTestHelper helper, ResourceKey<LootTable> key) {
+        ServerLevel level = helper.getLevel();
+        return level.getServer().reloadableRegistries().getLootTable(key);
+    }
+
+    private static LootParams chestParams(GameTestHelper helper) {
+        return new LootParams.Builder(helper.getLevel())
+                .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(helper.absolutePos(BlockPos.ZERO)))
+                .create(LootContextParamSets.CHEST);
+    }
+}

@@ -17,7 +17,7 @@ import net.minecraft.world.damagesource.DamageSource;
  *
  * <p>These tests check that the entries loaded, not that vanilla then applies them. Mock players in
  * a game test report creative mode and vanilla refuses to damage them, so actually losing health to
- * dehydration stays a manual check. See TESTING.md.
+ * dehydration stays a manual check. See docs/dev/MANUAL-TESTING.md.
  */
 public final class EnvironmentGameTest {
     @GameTest

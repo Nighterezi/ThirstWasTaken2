@@ -2,6 +2,28 @@
 
 All notable changes to ThirstWasTaken2 are documented in this file.
 
+## [1.0.4] - 2026-09-13
+
+### Added
+
+- Support for Minecraft 1.21 and 1.21.1.
+
+### Changed
+
+- Chests and Piglin bartering that a data pack replaced now get the mod's water bottles as well.
+
+### Fixed
+
+- Mineshaft chests held no water bottles in worlds created with the Villager Trade Rebalance
+  experiment.
+
+### Notes
+
+- On Minecraft 1.21 and 1.21.1, sea water in bottles and buckets looks like ordinary water, and
+  the droplets in tooltips have a shadow. The Salty tooltip line and the sea-coloured bowl are
+  unchanged.
+- No action is needed for existing worlds or config files.
+
 ## [1.0.3] - 2026-09-12
 
 ### Added

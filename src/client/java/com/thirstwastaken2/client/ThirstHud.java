@@ -8,7 +8,6 @@ import com.thirstwastaken2.data.ThirstData;
 import com.thirstwastaken2.data.ThirstManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -98,8 +97,8 @@ public final class ThirstHud {
     }
 
     private static void icon(GuiGraphicsExtractor graphics, int x, int y, int u) {
-        graphics.blit(RenderPipelines.GUI_TEXTURED, ICONS, x, y, u, 0, ICON_SIZE, ICON_SIZE,
-                ICONS_TEXTURE_WIDTH, ICONS_TEXTURE_HEIGHT);
+        ClientVanilla.blit(graphics, ICONS, x, y, u, 0, ICON_SIZE, ICON_SIZE,
+                ICONS_TEXTURE_WIDTH, ICONS_TEXTURE_HEIGHT, OPAQUE);
     }
 
     /** Draws AppleSkin's dithered exhaustion underlay beneath the thirst icons when enabled. */
@@ -110,7 +109,7 @@ public final class ThirstHud {
         int width = (int) (ratio * BAR_WIDTH);
         if (width <= 0) return;
 
-        graphics.blit(RenderPipelines.GUI_TEXTURED, OVERLAY_ICONS,
+        ClientVanilla.blit(graphics, OVERLAY_ICONS,
                 right - width, top, BAR_WIDTH - width, 18.0F, width, ICON_SIZE,
                 OVERLAY_TEXTURE_SIZE, OVERLAY_TEXTURE_SIZE, EXHAUSTION_TINT);
     }
@@ -118,7 +117,7 @@ public final class ThirstHud {
     private static void renderQuenched(GuiGraphicsExtractor graphics, int x, int y, float effective) {
         if (effective <= 0.0F) return;
         int u = effective >= 1.0F ? 27 : effective > 0.5F ? 18 : effective > 0.25F ? 9 : 0;
-        graphics.blit(RenderPipelines.GUI_TEXTURED, OVERLAY_ICONS, x, y, u, 0, ICON_SIZE, ICON_SIZE,
+        ClientVanilla.blit(graphics, OVERLAY_ICONS, x, y, u, 0, ICON_SIZE, ICON_SIZE,
                 OVERLAY_TEXTURE_SIZE, OVERLAY_TEXTURE_SIZE, OPAQUE);
     }
 }

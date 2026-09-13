@@ -28,8 +28,8 @@ jar. Verify that with `unzip -l build/libs/<jar> | grep gametest` after a releas
   silently never run.
 - A test is a `public`, non-static method taking one `GameTestHelper`, annotated `@GameTest`, ending
   in `helper.succeed()`.
-- `helper.assertTrue` only accepts a `Component` on every supported version. Use
-  `TestFixtures.check`, which takes a plain string.
+- `helper.assertTrue` takes a `Component` from 1.21.5 and a string before it. Use
+  `TestFixtures.check`, which takes a plain string on every version.
 - Positions passed to `helper` are relative to the test's own patch of world. Positions passed to
   mod or vanilla code are absolute. `helper.absolutePos` converts; mixing them up is the easiest
   mistake to make here.
@@ -40,6 +40,16 @@ jar. Verify that with `unzip -l build/libs/<jar> | grep gametest` after a releas
   hooks depend on.
 - Use survival mode for anything that fills a container. `ItemUtils.createFilledResult` behaves
   differently once the player has infinite materials.
+
+## The 1.21.1 harness
+
+Fabric API's own `@GameTest` arrived with 1.21.5. On 1.21.1 a test uses vanilla's annotation with
+Fabric's empty structure as its template, and `stonecutter.gradle.kts` rewrites both the import and
+the annotation, so no test file changes for it. Write `@GameTest` with no arguments, or that
+replacement stops matching.
+
+The same 60 tests run on every node. Later nodes report 61 because their runner adds vanilla's own
+`minecraft:alwayspass`; that one is not the mod's.
 
 ## Rules that keep these tests worth having
 
@@ -74,6 +84,25 @@ jar. Verify that with `unzip -l build/libs/<jar> | grep gametest` after a releas
 | `EnvironmentGameTest` | the datapack damage type and tag, and the version-forked environment call |
 | `CreativeTabGameTest` | the creative tab is registered, has the right icon, and holds every item the mod adds |
 | `AdvancementGameTest` | the mod's advancement tab loads, hangs off one root, and its recipe advancements unlock recipes that exist |
+| `ThirstDataGameTest` | the state record: drinking, the quenched cap, overflow into quenched, spending exhaustion, clamping, and both codecs round-tripping, including a save from before `enabled` existed |
+| `ThirstTickGameTest` | the tick spending quenched before thirst, peaceful with and without depletion, disabled and invulnerable players, Fire Resistance and Fire Protection slowing the drain, salt water charging at once, the full-bar rule |
+| `DrinkingGameTest` | drinking a bowl and a waterskin through the real right-click path, what is left in the hand, the drink animation and duration, water refused on a full bar while honey is not, the advancements a drink earns, and drinking by hand with every way it is refused |
+| `ThirstApiGameTest` | what items restore from the config, the blacklist, keyword matching and its blacklist, the per-item cache dropping on commit, and `sanitize` clamping a hand-edited config |
+| `CommandGameTest` | `/thirst set` and `/thirst enable` through the dispatcher, the argument range, and the permission requirement |
+| `WaterInteractionsGameTest` | scooping with the bowl and the waterskin, the clay bowl holding nothing, drawing the waterskin from a cauldron, pouring it out, and a bottle drawn from a cauldron keeping its grade |
+| `LootGameTest` | graded water in each seeded chest and in piglin bartering, no water anywhere else, and a table a data pack replaced still getting it |
+| `ItemAppearanceGameTest` | the custom model data bowls and waterskins dispatch on, the sea-water item model (1.21.2 and later), and the waterskin bar's width and colour |
+
+`WaterskinGameTest` also covers pouring a bottle or bucket into a slotted waterskin from the cursor,
+and `PurificationGameTest` the grade every boiling recipe produces and the crafted water bowl.
+
+What none of them can reach - the client, damage to a player, other dimensions and biomes, real
+time - is in [docs/dev/MANUAL-TESTING.md](../../../docs/dev/MANUAL-TESTING.md), with a section per
+version.
+
+The test server enables every experiment, including the Villager Trade Rebalance data pack, which
+replaces the mineshaft chest. `LootGameTest` relies on that to test a replaced table, and checks the
+pack is enabled first so that a server that stops enabling it fails loudly instead of proving nothing.
 
 ## Known limits of the harness
 
@@ -88,5 +117,6 @@ Client rendering is not covered, and neither is anything on a timer: dehydration
 regeneration and the faster Nether drain all stay manual. `fabric-client-gametest-api-v1` could cover
 the rendering, but it needs a real window and screenshot baselines maintained per Minecraft version.
 
-Three of the four shipped version forks are client-side, so the manual pass that matters after a HUD
-change is the thirst bar, the tooltip glyphs, F1 and the config screen, on each version.
+Much of what forks per version is client-side, so the manual pass that matters after a HUD change is
+the thirst bar (a mixin of its own on 1.21.1), the tooltip glyphs, F1 and the config screen, on each
+version.

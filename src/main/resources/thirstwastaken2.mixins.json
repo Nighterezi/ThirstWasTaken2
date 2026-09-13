@@ -3,6 +3,7 @@
   "package": "com.thirstwastaken2.mixin",
   "compatibilityLevel": "${java}",
   "mixins": [
+    "BlocksMixin",
     "BottleItemMixin",
     "BucketItemMixin",
     "CauldronBlockMixin",

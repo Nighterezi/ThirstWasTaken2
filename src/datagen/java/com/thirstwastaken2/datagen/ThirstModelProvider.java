@@ -1,20 +1,22 @@
 package com.thirstwastaken2.datagen;
 
-import com.thirstwastaken2.ThirstWasTaken2;
 import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.purity.WaterPurity;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
+import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
-import net.minecraft.client.renderer.item.ItemModel;
-import net.minecraft.client.renderer.item.RangeSelectItemModel;
-import net.minecraft.client.data.models.model.ItemModelUtils;
-import net.minecraft.client.renderer.item.properties.numeric.CustomModelDataProperty;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
+//? if >=1.21.4 {
+import net.minecraft.client.data.models.model.ItemModelUtils;
+import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.renderer.item.RangeSelectItemModel;
+import net.minecraft.client.renderer.item.properties.numeric.CustomModelDataProperty;
+//?}
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,20 +27,19 @@ import java.util.List;
  * <p>Two items dispatch on {@code minecraft:custom_model_data} rather than showing one sprite. The
  * waterskin reads index 0, how many servings are left, which {@code WaterskinItem.setServings}
  * writes; the filled bowl reads index 1, the water's grade, which {@code WaterPurity.setQuality} and
- * the purification recipes write. Both are floats mirrored from a real component, never a separate
- * source of truth.
+ * the purification recipes write. Both are mirrored from a real component, never a separate source
+ * of truth.
+ *
+ * <p>From 1.21.4 that dispatch is a range select in the item's model definition. Before it there are
+ * no definitions: the item's own model carries an override per value, and custom model data is one
+ * integer. Both versions select the same sprite for the same stack.
  *
  * <p>{@code salt_water_bottle} and {@code salt_water_bucket} are handled by
- * {@link ThirstItemModelDefinitionProvider} instead: they are model ids for vanilla's own
- * containers, not items of the mod's own, so there is no item here to hang them on.
+ * {@code ThirstItemModelDefinitionProvider} instead: they are model ids for vanilla's own
+ * containers, not items of the mod's own, so there is no item here to hang them on. 1.21.1 has no way
+ * to use them, so neither is written there.
  */
 public final class ThirstModelProvider extends FabricModelProvider {
-    /** Custom model data index the waterskin dispatches on: servings remaining, 0 to 3. */
-    private static final int WATERSKIN_INDEX = 0;
-
-    /** Custom model data index the filled bowl dispatches on: water grade, 0 to 4 with salt last. */
-    private static final int BOWL_INDEX = 1;
-
     /** The dispatch value sea water gets, one past the last fresh grade. */
     private static final int BOWL_SALT = WaterPurity.MAX + 1;
 
@@ -52,6 +53,9 @@ public final class ThirstModelProvider extends FabricModelProvider {
         // needs no model of its own, because the water level already has one.
     }
 
+    // Comments inside the version blocks below stay line comments: a disabled branch is itself one
+    // block comment, and a nested one would end it early.
+    //? if >=1.21.4 {
     @Override
     public void generateItemModels(ItemModelGenerators generators) {
         generators.generateFlatItem(ThirstItems.CLAY_BOWL, ModelTemplates.FLAT_ITEM);
@@ -62,9 +66,9 @@ public final class ThirstModelProvider extends FabricModelProvider {
         generators.createFlatItemModel(ThirstItems.TERRACOTTA_WATER_BOWL, ModelTemplates.FLAT_ITEM);
 
         generators.itemModelOutput.accept(ThirstItems.TERRACOTTA_WATER_BOWL,
-                dispatch(generators, ThirstItems.TERRACOTTA_WATER_BOWL, BOWL_INDEX, bowlVariants()));
+                dispatch(generators, ThirstItems.TERRACOTTA_WATER_BOWL, ThirstItems.BOWL_MODEL_INDEX, bowlVariants()));
         generators.itemModelOutput.accept(ThirstItems.WATERSKIN,
-                dispatch(generators, ThirstItems.WATERSKIN, WATERSKIN_INDEX, waterskinVariants()));
+                dispatch(generators, ThirstItems.WATERSKIN, ThirstItems.WATERSKIN_MODEL_INDEX, waterskinVariants()));
 
         // The sea-water bucket sprite. Its definition is written next door; only the model belongs
         // here, because it is an ordinary flat item model that happens to have no item.
@@ -79,6 +83,70 @@ public final class ThirstModelProvider extends FabricModelProvider {
         ModelTemplates.FLAT_ITEM.create(
                 ThirstItemModelDefinitionProvider.SALT_WATER_BUCKET_MODEL, bucket, generators.modelOutput);
     }
+
+    // Generates one flat model per suffix and returns a range dispatch over them, with the first
+    // suffix as the fallback and the rest reached at thresholds 1, 2, 3 and so on.
+    //
+    // The index is custom_model_data's, not the entry's: the thresholds are the values the item
+    // actually carries, so a bowl of grade 2 selects the third sprite by holding a 2.
+    private static ItemModel.Unbaked dispatch(
+            ItemModelGenerators generators, Item item, int index, List<String> suffixes) {
+        ItemModel.Unbaked fallback = null;
+        List<RangeSelectItemModel.Entry> entries = new ArrayList<>();
+
+        for (int variant = 0; variant < suffixes.size(); variant++) {
+            Identifier model = generators.createFlatItemModel(
+                    item, suffixes.get(variant), ModelTemplates.FLAT_ITEM);
+            if (variant == 0) {
+                fallback = ItemModelUtils.plainModel(model);
+            } else {
+                entries.add(ItemModelUtils.override(ItemModelUtils.plainModel(model), variant));
+            }
+        }
+
+        return ItemModelUtils.rangeSelect(new CustomModelDataProperty(index), fallback, entries);
+    }
+    //?} else {
+    /*@Override
+    public void generateItemModels(ItemModelGenerators generators) {
+        flat(generators, ThirstItems.CLAY_BOWL);
+        flat(generators, ThirstItems.TERRACOTTA_BOWL);
+        overrides(generators, ThirstItems.TERRACOTTA_WATER_BOWL, bowlVariants());
+        overrides(generators, ThirstItems.WATERSKIN, waterskinVariants());
+    }
+
+    private static void flat(ItemModelGenerators generators, Item item) {
+        ModelTemplates.FLAT_ITEM.create(ModelLocationUtils.getModelLocation(item),
+                TextureMapping.layer0(item), generators.output);
+    }
+
+    // One flat model per suffix, and the item's own model on top of them. It draws the first suffix
+    // itself, as the fallback, and overrides to the rest at custom_model_data 1, 2, 3 and so on. The
+    // game takes the last override whose value the stack reaches, so they are listed in rising order.
+    private static void overrides(ItemModelGenerators generators, Item item, List<String> suffixes) {
+        com.google.gson.JsonArray overrides = new com.google.gson.JsonArray();
+        for (int variant = 0; variant < suffixes.size(); variant++) {
+            Identifier model = ModelLocationUtils.getModelLocation(item, suffixes.get(variant));
+            ModelTemplates.FLAT_ITEM.create(model, TextureMapping.layer0(model), generators.output);
+            if (variant == 0) continue;
+
+            com.google.gson.JsonObject predicate = new com.google.gson.JsonObject();
+            predicate.addProperty("custom_model_data", variant);
+            com.google.gson.JsonObject override = new com.google.gson.JsonObject();
+            override.add("predicate", predicate);
+            override.addProperty("model", model.toString());
+            overrides.add(override);
+        }
+
+        Identifier fallback = ModelLocationUtils.getModelLocation(item, suffixes.get(0));
+        ModelTemplates.FLAT_ITEM.create(ModelLocationUtils.getModelLocation(item), TextureMapping.layer0(fallback),
+                generators.output, (id, textures) -> {
+                    com.google.gson.JsonObject json = ModelTemplates.FLAT_ITEM.createBaseTemplate(id, textures);
+                    json.add("overrides", overrides);
+                    return json;
+                });
+    }
+    *///?}
 
     /** The filled bowl: one sprite per fresh grade, then one for sea water. */
     private static List<String> bowlVariants() {
@@ -97,31 +165,6 @@ public final class ThirstModelProvider extends FabricModelProvider {
             suffixes.add("_" + servings);
         }
         return List.copyOf(suffixes);
-    }
-
-    /**
-     * Generates one flat model per suffix and returns a range dispatch over them, with the first
-     * suffix as the fallback and the rest reached at thresholds 1, 2, 3 and so on.
-     *
-     * <p>The index is {@code custom_model_data}'s, not the entry's: the thresholds are the values
-     * the item actually carries, so a bowl of grade 2 selects the third sprite by holding a 2.
-     */
-    private static ItemModel.Unbaked dispatch(
-            ItemModelGenerators generators, Item item, int index, List<String> suffixes) {
-        ItemModel.Unbaked fallback = null;
-        List<RangeSelectItemModel.Entry> entries = new ArrayList<>();
-
-        for (int variant = 0; variant < suffixes.size(); variant++) {
-            Identifier model = generators.createFlatItemModel(
-                    item, suffixes.get(variant), ModelTemplates.FLAT_ITEM);
-            if (variant == 0) {
-                fallback = ItemModelUtils.plainModel(model);
-            } else {
-                entries.add(ItemModelUtils.override(ItemModelUtils.plainModel(model), variant));
-            }
-        }
-
-        return ItemModelUtils.rangeSelect(new CustomModelDataProperty(index), fallback, entries);
     }
 
     @Override

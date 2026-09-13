@@ -162,8 +162,8 @@ public final class ThirstManager {
             float health = player.getHealth();
             if (health > 10.0F || difficulty == Difficulty.HARD
                     || (health > 0.0F && difficulty == Difficulty.NORMAL)) {
-                ServerLevel level = player.level();
-                player.hurtServer(level, ThirstDamageTypes.dehydration(level), 1.0F);
+                ServerLevel level = Vanilla.level(player);
+                Vanilla.hurt(player, ThirstDamageTypes.dehydration(level), 1.0F);
             }
         }
     }
@@ -202,7 +202,7 @@ public final class ThirstManager {
         // sound has to be broadcast with no exclusion. Volume and pitch match
         // LivingEntity#triggerItemUseEffects, i.e. the potion drinking sound.
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                SoundEvents.GENERIC_DRINK.value(), SoundSource.PLAYERS,
+                Vanilla.drinkSound(), SoundSource.PLAYERS,
                 0.5F, level.getRandom().nextFloat() * 0.1F + 0.9F);
         return InteractionResult.SUCCESS_SERVER;
     }
@@ -249,7 +249,7 @@ public final class ThirstManager {
             // getDamageProtection returns twice the enchantment level total, and the original scales
             // it by 0.0625 * 0.75 per level.
             float protection = EnchantmentHelper.getDamageProtection(
-                    serverPlayer.level(), serverPlayer, serverPlayer.damageSources().onFire());
+                    Vanilla.level(serverPlayer), serverPlayer, serverPlayer.damageSources().onFire());
             modifier *= Math.max(0.25F, 1.0F - protection * 0.0234375F);
         }
         return modifier;

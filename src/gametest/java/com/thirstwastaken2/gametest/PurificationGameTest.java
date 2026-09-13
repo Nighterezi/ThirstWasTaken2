@@ -8,6 +8,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
@@ -16,6 +18,8 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.List;
 
 /**
  * Which water a furnace will accept.
@@ -73,6 +77,58 @@ public final class PurificationGameTest {
         TestFixtures.check(helper, hasSmeltingRecipe(helper, dirty),
                 "dirty fresh water must still be smeltable, otherwise the test above proves nothing");
         helper.succeed();
+    }
+
+    /** The table in ThirstRecipeProvider: two grades up, stopping at pure, the same in a furnace and on a campfire. */
+    @GameTest
+    public void boilingRaisesTheGradeByTwoAndStopsAtPure(GameTestHelper helper) {
+        for (ItemStack container : List.of(TestFixtures.waterBottle(),
+                new ItemStack(ThirstItems.TERRACOTTA_WATER_BOWL), new ItemStack(Items.WATER_BUCKET))) {
+            for (int grade = WaterPurity.MIN; grade < WaterPurity.MAX; grade++) {
+                ItemStack input = WaterPurity.setQuality(container.copy(), WaterQuality.fresh(grade));
+                WaterQuality expected = WaterQuality.fresh(Math.min(grade + 2, WaterPurity.MAX));
+                boiled(helper, input, TestFixtures.cook(helper, RecipeType.SMELTING, input), expected, "a furnace");
+                boiled(helper, input, TestFixtures.cook(helper, RecipeType.CAMPFIRE_COOKING, input), expected, "a campfire");
+            }
+        }
+        helper.succeed();
+    }
+
+    @GameTest
+    public void pureWaterHasNothingToBoil(GameTestHelper helper) {
+        ItemStack pure = WaterPurity.setQuality(new ItemStack(ThirstItems.TERRACOTTA_WATER_BOWL),
+                WaterQuality.fresh(WaterPurity.MAX));
+
+        TestFixtures.check(helper, !hasSmeltingRecipe(helper, pure),
+                "pure water deliberately has no recipe, so it cannot be burned for nothing");
+        helper.succeed();
+    }
+
+    /** A water bowl crafted from a bucket of fresh water is graded clean; sea water cannot be poured in. */
+    @GameTest
+    public void aWaterBowlIsCraftedFromABucketOfFreshWater(GameTestHelper helper) {
+        ItemStack fresh = craftBowl(helper, WaterQuality.fresh(WaterPurity.MIN));
+        TestFixtures.check(helper, fresh.is(ThirstItems.TERRACOTTA_WATER_BOWL)
+                        && WaterPurity.quality(fresh).equals(WaterQuality.fresh(2)),
+                "a bowl and a bucket of fresh water should craft a clean water bowl, got "
+                        + fresh + " holding " + WaterPurity.quality(fresh));
+
+        TestFixtures.check(helper, craftBowl(helper, WaterQuality.SALT).isEmpty(),
+                "a bucket of sea water must not craft a water bowl");
+        helper.succeed();
+    }
+
+    private static ItemStack craftBowl(GameTestHelper helper, WaterQuality bucket) {
+        return TestFixtures.craft(helper, RecipeType.CRAFTING, CraftingInput.of(2, 1, List.of(
+                new ItemStack(ThirstItems.TERRACOTTA_BOWL),
+                WaterPurity.setQuality(new ItemStack(Items.WATER_BUCKET), bucket))));
+    }
+
+    private static void boiled(GameTestHelper helper, ItemStack input, ItemStack result, WaterQuality expected, String where) {
+        TestFixtures.check(helper, result.is(input.getItem()) && WaterPurity.isStamped(result)
+                        && WaterPurity.quality(result).equals(expected),
+                "boiling " + WaterPurity.quality(input) + " " + input.getItem() + " on " + where + " should give "
+                        + expected + ", got " + result + " holding " + WaterPurity.quality(result));
     }
 
     private static boolean hasSmeltingRecipe(GameTestHelper helper, ItemStack stack) {

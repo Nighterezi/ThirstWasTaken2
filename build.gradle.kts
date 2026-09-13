@@ -118,6 +118,7 @@ sourceSets.main {
 }
 sourceSets.named("client") {
     java.srcDir("src/client/$loader/java")
+    resources.srcDir("src/client/$loader/resources")
 }
 
 /**
@@ -208,6 +209,12 @@ tasks.processResources {
     )
     inputs.properties(props)
     filesMatching("fabric.mod.json") { expand(props) }
+    filesMatching("*.mixins.json") { expand("java" to "JAVA_${requiredJava.majorVersion}") }
+}
+
+// The loader's client mixins have their own config, in the client source set.
+tasks.named<ProcessResources>("processClientResources") {
+    inputs.property("java", requiredJava.majorVersion)
     filesMatching("*.mixins.json") { expand("java" to "JAVA_${requiredJava.majorVersion}") }
 }
 
@@ -314,6 +321,40 @@ tasks.register("checkLoaderSeam") {
         check(offenders.isEmpty()) {
             "Loader API in loader independent code. Route it through platform/Loader or " +
                 "client/platform/ClientLoader instead:\n" + offenders.joinToString("\n")
+        }
+    }
+}
+
+/**
+ * Fails when core code carries a Stonecutter version conditional. Minecraft version differences belong
+ * in `platform/` and, for injection signatures, `mixin/`; a `//?` block anywhere else in `src/main/java`
+ * or `src/client/java` means a seam is missing. This replaced counting blocks as the exit ramp; see
+ * docs/dev/PLATFORM-PLAN.md. Loader directories, datagen, gametests and dev tools are outside it.
+ */
+tasks.register("checkVersionSeam") {
+    group = "verification"
+    description = "Fails when core sources outside platform/ and mixin/ contain a version conditional"
+
+    val roots = listOf("src/main/java", "src/client/java").map(rootProject::file)
+    val allowed = setOf("platform", "mixin")
+    inputs.files(roots.map { fileTree(it) { include("**/*.java") } })
+
+    doLast {
+        val offenders = roots.flatMap { root ->
+            root.walk()
+                .filter { it.extension == "java" }
+                .filterNot { file -> file.relativeTo(root).invariantSeparatorsPath.split('/').any(allowed::contains) }
+                .flatMap { file ->
+                    file.readLines().withIndex()
+                        .filter { (_, line) -> line.contains("//?") }
+                        .map { (index, line) ->
+                            "${file.relativeTo(rootProject.projectDir).invariantSeparatorsPath}:${index + 1}: ${line.trim()}"
+                        }
+                }
+        }
+        check(offenders.isEmpty()) {
+            "Version conditional in core code. Put the difference behind platform/Vanilla or " +
+                "client/platform/ClientVanilla instead:\n" + offenders.joinToString("\n")
         }
     }
 }

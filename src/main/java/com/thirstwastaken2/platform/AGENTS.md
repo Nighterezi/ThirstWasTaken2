@@ -24,9 +24,35 @@ are identical on every version.
   needs to know what the mod is doing, it is in the wrong package.
 - **Same signature on every version.** A caller must never need to know which branch is live.
 - **Add to `Vanilla` rather than to the caller.** A `//?` block anywhere outside this package and
-  `mixin/` is a signal the seam is missing.
+  `mixin/` is a signal the seam is missing, and in `src/main/java` or `src/client/java`
+  `checkVersionSeam` fails the build on it. That check is the exit ramp in
+  `docs/dev/PLATFORM-PLAN.md`; the number of blocks in here is not.
 - Mixins are the documented exception: their `@Inject` signatures track the target method and cannot
   be abstracted away. Keep their bodies one line regardless.
+
+### What 1.21.1 costs
+
+1.21.1 is the one old version, and most of the conditionals here exist for it. What it lacks, and
+what stands in:
+
+| Missing on 1.21.1 | Seam | What 1.21.1 does instead |
+|---|---|---|
+| items knowing their id before construction | `registerItem` | registers the properties as they are |
+| the consumable component | `DrinkItem` | overrides use, animation, duration and finishing itself |
+| custom model data as float lists | `modelSelector(index, value)` | one integer; no item reads more than one index |
+| the `item_model` component | `swapItemModel` | nothing: a sea-water bottle or bucket keeps vanilla's sprite, and only its tooltip says salty |
+| styles without a shadow | `dropletFont` | the tooltip droplets are drawn with a shadow |
+| a block's id inside its constructor | `isWaterCauldron` | `BlocksMixin` marks the water cauldron's construction |
+| `hurtServer`, `level()` as `ServerLevel`, permission sets, environment attributes | `hurt`, `level`, `isGameMaster`, `isOwner`, `waterEvaporates` | the older call, same meaning |
+
+Pure renames (`ResourceLocation`, `CONSUME`, `moveTo`, `CONFUSION` and the rest) are replacements in
+`stonecutter.gradle.kts`, not branches. A threshold written `>1.21.1` rather than a release number
+means the exact release a call changed in was not pinned down; with no node between 1.21.1 and
+1.21.11 it makes no difference to any jar.
+
+`DrinkItem` is a class rather than a method because an item's use and animation are overrides. Keep it
+the one place that knows how drinking starts and finishes: `WaterskinItem` extends it and only says
+whether it has anything to drink (`canDrink`) and what a drink removes.
 
 ## Loader
 
@@ -45,7 +71,7 @@ What does live here are the types those signatures need, because both copies hav
 | `playerData` | the attachment system that saves a value on a player and syncs it to its owner |
 | `creativeTabBuilder` | a tab builder that places itself in the tab list |
 | `onServerTickEnd`, `onUseBlock`, `onUseItem`, `onRegisterCommands` | the event bus |
-| `onBuiltinLootTable` | loot table modification, datapack replacements excluded |
+| `onLootTable` | loot table modification, on every table whoever wrote it |
 | `ClientLoader.addRightStatusBar` | HUD layer registration and the right-hand status bar height |
 
 Rules:

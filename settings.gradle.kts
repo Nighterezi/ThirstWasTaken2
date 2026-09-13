@@ -14,13 +14,13 @@ plugins {
     // Loom variant each version needs and keeps `modImplementation` meaning the same thing on both.
     id("dev.kikugie.loom-back-compat") version "0.4.2"
     // Provisions the JDK a version needs when it is not installed locally: 26.1+ wants Java 25,
-    // 1.21.11 wants Java 21.
+    // 1.21.x wants Java 21.
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 stonecutter {
     create(rootProject) {
-        versions("1.21.11")
+        versions("1.21.1", "1.21.11")
         version("26.1.x", "26.1.2")
         version("26.2.x", "26.2")
         vcsVersion = "26.2.x"

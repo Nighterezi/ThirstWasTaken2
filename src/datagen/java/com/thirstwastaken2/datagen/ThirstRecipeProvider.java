@@ -2,6 +2,7 @@ package com.thirstwastaken2.datagen;
 
 import com.thirstwastaken2.ThirstWasTaken2;
 import com.thirstwastaken2.item.ThirstItems;
+import com.thirstwastaken2.platform.Vanilla;
 import com.thirstwastaken2.purity.ThirstComponents;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
@@ -23,6 +24,7 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 //? if >=26.1 {
@@ -32,7 +34,6 @@ import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import net.minecraft.world.item.crafting.CookingBookCategory;
@@ -77,10 +78,19 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
         return "ThirstWasTaken2 Recipes";
     }
 
+    // 1.21.2 moved building the recipes into a separate RecipeProvider the Fabric provider creates.
+    // Before it the Fabric provider builds them itself, and Recipes is only the helper it calls.
+    //? if >=1.21.2 {
     @Override
     protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
         return new Recipes(registries, output);
     }
+    //?} else {
+    /*@Override
+    public void buildRecipes(RecipeOutput output) {
+        new Recipes(output).buildRecipes();
+    }
+    *///?}
 
     /** One purifiable container: what holds the water, and what the recipes call it. */
     private record Container(String name, Item item, boolean potion, boolean bowl) {
@@ -91,6 +101,7 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
         static final List<Container> ALL = List.of(BOTTLE, BOWL, BUCKET);
     }
 
+    //? if >=1.21.2 {
     private static final class Recipes extends RecipeProvider {
         private final HolderGetter<Item> items;
 
@@ -99,9 +110,26 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
             this.items = registries.lookupOrThrow(Registries.ITEM);
         }
 
+        private ShapedRecipeBuilder shaped(ItemLike result, int count) {
+            return ShapedRecipeBuilder.shaped(items, RecipeCategory.MISC, result, count);
+        }
+    //?} else {
+    /*private static final class Recipes {
+        private final RecipeOutput output;
+
+        private Recipes(RecipeOutput output) {
+            this.output = output;
+        }
+
+        private ShapedRecipeBuilder shaped(ItemLike result, int count) {
+            return ShapedRecipeBuilder.shaped(RecipeCategory.MISC, result, count);
+        }
+    *///?}
+
+        //? if >=1.21.2
         @Override
         public void buildRecipes() {
-            ShapedRecipeBuilder.shaped(items, RecipeCategory.MISC, ThirstItems.CLAY_BOWL, 4)
+            shaped(ThirstItems.CLAY_BOWL, 4)
                     .pattern("C C")
                     .pattern(" C ")
                     .define('C', Items.CLAY_BALL)
@@ -118,7 +146,7 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
                     .unlockedBy("has_clay_bowl", has(ThirstItems.CLAY_BOWL))
                     .save(output, recipe("terracotta_bowl_from_smelting"));
 
-            ShapedRecipeBuilder.shaped(items, RecipeCategory.MISC, ThirstItems.WATERSKIN)
+            shaped(ThirstItems.WATERSKIN, 1)
                     .pattern(" S ")
                     .pattern("L L")
                     .pattern(" L ")
@@ -129,15 +157,33 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
 
             // A bucket of fresh water poured into a fired bowl. The result is graded 2 rather than
             // sampled, because the bucket's own grade is gone by the time a recipe sees it.
+            Ingredient freshWaterBucket = DefaultCustomIngredients.components(
+                    Ingredient.of(Items.WATER_BUCKET),
+                    DataComponentPatch.builder()
+                            .set(ThirstComponents.WATER_SALTY, false)
+                            .build());
+            //? if >=1.21.2 {
             ShapelessRecipeBuilder.shapeless(items, RecipeCategory.MISC, bowlResult(2))
                     .requires(ThirstItems.TERRACOTTA_BOWL)
-                    .requires(DefaultCustomIngredients.components(
-                            Ingredient.of(Items.WATER_BUCKET),
-                            DataComponentPatch.builder()
-                                    .set(ThirstComponents.WATER_SALTY, false)
-                                    .build()))
+                    .requires(freshWaterBucket)
                     .unlockedBy("has_terracotta_bowl", has(ThirstItems.TERRACOTTA_BOWL))
                     .save(output, recipe("terracotta_water_bowl"));
+            //?} else {
+            /*// 1.21.1's builder cannot give its result components, so the recipe and its unlock are
+            // written out the way the builder itself would write them.
+            var bowlRecipe = recipe("terracotta_water_bowl");
+            output.accept(bowlRecipe,
+                    new net.minecraft.world.item.crafting.ShapelessRecipe("",
+                            net.minecraft.world.item.crafting.CraftingBookCategory.MISC, bowlResult(2),
+                            net.minecraft.core.NonNullList.of(Ingredient.EMPTY,
+                                    Ingredient.of(ThirstItems.TERRACOTTA_BOWL), freshWaterBucket)),
+                    output.advancement()
+                            .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(bowlRecipe))
+                            .rewards(AdvancementRewards.Builder.recipe(bowlRecipe))
+                            .requirements(AdvancementRequirements.Strategy.OR)
+                            .addCriterion("has_terracotta_bowl", has(ThirstItems.TERRACOTTA_BOWL))
+                            .build(bowlRecipe.withPrefix("recipes/misc/")));
+            *///?}
 
             Container.ALL.forEach(this::purifyRecipes);
         }
@@ -156,7 +202,7 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
                 var result = purifyResult(container, PURIFY_TABLE[purity]);
 
                 for (Heat heat : Heat.values()) {
-                    ResourceKey<Recipe<?>> key = recipe(purifyName(container, purity, heat));
+                    var key = recipe(purifyName(container, purity, heat));
                     // The unlock is one file shared by all six, so only the first accept writes it.
                     output.accept(key, heat.create(ingredient, result), first ? unlock : null);
                     first = false;
@@ -169,7 +215,7 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
          * is enough, and so is already knowing the recipe.
          */
         private AdvancementHolder purifyUnlock(Container container) {
-            ResourceKey<Recipe<?>> representative = recipe(purifyName(container, 0, Heat.SMELTING));
+            var representative = recipe(purifyName(container, 0, Heat.SMELTING));
             Advancement.Builder builder = rootedRecipeAdvancement()
                     .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(representative))
                     .rewards(purifyRewards(container))
@@ -282,8 +328,7 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
             return DataComponentPatch.builder()
                     .set(ThirstComponents.WATER_PURITY, purity)
                     .set(ThirstComponents.WATER_SALTY, false)
-                    .set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(
-                            List.of(0.0F, (float) purity), List.of(), List.of(), List.of()))
+                    .set(DataComponents.CUSTOM_MODEL_DATA, Vanilla.modelSelector(ThirstItems.BOWL_MODEL_INDEX, purity))
                     .build();
         }
     }
@@ -319,7 +364,14 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
         *///?}
     }
 
+    // Recipes are registry entries with keys from 1.21.2; before it a recipe is known by its id alone.
+    //? if >=1.21.2 {
     private static ResourceKey<Recipe<?>> recipe(String name) {
         return ResourceKey.create(Registries.RECIPE, ThirstWasTaken2.id(name));
     }
+    //?} else {
+    /*private static Identifier recipe(String name) {
+        return ThirstWasTaken2.id(name);
+    }
+    *///?}
 }

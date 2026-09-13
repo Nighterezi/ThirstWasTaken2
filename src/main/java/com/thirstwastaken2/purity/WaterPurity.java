@@ -23,7 +23,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
@@ -49,8 +48,6 @@ public final class WaterPurity {
     public static final IntegerProperty BLOCK_PURITY = IntegerProperty.create("purity", 0, 5);
     public static final int BLOCK_UNSET = 0;
     public static final int BLOCK_SALT = 5;
-    /** Vanilla's description id for {@code Blocks.WATER_CAULDRON}, see {@link #addCauldronProperties}. */
-    private static final String WATER_CAULDRON = "block.minecraft.water_cauldron";
 
     private static final TagKey<Biome> STAGNANT_WATER = TagKey.create(
             Registries.BIOME, ThirstWasTaken2.id("stagnant_water"));
@@ -65,12 +62,13 @@ public final class WaterPurity {
     /**
      * Vanilla containers cannot be given a model of ours at registration, so salt water swaps their
      * whole item model through {@code minecraft:item_model}. The mod's own bowl has custom model
-     * data for the same job.
+     * data for the same job. On 1.21.1, which has no such component, only the bowl changes sprite
+     * and a sea-water bottle or bucket is told apart by its tooltip alone.
      */
     private static final Identifier SALT_WATER_BOTTLE_MODEL = ThirstWasTaken2.id("salt_water_bottle");
     private static final Identifier SALT_WATER_BUCKET_MODEL = ThirstWasTaken2.id("salt_water_bucket");
     /** The bowl's model variant for salt water, one past the four grades. */
-    private static final float SALT_BOWL_MODEL = 4.0F;
+    private static final int SALT_BOWL_MODEL = 4;
 
     /** Purity that has to be looked up from the config instead of being baked into the item. */
     private static final int PURITY_FROM_CONFIG = -1;
@@ -231,10 +229,10 @@ public final class WaterPurity {
      * multiply their blockstates tenfold for nothing.
      *
      * <p>Runs inside the block's constructor, before {@code Blocks.WATER_CAULDRON} is assigned or the
-     * block is registered, so its description id is the only identity available.
+     * block is registered, which is why identifying it is left to {@link Vanilla#isWaterCauldron}.
      */
     public static void addCauldronProperties(Block block, StateDefinition.Builder<Block, BlockState> builder) {
-        if (WATER_CAULDRON.equals(block.getDescriptionId())) builder.add(BLOCK_PURITY);
+        if (Vanilla.isWaterCauldron(block)) builder.add(BLOCK_PURITY);
     }
 
     /** What a cauldron holds, or {@code null} when nothing has been poured into it yet. */
@@ -323,19 +321,13 @@ public final class WaterPurity {
     /** Keeps the sprite in step with the contents, so that salt water never looks drinkable. */
     private static void syncModel(ItemStack stack, WaterQuality quality) {
         if (stack.is(ThirstItems.TERRACOTTA_WATER_BOWL)) {
-            float variant = quality instanceof WaterQuality.Fresh fresh ? fresh.purity() : SALT_BOWL_MODEL;
+            int variant = quality instanceof WaterQuality.Fresh fresh ? fresh.purity() : SALT_BOWL_MODEL;
             stack.set(DataComponents.CUSTOM_MODEL_DATA,
-                    new CustomModelData(List.of(0.0F, variant), List.of(), List.of(), List.of()));
+                    Vanilla.modelSelector(ThirstItems.BOWL_MODEL_INDEX, variant));
             return;
         }
         Identifier saltModel = saltModel(stack);
-        if (saltModel == null) return;
-        if (quality.salty()) {
-            stack.set(DataComponents.ITEM_MODEL, saltModel);
-        } else if (saltModel.equals(stack.get(DataComponents.ITEM_MODEL))) {
-            // Only ever clears a model this mod set, so a modded container keeps its own.
-            stack.remove(DataComponents.ITEM_MODEL);
-        }
+        if (saltModel != null) Vanilla.swapItemModel(stack, saltModel, quality.salty());
     }
 
     /** The salt-water sprite for a vanilla container, or {@code null} for anything else. */

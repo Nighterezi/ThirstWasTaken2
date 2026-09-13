@@ -34,8 +34,8 @@ public final class ThirstConfigScreen extends OptionsSubScreen {
 
         // Everything except the HUD section is server-authoritative, so editing it on a client that
         // is connected to a remote server has no effect there.
-        list.addHeader(Component.translatable("thirstwastaken2.config.note"));
-        list.addHeader(Component.translatable("thirstwastaken2.config.category.depletion"));
+        ClientVanilla.addHeader(list, Component.translatable("thirstwastaken2.config.note"));
+        ClientVanilla.addHeader(list, Component.translatable("thirstwastaken2.config.category.depletion"));
         list.addSmall(
                 percentSlider("thirst_depletion_modifier", config.thirstDepletionModifier, 0, 1000,
                         value -> config.thirstDepletionModifier = value),
@@ -52,7 +52,7 @@ public final class ThirstConfigScreen extends OptionsSubScreen {
                 toggle("prevent_sprinting_when_thirsty", config.preventSprintingWhenThirsty,
                         value -> config.preventSprintingWhenThirsty = value));
 
-        list.addHeader(Component.translatable("thirstwastaken2.config.category.drinking"));
+        ClientVanilla.addHeader(list, Component.translatable("thirstwastaken2.config.category.drinking"));
         list.addSmall(
                 toggle("can_drink_by_hand", config.canDrinkByHand, value -> config.canDrinkByHand = value),
                 toggle("drink_by_hand_needs_both_hands_empty", config.drinkByHandNeedsBothHandsEmpty,
@@ -64,7 +64,7 @@ public final class ThirstConfigScreen extends OptionsSubScreen {
                 slider("hand_drinking_quenched", config.handDrinkingQuenched, 0, 20,
                         value -> config.handDrinkingQuenched = value));
 
-        list.addHeader(Component.translatable("thirstwastaken2.config.category.purity"));
+        ClientVanilla.addHeader(list, Component.translatable("thirstwastaken2.config.category.purity"));
         list.addSmall(
                 slider("default_purity", config.defaultPurity, 0, 3, value -> config.defaultPurity = value),
                 slider("rainwater_purity", config.rainwaterPurity, 0, 3,
@@ -74,7 +74,7 @@ public final class ThirstConfigScreen extends OptionsSubScreen {
                 toggle("quench_when_debuffed", config.quenchWhenDebuffed,
                         value -> config.quenchWhenDebuffed = value));
 
-        list.addHeader(Component.translatable("thirstwastaken2.config.category.purity_chances"));
+        ClientVanilla.addHeader(list, Component.translatable("thirstwastaken2.config.category.purity_chances"));
         for (int purity = 0; purity < 4; purity++) {
             int index = purity;
             list.addSmall(
@@ -84,14 +84,14 @@ public final class ThirstConfigScreen extends OptionsSubScreen {
                             value -> config.poisonChance[index] = value));
         }
 
-        list.addHeader(Component.translatable("thirstwastaken2.config.category.hud"));
+        ClientVanilla.addHeader(list, Component.translatable("thirstwastaken2.config.category.hud"));
         list.addSmall(
                 slider("thirst_bar_x_offset", config.thirstBarXOffset, -200, 200,
                         value -> config.thirstBarXOffset = value),
                 slider("thirst_bar_y_offset", config.thirstBarYOffset, -200, 200,
                         value -> config.thirstBarYOffset = value));
 
-        list.addHeader(Component.translatable("thirstwastaken2.config.category.items"));
+        ClientVanilla.addHeader(list, Component.translatable("thirstwastaken2.config.category.items"));
         list.addSmall(
                 toggle("enable_keyword_matching", config.enableKeywordMatching,
                         value -> config.enableKeywordMatching = value));

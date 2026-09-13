@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "thirstwastaken2:terracotta_bowl"
+    },
+    {
+      "fabric:type": "fabric:components",
+      "base": {
+        "item": "minecraft:water_bucket"
+      },
+      "components": {
+        "thirstwastaken2:water_salty": false
+      }
+    }
+  ],
+  "result": {
+    "components": {
+      "minecraft:custom_model_data": 2,
+      "thirstwastaken2:water_purity": 2
+    },
+    "count": 1,
+    "id": "thirstwastaken2:terracotta_water_bowl"
+  }
+}

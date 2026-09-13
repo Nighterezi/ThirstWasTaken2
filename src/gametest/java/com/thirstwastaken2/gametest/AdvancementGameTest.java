@@ -65,15 +65,26 @@ public final class AdvancementGameTest {
             TestFixtures.check(helper, holder != null, "recipe advancement " + name + " did not load");
             if (holder == null) continue;
 
-            List<ResourceKey<Recipe<?>>> rewards = holder.value().rewards().recipes();
+            var rewards = holder.value().rewards().recipes();
             TestFixtures.check(helper, !rewards.isEmpty(), name + " should unlock at least one recipe");
-            for (ResourceKey<Recipe<?>> recipe : rewards) {
+            for (var recipe : rewards) {
                 TestFixtures.check(helper, server.getRecipeManager().byKey(recipe).isPresent(),
-                        "recipe " + recipe.identifier() + ", unlocked by " + name + ", does not exist");
+                        "recipe " + recipeId(recipe) + ", unlocked by " + name + ", does not exist");
             }
         }
         helper.succeed();
     }
+
+    /** Recipes are registry entries with keys from 1.21.2; before it a recipe is known by its id alone. */
+    //? if >=1.21.2 {
+    private static Identifier recipeId(ResourceKey<Recipe<?>> recipe) {
+        return recipe.identifier();
+    }
+    //?} else {
+    /*private static Identifier recipeId(Identifier recipe) {
+        return recipe;
+    }
+    *///?}
 
     private static AdvancementHolder advancement(GameTestHelper helper, Identifier id) {
         return helper.getLevel().getServer().getAdvancements().get(id);

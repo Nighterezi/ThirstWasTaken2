@@ -1,15 +1,29 @@
 package com.thirstwastaken2.gametest;
 
+import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.purity.WaterPurity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
+
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /** Scaffolding shared by the gametests: readable assertions, a water source, and a player aimed at it. */
 final class TestFixtures {
@@ -19,11 +33,14 @@ final class TestFixtures {
     private TestFixtures() { }
 
     /**
-     * Asserts with a plain message. {@link GameTestHelper#assertTrue} only takes a
-     * {@link Component} on every supported version, so this keeps the call sites readable.
+     * Asserts with a plain message. {@link GameTestHelper#assertTrue} takes a {@link Component} from
+     * 1.21.5 and a string before it, so this keeps the call sites the same on every version.
      */
     static void check(GameTestHelper helper, boolean condition, String message) {
+        //? if >=1.21.5 {
         helper.assertTrue(condition, Component.literal(message));
+        //?} else
+        /*helper.assertTrue(condition, message);*/
     }
 
     /**
@@ -56,6 +73,83 @@ final class TestFixtures {
     @SuppressWarnings("removal")
     static ServerPlayer mockPlayer(GameTestHelper helper) {
         return helper.makeMockServerPlayerInLevel();
+    }
+
+    /** A survival player with a full hunger bar, so vanilla allows sprinting and charges exhaustion. */
+    static ServerPlayer survivalPlayer(GameTestHelper helper) {
+        ServerPlayer player = mockPlayer(helper);
+        player.setGameMode(GameType.SURVIVAL);
+        player.getFoodData().setFoodLevel(20);
+        return player;
+    }
+
+    /** A vanilla water bottle: a potion whose contents are plain water. */
+    static ItemStack waterBottle() {
+        ItemStack bottle = new ItemStack(Items.POTION);
+        bottle.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.WATER));
+        return bottle;
+    }
+
+    /**
+     * Changes the live config, commits it the way the config screen does, runs {@code checks}, and
+     * puts the config back however the checks ended.
+     *
+     * <p>Committing re-sanitises, bumps the generation that per-item caches watch, and saves the file,
+     * so the original is restored by writing the file back and loading it again.
+     */
+    static void withConfig(java.util.function.Consumer<ThirstConfig> change, Runnable checks) {
+        Path path = ThirstConfig.path();
+        byte[] original;
+        try {
+            original = Files.readAllBytes(path);
+        } catch (IOException exception) {
+            throw new UncheckedIOException(exception);
+        }
+        try {
+            change.accept(ThirstConfig.get());
+            ThirstConfig.commit();
+            checks.run();
+        } finally {
+            try {
+                Files.write(path, original);
+            } catch (IOException exception) {
+                throw new UncheckedIOException(exception);
+            }
+            ThirstConfig.load();
+        }
+    }
+
+    /** What a furnace or campfire makes of {@code stack}, or an empty stack when no recipe takes it. */
+    static <T extends Recipe<SingleRecipeInput>> ItemStack cook(GameTestHelper helper, RecipeType<T> type, ItemStack stack) {
+        return craft(helper, type, new SingleRecipeInput(stack));
+    }
+
+    /** What the recipe manager makes of {@code input}, or an empty stack when no recipe matches it. */
+    static <I extends RecipeInput, T extends Recipe<I>> ItemStack craft(GameTestHelper helper, RecipeType<T> type, I input) {
+        return helper.getLevel().getServer().getRecipeManager()
+                .getRecipeFor(type, input, helper.getLevel())
+                .map(holder -> assemble(helper, holder.value(), input))
+                .orElse(ItemStack.EMPTY);
+    }
+
+    /** Builds a recipe's result. 26.1 dropped the registry lookup the call used to take. */
+    private static <I extends RecipeInput> ItemStack assemble(GameTestHelper helper, Recipe<I> recipe, I input) {
+        //? if >=26.1 {
+        return recipe.assemble(input);
+        //?} else
+        /*return recipe.assemble(input, helper.getLevel().registryAccess());*/
+    }
+
+    /**
+     * A piglin entity type, for bartering loot. The constants moved from {@code EntityType} to
+     * {@code EntityTypes} in 26.2.
+     */
+    static EntityType<?> piglinType() {
+        //? if >=26.2 {
+        return net.minecraft.world.entity.EntityTypes.PIGLIN;
+        //?} else {
+        /*return net.minecraft.world.entity.EntityType.PIGLIN;
+        *///?}
     }
 
     /**

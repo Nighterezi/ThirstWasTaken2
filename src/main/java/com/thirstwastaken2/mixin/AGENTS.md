@@ -9,8 +9,13 @@ Vanilla hooks. Everything the mod cannot do through a Fabric API event lands her
 - **A new mixin must be added to `src/main/resources/thirstwastaken2.mixins.json`** or it silently
   does nothing. `injectors.defaultRequire` is 1, so a stale target throws at load instead of failing
   quietly — a `runServer` that starts is already proof every injection point still resolves.
-- Client-only mixins would need their own `thirstwastaken2.client.mixins.json`; there are none yet, so
-  if you add one, wire the file into `fabric.mod.json` as well.
+- There are no client-only mixins in this package. The one client mixin, `GuiMixin`, stands in for a
+  Fabric API registry and so is loader code: it lives in `src/client/fabric/java` under
+  `com.thirstwastaken2.fabric.mixin`, with its own `thirstwastaken2.fabric.client.mixins.json` in the
+  client source set, so Loom writes its refmap.
+- A mixin that only one version needs still exists on every version, with an empty body elsewhere:
+  the mixin config is shared, and a listed class that is missing is a crash. `BlocksMixin` and
+  `GuiMixin` are the examples. No block comments inside their `//?` blocks; see the root `AGENTS.md`.
 - Keep the mixin thin: capture or redirect, then call into `com.thirstwastaken2.*`. Game logic does
   not belong in this package. One line of body is the target.
 - A mixin is the one place outside `platform/` allowed to carry a Stonecutter `//?` branch, because
@@ -21,20 +26,26 @@ Vanilla hooks. Everything the mod cannot do through a Fabric API event lands her
 | Mixin | Target | Purpose |
 |---|---|---|
 | `PlayerMixin` | `causeFoodExhaustion` (HEAD), `canSprint` (`@ModifyReturnValue`); implements `ExhaustionTracker.Holder` | buffer hunger exhaustion for the thirst tick; block sprinting at thirst ≤ 6 |
-| `FoodDataMixin` | `FoodData#tick`, both `ServerPlayer#heal` call sites | dehydration halts natural regen and refunds the food cost vanilla would have charged |
-| `ItemStackMixin` | `use` (HEAD), `finishUsingItem` (HEAD), `addDetailsToTooltip` (TAIL) | block plain water at full thirst; restore thirst on consume; append waterskin, purity and droplet lines |
+| `FoodDataMixin` | `FoodData#tick`, both `ServerPlayer#heal` call sites (`Player#heal` on 1.21.1) | dehydration halts natural regen and refunds the food cost vanilla would have charged |
+| `ItemStackMixin` | `use` (HEAD), `finishUsingItem` (HEAD), `addDetailsToTooltip` (TAIL); on 1.21.1 a `@WrapOperation` round the `appendHoverText` call in `getTooltipLines` | block plain water at full thirst; restore thirst on consume; append waterskin, purity and droplet lines |
 | `BottleItemMixin` | `BottleItem#use` | stamp sampled quality onto a bottle filled from a water block |
 | `BucketItemMixin` | `BucketItem#use` | stamp sampled quality onto a bucket filled from a water block |
 | `LayeredCauldronBlockMixin` | `createBlockStateDefinition`, `handlePrecipitation`, `receiveStalactiteDrip` | add the quality property; grade water that rain or a dripstone added |
 | `CauldronBlockMixin` | `handlePrecipitation`, `receiveStalactiteDrip` | the same two fills, on the empty cauldron they turn into a water cauldron |
+| `BlocksMixin` | 1.21.1 only: the two `new LayeredCauldronBlock` in `Blocks`' static init | mark which one is the water cauldron, for `Vanilla.isWaterCauldron` |
+
+`BlocksMixin` exists because 1.21.1 computes a block's description id from the registry and caches
+it. Asking a cauldron for it inside its own constructor, which is where the quality property has to
+be added, would find it unregistered and name it air for good. The water cauldron is told apart from
+the powder snow one by the precipitation it is built with.
 
 ## The fragile ones
 
 `BottleItemMixin` and `BucketItemMixin` share a two-step shape, implemented in
 `com.thirstwastaken2.purity.FillCapture`: a server-only `@Inject` at HEAD re-raycasts the player's
 view (`ClipContext.Fluid.SOURCE_ONLY`) and stores the sampled quality, then a `@ModifyArg` stamps the
-resulting stack. They depend on an exact target descriptor, and the bucket one also on `ordinal = 1`
-of `ItemUtils#createFilledResult` — the first call is the empty-bucket branch. Both break on a
+resulting stack. They depend on an exact target descriptor, and the bucket one also on the first
+`ItemUtils#createFilledResult` after `pickupBlock`, whose descriptor forks on 1.21.1. Both break on a
 vanilla refactor rather than misbehaving, which is the intent.
 
 The two cauldron fill hooks inject at `RETURN`, not `TAIL`: vanilla returns early when the roll

@@ -13,7 +13,7 @@ developers. There is no installer, the jar is the whole mod.
 ## Supported versions
 
 One release covers every supported Minecraft version, and they all share the same mod version. The
-Minecraft version is the suffix on the file name, for example `ThirstWasTaken2-1.0.3+1.21.11.jar`.
+Minecraft version is the suffix on the file name, for example `ThirstWasTaken2-1.0.4+1.21.11.jar`.
 Take the file whose suffix matches the game.
 
 | Minecraft | File suffix | Fabric Loader | Fabric API | Java |
@@ -21,6 +21,7 @@ Take the file whose suffix matches the game.
 | 26.2 | `+26.2` | 0.19.3 or newer | 0.160.0+26.2 or newer | 25 |
 | 26.1, 26.1.1, 26.1.2 | `+26.1.2` | 0.19.3 or newer | 0.155.3+26.1.2 or newer | 25 |
 | 1.21.11 | `+1.21.11` | 0.19.3 or newer | 0.141.6+1.21.11 or newer | 21 |
+| 1.21, 1.21.1 | `+1.21.1` | 0.19.3 or newer | 0.116.17+1.21.1 or newer | 21 |
 
 ### Reading the table
 
@@ -31,19 +32,27 @@ Take the file whose suffix matches the game.
   you run a server with your own JDK.
 - The mod never targets a snapshot. A row appears once the mod builds against a full release.
 
+### Minecraft 1.21 and 1.21.1
+
+The game plays the same, with two small differences in how things look:
+
+- Sea water in a bottle or bucket looks like ordinary water. Its tooltip still reads Salty, and a
+  bowl of sea water still changes colour.
+- The droplets in item tooltips have a shadow.
+
 ## Compatible mods
 
 None of these are required. The mod loads and plays exactly the same without them, it only unlocks
 the extra behaviour listed here when it finds one.
 
-Versions tested are listed per Minecraft version, in the order 26.2, 26.1.x, 1.21.11.
+Versions tested are listed per Minecraft version, in the order 26.2, 26.1.x, 1.21.11, 1.21.1.
 
 | Mod | Versions tested | What it adds | If it is missing |
 |---|---|---|---|
-| [Fabric API](https://modrinth.com/mod/fabric-api) | 0.160.0+26.2, 0.155.3+26.1.2, 0.141.6+1.21.11 | Required. Events, networking and the HUD hooks the mod is built on. | The mod will not load. |
-| [Mod Menu](https://modrinth.com/mod/modmenu) | 20.0.1, 18.0.0, 17.0.0 | A Config button in the Mods list that opens the [settings screen](/docs/configuration). | Edit `config/thirstwastaken2.json` by hand. |
-| [AppleSkin](https://modrinth.com/mod/appleskin) | 3.0.10+mc26.2, 3.0.10+mc26.1.2, 3.0.8+mc1.21.11 | A dithered thirst-exhaustion strip controlled by AppleSkin's HUD-underlay option. | The thirst bar renders normally without the strip. |
-| [Cloth Config](https://modrinth.com/mod/cloth-config) | 26.2.155, 26.1.154, 21.11.153 | AppleSkin's configuration screen inside Mod Menu. | AppleSkin still works, but its Config button is unavailable. |
+| [Fabric API](https://modrinth.com/mod/fabric-api) | 0.160.0+26.2, 0.155.3+26.1.2, 0.141.6+1.21.11, 0.116.17+1.21.1 | Required. Events, networking and the HUD hooks the mod is built on. | The mod will not load. |
+| [Mod Menu](https://modrinth.com/mod/modmenu) | 20.0.1, 18.0.0, 17.0.0, 11.0.4 | A Config button in the Mods list that opens the [settings screen](/docs/configuration). | Edit `config/thirstwastaken2.json` by hand. |
+| [AppleSkin](https://modrinth.com/mod/appleskin) | 3.0.10+mc26.2, 3.0.10+mc26.1.2, 3.0.8+mc1.21.11, 3.0.6+mc1.21 | A dithered thirst-exhaustion strip controlled by AppleSkin's HUD-underlay option. | The thirst bar renders normally without the strip. |
+| [Cloth Config](https://modrinth.com/mod/cloth-config) | 26.2.155, 26.1.154, 21.11.153, 15.0.140 | AppleSkin's configuration screen inside Mod Menu. | AppleSkin still works, but its Config button is unavailable. |
 
 Anything not listed simply coexists. Food mods usually work without a patch: an item whose name
 contains a drink, soup or fruit keyword picks up thirst values on its own, and the per-item values in

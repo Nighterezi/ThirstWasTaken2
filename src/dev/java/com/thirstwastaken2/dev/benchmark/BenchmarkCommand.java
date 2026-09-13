@@ -3,6 +3,7 @@ package com.thirstwastaken2.dev.benchmark;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.thirstwastaken2.platform.Vanilla;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -15,9 +16,9 @@ public final class BenchmarkCommand {
         // Merges into the mod's own /thirst node. Whichever registration runs first decides the root
         // requirement, so it is repeated here; benchmark itself is stricter.
         dispatcher.register(Commands.literal("thirst")
-                .requires(source -> Commands.LEVEL_GAMEMASTERS.check(source.permissions()))
+                .requires(Vanilla::isGameMaster)
                 .then(Commands.literal("benchmark")
-                        .requires(source -> Commands.LEVEL_OWNERS.check(source.permissions()))
+                        .requires(Vanilla::isOwner)
                         .executes(context -> start(context.getSource(), BenchmarkProfile.STANDARD))
                         .then(profile(BenchmarkProfile.QUICK))
                         .then(profile(BenchmarkProfile.STANDARD))

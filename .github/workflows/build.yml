@@ -89,8 +89,9 @@ jobs:
       - name: Build
         # devClasses compiles the dev tools (/thirst benchmark). They never ship, so nothing else would
         # notice them breaking on one version. checkLoaderSeam fails on a mod loader import in loader
-        # independent code, which compiles fine while Fabric is the only loader.
-        run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:devClasses" ":${{ matrix.version }}:checkLoaderSeam" --stacktrace
+        # independent code, which compiles fine while Fabric is the only loader. checkVersionSeam fails
+        # on a version conditional in core code, which is the exit ramp in docs/dev/PLATFORM-PLAN.md.
+        run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:devClasses" ":${{ matrix.version }}:checkLoaderSeam" ":${{ matrix.version }}:checkVersionSeam" --stacktrace
 
       # Regenerates every datapack and asset JSON and fails if the result differs from what is
       # committed, which is what catches a generator edited without regenerating and a generated

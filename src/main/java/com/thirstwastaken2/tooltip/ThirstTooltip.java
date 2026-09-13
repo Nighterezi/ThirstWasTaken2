@@ -113,10 +113,8 @@ public final class ThirstTooltip {
         for (int i = 0; i < droplets; i++) {
             icons.append(fillOf(units, i) == UNITS_PER_DROPLET ? full : half);
         }
-        return Component.literal(icons.toString()).withStyle(style -> Vanilla.dropletFont(style)
-                // Bitmap glyphs keep their own palette; shadows would smear their 1px outlines.
-                .withColor(0xFFFFFF)
-                .withoutShadow());
+        // Bitmap glyphs keep their own palette, so the colour is white rather than inherited.
+        return Component.literal(icons.toString()).withStyle(style -> Vanilla.dropletFont(style).withColor(0xFFFFFF));
     }
 
     /** Droplets needed to show this many units, rounding a leftover half up to its own droplet. */

@@ -53,7 +53,7 @@ public final class ThirstAdvancementProvider extends FabricAdvancementProvider {
                         ThirstItems.WATERSKIN,
                         title("root"),
                         description("root"),
-                        Identifier.withDefaultNamespace("block/terracotta"),
+                        rootBackground(),
                         AdvancementType.TASK,
                         false,
                         false,
@@ -108,8 +108,12 @@ public final class ThirstAdvancementProvider extends FabricAdvancementProvider {
 
         for (String container : List.of("bottle", "bowl", "bucket")) {
             for (int purity = 0; purity < 3; purity++) {
-                ResourceKey<Recipe<?>> key = ResourceKey.create(Registries.RECIPE,
-                        ThirstWasTaken2.id("purify_water_" + container + "_" + purity + "_smelting"));
+                Identifier id = ThirstWasTaken2.id("purify_water_" + container + "_" + purity + "_smelting");
+                // Recipes are registry entries with keys from 1.21.2; before it the trigger takes the id.
+                //? if >=1.21.2 {
+                ResourceKey<Recipe<?>> key = ResourceKey.create(Registries.RECIPE, id);
+                //?} else
+                /*Identifier key = id;*/
                 builder.addCriterion(container + "_" + purity, new Criterion<>(CriteriaTriggers.RECIPE_CRAFTED,
                         new RecipeCraftedTrigger.TriggerInstance(java.util.Optional.empty(), key, List.of())));
             }
@@ -128,6 +132,17 @@ public final class ThirstAdvancementProvider extends FabricAdvancementProvider {
      */
     private static Advancement.Builder builder() {
         return new Advancement.Builder();
+    }
+
+    /**
+     * The tab's background. Later releases name it by texture id, which the game resolves under
+     * {@code textures/}; 1.21.1 takes the texture's full path.
+     */
+    private static Identifier rootBackground() {
+        //? if >1.21.1 {
+        return Identifier.withDefaultNamespace("block/terracotta");
+        //?} else
+        /*return Identifier.withDefaultNamespace("textures/block/terracotta.png");*/
     }
 
     private static Component title(String name) {

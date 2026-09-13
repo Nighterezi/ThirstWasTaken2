@@ -16,6 +16,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BucketItem.class)
 abstract class BucketItemMixin {
+    // pickupBlock took the Player itself on 1.21.1; later releases widened it to any living entity.
+    //? if >1.21.1 {
+    private static final String PICKUP_BLOCK = "Lnet/minecraft/world/level/block/BucketPickup;pickupBlock(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/level/LevelAccessor;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Lnet/minecraft/world/item/ItemStack;";
+    //?} else
+    /*private static final String PICKUP_BLOCK = "Lnet/minecraft/world/level/block/BucketPickup;pickupBlock(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/level/LevelAccessor;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Lnet/minecraft/world/item/ItemStack;";*/
+
     @Inject(method = "use", at = @At("HEAD"))
     private void thirst$capturePurity(Level level, Player player, InteractionHand hand,
                                       CallbackInfoReturnable<InteractionResult> cir) {
@@ -28,11 +34,10 @@ abstract class BucketItemMixin {
      *
      * <p>The two branches are not in the same order on every version, so they cannot be told apart
      * by a plain {@code ordinal}: 26.2 emits the emptying branch first, 26.1 and 1.21.11 emit the
-     * filling branch first. Slicing from {@code pickupBlock}, which only the filling branch calls,
-     * identifies it on both orderings without a version fork.
+     * filling branch first, and so does 1.21.1. Slicing from {@code pickupBlock}, which only the
+     * filling branch calls, identifies it on every ordering without a version fork.
      */
-    @ModifyArg(method = "use", index = 2, slice = @Slice(from = @At(value = "INVOKE",
-            target = "Lnet/minecraft/world/level/block/BucketPickup;pickupBlock(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/level/LevelAccessor;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Lnet/minecraft/world/item/ItemStack;")),
+    @ModifyArg(method = "use", index = 2, slice = @Slice(from = @At(value = "INVOKE", target = PICKUP_BLOCK)),
             at = @At(value = "INVOKE", ordinal = 0,
             target = "Lnet/minecraft/world/item/ItemUtils;createFilledResult(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/ItemStack;"))
     private ItemStack thirst$addPurity(ItemStack filled) {

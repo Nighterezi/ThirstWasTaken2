@@ -13,7 +13,7 @@ dành cho lập trình viên. Không có trình cài đặt, file jar chính là
 ## Phiên bản được hỗ trợ
 
 Một bản phát hành bao gồm mọi phiên bản Minecraft được hỗ trợ, và tất cả dùng chung một số phiên bản
-mod. Phiên bản Minecraft nằm ở đuôi tên tệp, ví dụ `ThirstWasTaken2-1.0.3+1.21.11.jar`. Hãy lấy tệp
+mod. Phiên bản Minecraft nằm ở đuôi tên tệp, ví dụ `ThirstWasTaken2-1.0.4+1.21.11.jar`. Hãy lấy tệp
 có đuôi khớp với game.
 
 | Minecraft | Đuôi tệp | Fabric Loader | Fabric API | Java |
@@ -21,6 +21,7 @@ có đuôi khớp với game.
 | 26.2 | `+26.2` | 0.19.3 trở lên | 0.160.0+26.2 trở lên | 25 |
 | 26.1, 26.1.1, 26.1.2 | `+26.1.2` | 0.19.3 trở lên | 0.155.3+26.1.2 trở lên | 25 |
 | 1.21.11 | `+1.21.11` | 0.19.3 trở lên | 0.141.6+1.21.11 trở lên | 21 |
+| 1.21, 1.21.1 | `+1.21.1` | 0.19.3 trở lên | 0.116.17+1.21.1 trở lên | 21 |
 
 ### Cách đọc bảng
 
@@ -31,19 +32,27 @@ có đuôi khớp với game.
   khi bạn chạy máy chủ bằng JDK riêng.
 - Mod không nhắm tới bản snapshot. Một hàng chỉ xuất hiện khi mod build được trên bản chính thức.
 
+### Minecraft 1.21 và 1.21.1
+
+Lối chơi giữ nguyên, chỉ khác hai điểm nhỏ về hình ảnh:
+
+- Nước biển trong chai hoặc xô trông giống nước thường. Tooltip của nó vẫn ghi Mặn, và bát nước biển
+  vẫn đổi màu.
+- Các giọt nước trong tooltip vật phẩm có bóng đổ.
+
 ## Mod tương thích
 
 Không có mod nào ở đây là bắt buộc. Mod vẫn chạy y hệt khi thiếu chúng, chỉ là sẽ mở thêm phần hành
 vi được liệt kê bên dưới nếu tìm thấy.
 
-Phiên bản đã thử được liệt kê theo từng phiên bản Minecraft, thứ tự 26.2, 26.1.x, 1.21.11.
+Phiên bản đã thử được liệt kê theo từng phiên bản Minecraft, thứ tự 26.2, 26.1.x, 1.21.11, 1.21.1.
 
 | Mod | Phiên bản đã thử | Thêm gì | Nếu thiếu |
 |---|---|---|---|
-| [Fabric API](https://modrinth.com/mod/fabric-api) | 0.160.0+26.2, 0.155.3+26.1.2, 0.141.6+1.21.11 | Bắt buộc. Sự kiện, mạng và các móc HUD mà mod dựa trên. | Mod sẽ không nạp được. |
-| [Mod Menu](https://modrinth.com/mod/modmenu) | 20.0.1, 18.0.0, 17.0.0 | Nút Config trong danh sách Mods, mở [màn hình tùy chỉnh](/vi/docs/configuration). | Sửa `config/thirstwastaken2.json` bằng tay. |
-| [AppleSkin](https://modrinth.com/mod/appleskin) | 3.0.10+mc26.2, 3.0.10+mc26.1.2, 3.0.8+mc1.21.11 | Dải tiêu hao dạng hạt trên thanh khát, theo tùy chọn HUD underlay của AppleSkin. | Thanh khát vẫn hiển thị bình thường nhưng không có dải này. |
-| [Cloth Config](https://modrinth.com/mod/cloth-config) | 26.2.155, 26.1.154, 21.11.153 | Màn hình cấu hình AppleSkin bên trong Mod Menu. | AppleSkin vẫn chạy nhưng nút Config của nó không dùng được. |
+| [Fabric API](https://modrinth.com/mod/fabric-api) | 0.160.0+26.2, 0.155.3+26.1.2, 0.141.6+1.21.11, 0.116.17+1.21.1 | Bắt buộc. Sự kiện, mạng và các móc HUD mà mod dựa trên. | Mod sẽ không nạp được. |
+| [Mod Menu](https://modrinth.com/mod/modmenu) | 20.0.1, 18.0.0, 17.0.0, 11.0.4 | Nút Config trong danh sách Mods, mở [màn hình tùy chỉnh](/vi/docs/configuration). | Sửa `config/thirstwastaken2.json` bằng tay. |
+| [AppleSkin](https://modrinth.com/mod/appleskin) | 3.0.10+mc26.2, 3.0.10+mc26.1.2, 3.0.8+mc1.21.11, 3.0.6+mc1.21 | Dải tiêu hao dạng hạt trên thanh khát, theo tùy chọn HUD underlay của AppleSkin. | Thanh khát vẫn hiển thị bình thường nhưng không có dải này. |
+| [Cloth Config](https://modrinth.com/mod/cloth-config) | 26.2.155, 26.1.154, 21.11.153, 15.0.140 | Màn hình cấu hình AppleSkin bên trong Mod Menu. | AppleSkin vẫn chạy nhưng nút Config của nó không dùng được. |
 
 Những mod không nằm trong bảng thì cứ chạy song song bình thường. Mod đồ ăn thường không cần vá: món
 nào có tên chứa từ khóa đồ uống, súp hoặc trái cây sẽ tự có giá trị cấp nước, phần còn lại thì khai

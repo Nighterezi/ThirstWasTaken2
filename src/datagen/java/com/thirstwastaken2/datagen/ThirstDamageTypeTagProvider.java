@@ -22,7 +22,11 @@ public final class ThirstDamageTypeTagProvider extends FabricTagsProvider<Damage
 
     @Override
     protected void addTags(HolderLookup.Provider registries) {
+        // Fabric API's tag builder was called getOrCreateTagBuilder on 1.21.1.
+        //? if >1.21.1 {
         builder(DamageTypeTags.BYPASSES_ARMOR).addOptional(ThirstDamageTypes.DEHYDRATE);
+        //?} else
+        /*getOrCreateTagBuilder(DamageTypeTags.BYPASSES_ARMOR).addOptional(ThirstDamageTypes.DEHYDRATE);*/
     }
 
     @Override

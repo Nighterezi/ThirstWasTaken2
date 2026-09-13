@@ -137,7 +137,11 @@ public final class PlayerStateGameTest {
     public void ridingDoesNotDehydrate(GameTestHelper helper) {
         ServerPlayer player = survivalPlayer(helper);
         Entity mount = helper.spawn(TestFixtures.mountType(), new BlockPos(2, 2, 2));
+        // Forced. A release after 1.21.1 added the second flag, which also ignores the mount's own rules.
+        //? if >1.21.1 {
         player.startRiding(mount, true, true);
+        //?} else
+        /*player.startRiding(mount, true);*/
         TestFixtures.check(helper, player.isPassenger(), "the player should be riding the mount");
 
         ThirstData before = ThirstManager.get(player);
