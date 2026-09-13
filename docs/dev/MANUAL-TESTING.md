@@ -91,6 +91,8 @@ The server owns thirst. These are the checks that the client is told.
       as a potion. The bowl leaves an empty terracotta bowl; the waterskin stays in hand.
 - [ ] Crouch with an empty hand and use water at less than full thirst: the drinking sound is heard
       by the drinker.
+- [ ] Crouch with an empty hand and use water whose floor is out of reach (deep water, a waterfall):
+      it is drunk all the same, once per click, and an item in the other hand is still used.
 - [x] Scooping with a bowl plays the bucket sound, with a waterskin the bottle sound.
 
 ### Config screen

@@ -189,9 +189,12 @@ public final class ThirstManager {
             return InteractionResult.PASS;
         }
         if (!player.getItemInHand(hand).isEmpty()) return InteractionResult.PASS;
+        // A click the client does not handle itself is sent once per hand, main hand first, so with
+        // both hands empty the off hand's copy would be a second sip from the same click.
+        if (hand == InteractionHand.OFF_HAND && player.getMainHandItem().isEmpty()) return InteractionResult.PASS;
         if (config.drinkByHandNeedsBothHandsEmpty
-                && !player.getItemInHand(InteractionHand.OFF_HAND).isEmpty()
-                && !player.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()) {
+                && !player.getItemInHand(hand == InteractionHand.MAIN_HAND
+                        ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND).isEmpty()) {
             return InteractionResult.PASS;
         }
 

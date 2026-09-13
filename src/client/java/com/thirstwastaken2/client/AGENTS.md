@@ -13,6 +13,7 @@ except the HUD section.
 |---|---|
 | `ThirstWasTaken2Client` | `initialize`, called by the loader's client entrypoint: registers the HUD row |
 | `ThirstHud` | drawing the bar |
+| `HandDrinking` | hand drinking from water the crosshair misses: picks again with fluids and sends vanilla's use-on-block packet on the water |
 | `config/ThirstConfigScreen` | the root options screen: preview, a button per page, Cancel and Done |
 | `config/ThirstCategoryScreen` | one page as a vanilla options list, with Reset to Defaults |
 | `config/ConfigCategory` | every page: its widgets and what its reset puts back |
@@ -31,6 +32,7 @@ the build on a loader import in this directory:
 | `client/compat/ModMenuIntegration` | the `modmenu` entrypoint; Mod Menu is a Fabric-only mod |
 | `fabric/mixin/GuiMixin` | 1.21.1 only: the status bar registry Fabric API gained in 1.21.6 |
 | `fabric/mixin/LocalPlayerMixin` | 1.21.1 only: the thirst sprint gate, on the client player's own food check |
+| `fabric/mixin/MinecraftMixin` | every version: calls `HandDrinking` at the start of a right click |
 
 `ClientVanilla` is the client half of `com.thirstwastaken2.platform.Vanilla` and follows the same
 rules — plumbing only, one signature on every version. A Stonecutter `//?` branch anywhere else in

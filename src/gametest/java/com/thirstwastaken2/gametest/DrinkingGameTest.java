@@ -184,9 +184,40 @@ public final class DrinkingGameTest {
         helper.succeed();
     }
 
+    @GameTest
+    public void handDrinkingTakesOneSipPerClick(GameTestHelper helper) {
+        BlockPos water = TestFixtures.water(helper);
+
+        // Vanilla sends a click it does not handle once per hand, main hand first.
+        ServerPlayer bothEmpty = thirstyPlayer(helper);
+        bothEmpty.setPose(Pose.CROUCHING);
+        ThirstManager.drinkByHand(bothEmpty, helper.getLevel(), InteractionHand.MAIN_HAND, aimAt(water));
+        refused(helper, bothEmpty, InteractionHand.OFF_HAND, water, "the off hand of a player whose main hand already drank");
+
+        ServerPlayer holding = thirstyPlayer(helper);
+        holding.setPose(Pose.CROUCHING);
+        holding.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.STONE));
+        ThirstManager.drinkByHand(holding, helper.getLevel(), InteractionHand.OFF_HAND, aimAt(water));
+        TestFixtures.check(helper, ThirstManager.get(holding).thirst() > 10,
+                "an empty off hand should drink while the main hand holds something, got " + ThirstManager.get(holding));
+
+        TestFixtures.withConfig(config -> config.drinkByHandNeedsBothHandsEmpty = true, () -> {
+            ServerPlayer oneEmpty = thirstyPlayer(helper);
+            oneEmpty.setPose(Pose.CROUCHING);
+            oneEmpty.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.STONE));
+            refused(helper, oneEmpty, InteractionHand.OFF_HAND, water,
+                    "a player holding something with drink_by_hand_needs_both_hands_empty on");
+        });
+        helper.succeed();
+    }
+
     private static void refused(GameTestHelper helper, ServerPlayer player, BlockPos target, String who) {
+        refused(helper, player, InteractionHand.MAIN_HAND, target, who);
+    }
+
+    private static void refused(GameTestHelper helper, ServerPlayer player, InteractionHand hand, BlockPos target, String who) {
         ThirstData before = ThirstManager.get(player);
-        InteractionResult result = ThirstManager.drinkByHand(player, helper.getLevel(), InteractionHand.MAIN_HAND, aimAt(target));
+        InteractionResult result = ThirstManager.drinkByHand(player, helper.getLevel(), hand, aimAt(target));
         TestFixtures.check(helper, result == InteractionResult.PASS && ThirstManager.get(player).equals(before),
                 who + " should not drink by hand, got " + result + " and " + ThirstManager.get(player));
     }

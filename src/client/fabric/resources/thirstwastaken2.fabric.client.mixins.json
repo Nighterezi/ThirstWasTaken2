@@ -4,7 +4,8 @@
   "compatibilityLevel": "${java}",
   "client": [
     "GuiMixin",
-    "LocalPlayerMixin"
+    "LocalPlayerMixin",
+    "MinecraftMixin"
   ],
   "injectors": { "defaultRequire": 1 }
 }

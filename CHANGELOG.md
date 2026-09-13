@@ -26,6 +26,8 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 - The quenched outline had stray pixels outside the droplet at a quarter, half and three quarters
   full.
 - Low thirst did not stop sprinting. Players can no longer sprint at 6 thirst or below, as intended.
+- Dehydration damage knocked players back. It now hurts without knockback, like drowning.
+- Drinking by hand did not work on deep water or a waterfall when no block was within reach.
 
 ### Notes
 
