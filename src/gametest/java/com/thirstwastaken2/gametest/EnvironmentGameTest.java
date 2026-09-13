@@ -41,6 +41,19 @@ public final class EnvironmentGameTest {
     }
 
     @GameTest
+    public void dehydrationHurtsLikeDrowning(GameTestHelper helper) {
+        DamageSource source = ThirstDamageTypes.dehydration(helper.getLevel());
+
+        TestFixtures.check(helper, source.is(DamageTypeTags.NO_KNOCKBACK),
+                "the mod's no_knockback tag entry should have loaded, so dehydration does not "
+                        + "knock the player back");
+        TestFixtures.check(helper, source.is(DamageTypeTags.NO_IMPACT),
+                "the mod's no_impact tag entry should have loaded, so dehydration hurts the way "
+                        + "drowning does");
+        helper.succeed();
+    }
+
+    @GameTest
     public void overworldWaterDoesNotEvaporate(GameTestHelper helper) {
         BlockPos here = helper.absolutePos(new BlockPos(2, 2, 2));
 

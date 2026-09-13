@@ -44,10 +44,10 @@ Useful commands while testing:
 
 - [x] The thirst bar sits above the hunger bar on the right, ten droplets wide, the same width as hunger.
 - [x] `/thirst set @s 13 0`: six and a half droplets, the half droplet on the left end.
-- [ ] With quenched at 0, sprinting makes the next droplet drain through the quarter and three-quarter
+- [x] With quenched at 0, sprinting makes the next droplet drain through the quarter and three-quarter
       frames before a point is spent, and the bar shakes the way hunger does at zero saturation.
 - [x] `/thirst set @s 20 20`: the quenched outline is drawn over every droplet, cyan by default.
-- [ ] Mod Menu → ThirstWasTaken2 → HUD & AppleSkin: Quenched Outline reads "Quenched Outline: Diamond"
+- [x] Mod Menu → ThirstWasTaken2 → HUD & AppleSkin: Quenched Outline reads "Quenched Outline: Diamond"
       (the name once) and cycles Diamond, Ice, Gold, AppleSkin and Off. The preview and the real bar
       change at once. Off removes the outline from the bar; the tooltip row falls back to the plain
       blue outline.
@@ -55,7 +55,7 @@ Useful commands while testing:
       (a living mount's hearts take its place). It stays while in a boat or minecart.
 - [x] Underwater, the air bubbles sit **above** the thirst bar, not on top of it.
 - [x] Mod Menu → ThirstWasTaken2 → HUD & AppleSkin: the X and Y offsets move the bar live.
-- [ ] With AppleSkin's exhaustion underlay on, a translucent strip grows under the thirst bar while
+- [x] With AppleSkin's exhaustion underlay on, a translucent strip grows under the thirst bar while
       sprinting; turning the AppleSkin option off removes it. Nothing drawn after it (air bubbles,
       the hotbar) is left tinted.
 - [x] `/thirst enable @s false` hides the bar; `true` brings it back.
@@ -67,9 +67,9 @@ The server owns thirst. These are the checks that the client is told.
 - [x] `/thirst set @s 6 0` updates the bar immediately, and sprinting is refused at 6. Hold sprint and
       walk: at 7 the player runs, at 6 they walk. A gametest cannot see this, because the client decides
       sprinting.
-- [ ] Quit to the title screen and rejoin: the bar shows the value it had.
+- [x] Quit to the title screen and rejoin: the bar shows the value it had.
 - [x] Die and respawn: the bar is full again.
-- [ ] Go through a Nether portal and back: the bar is still correct on both sides.
+- [x] Go through a Nether portal and back: the bar is still correct on both sides.
 - [ ] Open the world to LAN or use `runServer` with a second client: each player sees only their own bar,
       and it is right for each.
 
@@ -77,7 +77,7 @@ The server owns thirst. These are the checks that the client is told.
 
 - [x] A water bottle, a filled bowl and a filled waterskin show a coloured grade line (Dirty, Murky,
       Clean, Pure) and two rows of droplet glyphs, not boxes or letters.
-- [ ] Turning Tooltip Droplets off removes both droplet rows and keeps the grade line.
+- [x] Turning Tooltip Droplets off removes both droplet rows and keeps the grade line.
 - [x] A sea-water bottle shows a single "Salty" line and no droplet rows.
 - [x] A waterskin says how many drinks it holds, or that it is empty. A clay bowl says it has to be fired.
 - [x] Milk, honey and an apple show droplet rows; stone shows nothing.
@@ -85,9 +85,9 @@ The server owns thirst. These are the checks that the client is told.
 
 ### Sprites and sounds
 
-- [ ] A filled bowl's water colour changes with its grade: four fresh colours and a sea colour.
-- [ ] A waterskin's sprite shows 0, 1, 2 or 3 drinks, and its bar is coloured by grade.
-- [ ] Drinking a bowl or a waterskin plays the drinking animation and sound, and takes about as long
+- [x] A filled bowl's water colour changes with its grade: four fresh colours and a sea colour.
+- [x] A waterskin's sprite shows 0, 1, 2 or 3 drinks, and its bar is coloured by grade.
+- [x] Drinking a bowl or a waterskin plays the drinking animation and sound, and takes about as long
       as a potion. The bowl leaves an empty terracotta bowl; the waterskin stays in hand.
 - [ ] Crouch with an empty hand and use water at less than full thirst: the drinking sound is heard
       by the drinker.
@@ -117,7 +117,7 @@ The server owns thirst. These are the checks that the client is told.
       configured rain grade. A dripstone dripping into a cauldron gives pure water.
 - [ ] A dungeon, mineshaft or shipwreck supply chest sometimes holds water bottles; a piglin sometimes
       barters one. Those bottles boil in a furnace.
-- [ ] The advancement tab has its icon and terracotta background, and the recipe book lists the
+- [x] The advancement tab has its icon and terracotta background, and the recipe book lists the
       purification recipes once a bottle, bowl or bucket is held.
 
 ### Without the optional mods
@@ -157,31 +157,31 @@ each one differs is in [VERSION-DIFFERENCES.md](VERSION-DIFFERENCES.md).
 The version with the most of its own code, and the only one where several things are known to look
 different on purpose. Check all of these on every release that ships a 1.21.1 jar.
 
-- [ ] **Sprinting is gated by a client mixin** (`LocalPlayerMixin`), because 1.21.1 keeps the food
+- [x] **Sprinting is gated by a client mixin** (`LocalPlayerMixin`), because 1.21.1 keeps the food
       check a sprint needs on LocalPlayer. At thirst 6 holding sprint must walk, at 7 it must run.
 - [ ] **Sync first.** Fabric API's attachment sync on 1.21.1 is a backport the gametests cannot reach.
       Run the whole "Sync to the client" section on this version before anything else.
-- [ ] **The HUD is drawn by a mixin**, not by Fabric API's HUD registry, which 1.21.1 does not have.
+- [x] **The HUD is drawn by a mixin**, not by Fabric API's HUD registry, which 1.21.1 does not have.
       Check that the bar is in the same place as on 26.2, that the air bubbles move up above it, that
       it disappears with the hearts in creative, and that a living mount's health replaces it.
-- [ ] **Tinting uses render state.** With AppleSkin's underlay on, the air bubbles and the hotbar
+- [x] **Tinting uses render state.** With AppleSkin's underlay on, the air bubbles and the hotbar
       drawn after the strip must not come out faded.
-- [ ] **Drinking is implemented by the item itself**, not by the consumable component. The animation
+- [x] **Drinking is implemented by the item itself**, not by the consumable component. The animation
       must be drinking, not eating; the sound must play; a creative player keeps the waterskin's
       servings and the bowl.
-- [ ] **Known, by design:** the tooltip droplets are drawn with a shadow (styles cannot turn it off
+- [x] **Known, by design:** the tooltip droplets are drawn with a shadow (styles cannot turn it off
       before 1.21.4). Check that they are still legible, not that the shadow is gone.
-- [ ] **Known, by design:** a sea-water bottle and bucket look like ordinary water (there is no
+- [x] **Known, by design:** a sea-water bottle and bucket look like ordinary water (there is no
       item-model component before 1.21.2). Check that the tooltip says "Salty" and that the bowl
       still changes to the sea colour.
-- [ ] **The config screen's headings are text rows**, not vanilla headings, which 1.21.1 lacks. Check
+- [x] **The config screen's headings are text rows**, not vanilla headings, which 1.21.1 lacks. Check
       that they are centred and readable and that the list still scrolls.
 - [ ] The config preview's food icons and droplet outlines have transparent corners, not black ones
       (1.21.1 needs blending turned on around each draw).
 - [ ] The water cauldron's name is "Water Cauldron" in the F3 target and in `/give` suggestions. On
       1.21.1 the mod has to identify the cauldron before its name exists, and a mistake there would
       rename it.
-- [ ] The advancement tab background is terracotta, not a missing texture.
+- [x] The advancement tab background is terracotta, not a missing texture.
 - [ ] The jar loads on Minecraft 1.21 as well as 1.21.1.
 
 ## When this file changes
