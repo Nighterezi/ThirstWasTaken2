@@ -70,7 +70,7 @@ The server owns thirst. These are the checks that the client is told.
 - [x] Quit to the title screen and rejoin: the bar shows the value it had.
 - [x] Die and respawn: the bar is full again.
 - [x] Go through a Nether portal and back: the bar is still correct on both sides.
-- [ ] Open the world to LAN or use `runServer` with a second client: each player sees only their own bar,
+- [x] Open the world to LAN or use `runServer` with a second client: each player sees only their own bar,
       and it is right for each.
 
 ### Tooltips
@@ -81,7 +81,7 @@ The server owns thirst. These are the checks that the client is told.
 - [x] A sea-water bottle shows a single "Salty" line and no droplet rows.
 - [x] A waterskin says how many drinks it holds, or that it is empty. A clay bowl says it has to be fired.
 - [x] Milk, honey and an apple show droplet rows; stone shows nothing.
-- [ ] The lines look the same in JEI, EMI or REI if one of them is installed.
+- [x] The lines look the same in JEI, EMI or REI if one of them is installed.
 
 ### Sprites and sounds
 
@@ -112,21 +112,21 @@ The server owns thirst. These are the checks that the client is told.
 - [x] `/thirst set @s 0 0` on Normal: half a heart of damage every two seconds, down to death; the death
       message names dehydration. On Easy it stops at five hearts. Armour does not reduce it.
 - [x] Natural regeneration stops below full thirst and resumes once it is full again.
-- [ ] Standing still in a desert drains faster than in a snowy biome; in the Nether faster again.
+- [x] Standing still in a desert drains faster than in a snowy biome; in the Nether faster again.
 - [x] Drinking in the Nether earns "nether_drink".
 - [x] On Peaceful, thirst does not drop and slowly refills.
-- [ ] Rain on an empty cauldron in the open fills it; drawing a bottle from it gives water of the
+- [x] Rain on an empty cauldron in the open fills it; drawing a bottle from it gives water of the
       configured rain grade. A dripstone dripping into a cauldron gives pure water.
-- [ ] A dungeon, mineshaft or shipwreck supply chest sometimes holds water bottles; a piglin sometimes
+- [x] A dungeon, mineshaft or shipwreck supply chest sometimes holds water bottles; a piglin sometimes
       barters one. Those bottles boil in a furnace.
 - [x] The advancement tab has its icon and terracotta background, and the recipe book lists the
       purification recipes once a bottle, bowl or bucket is held.
 
 ### Without the optional mods
 
-- [ ] Remove Mod Menu, AppleSkin and Cloth Config from the run: the game loads and the bar draws
+- [x] Remove Mod Menu, AppleSkin and Cloth Config from the run: the game loads and the bar draws
       without the exhaustion strip or the quenched outline, and tooltips have no droplet rows.
-- [ ] A dedicated server (`runServer`) starts and a client joins it without a crash on either side.
+- [x] A dedicated server (`runServer`) starts and a client joins it without a crash on either side.
 
 ## Per version
 
@@ -161,7 +161,7 @@ different on purpose. Check all of these on every release that ships a 1.21.1 ja
 
 - [x] **Sprinting is gated by a client mixin** (`LocalPlayerMixin`), because 1.21.1 keeps the food
       check a sprint needs on LocalPlayer. At thirst 6 holding sprint must walk, at 7 it must run.
-- [ ] **Sync first.** Fabric API's attachment sync on 1.21.1 is a backport the gametests cannot reach.
+- [x] **Sync first.** Fabric API's attachment sync on 1.21.1 is a backport the gametests cannot reach.
       Run the whole "Sync to the client" section on this version before anything else.
 - [x] **The HUD is drawn by a mixin**, not by Fabric API's HUD registry, which 1.21.1 does not have.
       Check that the bar is in the same place as on 26.2, that the air bubbles move up above it, that
@@ -180,11 +180,11 @@ different on purpose. Check all of these on every release that ships a 1.21.1 ja
       that they are centred and readable and that the list still scrolls.
 - [x] The config preview's food icons and droplet outlines have transparent corners, not black ones
       (1.21.1 needs blending turned on around each draw).
-- [ ] The water cauldron's name is "Water Cauldron" in the F3 target and in `/give` suggestions. On
+- [x] The water cauldron's name is "Water Cauldron" in the F3 target and in `/give` suggestions. On
       1.21.1 the mod has to identify the cauldron before its name exists, and a mistake there would
       rename it.
 - [x] The advancement tab background is terracotta, not a missing texture.
-- [ ] The jar loads on Minecraft 1.21 as well as 1.21.1.
+- [x] The jar loads on Minecraft 1.21 as well as 1.21.1.
 
 ## When this file changes
 
