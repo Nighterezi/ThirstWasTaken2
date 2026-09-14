@@ -14,6 +14,7 @@
   "thirst.purity.acceptable": "Propre",
   "thirst.purity.purified": "Pure",
   "thirst.water.salty": "Salée",
+  "config.jade.plugin_thirstwastaken2.water_purity": "Pureté de l'eau",
   "command.thirstwastaken2.query": "Soif actuelle : %1$s, hydratation actuelle : %2$s",
   "command.thirstwastaken2.set": "Soif réglée sur %1$s et hydratation sur %2$s",
   "command.thirstwastaken2.enable": "Soif activée pour %1$s joueur(s)",

@@ -17,6 +17,7 @@ deps.modmenu = "11.0.4"
 # 3.0.6+mc1.21, the Fabric upload.
 deps.appleskin = "b5ZiCjAr"
 deps.cloth_config = "15.0.140+fabric"
+deps.jade = "15.10.6+fabric"
 
 ["1.21.11"]
 mod.mc_compat = "1.21.11"
@@ -26,6 +27,7 @@ deps.fabric_api = "0.141.6+1.21.11"
 deps.modmenu = "17.0.0"
 deps.appleskin = "59ti1rvg"
 deps.cloth_config = "21.11.153+fabric"
+deps.jade = "21.1.6+fabric"
 
 ["26.1.x"]
 mod.mc_compat = "~26.1"
@@ -35,6 +37,7 @@ deps.fabric_api = "0.155.3+26.1.2"
 deps.modmenu = "18.0.0"
 deps.appleskin = "zLlqqiTA"
 deps.cloth_config = "26.1.154+fabric"
+deps.jade = "26.1.11+fabric"
 
 ["26.2.x"]
 # Range written into fabric.mod.json.
@@ -43,8 +46,10 @@ mod.mc_compat = "~26.2"
 mod.mc_releases = ["26.2"]
 
 deps.fabric_api = "0.160.0+26.2"
-# Mod Menu and Cloth Config resolve by version number; AppleSkin shares one version number across
-# its Fabric and NeoForge uploads, so it is pinned by Modrinth version id instead.
+# Mod Menu, Cloth Config and Jade resolve by version number; Jade's carries its loader as a suffix.
+# AppleSkin shares one version number across its Fabric and NeoForge uploads, so it is pinned by
+# Modrinth version id instead.
 deps.modmenu = "20.0.1"
 deps.appleskin = "uo5bAN1Y"
 deps.cloth_config = "26.2.155+fabric"
+deps.jade = "26.2.11+fabric"

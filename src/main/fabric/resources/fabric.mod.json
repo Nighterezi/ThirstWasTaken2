@@ -23,7 +23,8 @@
   "entrypoints": {
     "main": ["com.thirstwastaken2.fabric.ThirstWasTaken2Fabric"],
     "client": ["com.thirstwastaken2.client.fabric.ThirstWasTaken2FabricClient"],
-    "modmenu": ["com.thirstwastaken2.client.compat.ModMenuIntegration"]
+    "modmenu": ["com.thirstwastaken2.client.compat.ModMenuIntegration"],
+    "jade": ["com.thirstwastaken2.client.compat.JadeIntegration"]
   },
   "mixins": [
     "thirstwastaken2.mixins.json",

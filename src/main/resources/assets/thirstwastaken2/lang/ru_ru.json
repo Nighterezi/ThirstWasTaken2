@@ -14,6 +14,7 @@
   "thirst.purity.acceptable": "Чистая",
   "thirst.purity.purified": "Кристальная",
   "thirst.water.salty": "Солёная",
+  "config.jade.plugin_thirstwastaken2.water_purity": "Чистота воды",
   "command.thirstwastaken2.query": "Текущая жажда: %1$s, утоление: %2$s",
   "command.thirstwastaken2.set": "Жажда установлена на %1$s, утоление на %2$s",
   "command.thirstwastaken2.enable": "Жажда включена для %1$s игроков",

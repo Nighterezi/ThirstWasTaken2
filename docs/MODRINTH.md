@@ -5,7 +5,7 @@
 <br>
 <br>
 
-Adds a survival thirst bar, drinking, and water purity to Minecraft. Available in 9 languages, with built-in support for AppleSkin and Mod Menu.
+Adds a survival thirst bar, drinking, and water purity to Minecraft. Available in 9 languages, with built-in support for AppleSkin, Jade and Mod Menu.
 
 <br>
 

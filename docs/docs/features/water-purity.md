@@ -28,6 +28,13 @@ Modpacks can add biomes to `thirstwastaken2:stagnant_water` without changing cod
 no grade of its own, such as an unknown modded drink, uses
 [defaultPurity](/docs/configuration#defaultpurity).
 
+## Checking water with Jade
+
+With [Jade](https://modrinth.com/mod/jade) installed, looking at water shows its grade under the block
+name, or Salty for sea water. This works on water in the world, waterlogged blocks and water
+cauldrons, and the grade shown is the one a bottle filled there gets. It can be turned off in Jade's
+plugin settings.
+
 ## Salt water
 
 Oceans and beaches give salt water. It has its own icon and its own tooltip line, so it can be told

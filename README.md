@@ -8,7 +8,7 @@
 
 <br>
 
-Fabric port of the original [Thirst Was Taken](https://modrinth.com/mod/thirst-was-taken) by [**ghen**](https://github.com/ghen-git). It adds a survival thirst bar, drinking, and water purity to Minecraft. Available in 9 languages, with built-in support for AppleSkin, Mod Menu and drinks from other mods.
+Fabric port of the original [Thirst Was Taken](https://modrinth.com/mod/thirst-was-taken) by [**ghen**](https://github.com/ghen-git). It adds a survival thirst bar, drinking, and water purity to Minecraft. Available in 9 languages, with built-in support for AppleSkin, Jade, Mod Menu and drinks from other mods.
 
 </div>
 
@@ -24,6 +24,7 @@ Fabric port of the original [Thirst Was Taken](https://modrinth.com/mod/thirst-w
 - Purity information in item tooltips
 - Optional AppleSkin support: a quenched outline in four colours, thirst and quenched droplet rows in
   item tooltips, and the exhaustion underlay on the thirst bar
+- Optional Jade support: the grade of the water under the crosshair
 - Configurable HUD position and gameplay settings
 - Mod Menu configuration screen
 - `/thirst` commands for server administrators
@@ -53,6 +54,7 @@ There is one download per Minecraft version, named after it, for example
 | Mod Menu | Optional, 20.0.1 tested | Optional, 18.0.0 tested | Optional, 17.0.0 tested | Optional, 11.0.4 tested |
 | AppleSkin | Optional, 3.0.10+mc26.2 tested | Optional, 3.0.10+mc26.1.2 tested | Optional, 3.0.8+mc1.21.11 tested | Optional, 3.0.6+mc1.21 tested |
 | Cloth Config | Optional, needed for AppleSkin's Mod Menu screen | Same | Same | Same |
+| Jade | Optional, 26.2.11 | Optional, 26.1.11 | Optional, 21.1.6 | Optional, 15.10.6 |
 
 Download ThirstWasTaken2 from [Modrinth](https://modrinth.com/mod/thirst-was-taken-2) and install it along with Fabric API on both the client and server. Put the downloaded JAR in the
 `mods` folder.

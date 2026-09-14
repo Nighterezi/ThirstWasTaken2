@@ -150,6 +150,7 @@ Key families, and who reads them:
 | `command.thirstwastaken2.*` | `ThirstCommands` |
 | `advancements.thirstwastaken2.*` | the `title` and `description` of every advancement in `data/thirstwastaken2/advancement/` |
 | `death.attack.dehydrate*` | the `dehydrate` damage type's `message_id` |
+| `config.jade.plugin_thirstwastaken2.*` | Jade's plugin settings screen, one per provider `getUid()` |
 
-Player-facing wording in `vi_vn.json` is the source of truth for the Vietnamese docs site, so keep the
-two in step (see `docs/AGENTS.md`).
+Player-facing wording in `en_us.json` is what the docs site quotes, so keep the two in step (see
+`docs/AGENTS.md`).

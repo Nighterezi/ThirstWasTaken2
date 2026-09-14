@@ -2,9 +2,11 @@ import { defineConfig } from 'vitepress'
 
 const REPO = 'https://github.com/Nighterezi/ThirstWasTaken2'
 const MODRINTH = 'https://modrinth.com/mod/thirst-was-taken-2'
+// Simple Icons' Modrinth mark, the same one the SmartSpawner docs use.
+const MODRINTH_ICON = '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Modrinth</title><path d="M12.252.004a11.78 11.768 0 0 0-8.92 3.73 11 10.999 0 0 0-2.17 3.11 11.37 11.359 0 0 0-1.16 5.169c0 1.42.17 2.5.6 3.77.24.759.77 1.899 1.17 2.529a12.3 12.298 0 0 0 8.85 5.639c.44.05 2.54.07 2.76.02.2-.04.22.1-.26-1.7l-.36-1.37-1.01-.06a8.5 8.489 0 0 1-5.18-1.8 5.34 5.34 0 0 1-1.3-1.26c0-.05.34-.28.74-.5a37.572 37.545 0 0 1 2.88-1.629c.03 0 .5.45 1.06.98l1 .97 2.07-.43 2.06-.43 1.47-1.47c.8-.8 1.48-1.5 1.48-1.52 0-.09-.42-1.63-.46-1.7-.04-.06-.2-.03-1.02.18-.53.13-1.2.3-1.45.4l-.48.15-.53.53-.53.53-.93.1-.93.07-.52-.5a2.7 2.7 0 0 1-.96-1.7l-.13-.6.43-.57c.68-.9.68-.9 1.46-1.1.4-.1.65-.2.83-.33.13-.099.65-.579 1.14-1.069l.9-.9-.7-.7-.7-.7-1.95.54c-1.07.3-1.96.53-1.97.53-.03 0-2.23 2.48-2.63 2.97l-.29.35.28 1.03c.16.56.3 1.16.31 1.34l.03.3-.34.23c-.37.23-2.22 1.3-2.84 1.63-.36.2-.37.2-.44.1-.08-.1-.23-.6-.32-1.03-.18-.86-.17-2.75.02-3.73a8.84 8.839 0 0 1 7.9-6.93c.43-.03.77-.08.78-.1.06-.17.5-2.999.47-3.039-.01-.02-.1-.02-.2-.03Zm3.68.67c-.2 0-.3.1-.37.38-.06.23-.46 2.42-.46 2.52 0 .04.1.11.22.16a8.51 8.499 0 0 1 2.99 2 8.38 8.379 0 0 1 2.16 3.449 6.9 6.9 0 0 1 .4 2.8c0 1.07 0 1.27-.1 1.73a9.37 9.369 0 0 1-1.76 3.769c-.32.4-.98 1.06-1.37 1.38-.38.32-1.54 1.1-1.7 1.14-.1.03-.1.06-.07.26.03.18.64 2.56.7 2.78l.06.06a12.07 12.058 0 0 0 7.27-9.4c.13-.77.13-2.58 0-3.4a11.96 11.948 0 0 0-5.73-8.578c-.7-.42-2.05-1.06-2.25-1.06Z"/></svg>'
 const BASE = process.env.VITEPRESS_BASE || '/'
 
-const enManualSidebar = [
+const manualSidebar = [
   {
     text: 'Getting Started',
     items: [
@@ -30,34 +32,9 @@ const enManualSidebar = [
   }
 ]
 
-const viManualSidebar = [
-  {
-    text: 'Bắt đầu',
-    items: [
-      { text: 'Tổng quan', link: '/vi/docs/' },
-      { text: 'Cài đặt', link: '/vi/docs/installation' },
-      { text: 'Câu hỏi thường gặp', link: '/vi/docs/faq' }
-    ]
-  },
-  {
-    text: 'Tính năng',
-    items: [
-      { text: 'Khát và Đã khát', link: '/vi/docs/features/thirst-and-quenched' },
-      { text: 'Uống nước', link: '/vi/docs/features/drinking' },
-      { text: 'Độ sạch của nước', link: '/vi/docs/features/water-purity' }
-    ]
-  },
-  {
-    text: 'Hướng dẫn máy chủ',
-    items: [
-      { text: 'Lệnh', link: '/vi/docs/commands' },
-      { text: 'Cấu hình', link: '/vi/docs/configuration' }
-    ]
-  }
-]
-
 export default defineConfig({
   base: BASE,
+  lang: 'en',
   title: 'ThirstWasTaken2',
   description: 'Adds a survival thirst bar, drinking, and water purity.',
   cleanUrls: true,
@@ -74,87 +51,35 @@ export default defineConfig({
     externalLinkIcon: true,
     socialLinks: [
       { icon: 'github', link: REPO },
-      {
-        icon: {
-          svg: '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Modrinth</title><path d="M12.252.004a11.78 11.78 0 0 0-2.5 0C4.333.606.018 5.17.004 10.843c-.014 5.96 4.62 10.875 10.575 11.144a11.95 11.95 0 0 0 3.844-.22 10.975 10.975 0 0 0 2.228-.795l-.337-.872c-.752-.284-1.46-.662-2.115-1.125a9.01 9.01 0 0 1-2.404.328 9.17 9.17 0 0 1-7.05-3.328 9.27 9.27 0 0 1-2.072-6.046c.01-4.72 3.6-8.583 8.317-8.916 3.125-.22 6.136.96 8.212 3.22a9.14 9.14 0 0 1 2.392 6.07c0 .59-.06 1.17-.18 1.74l.92.17c.14-.62.22-1.26.22-1.91A11.17 11.17 0 0 0 20.73 3.86 11.45 11.45 0 0 0 12.252.004Z"/></svg>'
-        },
-        link: MODRINTH,
-        ariaLabel: 'Modrinth'
-      }
+      { icon: { svg: MODRINTH_ICON }, link: MODRINTH, ariaLabel: 'Modrinth' }
     ],
     search: {
       provider: 'local'
-    }
-  },
-  locales: {
-    root: {
-      label: 'English',
-      lang: 'en',
-      themeConfig: {
-        nav: [
-          { text: 'Home', link: '/', activeMatch: '^/$' },
-          { text: 'Docs', link: '/docs/', activeMatch: '^/docs/' }
-        ],
-        sidebar: {
-          '/docs/': enManualSidebar
-        },
-        editLink: {
-          pattern: `${REPO}/edit/main/docs/:path`,
-          text: 'Edit this page on GitHub'
-        },
-        outline: {
-          level: [2, 3],
-          label: 'On this page'
-        },
-        docFooter: {
-          prev: 'Previous page',
-          next: 'Next page'
-        },
-        lastUpdated: {
-          text: 'Last updated',
-          formatOptions: {
-            dateStyle: 'medium',
-            timeStyle: 'short'
-          }
-        }
-      }
     },
-    vi: {
-      label: 'Tiếng Việt',
-      lang: 'vi',
-      description: 'Thêm thanh khát nước, cơ chế uống nước và độ sạch của nước cho sinh tồn.',
-      themeConfig: {
-        nav: [
-          { text: 'Trang chủ', link: '/vi/', activeMatch: '^/vi/$' },
-          { text: 'Tài liệu', link: '/vi/docs/', activeMatch: '^/vi/docs/' }
-        ],
-        sidebar: {
-          '/vi/docs/': viManualSidebar
-        },
-        editLink: {
-          pattern: `${REPO}/edit/main/docs/:path`,
-          text: 'Chỉnh sửa trang này trên GitHub'
-        },
-        outline: {
-          level: [2, 3],
-          label: 'Trên trang này'
-        },
-        docFooter: {
-          prev: 'Trang trước',
-          next: 'Trang sau'
-        },
-        lastUpdated: {
-          text: 'Cập nhật lần cuối',
-          formatOptions: {
-            dateStyle: 'medium',
-            timeStyle: 'short'
-          }
-        },
-        returnToTopLabel: 'Về đầu trang',
-        sidebarMenuLabel: 'Menu',
-        darkModeSwitchLabel: 'Giao diện',
-        lightModeSwitchTitle: 'Chuyển sang giao diện sáng',
-        darkModeSwitchTitle: 'Chuyển sang giao diện tối'
+    nav: [
+      { text: 'Home', link: '/', activeMatch: '^/$' },
+      { text: 'Docs', link: '/docs/', activeMatch: '^/docs/' }
+    ],
+    sidebar: {
+      '/docs/': manualSidebar
+    },
+    editLink: {
+      pattern: `${REPO}/edit/main/docs/:path`,
+      text: 'Edit this page on GitHub'
+    },
+    outline: {
+      level: [2, 3],
+      label: 'On this page'
+    },
+    docFooter: {
+      prev: 'Previous page',
+      next: 'Next page'
+    },
+    lastUpdated: {
+      text: 'Last updated',
+      formatOptions: {
+        dateStyle: 'medium',
+        timeStyle: 'short'
       }
     }
   }

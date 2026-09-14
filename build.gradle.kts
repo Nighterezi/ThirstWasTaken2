@@ -189,15 +189,18 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:$loaderVersion")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric_api")}")
 
-    // Optional integrations. The mod runs without either, but both are compiled against, so they
+    // Optional integrations. The mod runs without any of them, but all are compiled against, so they
     // have to resolve on every version.
     clientMod("clientCompileOnly", "maven.modrinth:modmenu:${property("deps.modmenu")}")
     clientMod("clientCompileOnly", "maven.modrinth:appleskin:${property("deps.appleskin")}")
+    clientMod("clientCompileOnly", "maven.modrinth:jade:${property("deps.jade")}")
     // Test the client HUD and food tooltips alongside AppleSkin in runClient.
     clientMod("clientRuntimeOnly", "maven.modrinth:appleskin:${property("deps.appleskin")}")
     // AppleSkin uses Cloth Config for its Mod Menu configuration screen.
     clientMod("clientRuntimeOnly", "maven.modrinth:cloth-config:${property("deps.cloth_config")}")
     clientMod("clientRuntimeOnly", "maven.modrinth:modmenu:${property("deps.modmenu")}")
+    // Test the water purity line Jade shows when looking at water or a cauldron.
+    clientMod("clientRuntimeOnly", "maven.modrinth:jade:${property("deps.jade")}")
 }
 
 tasks.processResources {

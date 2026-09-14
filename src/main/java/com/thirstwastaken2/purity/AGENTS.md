@@ -57,8 +57,12 @@ that know the encoding.
   and both check that the blockstate actually changed: the vanilla hooks run whether or not a layer
   was added.
 - **Sampling is interaction-only and server-only.** The fixed 5x3x5 block inspection must never move
-  into a tick or tooltip path. Ocean and beach biomes return `Salt` before that scan runs. Bottle and
-  bucket mixins skip sampling on the prediction client.
+  into a tick or item tooltip path. Ocean and beach biomes return `Salt` before that scan runs. Bottle
+  and bucket mixins skip sampling on the prediction client. The one exception is the Jade overlay
+  (`client/compat/JadeIntegration`), which samples the single block under the crosshair on the client,
+  at most every 10 ticks per block. It shows the same grade the server would stamp because `sampleAt`
+  reads nothing the client lacks: blockstates, the biome and its tags. **Keep it that way** - a new
+  input that only the server knows would make the overlay lie.
 - **The contamination score is never stored.** `sampleAt` scores a source, grades it, and keeps only
   the grade, so no container carries a hidden number that the player cannot see and the tooltip
   cannot explain.

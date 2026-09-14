@@ -1,6 +1,7 @@
 # docs/
 
-VitePress site for players and server owners. English at the root, Vietnamese under `vi/`.
+VitePress site for players and server owners, in English only. The in-game text is still translated;
+the site is not, and no other language gets a copy of it.
 
 ```bash
 npm install
@@ -12,10 +13,10 @@ npm run docs:build    # must pass before you call a docs change done
 
 | Path | Holds |
 |---|---|
-| `index.md`, `vi/index.md` | The hero page. Feature cards link into the documentation. |
+| `index.md` | The hero page. Feature cards link into the documentation. |
 | `docs/` | The manual: overview, features, installation, commands, configuration, FAQ. |
 | `docs/features/` | What the mod does and why, in prose. No config key listings. |
-| `.vitepress/config.mts` | Nav and both sidebars. |
+| `.vitepress/config.mts` | Nav, sidebar and the GitHub and Modrinth icons. |
 | `.vitepress/theme/` | Default theme plus `custom.css` for the brand colour. |
 | `public/` | `logo-small.png` for the navbar and favicon, `logo.png` for the home hero, and `screenshots/`. |
 
@@ -38,10 +39,8 @@ Say the same thing in exactly one place and link to it. Numbers a player cares a
 values, sickness chances, purity by location) live on the `docs/features/` page that explains them, and
 `docs/configuration.md` links there instead of repeating the tables.
 
-Vietnamese pages are a full mirror, and their links are absolute with the prefix:
-`/vi/docs/commands`, not `/docs/commands`. In-game wording comes from
-`src/main/resources/assets/thirstwastaken2/lang/vi_vn.json`, so the grades of fresh water are Bẩn,
-Đục, Sạch and Tinh khiết, salt water is "nước mặn", and "quenched" is "đã khát".
+In-game wording comes from `src/main/resources/assets/thirstwastaken2/lang/en_us.json`, so a page
+names a grade, an item or a setting exactly as the game shows it.
 
 ## Keeping it true
 
@@ -50,7 +49,7 @@ ones most likely to go stale:
 
 | Changed | Update |
 |---|---|
-| A field in `ThirstConfig` | `docs/configuration.md`, both languages |
+| A field in `ThirstConfig` | `docs/configuration.md` |
 | A `/thirst` subcommand | `docs/commands.md` |
 | Exhaustion, climate or damage in `ThirstManager` | `docs/features/thirst-and-quenched.md` |
 | Thirst values, bowls, loot | `docs/features/drinking.md` |

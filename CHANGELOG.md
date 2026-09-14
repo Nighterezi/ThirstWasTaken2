@@ -2,6 +2,17 @@
 
 All notable changes to ThirstWasTaken2 are documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- With Jade installed, looking at water, a waterlogged block or a water cauldron shows its grade, or
+  Salty for sea water. It can be turned off in Jade's plugin settings.
+
+### Notes
+
+- Jade is optional and only needed on the client.
+
 ## [1.0.4] - 2026-09-13
 
 ### Added

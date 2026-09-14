@@ -14,6 +14,7 @@
   "thirst.purity.acceptable": "깨끗한 물",
   "thirst.purity.purified": "순수한 물",
   "thirst.water.salty": "소금물",
+  "config.jade.plugin_thirstwastaken2.water_purity": "물 정화도",
   "command.thirstwastaken2.query": "현재 갈증: %1$s, 해갈: %2$s",
   "command.thirstwastaken2.set": "갈증을 %1$s, 해갈을 %2$s(으)로 설정했습니다",
   "command.thirstwastaken2.enable": "플레이어 %1$s명의 갈증 시스템을 활성화했습니다",

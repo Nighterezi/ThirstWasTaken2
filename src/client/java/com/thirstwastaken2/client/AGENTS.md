@@ -21,6 +21,8 @@ except the HUD section.
 | `config/ConfigPreview` | the live thirst bar, food bar and tooltip drawn at the top of the screen |
 | `platform/ClientVanilla` | client vanilla calls whose shape differs between Minecraft versions |
 | `platform/StatusBarRenderer` | the shape `ClientLoader` draws a HUD row through |
+| `compat/AppleSkinIntegration` | reads AppleSkin's own settings, only after `AppleSkin.isLoaded()` |
+| `compat/JadeIntegration` | the `jade` entrypoint: the grade of the water under the crosshair, see `compat/AGENTS.md` |
 
 Loader code for the client lives in `src/client/fabric/java`, never here, and `checkLoaderSeam` fails
 the build on a loader import in this directory:

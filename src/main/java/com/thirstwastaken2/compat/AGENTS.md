@@ -16,6 +16,19 @@ the thirst half of what AppleSkin adds for hunger, so both are only shown while 
 AppleSkin's own config names its classes, so that part stays client-side in
 `client/compat/AppleSkinIntegration`, which is only reached after `AppleSkin.isLoaded()`.
 
+## Jade
+
+`client/compat/JadeIntegration` (client source set, since Jade's tooltip API is client code) shows
+the grade of the water under the crosshair: world water, waterlogged blocks and water cauldrons. It is
+reached only through the `jade` entrypoint in `fabric.mod.json`, which Jade resolves on the dedicated
+server too, so the plugin class itself names no client class outside `registerClient`. Jade toggles it
+under `config.jade.plugin_thirstwastaken2.water_purity`. Why client-side sampling is safe is in
+[purity/AGENTS.md](../purity/AGENTS.md).
+
+The part of the Jade API it uses is identical on every supported version, so it carries no version
+branch. A water cauldron nothing was poured into shows the client's `defaultPurity`, the same
+limitation an unstamped item tooltip already has on a server with a different config.
+
 ## LootIntegration
 
 `Loader.onLootTable` replacing the original's Forge global loot modifiers (Fabric's

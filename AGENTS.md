@@ -83,7 +83,8 @@ Switch it with `./gradlew "Set active project to 1.21.11"` — that rewrites the
 `src/` in place, which is what makes the IDE resolve against that version. Run
 `./gradlew "Reset active project"` before committing.
 
-Gradle needs network access on the first run for `maven.modrinth` artifacts (Mod Menu, AppleSkin).
+Gradle needs network access on the first run for `maven.modrinth` artifacts (Mod Menu, AppleSkin,
+Jade).
 Once cached, `--offline` works — except that the client compile-only dependencies must already be
 cached.
 
@@ -174,7 +175,7 @@ Two things about Stonecutter that are easy to learn the hard way:
 ### Adding a Minecraft version
 
 1. Add it to `stonecutter { create }` in `settings.gradle.kts` and add its matching block to
-   `stonecutter.properties.toml` — Fabric API, Mod Menu, AppleSkin, Cloth Config, and the
+   `stonecutter.properties.toml` — Fabric API, Mod Menu, AppleSkin, Cloth Config, Jade, and the
    `mod.mc_compat` range. Mod Menu and Cloth Config resolve by version number; AppleSkin publishes
    one version number for both its Fabric and NeoForge uploads, so it is pinned by Modrinth version
    id or Maven resolves the wrong jar.
@@ -304,7 +305,7 @@ src/main/java/com/thirstwastaken2/      common (client + server), loader indepen
 src/main/fabric/                        Fabric only, compiled into main
   java/.../fabric/ThirstWasTaken2Fabric.java  main entrypoint, calls ThirstWasTaken2.initialize
   java/.../platform/Loader.java        every call into Fabric Loader and Fabric API
-  resources/fabric.mod.json            entrypoints (main, client, modmenu); templated per version
+  resources/fabric.mod.json            entrypoints (main, client, modmenu, jade); templated per version
 
 src/client/java/com/thirstwastaken2/client/
   ThirstWasTaken2Client.java            initialize(): HUD row registration
@@ -315,6 +316,7 @@ src/client/java/com/thirstwastaken2/client/
   platform/ClientVanilla.java          client vanilla calls that differ between versions
   platform/StatusBarRenderer.java      the shape ClientLoader draws a HUD row through
   compat/AppleSkinIntegration.java     reads AppleSkin's own exhaustion-underlay setting
+  compat/JadeIntegration.java          jade entrypoint: the water grade under the crosshair
 
 src/client/fabric/java/com/thirstwastaken2/client/   Fabric only, compiled into client
   fabric/ThirstWasTaken2FabricClient.java  client entrypoint
@@ -379,7 +381,8 @@ a separate salinity flag makes every new cauldron read as sea water.
 biomes return `Salt` immediately; everything else is scored - biome tag baseline, then temperature,
 altitude, flow and nearby mud or agriculture - and the score is graded on the spot. The score itself
 is never stored, so nothing carries a number a player cannot see, and no environmental scan runs on
-a tick or tooltip path.
+a tick or item tooltip path. The Jade overlay is the one client-side caller; see
+[purity/AGENTS.md](src/main/java/com/thirstwastaken2/purity/AGENTS.md).
 
 `WaterPurity.INFO` caches, per `Item`, whether it counts as a water container and what static purity
 it carries — this is how the optional Tough As Nails / Farmer's Delight / Farmer's Respite /

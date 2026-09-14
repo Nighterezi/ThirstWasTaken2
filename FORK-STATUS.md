@@ -69,6 +69,7 @@ it adds a dithered thirst-exhaustion strip that follows AppleSkin's exhaustion-u
   own covering the water system.
 - A cauldron filled by rain holds clean water, and one filled by a pointed dripstone holds pure
   water. Both grades are settings.
+- With Jade installed, looking at water shows its grade before anything is collected.
 - A dedicated **ThirstWasTaken2** creative inventory tab collecting every item from the mod.
 
   ![The ThirstWasTaken2 creative inventory tab, collecting every item from the mod](docs/public/screenshots/creative-tab.png)
@@ -80,7 +81,6 @@ it adds a dithered thirst-exhaustion strip that follows AppleSkin's exhaustion-u
 
 - **Create.** Support was removed in this release: the Sand Filter never worked, and Builder's Tea
   went with it. Create will be supported again in a future release.
-- **Jade** does not show water purity.
 
 These need mods that have no Fabric release on Minecraft 26.x yet. Their items are already configured, so they will start working as soon as those mods update.
 

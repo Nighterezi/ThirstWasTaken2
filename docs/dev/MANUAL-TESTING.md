@@ -21,7 +21,7 @@ check, and every item below belongs to one of them:
 ## How to run a pass
 
 1. `./gradlew ":<node>:runClient"`, where `<node>` is `26.2.x`, `26.1.x`, `1.21.11` or `1.21.1`. The
-   dev client already has AppleSkin, Cloth Config and Mod Menu.
+   dev client already has AppleSkin, Cloth Config, Jade and Mod Menu.
 2. Create a new **survival** world on **Normal**, cheats on. Keep the world per version; saves do
    not move between versions.
 3. Work down the general checklist, then the section for that version.
@@ -83,6 +83,14 @@ The server owns thirst. These are the checks that the client is told.
 - [x] Milk, honey and an apple show droplet rows; stone shows nothing.
 - [x] The lines look the same in JEI, EMI or REI if one of them is installed.
 
+### Jade
+
+- [x] Looking at river water, sea water, a waterlogged block and a cauldron filled by rain shows the
+      grade (or Salty) under the block name, in the grade's colour. A bottle filled there gets the
+      same grade.
+- [x] Placing mud next to the water being looked at lowers the grade within half a second.
+- [x] Turning Water Purity off in Jade's plugin settings removes the line.
+
 ### Sprites and sounds
 
 - [x] A filled bowl's water colour changes with its grade: four fresh colours and a sea colour.
@@ -127,6 +135,8 @@ The server owns thirst. These are the checks that the client is told.
 - [x] Remove Mod Menu, AppleSkin and Cloth Config from the run: the game loads and the bar draws
       without the exhaustion strip or the quenched outline, and tooltips have no droplet rows.
 - [x] A dedicated server (`runServer`) starts and a client joins it without a crash on either side.
+- [ ] A dedicated server with Jade in its mods folder starts without a crash. Jade loads the plugin
+      on the server too.
 
 ## Per version
 

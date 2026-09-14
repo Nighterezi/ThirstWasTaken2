@@ -14,6 +14,7 @@
   "thirst.purity.acceptable": "清水",
   "thirst.purity.purified": "純水",
   "thirst.water.salty": "塩水",
+  "config.jade.plugin_thirstwastaken2.water_purity": "水の清浄度",
   "command.thirstwastaken2.query": "現在の渇き値: %1$s、潤い値: %2$s",
   "command.thirstwastaken2.set": "渇き値を %1$s、潤い値を %2$s に設定しました",
   "command.thirstwastaken2.enable": "%1$s 人のプレイヤーの渇きシステムを有効にしました",

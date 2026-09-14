@@ -161,7 +161,7 @@ it makes no difference to any jar.
 
 - A new `//? if` block or replacement gets a row under the release that introduced the newer form. If
   a player can see it, it also gets a row in the first table and a line on the
-  [installation page](../docs/installation.md), both languages.
+  [installation page](../docs/installation.md).
 - Retiring a node deletes the sections that only affect it. For 1.21.1 that is every section from
   1.21.9 down, plus the unpinned one.
 - `grep -rn "//? if" src --include=*.java` and `stonecutter.gradle.kts` are the source of truth; this

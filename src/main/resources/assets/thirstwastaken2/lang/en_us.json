@@ -14,6 +14,7 @@
   "thirst.purity.acceptable": "Clean",
   "thirst.purity.purified": "Pure",
   "thirst.water.salty": "Salty",
+  "config.jade.plugin_thirstwastaken2.water_purity": "Water Purity",
   "command.thirstwastaken2.query": "Current Thirst: %1$s, Current Quenched: %2$s",
   "command.thirstwastaken2.set": "set thirst to %1$s, set quenched to %2$s",
   "command.thirstwastaken2.enable": "Enabled thirst for %1$s player(s)",

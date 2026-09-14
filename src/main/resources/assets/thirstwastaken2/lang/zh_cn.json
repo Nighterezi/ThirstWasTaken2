@@ -14,6 +14,7 @@
   "thirst.purity.acceptable": "净水",
   "thirst.purity.purified": "纯水",
   "thirst.water.salty": "盐水",
+  "config.jade.plugin_thirstwastaken2.water_purity": "水的纯净度",
   "command.thirstwastaken2.query": "当前口渴值: %1$s, 当前解渴值: %2$s",
   "command.thirstwastaken2.set": "设置口渴值为 %1$s，解渴值为 %2$s",
   "command.thirstwastaken2.enable": "已为 %1$s 名玩家启用口渴",
