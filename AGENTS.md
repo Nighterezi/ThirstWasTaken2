@@ -185,6 +185,18 @@ Two things about Stonecutter that are easy to learn the hard way:
 4. Smoke-test with `./gradlew ":<version>:runServer"`. The new `run/<version>/` directory needs its
    own `eula.txt`.
 
+### Dependency updates
+
+Dependabot covers the Gradle plugins, the wrapper, GitHub Actions and `docs/`. It cannot cover
+`stonecutter.properties.toml`: it does not read that file, and it would give every node the newest
+Fabric API rather than the one built for that node's Minecraft. `.github/scripts/update_mc_deps.py`
+does that instead. For each node it takes the newest Fabric release on Modrinth that lists the
+Minecraft version the node compiles against, plus the newest stable Fabric Loader, and rewrites the
+values in place. `.github/workflows/update-mc-deps.yml` runs it daily and keeps one pull request,
+`automation/minecraft-deps`, up to date. Try it locally with
+`python .github/scripts/update_mc_deps.py --dry-run`. When a new dependency is added to
+`build.gradle.kts`, add it to `MODRINTH_DEPS` in the script.
+
 ## Architecture in one pass
 
 [ThirstWasTaken2.java](src/main/java/com/thirstwastaken2/ThirstWasTaken2.java) is the loader

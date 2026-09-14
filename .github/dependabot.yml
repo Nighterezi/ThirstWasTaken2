@@ -5,6 +5,8 @@
 
 version: 2
 updates:
+  # Covers the plugins in settings.gradle.kts and the wrapper. The Minecraft-bound dependencies in
+  # stonecutter.properties.toml are updated by .github/workflows/update-mc-deps.yml instead.
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:
