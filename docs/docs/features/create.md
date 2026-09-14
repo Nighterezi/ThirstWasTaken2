@@ -9,6 +9,8 @@ The Sand Filter is only in the Minecraft 26.1.2 and 26.2 versions of the mod for
 1.21.1 versions ignore Create Fly.
 :::
 
+![A Create Fly pipe network pumping water through a Sand Filter between two fluid tanks](/screenshots/create-sand-filter.png)
+
 ## Sand Filter
 
 The Sand Filter raises water one grade as it passes through. Pump water into the top and pump it out
@@ -28,6 +30,8 @@ Filtered water of a different grade cannot join water already waiting in the bot
 until that water is pumped out.
 
 A comparator reads how full the bottom is. Engineer's Goggles show both sides and their grades.
+
+![Engineer's Goggles showing Murky water entering the Sand Filter and Clean water leaving it](/screenshots/create-sand-filter-goggles.png)
 
 ### Recipe
 
