@@ -157,6 +157,17 @@ covered.
 
 Empty by default. A list of item ids that restore nothing, whatever the lists above say.
 
+### enableDrinkTagMatching
+
+Default `true`. An item its own mod marks as a drink restores `drinkTagValue`, even when the lists
+above do not name it. Potions and ominous bottles are left out. An item listed in `drinks` or
+`foods` keeps its listed value.
+
+### drinkTagValue
+
+Default `[6, 8]`, the same as a water bottle. What a drink found by `enableDrinkTagMatching`
+restores, thirst first.
+
 ### enableKeywordMatching
 
 Default `false`. Guesses a value for unknown items from their id, so a `strawberry_juice` from any

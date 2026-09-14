@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentSyncPredicate;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.CommonLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
@@ -91,6 +92,14 @@ public final class Loader {
         UseItemCallback.EVENT.register((player, level, hand) -> new net.minecraft.world.InteractionResultHolder<>(
                 handler.use(player, level, hand), player.getItemInHand(hand)));
         *///?}
+    }
+
+    /**
+     * Runs after tags are bound to their registries: on the server at startup and on {@code /reload},
+     * and on a client each time it joins a server and receives that server's tags.
+     */
+    public static void onTagsLoaded(Runnable handler) {
+        CommonLifecycleEvents.TAGS_LOADED.register((registries, client) -> handler.run());
     }
 
     /** Runs whenever the server builds its command tree, including on {@code /reload}. */

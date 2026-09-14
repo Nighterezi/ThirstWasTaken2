@@ -72,7 +72,7 @@ What does live here are the types those signatures need, because both copies hav
 | `isDevelopmentEnvironment`, `configDir`, `isModLoaded` | the loader's own environment |
 | `playerData` | the attachment system that saves a value on a player and syncs it to its owner |
 | `creativeTabBuilder` | a tab builder that places itself in the tab list |
-| `onServerTickEnd`, `onUseBlock`, `onUseItem`, `onRegisterCommands` | the event bus |
+| `onServerTickEnd`, `onUseBlock`, `onUseItem`, `onRegisterCommands`, `onTagsLoaded` | the event bus |
 | `onLootTable` | loot table modification, on every table whoever wrote it |
 | `ClientLoader.addRightStatusBar` | HUD layer registration and the right-hand status bar height |
 

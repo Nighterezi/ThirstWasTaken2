@@ -8,10 +8,23 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 
 - With Jade installed, looking at water, a waterlogged block or a water cauldron shows its grade, or
   Salty for sea water. It can be turned off in Jade's plugin settings.
+- Drinks from other mods now restore thirst without a config entry, as long as their mod marks them
+  as drinks.
+- Farmer's Delight milk bottle, hot cocoa, bone broth, onion soup, glow berry custard and tomato now
+  restore thirst.
 
 ### Notes
 
 - Jade is optional and only needed on the client.
+- Existing config files get the new Farmer's Delight values automatically.
+
+<details>
+<summary>Configuration file details</summary>
+
+- New `enableDrinkTagMatching`: `true` by default.
+- New `drinkTagValue`: `[6, 8]` by default.
+
+</details>
 
 ## [1.0.4] - 2026-09-13
 

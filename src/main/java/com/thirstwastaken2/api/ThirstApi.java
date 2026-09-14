@@ -4,7 +4,9 @@ import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.item.WaterskinItem;
 import com.thirstwastaken2.platform.Vanilla;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -20,10 +22,21 @@ import java.util.regex.Pattern;
  */
 public final class ThirstApi {
     private static final int[] NONE = new int[0];
+    private static final TagKey<Item> DRINKS = conventionTag("drinks");
+    private static final TagKey<Item> MAGIC_DRINKS = conventionTag("drinks/magic");
+    private static final TagKey<Item> OMINOUS_DRINKS = conventionTag("drinks/ominous");
     private static final Map<Item, int[]> CACHE = new ConcurrentHashMap<>();
     private static volatile int cachedGeneration = -1;
 
     private ThirstApi() { }
+
+    /**
+     * Forgets every resolved item. Tags are bound empty at startup and rebound on every data pack
+     * reload and every server join, so a value resolved from a tag is only good until the next load.
+     */
+    public static void clearCache() {
+        CACHE.clear();
+    }
 
     /** @return {thirst, quenched}, or {@code null} when the item restores no thirst. */
     public static int[] thirstValues(ItemStack stack) {
@@ -56,6 +69,7 @@ public final class ThirstApi {
         int[] value = config.drinks.get(id);
         if (value == null) value = config.foods.get(id);
         if (value != null) return value;
+        if (config.enableDrinkTagMatching && isTaggedDrink(item)) return config.drinkTagValue;
         if (!config.enableKeywordMatching) return NONE;
 
         String path = identifier.getPath();
@@ -66,7 +80,21 @@ public final class ThirstApi {
         return NONE;
     }
 
+    /**
+     * Whether the item's own mod calls it a drink, through the {@code c:drinks} convention tag. Magic
+     * drinks are left out: the tag counts every potion and the ominous bottle among them, and neither
+     * is water.
+     */
+    private static boolean isTaggedDrink(Item item) {
+        ItemStack stack = new ItemStack(item);
+        return stack.is(DRINKS) && !stack.is(MAGIC_DRINKS) && !stack.is(OMINOUS_DRINKS);
+    }
+
     private static boolean matches(Pattern pattern, String path) {
         return pattern != null && pattern.matcher(path).find();
+    }
+
+    private static TagKey<Item> conventionTag(String path) {
+        return TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", path));
     }
 }

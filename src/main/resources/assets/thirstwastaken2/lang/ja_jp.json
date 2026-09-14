@@ -99,6 +99,8 @@
   "thirstwastaken2.config.appleskin_quenched_overlay.off": "オフ",
   "thirstwastaken2.config.appleskin_tooltip_droplets": "ツールチップのしずく",
   "thirstwastaken2.config.appleskin_tooltip_droplets.tooltip": "アイテムのツールチップに渇きと潤いのしずくの列を表示します。",
+  "thirstwastaken2.config.enable_drink_tag_matching": "飲み物タグ判定",
+  "thirstwastaken2.config.enable_drink_tag_matching.tooltip": "Mod 自身が飲み物タグを付けたアイテムは、設定に載っていなくても水分を回復します。",
   "thirstwastaken2.config.enable_keyword_matching": "キーワード判定",
   "thirstwastaken2.config.enable_keyword_matching.tooltip": "未知の Mod アイテムの水分量を、登録名から推測します。",
   "thirstwastaken2.config.note": "HUD と AppleSkin の設定のみクライアント側です。その他はサーバー側に適用されます。"

@@ -31,8 +31,8 @@ other uses are not blocked by this rule.
 
 ![Tooltips for a waterskin, a bottle of sea water, a clay bowl and an apple, which also shows AppleSkin's hunger rows](/screenshots/tooltips.png)
 
-Items from other mods can be given values in the config. See
-[keyword matching](/docs/configuration#enablekeywordmatching).
+Drinks from other mods restore thirst as long as their mod marks them as drinks. Any item can be
+given its own value in the [config](/docs/configuration#drinks-and-foods).
 
 ## Bowls
 

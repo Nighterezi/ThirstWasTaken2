@@ -99,6 +99,8 @@
   "thirstwastaken2.config.appleskin_quenched_overlay.off": "Tắt",
   "thirstwastaken2.config.appleskin_tooltip_droplets": "Giọt nước trong tooltip",
   "thirstwastaken2.config.appleskin_tooltip_droplets.tooltip": "Hiện các hàng giọt độ khát và đã khát trong tooltip vật phẩm.",
+  "thirstwastaken2.config.enable_drink_tag_matching": "Nhận theo tag đồ uống",
+  "thirstwastaken2.config.enable_drink_tag_matching.tooltip": "Vật phẩm được mod của nó gắn tag đồ uống sẽ hồi nước, kể cả khi không có trong config.",
   "thirstwastaken2.config.enable_keyword_matching": "Dò theo từ khóa",
   "thirstwastaken2.config.enable_keyword_matching.tooltip": "Đoán giá trị nước cho vật phẩm mod lạ dựa trên tên đăng ký của nó.",
   "thirstwastaken2.config.note": "Chỉ mục Giao diện và AppleSkin là phía client; phần còn lại áp dụng trên máy chủ."

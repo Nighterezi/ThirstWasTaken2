@@ -145,6 +145,8 @@ enum ConfigCategory {
         @Override
         void addOptions(OptionsList list, ThirstConfig config) {
             list.addSmall(
+                    toggle("enable_drink_tag_matching", config.enableDrinkTagMatching,
+                            value -> config.enableDrinkTagMatching = value),
                     toggle("enable_keyword_matching", config.enableKeywordMatching,
                             value -> config.enableKeywordMatching = value));
             ClientVanilla.addFullWidthRow(list, Button.builder(text("open_file"),
@@ -156,6 +158,7 @@ enum ConfigCategory {
         void reset(ThirstConfig config, ThirstConfig defaults) {
             // The item maps are edited in the file; resetting them from a button would lose a whole
             // modpack's values in one click.
+            config.enableDrinkTagMatching = defaults.enableDrinkTagMatching;
             config.enableKeywordMatching = defaults.enableKeywordMatching;
         }
     };

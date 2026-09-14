@@ -65,6 +65,12 @@ public final class ThirstConfig {
     public int[] poisonChance = {30, 10, 0, 0};
 
     // ---- item values ------------------------------------------------------
+    /**
+     * Items their own mod tags {@code c:drinks} restore {@link #drinkTagValue} when neither list names
+     * them. On by default, unlike keyword matching, because the tag is the mod's word rather than a guess.
+     */
+    public boolean enableDrinkTagMatching = true;
+    public int[] drinkTagValue = {6, 8};
     public boolean enableKeywordMatching = false;
     public String keywordBlacklist = "dried|candied|leaf|leaves|gummy|crate|jam|sauce|bucket|seed|cookie|pie|bush|sapling|bean|curry|cake|candy";
     public String drinkKeywords = "drink|juice|tea|soda|coffee|wine|beer|cider|yogurt|milkshake|smoothie";
@@ -166,10 +172,18 @@ public final class ThirstConfig {
         // values to zero or list the item in itemBlacklist; only a missing key is filled in.
         drinks.putIfAbsent("minecraft:milk_bucket", new int[]{6, 8});
         drinks.putIfAbsent("minecraft:honey_bottle", new int[]{4, 6});
+        // And for the Farmer's Delight drinks and meals the first lists missed.
+        drinks.putIfAbsent("farmersdelight:milk_bottle", new int[]{6, 8});
+        drinks.putIfAbsent("farmersdelight:hot_cocoa", new int[]{8, 13});
         if (foods == null) foods = defaultFoods();
+        foods.putIfAbsent("farmersdelight:bone_broth", new int[]{5, 7});
+        foods.putIfAbsent("farmersdelight:onion_soup", new int[]{4, 5});
+        foods.putIfAbsent("farmersdelight:glow_berry_custard", new int[]{2, 3});
+        foods.putIfAbsent("farmersdelight:tomato", new int[]{2, 3});
         if (itemBlacklist == null) itemBlacklist = new LinkedHashSet<>();
         if (nauseaChance == null || nauseaChance.length != 4) nauseaChance = new int[]{100, 50, 5, 0};
         if (poisonChance == null || poisonChance.length != 4) poisonChance = new int[]{30, 10, 0, 0};
+        if (drinkTagValue == null || drinkTagValue.length != 2) drinkTagValue = new int[]{6, 8};
         if (keywordDrinkValue == null || keywordDrinkValue.length != 2) keywordDrinkValue = new int[]{10, 14};
         if (keywordSoupValue == null || keywordSoupValue.length != 2) keywordSoupValue = new int[]{4, 5};
         if (keywordFruitValue == null || keywordFruitValue.length != 2) keywordFruitValue = new int[]{2, 3};
@@ -222,7 +236,8 @@ public final class ThirstConfig {
         put(values, 10, 14, "farmersrespite:green_tea", "farmersrespite:yellow_tea", "farmersrespite:black_tea");
         put(values, 12, 22, "farmersrespite:rose_hip_tea", "farmersrespite:dandelion_tea");
         put(values, 6, 11, "farmersrespite:coffee");
-        put(values, 8, 13, "farmersdelight:apple_cider", "farmersdelight:melon_juice");
+        put(values, 8, 13, "farmersdelight:apple_cider", "farmersdelight:melon_juice", "farmersdelight:hot_cocoa");
+        put(values, 6, 8, "farmersdelight:milk_bottle");
         put(values, 10, 14, "brewinandchewin:beer", "brewinandchewin:vodka", "brewinandchewin:rice_wine", "brewinandchewin:mead", "brewinandchewin:egg_grog", "brewinandchewin:glittering_grenadine");
         put(values, 12, 22, "brewinandchewin:bloody_mary", "brewinandchewin:salty_folly", "brewinandchewin:pale_jane", "brewinandchewin:saccharine_rum", "brewinandchewin:strongroot_ale", "brewinandchewin:dread_nog");
         put(values, 14, 22, "brewinandchewin:kombucha", "brewinandchewin:red_rum", "brewinandchewin:steel_toe_stout");
@@ -243,10 +258,12 @@ public final class ThirstConfig {
         put(values, 1, 2, "minecraft:carrot", "minecraft:beetroot", "minecraft:sweet_berries", "minecraft:glow_berries", "minecraft:golden_carrot");
         put(values, 5, 7, "minecraft:beetroot_soup");
         put(values, 2, 1, "farmersdelight:pumpkin_slice");
+        put(values, 2, 3, "farmersdelight:tomato", "farmersdelight:glow_berry_custard");
+        put(values, 5, 7, "farmersdelight:bone_broth");
         put(values, 1, 2, "farmersdelight:cabbage_leaf", "collectorsreap:lime_slice");
         put(values, 7, 9, "farmersdelight:melon_popsicle", "collectorsreap:lime_popsicle");
         put(values, 6, 8, "farmersdelight:fruit_salad", "collectorsreap:portobello_rice_soup");
-        put(values, 4, 5, "farmersdelight:tomato_sauce", "farmersdelight:mixed_salad", "farmersdelight:beef_stew", "farmersdelight:chicken_soup", "farmersdelight:vegetable_soup", "farmersdelight:fish_stew", "farmersdelight:pumpkin_soup", "farmersdelight:baked_cod_stew", "farmersdelight:noodle_soup");
+        put(values, 4, 5, "farmersdelight:tomato_sauce", "farmersdelight:mixed_salad", "farmersdelight:beef_stew", "farmersdelight:chicken_soup", "farmersdelight:vegetable_soup", "farmersdelight:fish_stew", "farmersdelight:pumpkin_soup", "farmersdelight:baked_cod_stew", "farmersdelight:noodle_soup", "farmersdelight:onion_soup");
         put(values, 2, 3, "collectorsreap:lime");
         return values;
     }

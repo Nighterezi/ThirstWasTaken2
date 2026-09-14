@@ -55,9 +55,9 @@ Versions tested are listed per Minecraft version, in the order 26.2, 26.1.x, 1.2
 | [Cloth Config](https://modrinth.com/mod/cloth-config) | 26.2.155, 26.1.154, 21.11.153, 15.0.140 | AppleSkin's configuration screen inside Mod Menu. | AppleSkin still works, but its Config button is unavailable. |
 | [Jade](https://modrinth.com/mod/jade) | 26.2.11, 26.1.11, 21.1.6, 15.10.6 | The [grade of the water](/docs/features/water-purity#checking-water-with-jade) under the crosshair. Only the client needs it. | Fill a bottle and read its tooltip to learn the grade. |
 
-Anything not listed simply coexists. Food mods usually work without a patch: an item whose name
-contains a drink, soup or fruit keyword picks up thirst values on its own, and the per-item values in
-[Configuration](/docs/configuration) cover whatever the keywords miss.
+Anything not listed simply coexists. Food mods usually work without a patch: drinks their mod marks
+as drinks restore thirst on their own, and the per-item values in
+[Configuration](/docs/configuration) cover the rest.
 
 ## Where the mod goes
 

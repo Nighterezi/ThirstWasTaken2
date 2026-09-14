@@ -6,7 +6,10 @@ import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.item.WaterskinItem;
 import com.thirstwastaken2.purity.WaterQuality;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -15,12 +18,15 @@ import java.util.Arrays;
 
 /**
  * What an item restores, and the config that decides it: the drink and food tables, the blacklist,
- * keyword matching, and the clamping that keeps a hand-edited config file from breaking the game.
+ * the {@code c:drinks} tag, keyword matching, and the clamping that keeps a hand-edited config file
+ * from breaking the game.
  *
  * <p>Expected values are read from the live config rather than written out, because the test server
  * keeps its config file between runs and a value is only wrong if the API disagrees with the config.
  */
 public final class ThirstApiGameTest {
+    private static final TagKey<Item> DRINKS = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "drinks"));
+
     @GameTest
     public void configuredDrinksAndFoodsRestoreWhatTheConfigSays(GameTestHelper helper) {
         ThirstConfig config = ThirstConfig.get();
@@ -62,6 +68,49 @@ public final class ThirstApiGameTest {
         helper.succeed();
     }
 
+    /**
+     * The gametest mod tags a nautilus shell {@code c:drinks} in its own data, standing in for a drink
+     * from a mod the config has never heard of. Vanilla has no such item: everything it tags is listed.
+     */
+    @GameTest
+    public void itemsTaggedAsDrinksRestoreTheTagValue(GameTestHelper helper) {
+        TestFixtures.check(helper, new ItemStack(Items.NAUTILUS_SHELL).is(DRINKS),
+                "the gametest data pack should tag the nautilus shell c:drinks, or this test proves nothing");
+        restores(helper, Items.NAUTILUS_SHELL, ThirstConfig.get().drinkTagValue);
+        // Fabric API tags the ominous bottle c:drinks too, as a magic drink.
+        TestFixtures.check(helper, new ItemStack(Items.OMINOUS_BOTTLE).is(DRINKS),
+                "the ominous bottle should be tagged c:drinks, or its exclusion below proves nothing");
+        TestFixtures.check(helper, ThirstApi.thirstValues(new ItemStack(Items.OMINOUS_BOTTLE)) == null,
+                "a magic drink should restore nothing, got "
+                        + Arrays.toString(ThirstApi.thirstValues(new ItemStack(Items.OMINOUS_BOTTLE))));
+        helper.succeed();
+    }
+
+    @GameTest
+    public void theConfigAndBlacklistWinOverTheDrinkTag(GameTestHelper helper) {
+        // Honey is tagged c:drinks/honey and listed at a different value, so the listed one must win.
+        ThirstConfig config = ThirstConfig.get();
+        TestFixtures.check(helper, !Arrays.equals(config.drinks.get("minecraft:honey_bottle"), config.drinkTagValue),
+                "honey should be listed at a value other than the tag value, or this test proves nothing");
+        restores(helper, Items.HONEY_BOTTLE, config.drinks.get("minecraft:honey_bottle"));
+
+        TestFixtures.withConfig(edited -> edited.itemBlacklist.add("minecraft:nautilus_shell"), () ->
+                TestFixtures.check(helper, ThirstApi.thirstValues(new ItemStack(Items.NAUTILUS_SHELL)) == null,
+                        "a blacklisted item should restore nothing whatever its tags say"));
+        helper.succeed();
+    }
+
+    @GameTest
+    public void drinkTagMatchingCanBeTurnedOff(GameTestHelper helper) {
+        TestFixtures.withConfig(config -> config.enableDrinkTagMatching = false, () ->
+                TestFixtures.check(helper, ThirstApi.thirstValues(new ItemStack(Items.NAUTILUS_SHELL)) == null,
+                        "with drink tag matching off, a tagged item nobody listed should restore nothing, got "
+                                + Arrays.toString(ThirstApi.thirstValues(new ItemStack(Items.NAUTILUS_SHELL)))));
+        TestFixtures.check(helper, ThirstApi.thirstValues(new ItemStack(Items.NAUTILUS_SHELL)) != null,
+                "the tagged item should restore something again once matching is back on");
+        helper.succeed();
+    }
+
     @GameTest
     public void keywordMatchingOnlyAppliesWhenTurnedOn(GameTestHelper helper) {
         TestFixtures.withConfig(config -> config.enableKeywordMatching = false, () -> {
@@ -92,6 +141,9 @@ public final class ThirstApiGameTest {
             config.nauseaChance = new int[] {1};
             config.poisonChance = new int[] {150, -5, 0, 0};
             config.drinks.remove("minecraft:milk_bucket");
+            config.drinks.remove("farmersdelight:milk_bottle");
+            config.foods.remove("farmersdelight:bone_broth");
+            config.drinkTagValue = new int[] {3};
         }, () -> {
             ThirstConfig config = ThirstConfig.get();
             TestFixtures.check(helper, config.defaultPurity == 3, "default_purity should clamp to 3, got " + config.defaultPurity);
@@ -105,6 +157,11 @@ public final class ThirstApiGameTest {
                     "poison chances should clamp to 0-100, got " + Arrays.toString(config.poisonChance));
             TestFixtures.check(helper, config.drinks.containsKey("minecraft:milk_bucket"),
                     "a config file written before milk counted should have it merged back in");
+            TestFixtures.check(helper, config.drinks.containsKey("farmersdelight:milk_bottle")
+                            && config.foods.containsKey("farmersdelight:bone_broth"),
+                    "a config file written before the added Farmer's Delight entries should have them merged back in");
+            TestFixtures.check(helper, config.drinkTagValue.length == 2,
+                    "a drink tag value of the wrong length should be reset, got " + Arrays.toString(config.drinkTagValue));
         });
         helper.succeed();
     }

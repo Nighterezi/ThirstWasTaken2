@@ -42,6 +42,8 @@ Events registered there, in registration order per event:
   deliberately returns `PASS` and defers its work.
 - `Loader.onUseItem` → `WaterInteractions.fillFromWater`.
 - `Loader.onRegisterCommands` → `ThirstCommands.register`.
+- `Loader.onTagsLoaded` → `ThirstApi.clearCache`, because an item's value can come from the `c:drinks`
+  tag and tags are rebound on every reload and server join.
 
 ## Invariants worth not breaking
 

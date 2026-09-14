@@ -99,6 +99,8 @@
   "thirstwastaken2.config.appleskin_quenched_overlay.off": "Off",
   "thirstwastaken2.config.appleskin_tooltip_droplets": "Tooltip Droplets",
   "thirstwastaken2.config.appleskin_tooltip_droplets.tooltip": "Show the thirst and quenched droplet rows in item tooltips.",
+  "thirstwastaken2.config.enable_drink_tag_matching": "Drink Tag Matching",
+  "thirstwastaken2.config.enable_drink_tag_matching.tooltip": "Items their own mod tags as drinks restore thirst even when the config does not list them.",
   "thirstwastaken2.config.enable_keyword_matching": "Keyword Matching",
   "thirstwastaken2.config.enable_keyword_matching.tooltip": "Guesses thirst values for unknown modded items from their registry name.",
   "thirstwastaken2.config.note": "Only HUD and AppleSkin settings are client-side; the rest apply on the server."

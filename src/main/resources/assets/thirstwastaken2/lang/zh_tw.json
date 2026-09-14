@@ -99,6 +99,8 @@
   "thirstwastaken2.config.appleskin_quenched_overlay.off": "關閉",
   "thirstwastaken2.config.appleskin_tooltip_droplets": "提示框水滴",
   "thirstwastaken2.config.appleskin_tooltip_droplets.tooltip": "在物品提示框中顯示口渴和解渴的水滴列。",
+  "thirstwastaken2.config.enable_drink_tag_matching": "飲品標籤匹配",
+  "thirstwastaken2.config.enable_drink_tag_matching.tooltip": "被所屬模組標記為飲品的物品，即使未寫入設定也能補充水分。",
   "thirstwastaken2.config.enable_keyword_matching": "關鍵字匹配",
   "thirstwastaken2.config.enable_keyword_matching.tooltip": "根據註冊名猜測未知模組物品的水分數值。",
   "thirstwastaken2.config.note": "只有介面與 AppleSkin 設定屬於用戶端，其餘設定在伺服器上生效。"

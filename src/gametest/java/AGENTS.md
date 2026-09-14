@@ -48,7 +48,7 @@ Fabric's empty structure as its template, and `stonecutter.gradle.kts` rewrites 
 the annotation, so no test file changes for it. Write `@GameTest` with no arguments, or that
 replacement stops matching.
 
-The same 60 tests run on every node. Later nodes report 61 because their runner adds vanilla's own
+The same 122 tests run on every node. Later nodes report 123 because their runner adds vanilla's own
 `minecraft:alwayspass`; that one is not the mod's.
 
 ## Rules that keep these tests worth having
@@ -87,7 +87,7 @@ The same 60 tests run on every node. Later nodes report 61 because their runner 
 | `ThirstDataGameTest` | the state record: drinking, the quenched cap, overflow into quenched, spending exhaustion, clamping, and both codecs round-tripping, including a save from before `enabled` existed |
 | `ThirstTickGameTest` | the tick spending quenched before thirst, peaceful with and without depletion, disabled and invulnerable players, Fire Resistance and Fire Protection slowing the drain, salt water charging at once, the full-bar rule |
 | `DrinkingGameTest` | drinking a bowl and a waterskin through the real right-click path, what is left in the hand, the drink animation and duration, water refused on a full bar while honey is not, the advancements a drink earns, and drinking by hand with every way it is refused |
-| `ThirstApiGameTest` | what items restore from the config, the blacklist, keyword matching and its blacklist, the per-item cache dropping on commit, and `sanitize` clamping a hand-edited config |
+| `ThirstApiGameTest` | what items restore from the config, the blacklist, the `c:drinks` tag fallback (the gametest mod tags a nautilus shell for it) and the magic drinks it leaves out, keyword matching and its blacklist, the per-item cache dropping on commit, and `sanitize` clamping a hand-edited config |
 | `CommandGameTest` | `/thirst set` and `/thirst enable` through the dispatcher, the argument range, and the permission requirement |
 | `WaterInteractionsGameTest` | scooping with the bowl and the waterskin, the clay bowl holding nothing, drawing the waterskin from a cauldron, pouring it out, and a bottle drawn from a cauldron keeping its grade |
 | `LootGameTest` | graded water in each seeded chest and in piglin bartering, no water anywhere else, and a table a data pack replaced still getting it |

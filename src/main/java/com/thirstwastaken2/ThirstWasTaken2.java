@@ -1,5 +1,6 @@
 package com.thirstwastaken2;
 
+import com.thirstwastaken2.api.ThirstApi;
 import com.thirstwastaken2.command.ThirstCommands;
 import com.thirstwastaken2.compat.LootIntegration;
 import com.thirstwastaken2.config.ThirstConfig;
@@ -49,6 +50,7 @@ public final class ThirstWasTaken2 {
         Loader.onUseBlock(WaterInteractions::transferCauldronPurity);
         Loader.onUseItem(WaterInteractions::fillFromWater);
         Loader.onRegisterCommands(ThirstCommands::register);
+        Loader.onTagsLoaded(ThirstApi::clearCache);
 
         LOGGER.info("ThirstWasTaken2 initialized for Minecraft {}{}", MINECRAFT, DEV ? " (dev)" : "");
     }

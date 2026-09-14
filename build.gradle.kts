@@ -201,6 +201,8 @@ dependencies {
     clientMod("clientRuntimeOnly", "maven.modrinth:modmenu:${property("deps.modmenu")}")
     // Test the water purity line Jade shows when looking at water or a cauldron.
     clientMod("clientRuntimeOnly", "maven.modrinth:jade:${property("deps.jade")}")
+    // Test the drinks and meals Farmer's Delight adds, and the c:drinks tag it fills.
+    clientMod("clientRuntimeOnly", "maven.modrinth:farmers-delight-refabricated:${property("deps.farmersdelight")}")
 }
 
 tasks.processResources {
