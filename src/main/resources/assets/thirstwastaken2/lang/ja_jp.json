@@ -5,6 +5,7 @@
   "item.thirstwastaken2.terracotta_bowl": "テラコッタ 器",
   "item.thirstwastaken2.clay_bowl": "粘土の器",
   "item.thirstwastaken2.waterskin": "水袋",
+  "block.thirstwastaken2.sand_filter": "砂フィルター",
   "tooltip.thirstwastaken2.waterskin.empty": "空",
   "tooltip.thirstwastaken2.waterskin.servings": "%1$s/%2$s 回分の水入り",
   "tooltip.thirstwastaken2.clay_bowl": "焼くと水を汲める",

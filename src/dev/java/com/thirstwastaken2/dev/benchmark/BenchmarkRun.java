@@ -193,6 +193,7 @@ final class BenchmarkRun {
                 .map(mod -> mod.getMetadata().getVersion().getFriendlyString())
                 .orElse("unknown"));
         json.addProperty("dev", ThirstWasTaken2.DEV);
+        json.addProperty("createFly", FabricLoader.getInstance().isModLoaded("create"));
         json.addProperty("dedicatedServer", server.isDedicatedServer());
         json.addProperty("java", System.getProperty("java.version"));
         json.addProperty("vm", System.getProperty("java.vm.name") + " " + System.getProperty("java.vm.version"));

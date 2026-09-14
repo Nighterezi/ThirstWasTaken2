@@ -1,5 +1,6 @@
 package com.thirstwastaken2.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.thirstwastaken2.purity.FillCapture;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -7,6 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BottleItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -16,9 +18,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(BottleItem.class)
 abstract class BottleItemMixin {
     @Inject(method = "use", at = @At("HEAD"))
-    private void thirst$capturePurity(Level level, Player player, InteractionHand hand,
-                                      CallbackInfoReturnable<InteractionResult> cir) {
-        FillCapture.capture(level, player);
+    private void thirst$clearCapture(Level level, Player player, InteractionHand hand,
+                                     CallbackInfoReturnable<InteractionResult> cir) {
+        FillCapture.clear();
+    }
+
+    @ModifyExpressionValue(method = "use", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/world/item/BottleItem;getPlayerPOVHitResult(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/level/ClipContext$Fluid;)Lnet/minecraft/world/phys/BlockHitResult;"))
+    private BlockHitResult thirst$capturePurity(BlockHitResult hit, Level level) {
+        return FillCapture.capture(level, hit);
     }
 
     @ModifyArg(method = "use", index = 2, at = @At(value = "INVOKE",

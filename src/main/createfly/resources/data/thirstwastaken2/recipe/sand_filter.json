@@ -1,0 +1,25 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "create"
+      ]
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "create:fluid_tank",
+    "N": "create:nozzle",
+    "S": "#c:sands"
+  },
+  "pattern": [
+    "S",
+    "N",
+    "C"
+  ],
+  "result": {
+    "id": "thirstwastaken2:sand_filter"
+  }
+}

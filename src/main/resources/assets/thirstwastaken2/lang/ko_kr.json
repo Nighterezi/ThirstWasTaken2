@@ -5,6 +5,7 @@
   "item.thirstwastaken2.terracotta_bowl": "테라코타 그릇",
   "item.thirstwastaken2.clay_bowl": "점토 그릇",
   "item.thirstwastaken2.waterskin": "물주머니",
+  "block.thirstwastaken2.sand_filter": "모래 필터",
   "tooltip.thirstwastaken2.waterskin.empty": "비어 있음",
   "tooltip.thirstwastaken2.waterskin.servings": "물 %1$s/%2$s회분 포함",
   "tooltip.thirstwastaken2.clay_bowl": "구워야 물을 담을 수 있음",

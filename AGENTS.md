@@ -274,6 +274,7 @@ Each area of the tree carries its own `AGENTS.md` with rules and conventions loc
 | Vanilla behaviour hooks & fragile injections | [.../mixin/AGENTS.md](src/main/java/com/thirstwastaken2/mixin/AGENTS.md) |
 | Water purity carriers, environmental sampling, cauldrons | [.../purity/AGENTS.md](src/main/java/com/thirstwastaken2/purity/AGENTS.md) |
 | Loot injection & optional-integration rules | [.../compat/AGENTS.md](src/main/java/com/thirstwastaken2/compat/AGENTS.md) |
+| The Create Fly Sand Filter, compiled only where Create Fly exists | [src/main/createfly/AGENTS.md](src/main/createfly/AGENTS.md) |
 | Minecraft version and mod loader differences | [.../platform/AGENTS.md](src/main/java/com/thirstwastaken2/platform/AGENTS.md) |
 | Every difference between the supported versions, visible and underneath | [docs/dev/VERSION-DIFFERENCES.md](docs/dev/VERSION-DIFFERENCES.md) |
 | What to check by hand before a release, per version | [docs/dev/MANUAL-TESTING.md](docs/dev/MANUAL-TESTING.md) |
@@ -329,6 +330,9 @@ src/client/java/com/thirstwastaken2/client/
   platform/StatusBarRenderer.java      the shape ClientLoader draws a HUD row through
   compat/AppleSkinIntegration.java     reads AppleSkin's own exhaustion-underlay setting
   compat/JadeIntegration.java          jade entrypoint: the water grade under the crosshair
+
+src/main/createfly/                     Create Fly Sand Filter, compiled only where deps.create_fly is set
+src/client/createfly/                   its goggle tooltip, same condition
 
 src/client/fabric/java/com/thirstwastaken2/client/   Fabric only, compiled into client
   fabric/ThirstWasTaken2FabricClient.java  client entrypoint
@@ -449,6 +453,7 @@ takes effect in singleplayer or when edited on the server.
 | Mod Menu | `modmenu` entrypoint | class only loads if Mod Menu resolves it |
 | Loot | always | `Loader.onLootTable` on 5 vanilla chests + Piglin bartering, including tables a data pack replaced |
 | Food mods | always | resolved by registry id in `ThirstConfig.drinks` / `foods`, no classes referenced |
+| Create Fly | `deps.create_fly` at build time, then `CreateFlyPresence` | the Sand Filter, 26.1.x and 26.2.x for now; see [src/main/createfly/AGENTS.md](src/main/createfly/AGENTS.md) |
 
 ## Porting rules of thumb
 

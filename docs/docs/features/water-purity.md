@@ -95,4 +95,5 @@ Put a fresh water bottle, terracotta water bowl or water bucket in a furnace or 
 
 A furnace takes ten seconds and a campfire takes thirty. Dirty water needs two passes to become pure.
 With Farmer's Delight, the [Cooking Pot](/docs/features/farmers-delight#boiling-water-in-the-cooking-pot)
-makes bottles and bowls pure in one pass.
+makes bottles and bowls pure in one pass. With Create Fly on Minecraft 26.1.2 and 26.2, the
+[Sand Filter](/docs/features/create#sand-filter) cleans water pumped through it.

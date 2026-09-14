@@ -8,8 +8,10 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.players.PlayerList;
+import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -36,8 +38,11 @@ final class BenchmarkWorld {
     private static final int CHUNK_RADIUS = 2;
     /** Players stand within this many blocks of the centre, all inside the forced chunks. */
     private static final int SPREAD = 24;
-    /** Centre chunks to try, in order; the first one outside spawn protection wins. */
-    private static final int[][] AREA_CHUNKS = {{0, 0}, {32, 0}, {0, 32}, {-32, -32}};
+    /** Centre chunks to try, in order; the first one that suits the benchmark wins. */
+    private static final int[][] AREA_CHUNKS = areaChunks();
+    /** Candidate centres are this many chunks apart, and this many rings of them are tried around (0, 0). */
+    private static final int AREA_STEP = 32;
+    private static final int AREA_RINGS = 4;
     /** Block update plus client notification, the same flags the mod's cauldron transfer uses. */
     private static final int BLOCK_UPDATE_FLAGS = 3;
 
@@ -181,14 +186,39 @@ final class BenchmarkWorld {
 
     private void chooseArea() {
         BenchmarkPlayer probe = player(0);
+        boolean anyUnprotected = false;
         for (int[] candidate : AREA_CHUNKS) {
             chunkX = candidate[0];
             chunkZ = candidate[1];
             // Spawn protection would silently refuse the bottle and bucket fills.
-            if (!server.isUnderSpawnProtection(level, new BlockPos(centerX(), 0, centerZ()), probe)) return;
+            if (server.isUnderSpawnProtection(level, new BlockPos(centerX(), 0, centerZ()), probe)) continue;
+            anyUnprotected = true;
+            // Sea water carries no grade and never hydrates, so over an ocean or a beach the fills have
+            // nothing to stamp and the drinks restore nothing. Reading the biome does not generate a chunk.
+            if (!salty(new BlockPos(centerX(), topY(), centerZ()))) return;
         }
-        throw new IllegalStateException("Every candidate benchmark area is inside spawn protection; "
-                + "set spawn-protection=0 in server.properties");
+        throw new IllegalStateException(anyUnprotected
+                ? "Every candidate benchmark area is an ocean or a beach; the interactions need fresh water"
+                : "Every candidate benchmark area is inside spawn protection; set spawn-protection=0 in server.properties");
+    }
+
+    private boolean salty(BlockPos pos) {
+        Holder<Biome> biome = level.getBiome(pos);
+        return biome.is(BiomeTags.IS_OCEAN) || biome.is(BiomeTags.IS_BEACH);
+    }
+
+    /** (0, 0) first, then rings of candidates {@link #AREA_STEP} chunks apart, nearest ring first. */
+    private static int[][] areaChunks() {
+        List<int[]> chunks = new ArrayList<>();
+        chunks.add(new int[] {0, 0});
+        for (int ring = 1; ring <= AREA_RINGS; ring++) {
+            for (int dx = -ring; dx <= ring; dx++) {
+                for (int dz = -ring; dz <= ring; dz++) {
+                    if (Math.max(Math.abs(dx), Math.abs(dz)) == ring) chunks.add(new int[] {dx * AREA_STEP, dz * AREA_STEP});
+                }
+            }
+        }
+        return chunks.toArray(int[][]::new);
     }
 
     private void buildFixture() {
@@ -196,12 +226,7 @@ final class BenchmarkWorld {
         int z = centerZ();
         int surface = level.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
         BlockPos base = null;
-        // The highest buildable y. 1.21.1 only exposes the exclusive build limit, one above it.
-        //? if >1.21.1 {
-        int top = level.getMaxY();
-        //?} else
-        /*int top = level.getMaxBuildHeight() - 1;*/
-        for (int y = top - 4; y > surface + 2; y--) {
+        for (int y = topY() - 4; y > surface + 2; y--) {
             if (isClear(x, y, z)) {
                 base = new BlockPos(x, y, z);
                 break;
@@ -243,6 +268,14 @@ final class BenchmarkWorld {
     private void place(BlockPos pos, BlockState state) {
         originals.putIfAbsent(pos.immutable(), level.getBlockState(pos));
         level.setBlock(pos, state, BLOCK_UPDATE_FLAGS);
+    }
+
+    /** The highest buildable y. 1.21.1 only exposes the exclusive build limit, one above it. */
+    private int topY() {
+        //? if >1.21.1 {
+        return level.getMaxY();
+        //?} else
+        /*return level.getMaxBuildHeight() - 1;*/
     }
 
     private String biomeAt(BlockPos pos) {

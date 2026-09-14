@@ -14,6 +14,9 @@ All notable changes to ThirstWasTaken2 are documented in this file.
   tomato now restore thirst, alongside the drinks and meals already covered.
 - With Farmer's Delight, the Cooking Pot boils a fresh water bottle or water bowl pure in one pass.
 - With Farmer's Delight, Nourishment stops the thirst bar from draining.
+- The Sand Filter is back, now with Create Fly on Minecraft 26.1.2 and 26.2. Water pumped through it comes out one
+  grade cleaner.
+- With Create Fly, water keeps its grade through pumps, pipes, Spouts, Basins and Item Drains.
 
 ### Changed
 
@@ -23,6 +26,8 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 ### Notes
 
 - Jade is optional and only needed on the client.
+- Create Fly is optional and must be installed on both the client and the server. The other Minecraft
+  versions ignore it for now.
 - Existing config files get the new Farmer's Delight values automatically. Values for the removed
   mods stay in existing config files until deleted by hand.
 

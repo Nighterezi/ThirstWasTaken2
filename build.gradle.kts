@@ -122,6 +122,49 @@ sourceSets.named("client") {
 }
 
 /**
+ * The Create Fly version this node compiles the Sand Filter against, or null where it does not. Create
+ * Fly is a Fabric-only port with no release for every Minecraft version the mod supports, so the
+ * integration is its own pair of source directories that only such a node compiles, and the
+ * manifest only names its entrypoints and mixin config there. See src/main/createfly/AGENTS.md.
+ */
+val createFly = findProperty("deps.create_fly") as String?
+
+/**
+ * Create Fly's classes, without the files that make it a mod. Its class tweaker makes vanilla's
+ * `Container` implement one of Create's interfaces, and Loom bakes the tweakers of every mod on the
+ * compile classpath into the one Minecraft jar all of this node's runs share - so the gametests and
+ * runServer, which run without Create Fly, would fail to load `Container`. Turning transitive tweakers
+ * off is not an option, because Fabric API's own injected methods need them. Compiled against as a
+ * plain library, Create Fly leaves the Minecraft jar alone; in runClient and in a player's game,
+ * Fabric Loader applies its tweaker from the real jar as usual.
+ */
+val createFlyClasses = createFly?.let { version ->
+    val resolved = configurations.detachedConfiguration(dependencies.create("maven.modrinth:create-fly:$version"))
+        .apply { isTransitive = false }
+    tasks.register<Jar>("createFlyClasses") {
+        description = "Copies Create Fly's classes into a jar Loom does not treat as a mod"
+        destinationDirectory = layout.buildDirectory.dir("createfly")
+        archiveFileName = "create-fly-$version-classes.jar"
+        from(resolved.elements.map { jars -> jars.map { zipTree(it) } }) {
+            include("com/zurrtum/**")
+        }
+    }
+}
+
+if (createFly != null) {
+    sourceSets.main {
+        java.srcDir("src/main/createfly/java")
+        resources.srcDir("src/main/createfly/resources")
+    }
+    sourceSets.named("client") {
+        java.srcDir("src/client/createfly/java")
+    }
+    // The benchmark's Create Fly operations. They run only when Create Fly is on the benchmark's classpath,
+    // which `-Pcreate` asks for below.
+    dev.java.srcDir("src/dev/createfly/java")
+}
+
+/**
  * Every datapack and asset JSON the mod ships, written by `src/datagen`. The directory is keyed by
  * Minecraft version rather than by build node, because two nodes of the same Minecraft version on
  * different loaders produce byte-identical files and should share one directory. It is a resource
@@ -203,6 +246,19 @@ dependencies {
     clientMod("clientRuntimeOnly", "maven.modrinth:jade:${property("deps.jade")}")
     // Test the drinks and meals Farmer's Delight adds, and the c:drinks tag it fills.
     clientMod("clientRuntimeOnly", "maven.modrinth:farmers-delight-refabricated:${property("deps.farmersdelight")}")
+
+    if (createFlyClasses != null) {
+        // The Sand Filter extends Create classes on both sides, so both source sets compile against it.
+        compileOnly(files(createFlyClasses))
+        "clientCompileOnly"(files(createFlyClasses))
+        // Test the Sand Filter with pipes, pumps and spouts in runClient.
+        clientMod("clientRuntimeOnly", "maven.modrinth:create-fly:$createFly")
+        // `-Pcreate` puts Create Fly on runServer and runBenchmark too, to benchmark the mod with it
+        // installed. Off by default, so the usual benchmark measures the mod alone.
+        if (providers.gradleProperty("create").isPresent) {
+            "devRuntimeOnly"("maven.modrinth:create-fly:$createFly")
+        }
+    }
 }
 
 tasks.processResources {
@@ -213,8 +269,28 @@ tasks.processResources {
         "java" to requiredJava.majorVersion,
     )
     inputs.properties(props)
+    inputs.property("createFly", createFly ?: "")
     filesMatching("fabric.mod.json") { expand(props) }
     filesMatching("*.mixins.json") { expand("java" to "JAVA_${requiredJava.majorVersion}") }
+
+    // Only a node that compiles the Sand Filter may name its entrypoints and mixin config, or Fabric
+    // Loader would fail to find them on every other one. They are added to the built manifest rather
+    // than templated into the source, which has to stay valid JSON for Loom to read.
+    if (createFly != null) {
+        val manifest = destinationDir.resolve("fabric.mod.json")
+        doLast {
+            @Suppress("UNCHECKED_CAST")
+            val json = groovy.json.JsonSlurper().parse(manifest) as MutableMap<String, Any>
+            @Suppress("UNCHECKED_CAST")
+            val entrypoints = json.getValue("entrypoints") as MutableMap<String, Any>
+            entrypoints["thirstwastaken2:createfly"] = listOf("com.thirstwastaken2.createfly.CreateFlyEntrypoint")
+            entrypoints["thirstwastaken2:createfly_client"] =
+                listOf("com.thirstwastaken2.client.createfly.CreateFlyClientEntrypoint")
+            @Suppress("UNCHECKED_CAST")
+            (json.getValue("mixins") as MutableList<Any>).add(1, "thirstwastaken2.createfly.mixins.json")
+            manifest.writeText(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json)))
+        }
+    }
 }
 
 // The loader's client mixins have their own config, in the client source set.

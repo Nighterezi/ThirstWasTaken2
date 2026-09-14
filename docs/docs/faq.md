@@ -33,9 +33,9 @@ Its id is not in the lists. Add it to `drinks` in the config file, or switch on
 
 ## Is Create required?
 
-No, and Create is not supported in this release. The Sand Filter and Builder's Tea were both
-removed, and support will return in a future release. Mod Menu only adds the settings button, and
-nothing else here needs another mod.
+No. On Minecraft 26.1.2 and 26.2, installing [Create Fly](/docs/features/create) adds the Sand Filter.
+Builder's Tea does not restore thirst yet. Mod Menu only adds the settings button, and nothing else
+here needs another mod.
 
 ## Does it work on Peaceful?
 

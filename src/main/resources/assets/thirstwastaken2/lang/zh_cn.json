@@ -5,6 +5,7 @@
   "item.thirstwastaken2.terracotta_bowl": "陶碗",
   "item.thirstwastaken2.clay_bowl": "粘土碗",
   "item.thirstwastaken2.waterskin": "水袋",
+  "block.thirstwastaken2.sand_filter": "砂滤器",
   "tooltip.thirstwastaken2.waterskin.empty": "空",
   "tooltip.thirstwastaken2.waterskin.servings": "装有 %1$s/%2$s 份水",
   "tooltip.thirstwastaken2.clay_bowl": "烧制后才能舀水",

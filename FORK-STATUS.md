@@ -79,8 +79,8 @@ it adds a dithered thirst-exhaustion strip that follows AppleSkin's exhaustion-u
 
 ## Not available yet
 
-- **Create.** Support was removed in this release: the Sand Filter never worked, and Builder's Tea
-  went with it. Create will be supported again in a future release.
+- **Create on other Minecraft versions.** The Sand Filter is back with Create Fly, on Minecraft 26.1.2 and 26.2
+  only. Builder's Tea does not restore thirst yet.
 
 These need mods that have no Fabric release on Minecraft 26.x yet. Their items are already configured, so they will start working as soon as those mods update.
 

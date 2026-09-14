@@ -106,6 +106,31 @@ protection refusing a fill cannot pass as an impressively fast result.
 `tooltip_waterskin`, `tooltip_food`, `thirst_lookup`, `water_quality_read`, `waterskin_mix`,
 `exhaustion_mirror`, `thirst_tick_idle`. The report's `description` field says what each one does.
 
+### With Create Fly
+
+```bash
+./gradlew ":26.2.x:runBenchmark" -Pcreate
+```
+
+`-Pcreate` puts Create Fly on the benchmark server's classpath, on the nodes that build the Sand Filter
+(`deps.create_fly`). The report's `environment.createFly` says whether it was loaded, and six operations
+join the list:
+
+| Operation | What it times |
+|---|---|
+| `createfly_filter_active` | one Sand Filter tick moving dirty water into an empty output |
+| `createfly_filter_blocked` | one tick whose output holds water of another grade, so nothing moves |
+| `createfly_filter_idle` | one tick with an empty input |
+| `createfly_fill_bottle` | `GenericItemFilling.fillItem` filling a glass bottle, with the purity stamp |
+| `createfly_empty_bottle` | `GenericItemEmptying.emptyItem`, simulated, reading a graded bottle |
+| `createfly_open_pipe_draw` | `OpenEndedPipe#removeFluidFromSpace`, simulated, over the water fixture |
+
+The operations live in `src/dev/createfly/java` and are reached by name from `InteractionScenario`, so
+nodes without Create Fly compile nothing of them. The filter is a real block entity attached to the
+level but not placed, so the server never ticks it behind the benchmark's back. Everything else in the
+report still runs, so comparing a run with and without `-Pcreate` shows what installing Create Fly
+changes for the mod's own work.
+
 ### Memory
 
 - `thirstDataBytes`, `exhaustionTrackerBytes`: the shallow size of each object, from allocating ten
@@ -155,8 +180,9 @@ not move at all, so a changed `bytes` value is always real. The fields that matt
   that has already paused. Without that, a run typed into the console more than a minute after startup
   never advances, and a long run stalls a minute in. The pause behaves normally again once the run ends.
 
-- Force-loads 5x5 chunks around chunk (0, 0), or around the first of (32, 0), (0, 32), (-32, -32) that is
-  outside spawn protection, and builds a small water fixture a few blocks below the build limit. Both are
+- Force-loads 5x5 chunks around chunk (0, 0), or around the nearest of a grid of candidates 32 chunks
+  apart that is outside spawn protection and not an ocean or a beach (sea water has no grade to stamp
+  and never hydrates, so the fill and drink interactions would fail there), and builds a small water fixture a few blocks below the build limit. Both are
   undone when the run ends: completed, cancelled, failed, or cut short by the server stopping. Only a
   crash mid-run can leave them behind.
 - Simulated players are `BenchmarkPlayer`s, Fabric `FakePlayer`s built fresh per run: not in the player

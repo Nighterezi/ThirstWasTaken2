@@ -12,6 +12,7 @@ import com.thirstwastaken2.purity.WaterInteractions;
 import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.purity.WaterQuality;
 import com.thirstwastaken2.tooltip.ThirstTooltip;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -47,6 +48,7 @@ final class InteractionScenario implements Stage {
     private static final int THIRSTY = 10;
     private static final InteractionHand HAND = InteractionHand.MAIN_HAND;
     private static final Runnable NOTHING = () -> { };
+    private static final String CREATE_FLY_OPERATIONS = "com.thirstwastaken2.dev.benchmark.CreateFlyOperations";
 
     private record Operation(String name, String description, boolean batched, Runnable reset, Runnable body,
                              BooleanSupplier check) { }
@@ -105,7 +107,9 @@ final class InteractionScenario implements Stage {
                 if (!checked) {
                     if (!operation.check().getAsBoolean()) {
                         throw new IllegalStateException("Interaction '" + operation.name()
-                                + "' had no effect, so its timing would be meaningless");
+                                + "' had no effect, so its timing would be meaningless (result " + sink
+                                + ", main hand " + player.getMainHandItem() + " "
+                                + player.getMainHandItem().getComponentsPatch() + ")");
                     }
                     checked = true;
                 }
@@ -294,6 +298,25 @@ final class InteractionScenario implements Stage {
                 },
                 () -> ThirstManager.tickPlayer(player),
                 () -> true);
+        addCreateFly();
+    }
+
+    /**
+     * The Create Fly operations, when Create Fly is installed and this build compiled them. They live in
+     * {@code src/dev/createfly}, which only the nodes with {@code deps.create_fly} compile, so they are
+     * reached by name.
+     */
+    private void addCreateFly() {
+        if (!FabricLoader.getInstance().isModLoaded("create")) return;
+        try {
+            Class.forName(CREATE_FLY_OPERATIONS)
+                    .getDeclaredMethod("add", InteractionScenario.class, BenchmarkWorld.class, BenchmarkPlayer.class)
+                    .invoke(null, this, world, player);
+        } catch (ClassNotFoundException missing) {
+            BenchmarkRunner.LOGGER.warn("[ThirstBenchmark] Create is installed, but this build has no Create Fly operations");
+        } catch (ReflectiveOperationException error) {
+            throw new IllegalStateException("Could not add the Create Fly operations", error);
+        }
     }
 
     /** Drops the player and every operation, whose lambdas hold item stacks and the player. */
@@ -325,11 +348,11 @@ final class InteractionScenario implements Stage {
         ThirstManager.set(player, ThirstData.full().withLevels(THIRSTY, 0));
     }
 
-    private void batched(String name, String description, Runnable reset, Runnable body, BooleanSupplier check) {
+    void batched(String name, String description, Runnable reset, Runnable body, BooleanSupplier check) {
         operations.add(new Operation(name, description, true, reset, body, check));
     }
 
-    private void single(String name, String description, Runnable reset, Runnable body, BooleanSupplier check) {
+    void single(String name, String description, Runnable reset, Runnable body, BooleanSupplier check) {
         operations.add(new Operation(name, description, false, reset, body, check));
     }
 

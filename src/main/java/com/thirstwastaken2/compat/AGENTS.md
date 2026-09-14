@@ -47,6 +47,12 @@ Three pieces, none of which loads a Farmer's Delight class:
 The gametests run without Farmer's Delight, so the Cooking Pot and Nourishment are checked by hand:
 `./gradlew ":26.2.x:runClient"` has it on the classpath.
 
+## Create Fly
+
+Not in this package: the Sand Filter extends Create classes, and Create Fly only exists for some of the
+Minecraft versions the mod supports, so it has source directories of its own that only those builds
+compile. See [src/main/createfly/AGENTS.md](../../../../createfly/AGENTS.md).
+
 ## LootIntegration
 
 `Loader.onLootTable` replacing the original's Forge global loot modifiers (Fabric's

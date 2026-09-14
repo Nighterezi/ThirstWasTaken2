@@ -5,6 +5,7 @@
   "item.thirstwastaken2.terracotta_bowl": "Bol en terre cuite",
   "item.thirstwastaken2.clay_bowl": "Bol en argile",
   "item.thirstwastaken2.waterskin": "Outre",
+  "block.thirstwastaken2.sand_filter": "Filtre à sable",
   "tooltip.thirstwastaken2.waterskin.empty": "Vide",
   "tooltip.thirstwastaken2.waterskin.servings": "Contient %1$s/%2$s gorgées",
   "tooltip.thirstwastaken2.clay_bowl": "Cuire pour puiser de l'eau",

@@ -5,7 +5,7 @@
 <br>
 <br>
 
-Adds a survival thirst bar, drinking, and water purity to Minecraft. Available in 9 languages, with built-in support for [AppleSkin](https://modrinth.com/mod/appleskin), [Jade](https://modrinth.com/mod/jade), [Farmer's Delight](https://modrinth.com/mod/farmers-delight-refabricated) and [Mod Menu](https://modrinth.com/mod/modmenu).
+Adds a survival thirst bar, drinking, and water purity to Minecraft. Available in 9 languages, with built-in support for [AppleSkin](https://modrinth.com/mod/appleskin), [Jade](https://modrinth.com/mod/jade), [Farmer's Delight](https://modrinth.com/mod/farmers-delight-refabricated), [Create Fly](https://modrinth.com/mod/create-fly) (Minecraft 26.1.2 and 26.2) and [Mod Menu](https://modrinth.com/mod/modmenu).
 
 <br>
 

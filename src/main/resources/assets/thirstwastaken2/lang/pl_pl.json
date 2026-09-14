@@ -5,6 +5,7 @@
   "item.thirstwastaken2.terracotta_bowl": "Miska z Terakoty",
   "item.thirstwastaken2.clay_bowl": "Gliniana Miska",
   "item.thirstwastaken2.waterskin": "Bukłak",
+  "block.thirstwastaken2.sand_filter": "Filtr Piaskowy",
   "tooltip.thirstwastaken2.waterskin.empty": "Pusty",
   "tooltip.thirstwastaken2.waterskin.servings": "Liczba porcji: %1$s/%2$s",
   "tooltip.thirstwastaken2.clay_bowl": "Wypal, aby nabierać wodę",

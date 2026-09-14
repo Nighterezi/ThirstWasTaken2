@@ -64,6 +64,8 @@ MODRINTH_DEPS = [
     ModrinthDep("appleskin", "appleskin", by_id=True),
     ModrinthDep("cloth_config", "cloth-config"),
     ModrinthDep("jade", "jade"),
+    ModrinthDep("farmersdelight", "farmers-delight-refabricated"),
+    ModrinthDep("create_fly", "create-fly"),
 ]
 
 

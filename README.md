@@ -27,6 +27,8 @@ Fabric port of the original [Thirst Was Taken](https://modrinth.com/mod/thirst-w
 - Optional Jade support: the grade of the water under the crosshair
 - Optional Farmer's Delight support: thirst values for its drinks and meals, water purification in the
   Cooking Pot, and no thirst drain under Nourishment
+- Optional Create Fly support on Minecraft 26.1.2 and 26.2: the Sand Filter, and water that keeps its grade
+  through pipes, pumps and spouts
 - Configurable HUD position and gameplay settings
 - Mod Menu configuration screen
 - `/thirst` commands for server administrators
@@ -58,6 +60,7 @@ There is one download per Minecraft version, named after it, for example
 | Cloth Config | Optional, needed for AppleSkin's Mod Menu screen | Same | Same | Same |
 | Jade | Optional, 26.2.11 | Optional, 26.1.11 | Optional, 21.1.6 | Optional, 15.10.6 |
 | Farmer's Delight Refabricated | Optional, 26.2-3.6.21 | Optional, 26.1-3.6.21 | Optional, 1.21.11-3.6.16 | Optional, 1.21.1-3.3.6 |
+| Create Fly | Optional, 26.2-rc-2-6.0.9-1 | Optional, 26.1.2-6.0.9-4 | Not supported | Not supported |
 
 Download ThirstWasTaken2 from [Modrinth](https://modrinth.com/mod/thirst-was-taken-2) and install it along with Fabric API on both the client and server. Put the downloaded JAR in the
 `mods` folder.
@@ -83,9 +86,8 @@ These commands require game master permission.
 
 ## Known limitations
 
-- Create is not supported in this release. The Sand Filter and Builder's Tea were removed and will
-  return in a future release.
-- Jade does not currently display water purity.
+- The Create Fly Sand Filter is only available on Minecraft 26.1.2 and 26.2, and Builder's Tea does not restore
+  thirst yet.
 - On Minecraft 1.21 and 1.21.1, sea water in bottles and buckets looks like ordinary water (its tooltip
   still reads Salty), and the droplets in item tooltips have a shadow.
 - Cold Sweat, Farmer's Respite, Brewin' and Chewin', Tough As Nails, Supplementaries and Botania do
