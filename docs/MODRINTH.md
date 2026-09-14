@@ -1,189 +1,122 @@
-<div align="center">
-
-<img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/.github/assets/banner.png" alt="ThirstWasTaken2 banner" width="420">
-
-<br>
-<br>
-
-Adds a survival thirst bar, drinking, and water purity to Minecraft. Available in 9 languages, with built-in support for [AppleSkin](https://modrinth.com/mod/appleskin), [Jade](https://modrinth.com/mod/jade), [Farmer's Delight](https://modrinth.com/mod/farmers-delight-refabricated), [Create Fly](https://modrinth.com/mod/create-fly) (Minecraft 26.1.2 and 26.2) and [Mod Menu](https://modrinth.com/mod/modmenu).
-
-<br>
-
-</div>
-
-## Main Features
-
-<table>
-<tr>
-<td width="50%">
-
-![The thirst bar above the food bar, part drained](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/thirst-bar.png)
-
-</td>
-<td width="50%">
-
-### [Thirst and Quenched](https://nighterezi.github.io/ThirstWasTaken2/docs/features/thirst-and-quenched)
-
-Thirst is the bar. Quenched is a reserve that drains first, like saturation for hunger.
-Running, fighting and the Nether all make the bar empty faster.
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-### [Water Quality](https://nighterezi.github.io/ThirstWasTaken2/docs/features/water-purity)
-
-Water is graded Dirty, Murky, Clean or Pure by where it was collected. Bad water can cause Nausea,
-Hunger or Poison. Sea water will be salty and never quenches thirst.
-
-</td>
-<td width="50%">
-
-![Water bottles graded Dirty, Murky, Clean and Pure](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/water-purity.png)
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-![A dirty water bottle comes out of the furnace clean](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/furnace-clean-water.png)
-
-</td>
-<td width="50%">
-
-### [Boil It Clean](https://nighterezi.github.io/ThirstWasTaken2/docs/features/water-purity)
-
-A furnace or a campfire raises the grade of bottles, buckets and bowls. Rain and dripstone fill
-cauldrons with clean water for free.
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-### [Bowls and Waterskins](https://nighterezi.github.io/ThirstWasTaken2/docs/features/drinking)
-
-Clay bowls fire into terracotta bowls that scoop from any water. The waterskin carries three drinks
-in one slot. Each container shows what it holds.
-
-</td>
-<td width="50%">
-
-![Every item the mod adds and each look it has](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/items.png)
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-![A murky water bowl cooking in the Cooking Pot, with a pure water bowl ready to serve](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/farmers-delight-cooking-pot.png)
-
-</td>
-<td width="50%">
-
-### [Farmer's Delight](https://nighterezi.github.io/ThirstWasTaken2/docs/features/farmers-delight)
-
-Its drinks and meals restore thirst, the Cooking Pot boils water pure in one go, and Nourishment
-keeps the thirst bar from draining.
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-### [Better with AppleSkin](https://nighterezi.github.io/ThirstWasTaken2/docs/configuration#appleskin)
-
-Choose how Quenched looks on the thirst bar: a Diamond, Ice or Gold outline, AppleSkin's own gold, or no outline. Tooltips show how much thirst each item restores.
-
-</td>
-<td width="50%">
-
-![The bars without AppleSkin, then with each outline colour](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/hud-appleskin.png)
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-![Jade showing Murky for the river water under the crosshair](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/jade-water.png)
-
-</td>
-<td width="50%">
-
-### [Check Water with Jade](https://nighterezi.github.io/ThirstWasTaken2/docs/features/water-purity#checking-water-with-jade)
-
-Look at water, a waterlogged block or a cauldron to see its grade before filling a bottle. Sea water
-shows as Salty.
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-### [Easy Settings](https://nighterezi.github.io/ThirstWasTaken2/docs/configuration)
-
-Change drain speed, sickness chances, bar position and more from Mod Menu. A live preview shows the
-result before saving.
-
-</td>
-<td width="50%">
-
-![The config screen with its live preview](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/config-screen.png)
-
-</td>
-</tr>
-</table>
-
-## More Features
+## Thirst and Quenched
+Your body requires water just like food. The system mirrors vanilla hunger:
+* **Thirst Bar:** Depletes as you run, jump, mine, and fight.
+* **Quenched Buffer:** Works like saturation, and drains first before your thirst bar drops.
+* **Environment:** Hot biomes like deserts and the Nether deplete thirst faster. Fire Resistance and Fire Protection reduce heat drain.
+* **Dehydration:** Low thirst prevents sprinting and natural health regeneration. Empty thirst causes steady damage.
 
 <div align="center">
-
-| Feature | Description |
-|:-------:|:------------|
-| **[Running Dry](https://nighterezi.github.io/ThirstWasTaken2/docs/features/thirst-and-quenched)** | Low thirst stops sprinting and natural healing. An empty bar deals damage until the player drinks. |
-| **[Food and Drinks](https://nighterezi.github.io/ThirstWasTaken2/docs/features/drinking)** | Potions, soups, milk, honey and fruit all restore thirst. Drinks from other mods work on their own, and any item can be given a thirst value in the config. |
-| **[Recipes](https://nighterezi.github.io/ThirstWasTaken2/docs/features/drinking)** | Every recipe shows in the recipe book, and an advancement tab guides new players through the water system. |
-| **[Water in Chests](https://nighterezi.github.io/ThirstWasTaken2/docs/features/drinking)** | Water bottles turn up in dungeon, shipwreck and Nether chests, and from Piglin bartering. |
-
+  <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/thirst-bar.png" alt="Thirst Bar" width="600">
 </div>
 
+## Water Quality and Purification
+Water is graded based on where you collect it:
+
+| Grade | Common Sources | Effects |
+| :--- | :--- | :--- |
+| **Dirty** | Swamps, stagnant pools | High chance of Poison, Nausea, and Hunger |
+| **Murky** | Standard rivers, lakes, caves | Moderate chance of Nausea or Hunger |
+| **Clean** | Mountain rivers, deep aquifers, boiled water | Safe to drink, high hydration |
+| **Pure** | Glaciers, rain cauldrons, refined drinks | Completely safe, maximum hydration |
+| **Salty** | Oceans and beaches | Cannot quench thirst; worsens dehydration |
+
+* **Boiling:** Smelt water bottles, bowls, or buckets in a furnace or over a campfire to raise their purity grade.
+* **Rain and Dripstone:** Cauldrons placed under open rain or pointed dripstone automatically fill with clean water.
+
+<div align="center">
+  <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/furnace-clean-water.png" alt="Purifying Water" width="550">
+</div>
+
+## Early Game Gear and Drinking
+You do not need glass bottles to stay hydrated:
+* **Terracotta Bowls:** Mold clay into bowls and fire them in a furnace to scoop water early on.
+* **Waterskin:** Holds 3 servings of water in a single slot. Intelligently mixes water grades.
+* **Drink by Hand:** Sneak and right-click any fresh water block to drink directly without a container.
+
+<div align="center">
 <table>
-<tr>
-<td width="50%">
+  <tr>
+    <th align="center">Clay Bowl</th>
+    <th align="center">Waterskin</th>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/clay-bowl-recipe.png" width="280"></td>
+    <td align="center"><img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/waterskin-recipe.png" width="280"></td>
+  </tr>
+</table>
+</div>
 
-![The clay bowl recipe](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/clay-bowl-recipe.png)
+## Mod Compatibility
 
-</td>
-<td width="50%">
+Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box:
 
-![The waterskin recipe](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/waterskin-recipe.png)
-
-</td>
-</tr>
+<table>
+  <tr>
+    <td width="55%">
+      <b><a href="https://modrinth.com/mod/appleskin">AppleSkin</a></b><br>
+      Displays your Quenched reserve directly on the HUD (Gold, Diamond, Ice, or Classic outline). Tooltips show exact thirst values for every drink and food item.
+    </td>
+    <td width="45%">
+      <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/hud-appleskin.png" width="100%">
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
+      <b><a href="https://modrinth.com/mod/jade">Jade (WAILA)</a></b><br>
+      Shows the purity grade of water sources, waterlogged blocks, and cauldrons directly under your crosshair.
+    </td>
+    <td width="45%">
+      <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/jade-water.png" width="100%">
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
+      <b><a href="https://modrinth.com/mod/farmers-delight-refabricated">Farmer's Delight</a></b><br>
+      Soups, stews, and drinks restore thirst. The Cooking Pot purifies water to Pure grade. The Nourishment effect pauses thirst depletion.
+    </td>
+    <td width="45%">
+      <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/farmers-delight-cooking-pot.png" width="100%">
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
+      <b><a href="https://modrinth.com/mod/create-fly">Create Fly</a></b><br>
+      On Minecraft 26.1.2 and 26.2, water keeps its grade through Create Fly pipes, pumps, tanks, drains, and spouts. The Sand Filter raises fresh water by one grade, and Engineer's Goggles show both sides.
+    </td>
+    <td width="45%">
+      <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/create-sand-filter-goggles.png" width="100%">
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
+      <b><a href="https://modrinth.com/mod/modmenu">Mod Menu</a></b><br>
+      Offers an in-game settings screen with a real-time HUD preview to customize drain rates, sickness chances, and HUD positioning.
+    </td>
+    <td width="45%">
+      <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/config-screen.png" width="100%">
+    </td>
+  </tr>
 </table>
 
-## Localization
+## Quick FAQ
 
-Every player sees the mod in their own game language.
+**Is the mod required on both client and server?**  
+Yes. The mod needs to be installed on both sides for packet synchronization and HUD display.
 
-| Language | Status |
-|:--------:|:------:|
-| English | Complete |
-| Vietnamese | Complete |
-| Simplified Chinese | Complete |
-| Traditional Chinese | Complete |
-| French | Complete |
-| Japanese | Complete |
-| Korean | Complete |
-| Polish | Complete |
-| Russian | Complete |
+**Does it work in Peaceful mode?**  
+Yes. In Peaceful mode, thirst naturally regenerates over time.
+
+**Can I use this in a modpack?**  
+Yes. You are free to include Thirst Was Taken 2 in any public or private modpack.
+
+**Supported languages:**  
+English, Vietnamese, Simplified Chinese, Traditional Chinese, French, Japanese, Korean, Polish, and Russian.
 
 ![Item tooltips in Simplified Chinese](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/chinese-tooltips.png)
 
-Want to improve a translation? [Open a pull request](https://github.com/Nighterezi/ThirstWasTaken2) or ask on [Discord](https://discord.gg/YwD9Xv7Beu).
+Want to improve or add a translation? [Open a pull request](https://github.com/Nighterezi/ThirstWasTaken2).
 
 ## Credits
 
-ThirstWasTaken2 is a fork of [Thirst Was Taken](https://modrinth.com/mod/thirst-was-taken) by
-[**ghen**](https://github.com/ghen-git), rebuilt for Fabric and extended since.
+* **Original Mod:** Based on [Thirst Was Taken](https://modrinth.com/mod/thirst-was-taken) by [**ghen**](https://github.com/ghen-git).
+* **License:** Licensed under the [MIT License](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/LICENSE).

@@ -2,7 +2,7 @@
 
 All notable changes to ThirstWasTaken2 are documented in this file.
 
-## [Unreleased]
+## [1.0.5] - 2026-09-14
 
 ### Added
 
