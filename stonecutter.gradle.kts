@@ -42,6 +42,8 @@ stonecutter parameters {
                     "net.minecraft.advancements.CriteriaTriggers")
             replace("net.minecraft.advancements.triggers.Criterion",
                     "net.minecraft.advancements.Criterion")
+            replace("net.minecraft.advancements.triggers.InventoryChangeTrigger",
+                    "net.minecraft.advancements.$criterion.InventoryChangeTrigger")
             replace("net.minecraft.advancements.triggers.ImpossibleTrigger",
                     "net.minecraft.advancements.$criterion.ImpossibleTrigger")
             replace("net.minecraft.advancements.triggers.PlayerTrigger",

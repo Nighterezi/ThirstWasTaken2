@@ -60,12 +60,12 @@ import java.util.concurrent.CompletableFuture;
  */
 public final class ThirstRecipeProvider extends FabricRecipeProvider {
     /** The grade boiling cannot improve on, so the grade with no recipe of its own. */
-    private static final int PURIFIED = 3;
+    static final int PURIFIED = 3;
 
     /** Input grade to output grade: a two grade bump, capped. Index is the input grade. */
     private static final int[] PURIFY_TABLE = { 2, 3, 3 };
 
-    private static final float PURIFY_EXPERIENCE = 0.35F;
+    static final float PURIFY_EXPERIENCE = 0.35F;
     private static final int SMELTING_TIME = 200;
     private static final int CAMPFIRE_TIME = 600;
 
@@ -93,7 +93,7 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
     *///?}
 
     /** One purifiable container: what holds the water, and what the recipes call it. */
-    private record Container(String name, Item item, boolean potion, boolean bowl) {
+    record Container(String name, Item item, boolean potion, boolean bowl) {
         static final Container BOTTLE = new Container("bottle", Items.POTION, true, false);
         static final Container BOWL = new Container("bowl", ThirstItems.TERRACOTTA_WATER_BOWL, false, true);
         static final Container BUCKET = new Container("bucket", Items.WATER_BUCKET, false, false);
@@ -102,7 +102,7 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
     }
 
     //? if >=1.21.2 {
-    private static final class Recipes extends RecipeProvider {
+    static final class Recipes extends RecipeProvider {
         private final HolderGetter<Item> items;
 
         private Recipes(HolderLookup.Provider registries, RecipeOutput output) {
@@ -114,7 +114,7 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
             return ShapedRecipeBuilder.shaped(items, RecipeCategory.MISC, result, count);
         }
     //?} else {
-    /*private static final class Recipes {
+    /*static final class Recipes {
         private final RecipeOutput output;
 
         private Recipes(RecipeOutput output) {
@@ -268,7 +268,7 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
             return "purify_water_" + container.name() + "_" + purity + "_" + heat.suffix;
         }
 
-        private static Ingredient purifyIngredient(Container container, int purity) {
+        static Ingredient purifyIngredient(Container container, int purity) {
             DataComponentPatch.Builder patch = DataComponentPatch.builder();
             if (container.potion()) {
                 patch.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.WATER));
@@ -279,9 +279,9 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
         }
 
         //? if >=26.1 {
-        private static ItemStackTemplate purifyResult(Container container, int purity) {
+        static ItemStackTemplate purifyResult(Container container, int purity) {
         //?} else
-        /*private static ItemStack purifyResult(Container container, int purity) {*/
+        /*static ItemStack purifyResult(Container container, int purity) {*/
             if (container.bowl()) return bowlResult(purity);
 
             DataComponentPatch.Builder patch = DataComponentPatch.builder();
@@ -366,11 +366,11 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
 
     // Recipes are registry entries with keys from 1.21.2; before it a recipe is known by its id alone.
     //? if >=1.21.2 {
-    private static ResourceKey<Recipe<?>> recipe(String name) {
+    static ResourceKey<Recipe<?>> recipe(String name) {
         return ResourceKey.create(Registries.RECIPE, ThirstWasTaken2.id(name));
     }
     //?} else {
-    /*private static Identifier recipe(String name) {
+    /*static Identifier recipe(String name) {
         return ThirstWasTaken2.id(name);
     }
     *///?}

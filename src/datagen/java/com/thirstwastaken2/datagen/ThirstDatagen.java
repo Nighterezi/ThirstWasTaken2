@@ -22,6 +22,7 @@ public final class ThirstDatagen implements DataGeneratorEntrypoint {
         FabricDataGenerator.Pack pack = generator.createPack();
 
         pack.addProvider(ThirstRecipeProvider::new);
+        pack.addProvider(FarmersDelightRecipeProvider::new);
         pack.addProvider(ThirstAdvancementProvider::new);
         pack.addProvider(ThirstDamageTypeProvider::new);
         pack.addProvider(ThirstDamageTypeTagProvider::new);

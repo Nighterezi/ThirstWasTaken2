@@ -20,7 +20,8 @@ const manualSidebar = [
     items: [
       { text: 'Thirst and Quenched', link: '/docs/features/thirst-and-quenched' },
       { text: 'Drinking', link: '/docs/features/drinking' },
-      { text: 'Water Purity', link: '/docs/features/water-purity' }
+      { text: 'Water Purity', link: '/docs/features/water-purity' },
+      { text: "Farmer's Delight", link: '/docs/features/farmers-delight' }
     ]
   },
   {

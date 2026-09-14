@@ -86,6 +86,23 @@ public final class AdvancementGameTest {
     }
     *///?}
 
+    /**
+     * The Cooking Pot recipes and their unlocks name a recipe type only Farmer's Delight registers, so
+     * they carry a load condition. The test server runs without it, and must skip them rather than
+     * fail on them. The purification unlock beside them is the control that the lookup works at all.
+     */
+    @GameTest
+    public void cookingPotFilesAreSkippedWithoutFarmersDelight(GameTestHelper helper) {
+        TestFixtures.check(helper, advancement(helper, ThirstWasTaken2.id("recipes/misc/purify_water_bottle")) != null,
+                "the furnace purification unlock should load, or the check below proves nothing");
+        for (String container : List.of("bottle", "bowl")) {
+            String name = "cooking_pot_purify_water_" + container;
+            TestFixtures.check(helper, advancement(helper, ThirstWasTaken2.id("recipes/misc/" + name)) == null,
+                    "the unlock for " + name + " should be skipped without Farmer's Delight");
+        }
+        helper.succeed();
+    }
+
     private static AdvancementHolder advancement(GameTestHelper helper, Identifier id) {
         return helper.getLevel().getServer().getAdvancements().get(id);
     }

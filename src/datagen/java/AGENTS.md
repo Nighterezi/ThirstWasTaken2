@@ -102,12 +102,18 @@ The generators are the same; the formats they write to are older.
 | Provider | Writes |
 |---|---|
 | `ThirstRecipeProvider` | `data/…/recipe/`, and the `advancement/recipes/misc/` unlocks with them |
+| `FarmersDelightRecipeProvider` | the two Cooking Pot recipes and their unlocks, as JSON with a load condition |
 | `ThirstAdvancementProvider` | `data/…/advancement/`, the mod's own tab |
 | `ThirstDamageTypeProvider` | `data/…/damage_type/dehydrate.json` |
 | `ThirstDamageTypeTagProvider` | `data/minecraft/tags/damage_type/bypasses_armor.json` |
 | `ThirstBiomeTagProvider` | `data/…/tags/worldgen/biome/stagnant_water.json` |
 | `ThirstModelProvider` | `assets/…/models/item/`, and the definitions for the mod's own items |
 | `ThirstItemModelDefinitionProvider` | the two definitions in `assets/…/items/` that have no item; 1.21.4 and later |
+
+`FarmersDelightRecipeProvider` is a plain `DataProvider` because nothing of Farmer's Delight is on
+the datagen classpath, so there is no recipe class to hand a builder. It encodes the same ingredient
+and result `ThirstRecipeProvider` uses with vanilla's codecs, which is what keeps the component format
+right per version, and prepends `fabric:load_conditions`.
 
 A new provider has to be added to `ThirstDatagen.onInitializeDataGenerator` or it never runs, and
 nothing fails to tell you so.

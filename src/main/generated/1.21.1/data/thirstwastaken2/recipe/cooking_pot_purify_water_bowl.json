@@ -1,0 +1,55 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "farmersdelight"
+      ]
+    }
+  ],
+  "type": "farmersdelight:cooking",
+  "cookingtime": 200,
+  "experience": 0.35,
+  "ingredients": [
+    {
+      "fabric:type": "fabric:any",
+      "ingredients": [
+        {
+          "fabric:type": "fabric:components",
+          "base": {
+            "item": "thirstwastaken2:terracotta_water_bowl"
+          },
+          "components": {
+            "thirstwastaken2:water_purity": 0,
+            "thirstwastaken2:water_salty": false
+          }
+        },
+        {
+          "fabric:type": "fabric:components",
+          "base": {
+            "item": "thirstwastaken2:terracotta_water_bowl"
+          },
+          "components": {
+            "thirstwastaken2:water_purity": 1,
+            "thirstwastaken2:water_salty": false
+          }
+        },
+        {
+          "fabric:type": "fabric:components",
+          "base": {
+            "item": "thirstwastaken2:terracotta_water_bowl"
+          },
+          "components": {
+            "thirstwastaken2:water_purity": 2,
+            "thirstwastaken2:water_salty": false
+          }
+        }
+      ]
+    }
+  ],
+  "recipe_book_tab": "drinks",
+  "result": {
+    "count": 1,
+    "id": "thirstwastaken2:terracotta_water_bowl"
+  }
+}

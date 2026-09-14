@@ -1,0 +1,152 @@
+package com.thirstwastaken2.datagen;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
+import com.thirstwastaken2.ThirstWasTaken2;
+import com.thirstwastaken2.compat.FarmersDelight;
+import com.thirstwastaken2.datagen.ThirstRecipeProvider.Container;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
+import net.fabricmc.fabric.api.recipe.v1.ingredient.DefaultCustomIngredients;
+import net.fabricmc.fabric.api.resource.conditions.v1.ResourceCondition;
+import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementRequirements;
+import net.minecraft.advancements.AdvancementRewards;
+import net.minecraft.advancements.triggers.InventoryChangeTrigger;
+import net.minecraft.advancements.triggers.RecipeUnlockedTrigger;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.CachedOutput;
+import net.minecraft.data.DataProvider;
+import net.minecraft.data.PackOutput;
+import net.minecraft.data.recipes.RecipeBuilder;
+//? if >=26.1 {
+import net.minecraft.world.item.ItemStackTemplate;
+//?} else
+/*import net.minecraft.world.item.ItemStack;*/
+import net.minecraft.world.item.crafting.Ingredient;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+/**
+ * Boiling water in the Farmer's Delight Cooking Pot, one recipe per container.
+ *
+ * <p>Nothing of Farmer's Delight is on the datagen classpath, so these cannot go through a recipe
+ * builder the way {@link ThirstRecipeProvider}'s do. The JSON is assembled here instead, from the same
+ * ingredient and result that provider uses, encoded with vanilla's own codecs so each Minecraft version
+ * gets its own component format. Every file carries a {@code fabric:all_mods_loaded} condition, so
+ * without Farmer's Delight the game skips them rather than failing to parse an unknown recipe type.
+ *
+ * <p>The pot is the better tool: any fresh grade comes out purified in one go, where the furnace and
+ * campfire bump it by two. No container is named, so the pot falls back to the result's crafting
+ * remainder, the same as for its own drinks. The bowl has none and goes straight to the output slot.
+ * From 1.21.2 a potion's remainder is a glass bottle: the pot hands the bottle back when it starts and
+ * wants one in its container slot to serve the water, like Farmer's Delight's milk and hot cocoa.
+ */
+public final class FarmersDelightRecipeProvider implements DataProvider {
+    private static final String COOKING = FarmersDelight.MOD_ID + ":cooking";
+    /** The Cooking Pot's own default, the same as a furnace. */
+    private static final int COOKING_TIME = 200;
+    private static final List<Container> CONTAINERS = List.of(Container.BOTTLE, Container.BOWL);
+
+    private final PackOutput.PathProvider recipes;
+    private final PackOutput.PathProvider advancements;
+    private final CompletableFuture<HolderLookup.Provider> registries;
+
+    public FarmersDelightRecipeProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+        this.recipes = output.createPathProvider(PackOutput.Target.DATA_PACK, "recipe");
+        this.advancements = output.createPathProvider(PackOutput.Target.DATA_PACK, "advancement");
+        this.registries = registries;
+    }
+
+    @Override
+    public String getName() {
+        return "ThirstWasTaken2 Farmer's Delight Recipes";
+    }
+
+    @Override
+    public CompletableFuture<?> run(CachedOutput cache) {
+        return registries.thenCompose(lookup -> {
+            DynamicOps<JsonElement> ops = lookup.createSerializationContext(JsonOps.INSTANCE);
+            List<CompletableFuture<?>> writes = new ArrayList<>();
+            for (Container container : CONTAINERS) {
+                String name = name(container);
+                writes.add(DataProvider.saveStable(cache, recipe(container, ops),
+                        recipes.json(ThirstWasTaken2.id(name))));
+                writes.add(DataProvider.saveStable(cache, unlock(container, ops),
+                        advancements.json(ThirstWasTaken2.id("recipes/misc/" + name))));
+            }
+            return CompletableFuture.allOf(writes.toArray(CompletableFuture[]::new));
+        });
+    }
+
+    private static String name(Container container) {
+        return "cooking_pot_purify_water_" + container.name();
+    }
+
+    private static JsonObject recipe(Container container, DynamicOps<JsonElement> ops) {
+        List<Ingredient> grades = new ArrayList<>();
+        for (int purity = 0; purity < ThirstRecipeProvider.PURIFIED; purity++) {
+            grades.add(ThirstRecipeProvider.Recipes.purifyIngredient(container, purity));
+        }
+        Ingredient anyGrade = DefaultCustomIngredients.any(grades.toArray(Ingredient[]::new));
+
+        JsonObject json = conditional(ops);
+        json.addProperty("type", COOKING);
+        json.addProperty("recipe_book_tab", "drinks");
+        JsonArray ingredients = new JsonArray();
+        ingredients.add(encode(INGREDIENT_CODEC, anyGrade, ops));
+        json.add("ingredients", ingredients);
+        json.add("result", encode(RESULT_CODEC,
+                ThirstRecipeProvider.Recipes.purifyResult(container, ThirstRecipeProvider.PURIFIED), ops));
+        json.addProperty("experience", ThirstRecipeProvider.PURIFY_EXPERIENCE);
+        json.addProperty("cookingtime", COOKING_TIME);
+        return json;
+    }
+
+    /** Holding the filled container, or already knowing the recipe, puts it in the pot's recipe book. */
+    @SuppressWarnings("removal")
+    private static JsonObject unlock(Container container, DynamicOps<JsonElement> ops) {
+        var key = ThirstRecipeProvider.recipe(name(container));
+        Advancement advancement = Advancement.Builder.recipeAdvancement()
+                .parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT)
+                .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(key))
+                .addCriterion("has_water", InventoryChangeTrigger.TriggerInstance.hasItems(container.item()))
+                .rewards(AdvancementRewards.Builder.recipe(key))
+                .requirements(AdvancementRequirements.Strategy.OR)
+                .build(ThirstWasTaken2.id("recipes/misc/" + name(container)))
+                .value();
+
+        JsonObject json = conditional(ops);
+        encode(Advancement.CODEC, advancement, ops).getAsJsonObject().entrySet()
+                .forEach(entry -> json.add(entry.getKey(), entry.getValue()));
+        return json;
+    }
+
+    /** A JSON object that only loads alongside Farmer's Delight. */
+    private static JsonObject conditional(DynamicOps<JsonElement> ops) {
+        JsonObject json = new JsonObject();
+        json.add(ResourceConditions.CONDITIONS_KEY, encode(ResourceCondition.LIST_CODEC,
+                List.of(ResourceConditions.allModsLoaded(FarmersDelight.MOD_ID)), ops));
+        return json;
+    }
+
+    private static <T> JsonElement encode(Codec<T> codec, T value, DynamicOps<JsonElement> ops) {
+        return codec.encodeStart(ops, value).getOrThrow();
+    }
+
+    // 1.21.2 made every Ingredient non-empty, and 26.1 replaced the ItemStack result with a template.
+    //? if >=1.21.2 {
+    private static final Codec<Ingredient> INGREDIENT_CODEC = Ingredient.CODEC;
+    //?} else
+    /*private static final Codec<Ingredient> INGREDIENT_CODEC = Ingredient.CODEC_NONEMPTY;*/
+    //? if >=26.1 {
+    private static final Codec<ItemStackTemplate> RESULT_CODEC = ItemStackTemplate.CODEC;
+    //?} else
+    /*private static final Codec<ItemStack> RESULT_CODEC = ItemStack.CODEC;*/
+}

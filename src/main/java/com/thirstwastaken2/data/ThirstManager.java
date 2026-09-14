@@ -2,6 +2,7 @@ package com.thirstwastaken2.data;
 
 import com.thirstwastaken2.advancement.ThirstAdvancements;
 import com.thirstwastaken2.api.ThirstApi;
+import com.thirstwastaken2.compat.FarmersDelight;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.damage.ThirstDamageTypes;
 import com.thirstwastaken2.item.ThirstItems;
@@ -152,6 +153,10 @@ public final class ThirstManager {
         MobEffectInstance hunger = player.getEffect(MobEffects.HUNGER);
         if (hunger != null) raw -= HUNGER_EXHAUSTION * (hunger.getAmplifier() + 1);
         if (config.depletesWhenNauseous && player.hasEffect(MobEffects.NAUSEA)) raw += NAUSEA_EXHAUSTION;
+        // Nourishment stops thirst draining the way it stops hunger, as in the original mod. Everything
+        // is dropped, including the negative amounts Farmer's Delight uses to cancel food exhaustion from
+        // 1.21.11 on, so the Hunger refund above cannot turn into a refill either.
+        if (FarmersDelight.isNourished(player)) raw = 0.0F;
 
         // On peaceful, exhaustion never reaches thirst, so once quenched is empty it has nothing left to
         // spend and is dropped. Kept, it would sit below a point forever, and the HUD draws that against

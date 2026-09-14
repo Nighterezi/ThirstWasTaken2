@@ -149,9 +149,9 @@ first:
 }
 ```
 
-Ids for items that do not exist are simply ignored, which is how the mod ships values for a dozen
-food mods without depending on any of them. Add your own entries here to support a mod that is not
-covered.
+Ids for items that do not exist are simply ignored, which is how the mod ships values for
+[Farmer's Delight](/docs/features/farmers-delight) without depending on it. Add your own entries here
+to support another mod.
 
 ### itemBlacklist
 

@@ -30,6 +30,8 @@ no grade of its own, such as an unknown modded drink, uses
 
 ## Checking water with Jade
 
+![Jade showing Murky for the river water under the crosshair](/screenshots/jade-water.png)
+
 With [Jade](https://modrinth.com/mod/jade) installed, looking at water shows its grade under the block
 name, or Salty for sea water. This works on water in the world, waterlogged blocks and water
 cauldrons, and the grade shown is the one a bottle filled there gets. It can be turned off in Jade's
@@ -92,3 +94,5 @@ Put a fresh water bottle, terracotta water bowl or water bucket in a furnace or 
 | Clean | Pure |
 
 A furnace takes ten seconds and a campfire takes thirty. Dirty water needs two passes to become pure.
+With Farmer's Delight, the [Cooking Pot](/docs/features/farmers-delight#boiling-water-in-the-cooking-pot)
+makes bottles and bowls pure in one pass.

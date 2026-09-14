@@ -128,6 +128,8 @@ already has by default. The stack the furnace hands out is the same; see
 | Server-side damage became `hurtServer` | `Vanilla.hurt` |
 | `FoodData#tick` takes a `ServerPlayer` | `FoodDataMixin` |
 | `Registry#get` became `getValue` | replacement |
+| `Registry#get(id)` returns a holder, where `getHolder` did | `Vanilla.mobEffect` |
+| A potion's crafting remainder is a glass bottle, so the Cooking Pot serves boiled water into one | `FarmersDelightRecipeProvider` names no container either way (visible in game only) |
 | Recipes are registry entries with keys, built by a separate recipe provider | `ThirstRecipeProvider`, `ThirstAdvancementProvider`, `AdvancementGameTest` |
 | The shapeless recipe builder can give its result components | `ThirstRecipeProvider`; on 1.21.1 the filled-bowl recipe is written out by hand |
 

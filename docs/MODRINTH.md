@@ -5,7 +5,7 @@
 <br>
 <br>
 
-Adds a survival thirst bar, drinking, and water purity to Minecraft. Available in 9 languages, with built-in support for AppleSkin, Jade and Mod Menu.
+Adds a survival thirst bar, drinking, and water purity to Minecraft. Available in 9 languages, with built-in support for [AppleSkin](https://modrinth.com/mod/appleskin), [Jade](https://modrinth.com/mod/jade), [Farmer's Delight](https://modrinth.com/mod/farmers-delight-refabricated) and [Mod Menu](https://modrinth.com/mod/modmenu).
 
 <br>
 
@@ -77,14 +77,44 @@ in one slot. Each container shows what it holds.
 <tr>
 <td width="50%">
 
-![The bars without AppleSkin, then with each outline colour](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/hud-appleskin.png)
+![A murky water bowl cooking in the Cooking Pot, with a pure water bowl ready to serve](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/farmers-delight-cooking-pot.png)
 
 </td>
+<td width="50%">
+
+### [Farmer's Delight](https://nighterezi.github.io/ThirstWasTaken2/docs/features/farmers-delight)
+
+Its drinks and meals restore thirst, the Cooking Pot boils water pure in one go, and Nourishment
+keeps the thirst bar from draining.
+
+</td>
+</tr>
+<tr>
 <td width="50%">
 
 ### [Better with AppleSkin](https://nighterezi.github.io/ThirstWasTaken2/docs/configuration#appleskin)
 
 Choose how Quenched looks on the thirst bar: a Diamond, Ice or Gold outline, AppleSkin's own gold, or no outline. Tooltips show how much thirst each item restores.
+
+</td>
+<td width="50%">
+
+![The bars without AppleSkin, then with each outline colour](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/hud-appleskin.png)
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+![Jade showing Murky for the river water under the crosshair](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/jade-water.png)
+
+</td>
+<td width="50%">
+
+### [Check Water with Jade](https://nighterezi.github.io/ThirstWasTaken2/docs/features/water-purity#checking-water-with-jade)
+
+Look at water, a waterlogged block or a cauldron to see its grade before filling a bottle. Sea water
+shows as Salty.
 
 </td>
 </tr>
@@ -112,7 +142,7 @@ result before saving.
 | Feature | Description |
 |:-------:|:------------|
 | **[Running Dry](https://nighterezi.github.io/ThirstWasTaken2/docs/features/thirst-and-quenched)** | Low thirst stops sprinting and natural healing. An empty bar deals damage until the player drinks. |
-| **[Food and Drinks](https://nighterezi.github.io/ThirstWasTaken2/docs/features/drinking)** | Potions, soups, milk, honey and fruit all restore thirst. Items from other mods can be given a thirst value in the config. |
+| **[Food and Drinks](https://nighterezi.github.io/ThirstWasTaken2/docs/features/drinking)** | Potions, soups, milk, honey and fruit all restore thirst. Drinks from other mods work on their own, and any item can be given a thirst value in the config. |
 | **[Recipes](https://nighterezi.github.io/ThirstWasTaken2/docs/features/drinking)** | Every recipe shows in the recipe book, and an advancement tab guides new players through the water system. |
 | **[Water in Chests](https://nighterezi.github.io/ThirstWasTaken2/docs/features/drinking)** | Water bottles turn up in dungeon, shipwreck and Nether chests, and from Piglin bartering. |
 

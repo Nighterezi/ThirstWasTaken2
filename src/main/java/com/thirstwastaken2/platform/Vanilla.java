@@ -3,6 +3,7 @@ package com.thirstwastaken2.platform;
 import com.thirstwastaken2.ThirstWasTaken2;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -14,6 +15,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomModelData;
@@ -68,6 +70,14 @@ public final class Vanilla {
     /** The registry id of a built-in or modded item. */
     public static Identifier itemId(Item item) {
         return BuiltInRegistries.ITEM.getKey(item);
+    }
+
+    /** A mob effect by id, or {@code null} when nothing is registered under it, such as another mod's. */
+    public static Holder<MobEffect> mobEffect(Identifier id) {
+        //? if >=1.21.2 {
+        return BuiltInRegistries.MOB_EFFECT.get(id).<Holder<MobEffect>>map(holder -> holder).orElse(null);
+        //?} else
+        /*return BuiltInRegistries.MOB_EFFECT.getHolder(id).<Holder<MobEffect>>map(holder -> holder).orElse(null);*/
     }
 
     /**

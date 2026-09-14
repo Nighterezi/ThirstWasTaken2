@@ -29,6 +29,24 @@ The part of the Jade API it uses is identical on every supported version, so it 
 branch. A water cauldron nothing was poured into shows the client's `defaultPurity`, the same
 limitation an unstamped item tooltip already has on a server with a different config.
 
+## Farmer's Delight
+
+Three pieces, none of which loads a Farmer's Delight class:
+
+- **Item values** are plain entries in `ThirstConfig`, and `WaterPurity.resolve` still marks its apple
+  cider and melon juice as pure containers by id.
+- **Cooking Pot recipes** are data: `FarmersDelightRecipeProvider` in `src/datagen` writes
+  `cooking_pot_purify_water_bottle` and `_bowl` plus their unlocks, each behind a
+  `fabric:all_mods_loaded` condition. `AdvancementGameTest` checks they are skipped without the mod.
+- **Nourishment** is `FarmersDelight.isNourished`, which looks the effect up by id through
+  `Vanilla.mobEffect` on first use. `ThirstManager.tickPlayer` drops the tick's exhaustion while it
+  holds, as the original mod did. Farmer's Delight itself cancels food exhaustion with
+  `setExhaustion(0)` on 1.21.1 and with negative `causeFoodExhaustion` calls from 1.21.11, which
+  `PlayerMixin` mirrors, so relying on its side would drain thirst on one version and not the other.
+
+The gametests run without Farmer's Delight, so the Cooking Pot and Nourishment are checked by hand:
+`./gradlew ":26.2.x:runClient"` has it on the classpath.
+
 ## LootIntegration
 
 `Loader.onLootTable` replacing the original's Forge global loot modifiers (Fabric's

@@ -71,9 +71,8 @@ that know the encoding.
   `INFO` cache only answers the per-`Item` half of the question.
 - **`INFO` caches forever.** Only put facts in it that cannot change at runtime. Config-dependent
   purity is stored as the sentinel `PURITY_FROM_CONFIG` (`-1`) and resolved on each call.
-- **Optional mod support is by registry id only.** `resolve` matches namespaces
-  (`toughasnails`, `farmersdelight`, `collectorsreap`, `farmersrespite`, `brewinandchewin`) as
-  strings - no class is ever referenced, so none of those mods is a dependency. Add support by
+- **Optional mod support is by registry id only.** `resolve` matches namespaces (currently only
+  `farmersdelight`) as strings - no class is ever referenced, so no such mod is a dependency. Add support by
   extending `resolve`, not by importing anything.
 - **One roll drives both effects.** `applyEffects` rolls once for fresh water and compares it against
   `nauseaChance[purity]` and `poisonChance[purity]`, matching the original mod; it returns whether

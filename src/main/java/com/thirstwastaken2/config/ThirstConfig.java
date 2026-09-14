@@ -233,21 +233,8 @@ public final class ThirstConfig {
         put(values, 4, 6, "minecraft:honey_bottle");
         put(values, 4, 5, "thirstwastaken2:terracotta_water_bowl");
         put(values, 4, 5, "thirstwastaken2:waterskin");
-        put(values, 10, 14, "farmersrespite:green_tea", "farmersrespite:yellow_tea", "farmersrespite:black_tea");
-        put(values, 12, 22, "farmersrespite:rose_hip_tea", "farmersrespite:dandelion_tea");
-        put(values, 6, 11, "farmersrespite:coffee");
         put(values, 8, 13, "farmersdelight:apple_cider", "farmersdelight:melon_juice", "farmersdelight:hot_cocoa");
         put(values, 6, 8, "farmersdelight:milk_bottle");
-        put(values, 10, 14, "brewinandchewin:beer", "brewinandchewin:vodka", "brewinandchewin:rice_wine", "brewinandchewin:mead", "brewinandchewin:egg_grog", "brewinandchewin:glittering_grenadine");
-        put(values, 12, 22, "brewinandchewin:bloody_mary", "brewinandchewin:salty_folly", "brewinandchewin:pale_jane", "brewinandchewin:saccharine_rum", "brewinandchewin:strongroot_ale", "brewinandchewin:dread_nog");
-        put(values, 14, 22, "brewinandchewin:kombucha", "brewinandchewin:red_rum", "brewinandchewin:steel_toe_stout");
-        put(values, 8, 13, "collectorsreap:berry_limeade", "collectorsreap:limeade", "collectorsreap:pink_limeade");
-        put(values, 10, 14, "collectorsreap:pomegranate_black_tea", "collectorsreap:lime_green_tea");
-        put(values, 6, 8, "toughasnails:dirty_water_bottle");
-        put(values, 8, 10, "toughasnails:purified_water_bottle", "toughasnails:dirty_water_canteen");
-        put(values, 9, 11, "toughasnails:water_canteen");
-        put(values, 10, 12, "toughasnails:purified_water_canteen");
-        put(values, 8, 13, "toughasnails:melon_juice", "toughasnails:apple_juice", "toughasnails:cactus_juice", "toughasnails:carrot_juice", "toughasnails:glow_berry_juice", "toughasnails:chorus_fruit_juice", "toughasnails:suspicious_water_cup", "toughasnails:pumpkin_juice", "toughasnails:sweet_berry_juice");
         return values;
     }
 
@@ -260,11 +247,10 @@ public final class ThirstConfig {
         put(values, 2, 1, "farmersdelight:pumpkin_slice");
         put(values, 2, 3, "farmersdelight:tomato", "farmersdelight:glow_berry_custard");
         put(values, 5, 7, "farmersdelight:bone_broth");
-        put(values, 1, 2, "farmersdelight:cabbage_leaf", "collectorsreap:lime_slice");
-        put(values, 7, 9, "farmersdelight:melon_popsicle", "collectorsreap:lime_popsicle");
-        put(values, 6, 8, "farmersdelight:fruit_salad", "collectorsreap:portobello_rice_soup");
+        put(values, 1, 2, "farmersdelight:cabbage_leaf");
+        put(values, 7, 9, "farmersdelight:melon_popsicle");
+        put(values, 6, 8, "farmersdelight:fruit_salad");
         put(values, 4, 5, "farmersdelight:tomato_sauce", "farmersdelight:mixed_salad", "farmersdelight:beef_stew", "farmersdelight:chicken_soup", "farmersdelight:vegetable_soup", "farmersdelight:fish_stew", "farmersdelight:pumpkin_soup", "farmersdelight:baked_cod_stew", "farmersdelight:noodle_soup", "farmersdelight:onion_soup");
-        put(values, 2, 3, "collectorsreap:lime");
         return values;
     }
 

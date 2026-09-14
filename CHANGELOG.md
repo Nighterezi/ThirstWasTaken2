@@ -10,13 +10,21 @@ All notable changes to ThirstWasTaken2 are documented in this file.
   Salty for sea water. It can be turned off in Jade's plugin settings.
 - Drinks from other mods now restore thirst without a config entry, as long as their mod marks them
   as drinks.
-- Farmer's Delight milk bottle, hot cocoa, bone broth, onion soup, glow berry custard and tomato now
-  restore thirst.
+- Farmer's Delight support. Its milk bottle, hot cocoa, bone broth, onion soup, glow berry custard and
+  tomato now restore thirst, alongside the drinks and meals already covered.
+- With Farmer's Delight, the Cooking Pot boils a fresh water bottle or water bowl pure in one pass.
+- With Farmer's Delight, Nourishment stops the thirst bar from draining.
+
+### Changed
+
+- Built-in thirst values and water grades for Farmer's Respite, Brewin' and Chewin', Collector's Reap
+  and Tough As Nails were removed. Farmer's Delight is the only food mod with built-in values for now.
 
 ### Notes
 
 - Jade is optional and only needed on the client.
-- Existing config files get the new Farmer's Delight values automatically.
+- Existing config files get the new Farmer's Delight values automatically. Values for the removed
+  mods stay in existing config files until deleted by hand.
 
 <details>
 <summary>Configuration file details</summary>

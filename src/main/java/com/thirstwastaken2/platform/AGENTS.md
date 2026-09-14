@@ -46,6 +46,7 @@ seam gets a row there too.
 | styles without a shadow | `dropletFont` | the tooltip droplets are drawn with a shadow |
 | a block's id inside its constructor | `isWaterCauldron` | `BlocksMixin` marks the water cauldron's construction |
 | `hurtServer`, `level()` as `ServerLevel`, permission sets, environment attributes | `hurt`, `level`, `isGameMaster`, `isOwner`, `waterEvaporates` | the older call, same meaning |
+| `Registry#get(id)` returning a holder | `mobEffect` | `getHolder(id)`, same meaning |
 
 Pure renames (`ResourceLocation`, `CONSUME`, `moveTo`, `CONFUSION` and the rest) are replacements in
 `stonecutter.gradle.kts`, not branches. A threshold written `>1.21.1` rather than a release number

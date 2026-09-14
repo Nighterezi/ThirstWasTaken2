@@ -355,26 +355,10 @@ public final class WaterPurity {
         String namespace = id.getNamespace();
         String path = id.getPath();
 
-        if (namespace.equals("toughasnails")) {
-            boolean container = path.contains("water_bottle") || path.contains("water_canteen");
-            int purity = switch (path) {
-                case "dirty_water_bottle", "dirty_water_canteen" -> 0;
-                case "water_canteen" -> 2;
-                default -> 3;
-            };
-            return new ItemInfo(container, container, purity);
-        }
         if (namespace.equals("farmersdelight")) {
             // Only the two bottled drinks were registered as containers by the original mod.
             boolean container = path.equals("melon_juice") || path.equals("apple_cider");
             return new ItemInfo(container, false, 3);
-        }
-        if (namespace.equals("collectorsreap")) {
-            boolean container = path.equals("pomegranate_black_tea") || path.equals("lime_green_tea");
-            return new ItemInfo(container, false, PURITY_FROM_CONFIG);
-        }
-        if (namespace.equals("farmersrespite") || namespace.equals("brewinandchewin")) {
-            return new ItemInfo(true, false, PURITY_FROM_CONFIG);
         }
         return NOT_A_CONTAINER;
     }

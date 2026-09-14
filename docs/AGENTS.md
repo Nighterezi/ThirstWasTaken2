@@ -54,4 +54,5 @@ ones most likely to go stale:
 | Exhaustion, climate or damage in `ThirstManager` | `docs/features/thirst-and-quenched.md` |
 | Thirst values, bowls, loot | `docs/features/drinking.md` |
 | Anything in `WaterPurity` or a purify recipe | `docs/features/water-purity.md` |
+| Farmer's Delight values, Cooking Pot recipes or Nourishment | `docs/features/farmers-delight.md` |
 | Supported Minecraft, Loader or Fabric API version | `docs/installation.md` |

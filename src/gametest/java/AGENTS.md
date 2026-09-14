@@ -48,7 +48,7 @@ Fabric's empty structure as its template, and `stonecutter.gradle.kts` rewrites 
 the annotation, so no test file changes for it. Write `@GameTest` with no arguments, or that
 replacement stops matching.
 
-The same 122 tests run on every node. Later nodes report 123 because their runner adds vanilla's own
+The same 123 tests run on every node. Later nodes report 124 because their runner adds vanilla's own
 `minecraft:alwayspass`; that one is not the mod's.
 
 ## Rules that keep these tests worth having
@@ -83,7 +83,7 @@ The same 122 tests run on every node. Later nodes report 123 because their runne
 | `PurificationGameTest` | which water the furnace accepts: looted bottles yes, salt water never |
 | `EnvironmentGameTest` | the datapack damage type and tag, and the version-forked environment call |
 | `CreativeTabGameTest` | the creative tab is registered, has the right icon, and holds every item the mod adds |
-| `AdvancementGameTest` | the mod's advancement tab loads, hangs off one root, and its recipe advancements unlock recipes that exist |
+| `AdvancementGameTest` | the mod's advancement tab loads, hangs off one root, its recipe advancements unlock recipes that exist, and the Cooking Pot files are skipped without Farmer's Delight |
 | `ThirstDataGameTest` | the state record: drinking, the quenched cap, overflow into quenched, spending exhaustion, clamping, and both codecs round-tripping, including a save from before `enabled` existed |
 | `ThirstTickGameTest` | the tick spending quenched before thirst, peaceful with and without depletion, disabled and invulnerable players, Fire Resistance and Fire Protection slowing the drain, salt water charging at once, the full-bar rule |
 | `DrinkingGameTest` | drinking a bowl and a waterskin through the real right-click path, what is left in the hand, the drink animation and duration, water refused on a full bar while honey is not, the advancements a drink earns, and drinking by hand with every way it is refused |
