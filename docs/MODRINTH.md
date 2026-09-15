@@ -57,7 +57,7 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
       Displays your Quenched reserve directly on the HUD (Gold, Diamond, Ice, or Classic outline). Tooltips show exact thirst values for every drink and food item.
     </td>
     <td width="45%">
-      <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/hud-appleskin.png" width="100%">
+      <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/hud-appleskin.gif" width="100%">
     </td>
   </tr>
   <tr>
