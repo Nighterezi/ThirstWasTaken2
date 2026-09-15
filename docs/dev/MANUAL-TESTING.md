@@ -273,14 +273,29 @@ the water cauldron's name and the advancement background.
 ### 1.21.11 and 26.1.x NeoForge
 
 The 26.2 NeoForge list, on `1.21.11-neoforge` and on `26.1.x-neoforge`, plus the items of the Fabric
-section for the same version. Not yet checked by hand.
+section for the same version. `1.21.11-neoforge` partly checked on 2026-09-15 with computer use;
+`26.1.x-neoforge` not yet checked by hand.
 
-- [ ] Every item of the 26.2 NeoForge section above, on each node.
+- [ ] Every item of the 26.2 NeoForge section above, on each node. On 1.21.11, checked all but two:
+      the bar above hunger and the bubbles above it, creative and a ridden horse hiding it, the
+      Diamond quenched outline, the exhaustion strip after sprinting and its removal by
+      `showFoodExhaustionHudUnderlay = false`, tooltips (grade line, droplet rows after NeoForge's
+      lines, Salty, waterskin servings, apple), Mods → Config → Done, Jade on still water, sea water
+      (a waterlogged kelp) and a water cauldron, drinking by hand from targeted water and from water
+      whose floor is out of reach (F3 showing no Targeted Block), bottles from a cauldron and bowls
+      from water filling on a second use, and thirst full after death. **Open on 1.21.11:**
+      `runServer` with Jade in `mods` (the jar is already copied there), and leaving and rejoining
+      with thirst not full. **Open on 26.1.x:** everything; Jade is already in its `mods`.
 - [ ] **Sync first on 1.21.11.** Like 21.1, NeoForge 21.11 only syncs thirst to a connection that
-      negotiated the attachment channel. Run the whole "Sync to the client" section there.
+      negotiated the attachment channel. Run the whole "Sync to the client" section there. Not tried.
 - [ ] The thirst bar and the air bubbles stack by `Gui.rightHeight` on both: same place as on 26.2,
-      bubbles above the bar underwater.
+      bubbles above the bar underwater. Checked on 1.21.11; **open on 26.1.x.**
 - [ ] F1 hides the bar on both (read from the options, as on the Fabric nodes of these versions).
+      Checked on 1.21.11; **open on 26.1.x.**
+
+A click from computer use moves the cursor, and Minecraft turns the camera on any mouse move, so a
+right click on a block misses. Send the click with `mouse_event` and no movement, and hold Shift with
+`keybd_event`, from PowerShell.
 
 ## When this file changes
 
