@@ -41,9 +41,11 @@ jobs:
         # Every version needs a table in that file because the build reads its dependency versions
         # from it, so the two cannot drift. A hard-coded list would let a version added to
         # settings.gradle.kts go silently unbuilt.
+        # The NeoForge node is left out until it can build and run its gametests, P4's step 7 in
+        # docs/dev/P4-NEOFORGE-PLAN.md, which removes this filter.
         run: |
           set -euo pipefail
-          names=$(grep -oP '^\["\K[^"]+' stonecutter.properties.toml || true)
+          names=$(grep -oP '^\["\K[^"]+' stonecutter.properties.toml | grep -v -- '-neoforge$' || true)
           if [ -z "$names" ]; then
             echo "No version tables found in stonecutter.properties.toml." >&2
             exit 1

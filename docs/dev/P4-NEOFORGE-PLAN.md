@@ -5,8 +5,11 @@ with an end state: delete it once P4's gate in [PLATFORM-PLAN.md](PLATFORM-PLAN.
 anything that outlives it into [platform/AGENTS.md](../../src/main/java/com/thirstwastaken2/platform/AGENTS.md)
 and the root [AGENTS.md](../../AGENTS.md).
 
-**Status: not started.** Estimate 8 to 15 days. The exit ramp is 20 days: past it, NeoForge stays on
-26.2 and P5 is dropped.
+**Status: steps 0 and 1 done.** Estimate 8 to 15 days. The exit ramp is 20 days: past it, NeoForge
+stays on 26.2 and P5 is dropped. Days spent: 1.
+
+Steps 0 and 1 were first written without a network, then built and launched on 2026-09-15. What the
+launch changed is in the answers and in step 1's table. Next is step 2.
 
 ## Scope
 
@@ -44,7 +47,7 @@ Checked 2026-09-15. Re-check before relying on any of it.
 | NeoForge | `26.2.0.88` is the newest `26.2.0.x` on `maven.neoforged.net` |
 | Build plugin | ModDevGradle `net.neoforged.moddev` `2.0.147` |
 | Stonecutter | `version("<name>", "<mc>").buildscript = "build.neoforge.gradle.kts"` gives a node its own buildscript; [rotgruengelb/stonecutter-mod-template](https://github.com/rotgruengelb/stonecutter-mod-template) runs Loom and ModDevGradle nodes side by side in one build this way, on Stonecutter 0.9.7 |
-| AppleSkin | `3.0.10+mc26.2` for NeoForge |
+| AppleSkin | `3.0.10+mc26.2` for NeoForge, Modrinth version id `slnk1Qah` |
 | Jade | `26.2.10+neoforge`. `JadeIntegration` already carries `@WailaPlugin`, which is how Jade finds plugins on NeoForge |
 | Cloth Config | `26.2.155+neoforge` (AppleSkin's own config screen) |
 | Farmer's Delight, Create | no NeoForge 26.2 build on Modrinth |
@@ -52,6 +55,8 @@ Checked 2026-09-15. Re-check before relying on any of it.
 | Loader-injected methods | `getAttachedOrCreate` and `setAttached` appear only in the Fabric `Loader` |
 | Gametests | 123 mod tests. The only loader API they name is Fabric's `@GameTest` annotation |
 | Version conditionals | 69 `//? if` blocks, up from 58 at the end of P3. Written down so P4's addition is visible |
+| HUD class | 26.2 split vanilla's `Gui` into `Gui` (screens) and `Hud` (the in-game overlay). NeoForge's patch is `Hud.java.patch`; `Minecraft#gui.hud` reaches it |
+| MixinExtras | NeoForge bundles `mixinextras-neoforge` in its userdev, so `@WrapOperation`, `@ModifyExpressionValue` and `@ModifyReturnValue` compile with nothing added |
 
 NeoForge API the seam maps onto, read from the `26.2.x` branch of NeoForge:
 
@@ -65,7 +70,7 @@ NeoForge API the seam maps onto, read from the `26.2.x` branch of NeoForge:
 | `onLootTable` | `LootTableLoadEvent`: `getKey()` is already a `ResourceKey<LootTable>`; append with `getTable().addPool(builder.build())` |
 | `creativeTabBuilder` | `CreativeModeTab.builder()` |
 | `configDir`, `isModLoaded`, `isDevelopmentEnvironment` | `FMLPaths.CONFIGDIR`, `ModList`, `FMLEnvironment`. The 1.21.9+ form: `FMLEnvironment.getDist()` rather than the static `dist` field 1.21.1 still has |
-| `ClientLoader.addRightStatusBar` | `RegisterGuiLayersEvent#registerAbove(VanillaGuiLayers.FOOD_LEVEL, id, layer)`. **The stack height is unresolved**, see step 5 |
+| `ClientLoader.addRightStatusBar` | `RegisterGuiLayersEvent#registerAbove(VanillaGuiLayers.FOOD_LEVEL, id, layer)`, drawing at `guiHeight() - hud.rightHeight` and then advancing `hud.rightHeight`. Resolved, see step 0's second answer |
 | config screen | `IConfigScreenFactory`, registered on the mod container |
 | components ingredient | `DataComponentIngredient`: `{"neoforge:ingredient_type": "neoforge:components", "items", "components", "strict"}`, `strict` false by default |
 | any-of ingredient | `CompoundIngredient`: `children`, with `ingredients` accepted as an alias |
@@ -86,6 +91,15 @@ shared tail moves out.** What both nodes need (the Java toolchain, `checkLoaderS
 `buildAndCollect`, the `AGENTS.md` and `*.bak` excludes, the source directory wiring) goes to a script
 plugin such as `gradle/shared.gradle.kts`, applied by both. Do not rename `build.gradle.kts` in the same
 change; that is churn the diff does not need.
+
+*Done, minus two pieces that could not go.* `gradle/shared.gradle.kts` is applied by both scripts
+with `apply(from = ...)`, which gives it a plain `Project` receiver and no type-safe accessors, so
+each script passes the Java version in as the `thirst.requiredJava` extra property rather than the
+script reading `sc` itself. The source directory wiring stayed out: Loom splits `main` and `client`
+and ModDevGradle does not, so the two are genuinely different and sharing them would mean a branch.
+`buildAndCollect` is split — the shared script registers the `Copy` and sets its destination, and
+each buildscript adds its own inputs, because the jar that ships is Loom's remapped one on Fabric
+and the plain `jar` on NeoForge.
 
 **Registration: defer the registering call, not the field.** See step 2. Keeps `ThirstItems.WATERSKIN`
 and the other 110 or so item references typed as `Item`, rather than turning them into suppliers.
@@ -123,6 +137,91 @@ breaks. It exists to answer four questions before the estimate is trusted:
 **Check:** the four answers are written into this file, under the step they change. If more than one
 of them is "no", re-estimate before step 1.
 
+#### Answers
+
+Checked 2026-09-15. Answers 1 and 2 come from reading the `26.2.x` branch of NeoForge (`1ad7d23`),
+and steps 2 and 5 will prove them. Answer 3 was confirmed by the compiler against the AppleSkin jar
+the node resolves, and answer 4 by launching the node. One "no", so no re-estimate.
+
+1. **Does registering directly inside `RegisterEvent` work? Yes, and more widely than the question
+   assumed.** `CommonModLoader.begin` runs `GameData.unfreezeData()`, `GameData.postRegisterEvents()`
+   and `GameData.freezeData()` as one init task, and `unfreezeData` unfreezes *every* built-in
+   registry before the first event fires. So all of them are open for the whole phase, not just the
+   one whose event is firing, and `RegisterEvent.register` is a plain `Registry.register` into it.
+   Step 2 keeps its shape and its `Supplier<Item>` fallback is not needed. The other half of the
+   premise holds too: `ModLoader.gatherAndInitializeMods` constructs the mods *before* the unfreeze,
+   so `ThirstItems`' static fields cannot be built during mod construction.
+
+   `GameData.getRegistrationOrder` also settles step 2's open question about event order. It hoists
+   `ATTRIBUTE`, then `DATA_COMPONENT_TYPE`, then `PARTICLE_TYPE` to the front, ahead of vanilla's own
+   order, with the comment that `Item` depends on data components at construction time. The
+   component event therefore fires before the item event, which is what the terracotta water bowl
+   needs. Because every registry is unfrozen at once, an item built early by some other registry's
+   event would still register rather than throw, so this is belt and braces.
+
+2. **How does a HUD row move the air bubbles up on 26.2? `Hud.rightHeight`, exactly as on 1.21.x.**
+   26.2 split vanilla's `Gui` into `Gui` (screens) and `Hud` (the in-game overlay), so the patch is
+   `patches/net/minecraft/client/gui/Hud.java.patch` — which is why looking for `Gui.java.patch`
+   found nothing. NeoForge still adds `public int leftHeight` and `public int rightHeight` to `Hud`,
+   resets both to 39 at the top of `extractRenderState`, and has split vanilla's own overlay into
+   `GuiLayerManager` layers that read and advance them: `FOOD_LEVEL` draws at
+   `guiHeight() - rightHeight` and adds 10, then `VEHICLE_HEALTH` and `AIR_LEVEL` read what it left.
+   A row registered with `registerAbove(VanillaGuiLayers.FOOD_LEVEL, ...)` renders between the two
+   and does the same:
+
+   ```java
+   Hud hud = Minecraft.getInstance().gui.hud;
+   renderer.render(graphics, graphics.guiHeight() - hud.rightHeight);
+   hud.rightHeight += height;
+   ```
+
+   That is NeoForge's own idiom, from `GuiTests#makeRightOverlay` in its test mods. **Step 5's
+   fallback is off the table**: no client mixin is needed to shift the bubbles, so `GuiMixin` stays
+   Fabric-only and 1.21.1-only.
+
+3. **Does `squeek.appleskin.ModConfig.INSTANCE` exist in AppleSkin's NeoForge jar? No.** The class
+   name is all the two loaders share. On NeoForge, `ModConfig` is a holder of NeoForge's own
+   `ModConfigSpec`: no `INSTANCE`, no instance fields, and the setting is
+   `public static final ModConfigSpec.BooleanValue SHOW_FOOD_EXHAUSTION_UNDERLAY`. So the read moves
+   behind `ClientLoader`, as step 5 anticipated. The NeoForge side reads
+
+   ```java
+   ModConfig.SPEC.isLoaded() && ModConfig.SHOW_FOOD_EXHAUSTION_UNDERLAY.get()
+   ```
+
+   and the `isLoaded` guard is not optional: `ConfigValue#getRaw` throws
+   `IllegalStateException("Cannot get config value before config is loaded.")`, and AppleSkin's spec
+   is loaded by FML, not by the mod.
+
+   Confirmed on the node: `:26.2.x-neoforge:compileJava` reports `ModConfig.INSTANCE` and
+   `showFoodExhaustionHudUnderlay` as missing in `AppleSkinIntegration`, and `javap` on the resolved
+   jar (`slnk1Qah`) shows only the static `ModConfigSpec` values.
+
+4. **Do the mixins apply? Yes, all of them.** Launched on the node with throwaway stubs: a `Loader`
+   and `ClientLoader` with the Fabric signatures and no bodies, a `neoforge.mods.toml` listing
+   `thirstwastaken2.mixins.json` and a client config holding a copy of `MinecraftMixin`, and a `@Mod`
+   class that only loads the target classes. With `-Dmixin.debug.verbose` and `-Dmixin.debug.export`,
+   the game test server logged `Mixing ... into ...` for all eight common mixins and shut down
+   cleanly, and the client did the same plus `MinecraftMixin` and went on to load its textures. The
+   exported classes carry the handlers: `Player` 4, `FoodData` 3, `BottleItem` 3, `BucketItem` 3,
+   `ItemStack` 3, `LayeredCauldronBlock` 3, `CauldronBlock` 2, `Minecraft` 1. `BlocksMixin` is empty on
+   26.2, since only 1.21.1 needs it. None of the stubs were kept.
+
+   Two log lines that look alarming and are not. Mixin warns that `JAVA_25` is above the highest level
+   it knows; Fabric logs the same, at debug level. And the datapack reports every recipe and
+   advancement that names a mod item or component, because the stubs registered nothing. That is
+   what steps 2 and 4 fix, not a mixin problem.
+
+   Two mixins apply but reach a method NeoForge changed, so the manual pass should look at them:
+
+   - `ItemStack#addDetailsToTooltip` is restructured into four calls, two of them NeoForge's own
+     tooltip hooks. `@At("TAIL")` still lands after everything, as it does on Fabric, but the mod's
+     rows now come after NeoForge's tail hook rather than only after vanilla's advanced lines.
+   - `CauldronBlock#receiveStalactiteDrip` gains an early `return` when a modded fluid type handles
+     the drip, and `@At("RETURN")` fires on that return too. Harmless as written —
+     `WaterInteractions.filledByDripstone` compares the fluid against `Fluids.WATER` first — but it
+     is a second entry into the hook that does not exist on Fabric.
+
 ### 1. The node (1.5 to 2 days)
 
 - `settings.gradle.kts`: the NeoForged repository in `pluginManagement`, ModDevGradle on the plugin
@@ -146,6 +245,27 @@ of them is "no", re-estimate before step 1.
 
 **Check:** `:26.2.x-neoforge:compileJava` reaches the compiler and fails only on the missing NeoForge
 `Loader` and `ClientLoader`, and `:26.2.x:build` still passes untouched.
+
+**Result, 2026-09-15.** `compileJava` fails with 27 errors across `main` and the client sources: the
+missing `Loader` and `ClientLoader`, plus `AppleSkinIntegration`'s read of `ModConfig.INSTANCE`, which
+is spike answer 3 and belongs to step 5. With stub copies of the two loader classes that read is the
+only error left, so Jade and the rest of the client code already compile against NeoForge. Every
+Fabric node still passes what CI runs: `buildAndCollect`, `devClasses` and both seam checks on all
+four, and `checkDatagen` and 124 of 124 gametests on `26.2.x`. What landed:
+
+| | |
+|---|---|
+| `settings.gradle.kts` | NeoForged repository, `net.neoforged.moddev` 2.0.147 resolved with `apply false`, and `version("26.2.x-neoforge", "26.2").buildscript = "build.neoforge.gradle.kts"`. Stonecutter 0.9's `BranchBuilder.version` does return a `NodeBuilder` with a `buildscript` property, and it resolves the name against the root project directory |
+| `stonecutter.properties.toml` | the `["26.2.x-neoforge"]` table, with `mod.mc_range` as the key of its own for `[26.2,26.3)` |
+| `build.neoforge.gradle.kts` | the plugin, one `main` source set carrying `src/client/*` and `src/main/generated/26.2`, the `mods` entry, and `client`, `server` and `gametest` runs under `run/26.2.x-neoforge/` |
+| The `client` source set | exists on the NeoForge node only to be preprocessed. Stonecutter writes a node's copy of `src/<name>` only for a source set called `<name>`, so `src/client/java` listed as a directory of `main` compiled nothing, and said nothing: the first build passed `compileJava` with no client class in it. `main` now reads the client sources by path, from the root on the active node and from `build/generated/stonecutter/client` otherwise, built by `stonecutterGenerateClient` |
+| `stonecutterGenerate` | `processResources` and `createMinecraftArtifacts` depend on it, as in the template. Not tested without either |
+| Unqualified tasks | `./gradlew buildAndCollect` and `./gradlew build` run on every node, so the node that cannot compile failed them. Until step 3, the node's tasks are disabled unless the command line names the node, as `:26.2.x-neoforge:compileJava` does |
+| `gradle/shared.gradle.kts` | the shared tail, applied by both scripts; see the decision above |
+| Versions | `deps.neoforge = 26.2.0.88` and ModDevGradle `2.0.147` are the newest on `maven.neoforged.net`, and the node resolves both. `deps.appleskin` is `slnk1Qah`, the NeoForge upload of `3.0.10+mc26.2` |
+| Deliberately deferred | the run classpath. AppleSkin and Jade are `compileOnly` only: a plain `runtimeOnly` would load two client mods into `runServer`, and the per-run `clientAdditionalRuntimeClasspath` configuration ModDevGradle creates is step 5's business, with Cloth Config |
+| CI | `discover` leaves `-neoforge` tables out of the matrix, so pull requests stay green while the node cannot build. Step 7 removes the filter |
+| Dependency updates | `.github/scripts/update_mc_deps.py` took Fabric uploads for every node, and would have swapped the node's Jade for the Fabric build on its next run. A node whose name ends in `-neoforge` now takes NeoForge uploads. `deps.neoforge` is still bumped by hand |
 
 ### 2. The registration seam (1 to 2 days)
 
@@ -177,7 +297,9 @@ properties name the purity and salt components.
 
 **Fallback, if the spike's first question comes back "no":** fields become `Supplier<Item>` or
 `Holder<Item>` behind `DeferredRegister`. That is 23 files of mechanical `.get()` edits. Measure it before
-starting rather than after.
+starting rather than after. *It came back "yes": the fallback is off the table, and so is the worry
+about component and item event order — `GameData.getRegistrationOrder` hoists `DATA_COMPONENT_TYPE`
+ahead of `ITEM` on purpose. See step 0's first answer.*
 
 **Check:** `:26.2.x:runGametest` still passes 123 tests. On Fabric the seam changes nothing but order.
 
@@ -197,6 +319,9 @@ copy has, mapped as in the table above. Plus:
   interaction's result. Reproduce that exactly: cancel only on non-`PASS`, and set the cancellation
   result. Check which side each event fires on against Fabric; the gametests drive both through
   `player.gameMode`, so they will tell.
+
+Once it compiles, delete the block at the end of `build.neoforge.gradle.kts` that disables the node's
+tasks unless the command line names it. Step 1 added it so `./gradlew buildAndCollect` kept working.
 
 **Check:** `:26.2.x-neoforge:compileJava` passes; `checkLoaderSeam` still passes on every node.
 
@@ -230,9 +355,15 @@ unknown recipe type.
 ### 5. Client (1.5 to 3 days)
 
 - **`ClientLoader`** in `src/client/neoforge`: `addRightStatusBar` registers a GUI layer above
-  `VanillaGuiLayers.FOOD_LEVEL`, and moves the stack up by the answer to the spike's second question.
-  If that answer is "nothing does", draw the row from a layer and shift the air bubbles with a client
-  mixin, the way 1.21.1's `GuiMixin` does; that mixin then lives in `src/client/neoforge`.
+  `VanillaGuiLayers.FOOD_LEVEL` through `RegisterGuiLayersEvent`, draws at
+  `graphics.guiHeight() - hud.rightHeight` and then adds the row's height to `hud.rightHeight`, which
+  is what moves the air bubbles up. `hud` is `Minecraft.getInstance().gui.hud`. The alternative the
+  spike was hedging against — a client mixin that shifts the bubbles by hand — **is not needed**; see
+  step 0's second answer. `GuiMixin` stays Fabric-only and 1.21.1-only.
+  - The one shape difference from Fabric: Fabric API takes a height supplier and asks it every
+    frame (`HudStatusBarHeightRegistry.addRight`), while NeoForge has the layer advance the counter
+    itself. So the NeoForge copy tests `visible` inside the layer and only advances `rightHeight`
+    when it actually drew, rather than registering the predicate anywhere.
 - **`MinecraftMixin`** names no loader API. Move it to a loader independent client mixin config,
   `src/client/resources/thirstwastaken2.client.mixins.json`, with the class under
   `com.thirstwastaken2.client.mixin`, which `checkVersionSeam` already allows. `GuiMixin` and
@@ -242,7 +373,18 @@ unknown recipe type.
   `IConfigScreenFactory` returning `ThirstConfigScreen`.
 - **Client entrypoint.** `ThirstWasTaken2NeoForgeClient`, a `@Mod(dist = Dist.CLIENT)` class calling
   `ThirstWasTaken2Client.initialize()`.
-- **AppleSkin.** Depending on the spike: nothing, or the `ModConfig` read behind `ClientLoader`.
+- **The run classpath**, deferred from step 1: AppleSkin, Jade and Cloth Config on the client run
+  only, through the `clientAdditionalRuntimeClasspath` configuration ModDevGradle creates per run.
+  A plain `runtimeOnly` would load two client mods into `runServer` as well.
+- **AppleSkin.** The read moves behind `ClientLoader`: `ModConfig.INSTANCE` does not exist on
+  NeoForge. `AppleSkinIntegration` keeps deciding *whether* to ask (loaded, and the quenched outline
+  not off) and loses the direct field read; `ClientLoader` answers
+  `ModConfig.SPEC.isLoaded() && ModConfig.SHOW_FOOD_EXHAUSTION_UNDERLAY.get()` on NeoForge and
+  `ModConfig.INSTANCE != null && ModConfig.INSTANCE.showFoodExhaustionHudUnderlay` on Fabric. See
+  step 0's third answer, including why the `isLoaded` guard is load-bearing.
+  - This adds a method to both `ClientLoader` copies, so it is a seam change, not an integration
+    tweak: every copy changes together, and the nested `AppleSkinConfig` holder class in
+    `AppleSkinIntegration` goes away with the field read it was isolating.
 - **Jade.** Nothing expected, through `@WailaPlugin`. The manual pass checks the dedicated server,
   still the one open item in [MANUAL-TESTING.md](MANUAL-TESTING.md).
 
@@ -279,8 +421,7 @@ Before trusting the node, break one thing on purpose, as the gametest rules requ
 
 ### 7. CI (half a day)
 
-- `discover` already builds one job per table in `stonecutter.properties.toml`; the new table adds the
-  job.
+- Remove the `-neoforge` filter step 1 added to `discover`, so the node's table adds the job.
 - Skip `devClasses` and `checkDatagen` on `-neoforge` jobs, and run `checkNeoForgeResources` there.
   `checkLoaderSeam` and `checkVersionSeam` read the same files on every node; running them on one
   NeoForge job too is harmless.

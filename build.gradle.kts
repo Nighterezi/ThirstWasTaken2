@@ -104,7 +104,8 @@ loom {
  * The mod loader this node builds for. Loader code lives beside the source set it belongs to, in
  * `src/main/<loader>` and `src/client/<loader>`, and only this loader's directories are compiled.
  * Everything else in `src/main/java` and `src/client/java` is loader independent; `checkLoaderSeam`
- * enforces it. Only Fabric exists so far. See src/main/java/com/thirstwastaken2/platform/AGENTS.md.
+ * enforces it. The NeoForge node has a script of its own, build.neoforge.gradle.kts. See
+ * src/main/java/com/thirstwastaken2/platform/AGENTS.md.
  *
  * The directories sit inside `src/main` and `src/client` rather than in a `src/<loader>` of their
  * own because Stonecutter only rewrites versioned comments under `src/<source set>`: anywhere else,
@@ -307,37 +308,21 @@ tasks.named("runClient") {
     }
 }
 
-// Per-directory notes for contributors and backup copies of edited textures; they live next to the
-// files they describe, not in the jars.
-tasks.withType<ProcessResources>().configureEach {
-    exclude("**/AGENTS.md", "**/*.bak")
-}
-
-// Registered lazily: withSourcesJar() below adds the task after this block is evaluated. The
-// dependency is the one described above, which the sources jar needs for the same reason
-// processResources does; `.cache` is datagen's hash cache, which Loom keeps out of the mod jar but
-// not out of this one.
+// Registered lazily: withSourcesJar(), in gradle/shared.gradle.kts below, adds the task after this
+// block is evaluated. The dependency is the one described above, which the sources jar needs for the
+// same reason processResources does; `.cache` is datagen's hash cache, which Loom keeps out of the mod
+// jar but not out of this one.
 tasks.withType<Jar>().matching { it.name.endsWith("sourcesJar") }.configureEach {
     dependsOn("stonecutterGenerate")
     mustRunAfter("runDatagen")
     exclude("**/AGENTS.md", "**/*.bak", "**/.cache/**")
 }
 
-tasks.withType<JavaCompile>().configureEach {
-    options.encoding = "UTF-8"
-    options.release.set(requiredJava.majorVersion.toInt())
-}
-
-java {
-    withSourcesJar()
-    sourceCompatibility = requiredJava
-    targetCompatibility = requiredJava
-
-    toolchain {
-        vendor = JvmVendorSpec.ADOPTIUM
-        languageVersion = JavaLanguageVersion.of(requiredJava.majorVersion)
-    }
-}
+// The toolchain, the seam checks, the jar excludes and `buildAndCollect` are shared with the
+// NeoForge node, which cannot apply this script. The Java version is passed in because it follows
+// from the node's Minecraft version, which only this script can read.
+extra["thirst.requiredJava"] = requiredJava.majorVersion
+apply(from = rootProject.file("gradle/shared.gradle.kts"))
 
 tasks.jar {
     from(rootProject.file("LICENSE")) {
@@ -375,77 +360,10 @@ tasks.register("checkDatagen") {
     }
 }
 
-/**
- * Fails when loader independent code names a mod loader. `src/main/java` and `src/client/java` are
- * compiled against Fabric API today, so the compiler cannot catch a Fabric import there; this can.
- * It cannot see the methods Fabric API injects into vanilla classes, such as `getAttachedOrCreate`,
- * which only the first NeoForge build will report.
- */
-tasks.register("checkLoaderSeam") {
-    group = "verification"
-    description = "Fails when loader independent sources import a mod loader's API"
-
-    val roots = listOf("src/main/java", "src/client/java").map(rootProject::file)
-    val forbidden = Regex("""\b(net\.fabricmc|net\.neoforged)\.""")
-    inputs.files(roots.map { fileTree(it) { include("**/*.java") } })
-
-    doLast {
-        val offenders = roots.flatMap { root ->
-            root.walk().filter { it.extension == "java" }.flatMap { file ->
-                file.readLines().withIndex()
-                    .filter { (_, line) -> forbidden.containsMatchIn(line) }
-                    .map { (index, line) ->
-                        "${file.relativeTo(rootProject.projectDir).invariantSeparatorsPath}:${index + 1}: ${line.trim()}"
-                    }
-            }
-        }
-        check(offenders.isEmpty()) {
-            "Loader API in loader independent code. Route it through platform/Loader or " +
-                "client/platform/ClientLoader instead:\n" + offenders.joinToString("\n")
-        }
-    }
-}
-
-/**
- * Fails when core code carries a Stonecutter version conditional. Minecraft version differences belong
- * in `platform/` and, for injection signatures, `mixin/`; a `//?` block anywhere else in `src/main/java`
- * or `src/client/java` means a seam is missing. This replaced counting blocks as the exit ramp; see
- * docs/dev/PLATFORM-PLAN.md. Loader directories, datagen, gametests and dev tools are outside it.
- */
-tasks.register("checkVersionSeam") {
-    group = "verification"
-    description = "Fails when core sources outside platform/ and mixin/ contain a version conditional"
-
-    val roots = listOf("src/main/java", "src/client/java").map(rootProject::file)
-    val allowed = setOf("platform", "mixin")
-    inputs.files(roots.map { fileTree(it) { include("**/*.java") } })
-
-    doLast {
-        val offenders = roots.flatMap { root ->
-            root.walk()
-                .filter { it.extension == "java" }
-                .filterNot { file -> file.relativeTo(root).invariantSeparatorsPath.split('/').any(allowed::contains) }
-                .flatMap { file ->
-                    file.readLines().withIndex()
-                        .filter { (_, line) -> line.contains("//?") }
-                        .map { (index, line) ->
-                            "${file.relativeTo(rootProject.projectDir).invariantSeparatorsPath}:${index + 1}: ${line.trim()}"
-                        }
-                }
-        }
-        check(offenders.isEmpty()) {
-            "Version conditional in core code. Put the difference behind platform/Vanilla or " +
-                "client/platform/ClientVanilla instead:\n" + offenders.joinToString("\n")
-        }
-    }
-}
-
-/** Collects the jars every version produces into one directory, for `chiseledBuild`. */
-tasks.register<Copy>("buildAndCollect") {
-    group = "build"
-    description = "Builds the mod jar and copies it to build/libs/"
+// What this node hands `buildAndCollect`, which gradle/shared.gradle.kts registers: Loom's remapped
+// jar, not the plain one.
+tasks.named<Copy>("buildAndCollect") {
     from(loomx.modJar.flatMap { it.archiveFile }, loomx.modSourcesJar.flatMap { it.archiveFile })
-    into(rootProject.layout.buildDirectory.dir("libs"))
 }
 
 publishing {

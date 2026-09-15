@@ -63,3 +63,20 @@ deps.farmersdelight = "26.2-3.6.21"
 # Create Fly, the Fabric port of Create. Only nodes that set this compile the Sand Filter; see
 # src/main/createfly/AGENTS.md. Its version numbers carry the Minecraft version as a prefix too.
 deps.create_fly = "26.2-rc-2-6.0.9-1"
+
+["26.2.x-neoforge"]
+# The NeoForge node, on the same Minecraft version as 26.2.x and from the same sources. See
+# docs/dev/P4-NEOFORGE-PLAN.md. Create Fly and Farmer's Delight are deliberately absent: neither has
+# a NeoForge build for 26.2, and `deps.create_fly` is what decides whether a node compiles the Sand
+# Filter at all.
+mod.mc_compat = "~26.2"
+mod.mc_releases = ["26.2"]
+# The same range in NeoForge's syntax, written into neoforge.mods.toml. It gets a key of its own
+# rather than reusing mod.mc_compat, which is Fabric's spelling of the same thing.
+mod.mc_range = "[26.2,26.3)"
+
+deps.neoforge = "26.2.0.88"
+# 3.0.10+mc26.2, the NeoForge upload. Pinned by Modrinth version id for the reason 26.2.x gives.
+deps.appleskin = "slnk1Qah"
+deps.cloth_config = "26.2.155+neoforge"
+deps.jade = "26.2.10+neoforge"

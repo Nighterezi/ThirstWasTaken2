@@ -2,9 +2,9 @@
 
 Dependabot cannot do this. The versions live in a Stonecutter properties file it does not read, and
 even if it did, it would offer every version node the newest Fabric API, the one built for the newest
-Minecraft. This asks Modrinth instead, once per node, for the newest upload of each mod that is a
-Fabric build and lists the Minecraft version that node compiles against, and writes it back in place,
-comments and layout untouched.
+Minecraft. This asks Modrinth instead, once per node, for the newest upload of each mod that is built
+for that node's loader and lists the Minecraft version that node compiles against, and writes it back in
+place, comments and layout untouched.
 
     python .github/scripts/update_mc_deps.py            # rewrite the file
     python .github/scripts/update_mc_deps.py --dry-run  # only report
@@ -13,6 +13,8 @@ comments and layout untouched.
 Rules:
 - A node compiles against the Minecraft version settings.gradle.kts gives it (`26.1.x` -> `26.1.2`),
   so that is the version a candidate has to list. A newer Minecraft patch is a manual bump.
+- A node whose name ends in `-neoforge` takes NeoForge uploads; every other node takes Fabric ones.
+  NeoForge itself is not bumped here.
 - Only release uploads are taken, unless the pinned version is itself a beta or alpha: a node on a
   pre-release dependency stays on that channel until a release catches up.
 - A candidate has to be published after the pinned version. Nothing is ever downgraded.
@@ -155,9 +157,14 @@ def modrinth_version(project: str, id_or_number: str) -> dict | None:
         raise
 
 
-def modrinth_candidates(project: str, minecraft: str) -> list[dict]:
+def node_loader(node: str) -> str:
+    """The mod loader a node builds for. Only the NeoForge node says so in its name."""
+    return "neoforge" if node.endswith("-neoforge") else "fabric"
+
+
+def modrinth_candidates(project: str, minecraft: str, loader: str) -> list[dict]:
     query = urllib.parse.urlencode({
-        "loaders": json.dumps(["fabric"]),
+        "loaders": json.dumps([loader]),
         "game_versions": json.dumps([minecraft]),
         "include_changelog": "false",
     })
@@ -178,7 +185,7 @@ def check_modrinth(props: Properties, node: str, minecraft: str, dep: ModrinthDe
         return
 
     channels = {"release", current["version_type"]}
-    newest = next((v for v in modrinth_candidates(dep.project, minecraft) if v["version_type"] in channels), None)
+    newest = next((v for v in modrinth_candidates(dep.project, minecraft, node_loader(node)) if v["version_type"] in channels), None)
     if newest is None or newest["date_published"] <= current["date_published"]:
         return
     value = newest["id"] if dep.by_id else newest["version_number"]
@@ -229,8 +236,8 @@ def files_mentioning(value: str) -> list[str]:
 
 
 def summary(changes: list[Change], warnings: list[str]) -> str:
-    out = ["Updates the Minecraft-bound dependencies in `stonecutter.properties.toml`. Each candidate is a Fabric "
-           "upload on Modrinth that lists the Minecraft version its node compiles against.", ""]
+    out = ["Updates the Minecraft-bound dependencies in `stonecutter.properties.toml`. Each candidate is an upload "
+           "on Modrinth for its node's loader that lists the Minecraft version the node compiles against.", ""]
     if changes:
         out += ["| Node | Dependency | From | To |", "| --- | --- | --- | --- |"]
         for change in changes:
