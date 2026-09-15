@@ -40,12 +40,11 @@ jobs:
         # The matrix is derived from stonecutter.properties.toml rather than written out here.
         # Every version needs a table in that file because the build reads its dependency versions
         # from it, so the two cannot drift. A hard-coded list would let a version added to
-        # settings.gradle.kts go silently unbuilt.
-        # The NeoForge node is left out until it can build and run its gametests, P4's step 7 in
-        # docs/dev/P4-NEOFORGE-PLAN.md, which removes this filter.
+        # settings.gradle.kts go silently unbuilt. The NeoForge node, 26.2.x-neoforge, is a table
+        # like any other and gets a job of its own.
         run: |
           set -euo pipefail
-          names=$(grep -oP '^\["\K[^"]+' stonecutter.properties.toml | grep -v -- '-neoforge$' || true)
+          names=$(grep -oP '^\["\K[^"]+' stonecutter.properties.toml || true)
           if [ -z "$names" ]; then
             echo "No version tables found in stonecutter.properties.toml." >&2
             exit 1
@@ -89,21 +88,31 @@ jobs:
           echo "org.gradle.java.installations.fromEnv=JAVA_HOME_21_X64,JAVA_HOME_25_X64" >> ~/.gradle/gradle.properties
 
       - name: Build
+        if: ${{ !endsWith(matrix.version, '-neoforge') }}
         # devClasses compiles the dev tools (/thirst benchmark). They never ship, so nothing else would
         # notice them breaking on one version. checkLoaderSeam fails on a mod loader import in loader
-        # independent code, which compiles fine while Fabric is the only loader. checkVersionSeam fails
-        # on a version conditional in core code, which is the exit ramp in docs/dev/PLATFORM-PLAN.md.
+        # independent code, which compiles fine against one loader. checkVersionSeam fails on a
+        # version conditional in core code, which is the exit ramp in docs/dev/PLATFORM-PLAN.md.
         run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:devClasses" ":${{ matrix.version }}:checkLoaderSeam" ":${{ matrix.version }}:checkVersionSeam" --stacktrace
+
+      # The NeoForge node has no dev tools and no generators of its own; it reads what the 26.2 Fabric
+      # node generates. checkNeoForgeResources fails when a Fabric-only key survives the translation of
+      # that JSON. The two seam checks read the same files on every node and are cheap to repeat here.
+      - name: Build (NeoForge)
+        if: ${{ endsWith(matrix.version, '-neoforge') }}
+        run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:checkNeoForgeResources" ":${{ matrix.version }}:checkLoaderSeam" ":${{ matrix.version }}:checkVersionSeam" --stacktrace
 
       # Regenerates every datapack and asset JSON and fails if the result differs from what is
       # committed, which is what catches a generator edited without regenerating and a generated
       # file edited by hand. Fabric runs the generators out of the client's main before a window is
       # ever created, so this needs no display either.
       - name: Check generated resources
+        if: ${{ !endsWith(matrix.version, '-neoforge') }}
         run: ./gradlew ":${{ matrix.version }}:checkDatagen" --stacktrace
 
       # The GameTest runner replaces the dedicated server, skips the EULA prompt and needs no
       # display, so it runs here exactly as it does locally. It exits non-zero when a test fails.
+      # Both loaders write the JUnit report to the same path.
       - name: Game tests
         run: ./gradlew ":${{ matrix.version }}:runGametest" --stacktrace
 

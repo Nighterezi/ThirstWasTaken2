@@ -5,12 +5,14 @@ with an end state: delete it once P4's gate in [PLATFORM-PLAN.md](PLATFORM-PLAN.
 anything that outlives it into [platform/AGENTS.md](../../src/main/java/com/thirstwastaken2/platform/AGENTS.md)
 and the root [AGENTS.md](../../AGENTS.md).
 
-**Status: steps 0 to 4 done.** Estimate 8 to 15 days. The exit ramp is 20 days: past it, NeoForge
-stays on 26.2 and P5 is dropped. Days spent: 2.5.
+**Status: steps 0 to 7 done, step 8 half done.** Estimate 8 to 15 days. The exit ramp is 20 days:
+past it, NeoForge stays on 26.2 and P5 is dropped. Days spent: 3.5.
 
 Steps 0 and 1 were first written without a network, then built and launched on 2026-09-15. What the
 launch changed is in the answers and in step 1's table. Steps 2 to 4 landed the same day, the build
-half of step 4 before step 3 and its runtime check after. Next is step 5.
+half of step 4 before step 3 and its runtime check after. Steps 5 to 7 and the docs of step 8 landed
+the same day too. What is left: the unticked NeoForge items in MANUAL-TESTING.md, five green jobs on
+a real pull request, and the release write-up.
 
 ## Scope
 
@@ -451,6 +453,20 @@ failing. What landed:
 **Check:** `:26.2.x-neoforge:runClient` starts with AppleSkin, Jade and Cloth Config, and the thirst bar
 draws above hunger with the air bubbles above it underwater.
 
+**Result, 2026-09-15.** `runClient` lists AppleSkin 3.0.10, Cloth Config 26.2.155, Jade 26.2.10 and the
+mod, and not the gametest mod; Jade logs `JadeIntegration` loaded; the only load warnings are
+AppleSkin's and Cloth Config's own deprecated manifest keys. In a new survival world the thirst bar is
+above hunger, and in water the air bubbles are above the thirst bar. Mods, ThirstWasTaken2, Config opens
+`ThirstConfigScreen`. What landed:
+
+| | |
+|---|---|
+| `ClientLoader`, AppleSkin | already in step 3, unchanged |
+| `MinecraftMixin` | moved to `src/client/java/com/thirstwastaken2/client/mixin`, listed in `src/client/resources/thirstwastaken2.client.mixins.json`, which `fabric.mod.json` lists with `"environment": "client"` and `neoforge.mods.toml` as a plain `[[mixins]]` entry. Every Fabric jar carries both client configs; the Fabric one keeps `GuiMixin` and `LocalPlayerMixin` |
+| `ThirstWasTaken2NeoForgeClient` | `src/client/neoforge/java/com/thirstwastaken2/client/neoforge`, `@Mod(value = MOD_ID, dist = Dist.CLIENT)`, taking the `ModContainer`: registers `IConfigScreenFactory` returning `ThirstConfigScreen`, then calls `ThirstWasTaken2Client.initialize()` |
+| The run classpath | **not** `clientAdditionalRuntimeClasspath`: ModDevGradle 2.0.147 throws on a dependency added there for Minecraft 26.2, saying the additional classpath is gone. A run's classpath is its source set's runtime classpath, so runClient has a source set of its own, `clientRun`, with no sources and `main`'s runtime classpath plus a `clientRunMods` configuration. The `client` and `server` runs also set `loadedMods` to the mod alone, because ModDevGradle loads every mod, the gametest one included, by default |
+| Jade | nothing needed, `@WailaPlugin` is found. The dedicated server check stays in the manual pass |
+
 ### 6. Gametests (2 to 3 days)
 
 The same 123 test methods, run by NeoForge's game test server. No test body changes.
@@ -479,6 +495,28 @@ Before trusting the node, break one thing on purpose, as the gametest rules requ
 **Check:** `:26.2.x-neoforge:runGametest` reports 123 of 123, and deliberately breaking the NeoForge
 `Loader` fails it.
 
+**Result, 2026-09-15.** `:26.2.x-neoforge:runGametest` passes 124 of 124: the 123 mod tests under
+`thirstwastaken2_gametest:` and vanilla's `minecraft:always_pass`, the same count the Fabric 26.2 node
+reports, and writes `versions/26.2.x-neoforge/build/gametest/report.xml`. Every test passed on the
+first run once the harness loaded, so no test body changed and no NeoForge-only branch was added.
+Breaking the `Loader` on purpose: skipping `onUseBlock` fails
+`water_interactions_game_test_a_bottle_drawn_from_acauldron_carries_its_water`, and skipping `onUseItem`
+fails the bowl and waterskin scooping tests. Drinking itself runs through the items and the mixins,
+not through either hook, so the drinking tests stay green, which is right. What landed, and where it
+differs from the bullets above:
+
+| | |
+|---|---|
+| Annotation | `com.thirstwastaken2.gametest.neoforge.GameTest`, not `com.thirstwastaken2.gametest.GameTest`, so the harness is one package. The replacement in `stonecutter.gradle.kts` is keyed on `current.project.endsWith("-neoforge")` |
+| Mod id | `thirstwastaken2_gametest` on both loaders, as decided. `fabric.mod.json` and the Loom mod name changed; test ids on Fabric change prefix with it |
+| Ids | Fabric API's real rule is `<mod id>:<class>_<method>` in snake case, not `<class>/<method>` as written above; the harness copies the real one |
+| Discovery | the `fabric-gametest` list is read from the gametest mod's own file through `IModFile.getContents().openFile`, not from the classpath, where other jars carry a `fabric.mod.json` too. Classes are loaded without initializing and instantiated on their first test: the first launch failed with `Registry is already frozen`, because test classes hold items in static fields and mods are constructed before registration |
+| Structure | NeoForge has no empty structure and vanilla loads only `.nbt` from data packs, so `data/thirstwastaken2_gametest/structure/empty.nbt` is Fabric's 8x8x8 air `empty.snbt` written as NBT. `.gitattributes` marks `*.nbt` binary |
+| Environment | `RegisterGameTestsEvent` cannot look up `minecraft:default`, so the harness registers `thirstwastaken2_gametest:default`, an empty `AllOf`, the definition vanilla's default has |
+| `neoforge.enabledGameTestNamespaces` | does not exist in NeoForge 26.2. `GameTestHooks.isGametestEnabled` is on for the game test server, and every registered test runs |
+| Report | yes: vanilla's `--report <file>` program argument writes a JUnit report. The run passes it with the Fabric path, and `runGametest` creates the directory first, since vanilla does not |
+| `isDedicatedServer` | Fabric API forces it to `true` on the test server, NeoForge leaves vanilla's `false`. No test noticed |
+
 ### 7. CI (half a day)
 
 - Remove the `-neoforge` filter step 1 added to `discover`, so the node's table adds the job.
@@ -489,6 +527,15 @@ Before trusting the node, break one thing on purpose, as the gametest rules requ
   the Fabric ones before accepting it.
 
 **Check:** five green jobs on a pull request.
+
+**Result, 2026-09-15.** The workflow is changed; the pull request that proves it is still to open.
+`discover` no longer filters `-neoforge`. The Fabric `Build` step and `Check generated resources` skip
+`-neoforge` jobs, and a `Build (NeoForge)` step runs `buildAndCollect`, `checkNeoForgeResources` and
+both seam checks there. `runGametest` and both uploads are shared, since the report and the jar land
+at the same paths. Locally, what the five jobs run passed: `buildAndCollect` and both seam checks on
+all five nodes, `devClasses` on the four Fabric ones, `checkNeoForgeResources`, `:26.2.x:checkDatagen`,
+and the gametests on `26.2.x-neoforge` (124), `26.2.x` (124) and `1.21.1` (123). The job time against
+the Fabric jobs is measured on the first pull request.
 
 ### 8. Manual pass and docs (1 day)
 
@@ -503,6 +550,14 @@ Before trusting the node, break one thing on purpose, as the gametest rules requ
 - [VERSION-DIFFERENCES.md](VERSION-DIFFERENCES.md) only if a version conditional was added.
 - CHANGELOG, the docs site and the Modrinth page through the `write-docs` skill, for the release.
 - The count of `//? if` blocks, written into [PLATFORM-PLAN.md](PLATFORM-PLAN.md) next to P3's.
+
+**Result so far, 2026-09-15.** Done: the NeoForge section in MANUAL-TESTING.md, with the HUD stacking
+and the config screen ticked from step 5's launch; the NeoForge mapping in `platform/AGENTS.md`; the
+manifests in `src/main/resources/AGENTS.md`; the harness in `src/gametest/java/AGENTS.md`; the node,
+the client mixin config and the NeoForge client in the root, client and mixin `AGENTS.md`; the count,
+69, unchanged by steps 5 to 7. VERSION-DIFFERENCES.md is untouched, since no version conditional was
+added. Left: the rest of the manual pass, and the CHANGELOG, docs site and Modrinth page for the beta
+release.
 
 ## Measurements
 

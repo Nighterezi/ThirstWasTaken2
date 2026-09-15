@@ -47,7 +47,7 @@ loom {
             sourceSet(sourceSets.main.get())
             sourceSet(sourceSets["client"])
         }
-        register("thirstwastaken2-gametest") {
+        register("thirstwastaken2_gametest") {
             sourceSet(gametest)
         }
         register("thirstwastaken2-dev") {
@@ -294,14 +294,15 @@ tasks.processResources {
     }
 }
 
-// The loader's client mixins have their own config, in the client source set.
+// The client mixins have their own configs, in the client source set: the loader independent one in
+// src/client/resources and Fabric's own in src/client/fabric/resources.
 tasks.named<ProcessResources>("processClientResources") {
     inputs.property("java", requiredJava.majorVersion)
     filesMatching("*.mixins.json") { expand("java" to "JAVA_${requiredJava.majorVersion}") }
 }
 
-// The client source set currently has Java only. Keep its runtime classpath entry present so Fabric
-// Loader does not report build/resources/client as a missing path during runClient.
+// Keep the client source set's runtime classpath entry present so Fabric Loader does not report
+// build/resources/client as a missing path during runClient.
 tasks.named("runClient") {
     doFirst {
         layout.buildDirectory.dir("resources/client").get().asFile.mkdirs()

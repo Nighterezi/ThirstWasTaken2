@@ -1,4 +1,4 @@
-package com.thirstwastaken2.fabric.mixin;
+package com.thirstwastaken2.client.mixin;
 
 import com.thirstwastaken2.client.HandDrinking;
 import net.minecraft.client.Minecraft;

@@ -1,7 +1,8 @@
 # ThirstWasTaken2
 
-A Fabric fork of [Thirst Was Taken](https://github.com/ghen-git/Thirst-Mod) (originally Forge,
-Minecraft 1.19.2) for **Minecraft 26.2, 26.1.x, 1.21.11 and 1.21.1** on **Fabric Loader 0.19.5**. It adds a
+A fork of [Thirst Was Taken](https://github.com/ghen-git/Thirst-Mod) (originally Forge,
+Minecraft 1.19.2) for **Minecraft 26.2, 26.1.x, 1.21.11 and 1.21.1** on **Fabric Loader 0.19.5**, and
+for **Minecraft 26.2 on NeoForge 26.2.0.88**. It adds a
 survival thirst bar, drinking, and water purity to Minecraft and further extends the original mod. It
 started as a port and has since diverged, so upstream is a reference, not a spec.
 
@@ -13,8 +14,10 @@ started as a port and has since diverged, so upstream is a reference, not a spec
 ## Build and run
 
 One source tree produces one jar per Minecraft version. Every version is a Gradle subproject named
-after its entry in `settings.gradle.kts`: `26.2.x`, `26.1.x`, `1.21.11`, `1.21.1`. The `1.21.1` jar also covers 1.21, which nothing the mod
-touches differs from.
+after its entry in `settings.gradle.kts`: `26.2.x`, `26.1.x`, `1.21.11`, `1.21.1` on Fabric, and
+`26.2.x-neoforge`, the same Minecraft version on NeoForge, with a buildscript of its own
+(`build.neoforge.gradle.kts`). The `1.21.1` jar also covers 1.21, which nothing the mod touches
+differs from.
 
 Build every version and collect the jars in `build/libs/`:
 
@@ -44,7 +47,7 @@ Run the automated in-game tests for one version:
 
 That is the check that actually proves behaviour. It replaces the dedicated server with Mojang's
 GameTest runner, needs no display and no accepted EULA, finishes in a few seconds, and fails the
-build on a failed assertion. CI runs it for every version. See
+build on a failed assertion. CI runs it for every node, `26.2.x-neoforge` included. See
 [src/gametest/java/AGENTS.md](src/gametest/java/AGENTS.md) before adding to it, including what it
 deliberately does not cover.
 
@@ -58,7 +61,9 @@ Recipes, advancements, tags, the damage type and the item models are all written
 into `src/main/generated/<minecraft version>/`, never edited by hand. `":<version>:checkDatagen"`
 regenerates and then fails if the result differs from what is committed; CI runs it for every
 version. See [src/datagen/java/AGENTS.md](src/datagen/java/AGENTS.md), including why the versions
-produce different bytes from one body of code.
+produce different bytes from one body of code. Datagen runs on Fabric only; the NeoForge node reads
+the 26.2 output and translates its Fabric-only JSON keys as it copies them, and
+`:26.2.x-neoforge:checkNeoForgeResources` fails if one survives.
 
 Measure what the mod costs a server, in time and memory, without anyone joining:
 
@@ -96,21 +101,26 @@ cached.
 - **Multi-version via [Stonecutter](https://stonecutter.kikugie.dev)**. `settings.gradle.kts` lists
   the versions, `stonecutter.properties.toml` holds every per-version value (dependency versions,
   the `fabric.mod.json` range), `stonecutter.gradle.kts` is the controller, and `build.gradle.kts`
-  is shared by all of them. `dev.kikugie.loom-back-compat` picks the Loom variant each version
+  is shared by the Fabric nodes. `dev.kikugie.loom-back-compat` picks the Loom variant each version
   needs — 26.1 dropped obfuscation — and keeps `modImplementation` meaning the same thing on both.
+  The NeoForge node uses ModDevGradle through `build.neoforge.gradle.kts`; what both scripts need is
+  in `gradle/shared.gradle.kts`.
 - **Gradle Kotlin DSL**. There is no version catalog: per-version values cannot live in one, so
   they are all in `stonecutter.properties.toml`.
 - **Source sets are split** (`loom.splitEnvironmentSourceSets()`). Anything that touches
-  `net.minecraft.client` belongs in `src/client/java`, never in `src/main/java`.
+  `net.minecraft.client` belongs in `src/client/java`, never in `src/main/java`. ModDevGradle has no
+  split, so the NeoForge node compiles both into one; the four Fabric nodes still catch a mistake.
 - **`ThirstWasTaken2.DEV` separates development runs from published jars.** It is true under every
   Loom run task and false in the jar players install; `-Dthirstwastaken2.dev=true|false` overrides it.
   Dev-only tooling checks it before registering anything and lives in the `dev` source set, its own
   `thirstwastaken2-dev` mod like the gametests, which `main` and `client` never reference.
 - **Mixins live in `com.thirstwastaken2.mixin`**, are package-private, `abstract`, and prefix every
   injected member with `thirst$`. New mixins must be listed in `thirstwastaken2.mixins.json`. The
-  two exceptions have configs of their own: Fabric client mixins in
+  exceptions have configs of their own: client mixins in
+  `src/client/resources/thirstwastaken2.client.mixins.json`, Fabric-only client mixins in
   `src/client/fabric/resources/thirstwastaken2.fabric.client.mixins.json`, and the Create Fly mixins in
-  `src/main/createfly/resources/thirstwastaken2.createfly.mixins.json`.
+  `src/main/createfly/resources/thirstwastaken2.createfly.mixins.json`. A new config goes in both
+  manifests.
 - **Config is a plain POJO** serialized by Gson (`ThirstConfig`). Adding a field means: add it to the
   POJO, clamp it in `sanitize()`, and — if it is user-facing — add a widget and a reset line to its
   page in `client/config/ConfigCategory` plus `en_us`/`vi_vn` keys.
@@ -121,8 +131,8 @@ cached.
   `Loader.isModLoaded`, plus a marker-class probe when the integration extends a foreign class,
   and keep integration classes out of the load path otherwise.
 - **`src/main/java` and `src/client/java` never name a mod loader.** Loader calls go through
-  `platform/Loader` and `client/platform/ClientLoader`, whose code lives in `src/main/fabric` and
-  `src/client/fabric`; `checkLoaderSeam` fails the build otherwise. See
+  `platform/Loader` and `client/platform/ClientLoader`, one copy per loader in `src/main/<loader>`
+  and `src/client/<loader>`; `checkLoaderSeam` fails the build otherwise. See
   [platform/AGENTS.md](src/main/java/com/thirstwastaken2/platform/AGENTS.md).
 - Player thirst state is an **immutable record** (`ThirstData`) stored through `Loader.playerData`. Mutate
   by deriving a new record and calling `ThirstManager.set`; only write when the value actually
@@ -184,7 +194,8 @@ Two things about Stonecutter that are easy to learn the hard way:
    one version number for both its Fabric and NeoForge uploads, so it is pinned by Modrinth version
    id or Maven resolves the wrong jar.
 2. Nothing to add to CI: `.github/workflows/build.yml` builds one job per table in
-   `stonecutter.properties.toml`.
+   `stonecutter.properties.toml`. A table whose name ends in `-neoforge` gets the NeoForge steps
+   instead of `devClasses` and `checkDatagen`.
 3. Run `./gradlew ":<version>:build"` and fix what the compiler reports, by extending `platform/`
    rather than by branching at the call site.
 4. Smoke-test with `./gradlew ":<version>:runServer"`. The new `run/<version>/` directory needs its
@@ -347,19 +358,27 @@ src/client/java/com/thirstwastaken2/client/
 src/main/createfly/                     Create Fly Sand Filter, compiled only where deps.create_fly is set
 src/client/createfly/                   its goggle tooltip, same condition
 
+src/client/java/com/thirstwastaken2/client/mixin/MinecraftMixin.java  hand drinking outside the crosshair
+src/client/resources/thirstwastaken2.client.mixins.json  its mixin config, loaded by both loaders
+
 src/client/fabric/java/com/thirstwastaken2/client/   Fabric only, compiled into client
   fabric/ThirstWasTaken2FabricClient.java  client entrypoint
   platform/ClientLoader.java           HUD layer and status bar height registration
   compat/ModMenuIntegration.java       modmenu entrypoint
-src/client/fabric/java/com/thirstwastaken2/fabric/mixin/MinecraftMixin.java  hand drinking outside the crosshair
 src/client/fabric/java/com/thirstwastaken2/fabric/mixin/GuiMixin.java  the 1.21.1 HUD hook
 src/client/fabric/java/com/thirstwastaken2/fabric/mixin/LocalPlayerMixin.java  the 1.21.1 sprint gate
-src/client/fabric/resources/thirstwastaken2.fabric.client.mixins.json  its mixin config
+src/client/fabric/resources/thirstwastaken2.fabric.client.mixins.json  their mixin config
 
-settings.gradle.kts                    the list of supported Minecraft versions
-stonecutter.properties.toml            every per-version value
+src/client/neoforge/java/com/thirstwastaken2/client/  NeoForge only, compiled into main on its node
+  neoforge/ThirstWasTaken2NeoForgeClient.java  @Mod(dist = CLIENT): client init and the config screen
+  platform/ClientLoader.java           the HUD layer above food, and AppleSkin's NeoForge config
+
+settings.gradle.kts                    the list of nodes: Minecraft versions, and the NeoForge node
+stonecutter.properties.toml            every per-node value
 stonecutter.gradle.kts                 active version, swaps and renames
-build.gradle.kts                       one build script, shared by every version
+build.gradle.kts                       the build script shared by every Fabric node
+build.neoforge.gradle.kts              the NeoForge node's build script, and the datagen translation
+gradle/shared.gradle.kts               toolchain, seam checks and buildAndCollect, for both
 
 src/gametest/java/com/thirstwastaken2/gametest/
   TestFixtures.java                    water source, aimed player, readable assertions
@@ -382,6 +401,7 @@ src/gametest/java/com/thirstwastaken2/gametest/
   CreativeTabGameTest.java             the mod's creative tab
   AdvancementGameTest.java             the advancements load, and unlock recipes that exist
   EnvironmentGameTest.java             datapack entries and version-specific vanilla calls
+src/gametest/neoforge/                  the NeoForge harness: @GameTest, discovery, registration, empty structure
 
 src/dev/java/com/thirstwastaken2/dev/   dev-only tools mod, never packaged
   ThirstDev.java                       entrypoint: /thirst benchmark and the runBenchmark autorun
@@ -444,14 +464,15 @@ support stays dependency-free.
 | `LayeredCauldronBlockMixin` | `#createBlockStateDefinition`, `#handlePrecipitation`, `#receiveStalactiteDrip` | add the stored-quality property; grade the water rain or a dripstone added |
 | `CauldronBlockMixin` | `#handlePrecipitation`, `#receiveStalactiteDrip` | the same, for the empty cauldron those two turn into a water cauldron |
 | `BlocksMixin` | `Blocks` static init, 1.21.1 only | mark the water cauldron's construction, which cannot be identified from inside its constructor there |
-| `MinecraftMixin` (Fabric, client) | `Minecraft#startUseItem` | drink by hand from water the crosshair misses, then let vanilla go on with the click |
+| `MinecraftMixin` (client) | `Minecraft#startUseItem` | drink by hand from water the crosshair misses, then let vanilla go on with the click |
 | `LocalPlayerMixin` (Fabric, client) | `LocalPlayer#hasEnoughFoodToStartSprinting`, 1.21.1 only | the sprint gate, where 1.21.1 keeps that check on the client player |
 | `GuiMixin` (Fabric, client) | `Gui#renderPlayerHealth`, 1.21.1 only | draw the thirst bar after the food bar and move the air bubbles up, which Fabric API's HUD registry does from 1.21.6 |
 
 ## HUD
 
 `ThirstWasTaken2Client` adds `thirst_bar` through `ClientLoader.addRightStatusBar`, which on Fabric
-attaches it after `VanillaHudElements.FOOD_BAR` and reserves 10px of right-stack height. 1.21.1 has
+attaches it after `VanillaHudElements.FOOD_BAR` and reserves 10px of right-stack height. On NeoForge
+it is a GUI layer above `FOOD_LEVEL` that draws at `Hud.rightHeight` and advances it. 1.21.1 has
 neither registry, so there `GuiMixin` draws the bar at the same place and moves the air bubbles up.
 `ThirstHud.render` draws, in order:
 
@@ -477,7 +498,7 @@ Without AppleSkin the bar is droplets only, the way vanilla's food bar has no sa
 `config/thirstwastaken2.json` is a Gson dump of `ThirstConfig`. `ThirstConfig.generation()` increments
 on every load or commit; `ThirstApi` watches it to drop its per-item cache.
 
-The Mod Menu screen (`ThirstConfigScreen`) writes straight into the live instance through
+The config screen (`ThirstConfigScreen`, from Mod Menu on Fabric and the mods list on NeoForge) writes straight into the live instance through
 `OptionInstance` listeners, calls `ThirstConfig.commit()` on Done and `ThirstConfig.restore` on
 Cancel. Only the HUD and AppleSkin settings are client-side — the rest is server-authoritative and
 takes effect in singleplayer or when edited on the server.
@@ -486,14 +507,14 @@ takes effect in singleplayer or when edited on the server.
 
 | Integration | Gate | Notes |
 |---|---|---|
-| Mod Menu | `modmenu` entrypoint | class only loads if Mod Menu resolves it |
+| Mod Menu | `modmenu` entrypoint | class only loads if Mod Menu resolves it. On NeoForge the mods list's own `IConfigScreenFactory` does the same job |
 | AppleSkin | `AppleSkin.isLoaded()` | the quenched outline, the exhaustion strip and the tooltip droplet rows; without it none of them is drawn |
 | Jade | `jade` entrypoint, `@WailaPlugin` | the water grade, or Salty, when looking at water, a waterlogged block or a water cauldron |
 | Farmer's Delight | registry ids, recipe load conditions | its drinks and meals in `ThirstConfig`, Cooking Pot purification recipes, Nourishment stopping the drain |
 | Drinks from other mods | `c:drinks` tag, `enableDrinkTagMatching` | restores `drinkTagValue` for a tagged item neither table names |
 | Loot | always | `Loader.onLootTable` on 5 vanilla chests + Piglin bartering, including tables a data pack replaced |
 | Food mods | always | resolved by registry id in `ThirstConfig.drinks` / `foods`, no classes referenced |
-| Create Fly | `deps.create_fly` at build time, then `CreateFlyPresence` | the Sand Filter, 26.1.x and 26.2.x for now; see [src/main/createfly/AGENTS.md](src/main/createfly/AGENTS.md) |
+| Create Fly | `deps.create_fly` at build time, then `CreateFlyPresence` | the Sand Filter, 26.1.x and 26.2.x Fabric for now; Create Fly is a Fabric port. See [src/main/createfly/AGENTS.md](src/main/createfly/AGENTS.md) |
 
 ## Porting rules of thumb
 

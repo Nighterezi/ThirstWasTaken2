@@ -98,7 +98,7 @@ a real build; see [P0-SPIKE.md](P0-SPIKE.md). P4 has its own working plan in
 | ~~**P1**~~ | Move the 90 resource files to datagen, output keyed by Minecraft version | 2 to 3 days | **Done.** 58 of the 90 are generated into `src/main/generated/<minecraft version>/`; `:<version>:checkDatagen` runs in CI on all three nodes and 61 gametests pass on each |
 | ~~**P2**~~ | `platform/Loader`, written while there is still only one loader | 2 to 3 days | **Done.** No loader import left in `src/main/java` or `src/client/java`; `checkLoaderSeam` runs in CI; all three nodes build and pass gametests |
 | ~~**P3**~~ | 1.21.1 Fabric node: sync packet, HUD fork, drink item fork, asset overlay | 4 to 6 days | **Done.** Released in 1.0.4 on 2026-09-13; 115 of 115 mod gametests on all four nodes at the time; no sync packet was needed; the exit ramp was revised after P3 crossed the old one, see below |
-| **P4** | NeoForge on 26.2 only | 8 to 15 days | Gametests green on five nodes. **Next.** Steps in [P4-NEOFORGE-PLAN.md](P4-NEOFORGE-PLAN.md) |
+| **P4** | NeoForge on 26.2 only | 8 to 15 days | Gametests green on five nodes. **In progress:** steps 0 to 7 done, 124 of 124 gametests on `26.2.x-neoforge` locally; the manual pass and the release remain. Steps in [P4-NEOFORGE-PLAN.md](P4-NEOFORGE-PLAN.md) |
 | **P5** | NeoForge across the remaining versions, starting with 1.21.1, plus publish automation | 4 to 8 days | Seven nodes green |
 
 Roughly 12 to 23 days of work left. Spread it over months, not weeks.
@@ -130,7 +130,8 @@ measuring the places differences are meant to live, while what a branch would ac
 code staying version-free, was already at zero. Branching the 1.21.x family would instead double every
 feature from then on. So the gate moved to what hurts, and the count is written down at each phase:
 58 at the end of P3, after taking every loot table removed the one gametest branch the old loot rule
-needed.
+needed. 69 during P4, after its step 7: the NeoForge node added none, and the 11 since P3 came with the
+work between the two phases.
 - P4 passes **20 days**: keep NeoForge on one version and drop P5.
 - Gametests cannot be made to run on a node: that node does not ship. No exceptions.
 - 1.21.1 starts shipping a different version number from the rest: it has frozen in practice.

@@ -20,8 +20,9 @@ check, and every item below belongs to one of them:
 
 ## How to run a pass
 
-1. `./gradlew ":<node>:runClient"`, where `<node>` is `26.2.x`, `26.1.x`, `1.21.11` or `1.21.1`. The
-   dev client already has AppleSkin, Cloth Config, Jade and Mod Menu.
+1. `./gradlew ":<node>:runClient"`, where `<node>` is `26.2.x`, `26.1.x`, `1.21.11`, `1.21.1` or
+   `26.2.x-neoforge`. The dev client already has AppleSkin, Cloth Config and Jade, and Mod Menu on
+   the Fabric nodes.
 2. Create a new **survival** world on **Normal**, cheats on. Keep the world per version; saves do
    not move between versions.
 3. Work down the general checklist, then the section for that version.
@@ -195,6 +196,36 @@ different on purpose. Check all of these on every release that ships a 1.21.1 ja
       rename it.
 - [x] The advancement tab background is terracotta, not a missing texture.
 - [x] The jar loads on Minecraft 1.21 as well as 1.21.1.
+
+### 26.2 NeoForge
+
+A subset of the general checklist, for what the loader changes: the HUD layer, the config screen
+entry, the client mixins, the event hooks and the attachment. Everything else is the same code as
+26.2 Fabric and the same 123 gametests pass on this node. Run it on `26.2.x-neoforge`, which has no
+Mod Menu and no Farmer's Delight or Create Fly.
+
+- [x] The thirst bar sits above the hunger bar, and underwater the air bubbles sit above the thirst
+      bar. NeoForge stacks the right-hand bars by a shared height rather than Fabric's registry.
+      Checked on 2026-09-15.
+- [ ] In creative the thirst bar disappears with the hearts and hunger, and a living mount's health
+      replaces it, as on Fabric.
+- [ ] With AppleSkin, the quenched outline and the exhaustion strip draw on the thirst bar, and
+      turning AppleSkin's own exhaustion underlay off in its config screen removes the strip.
+- [ ] Item tooltips show the purity line and the thirst and quenched droplet rows. The rows come
+      after NeoForge's own tooltip lines here, so check they are still together and in order.
+- [x] Mods, ThirstWasTaken2, Config opens the mod's config screen, and Done returns to the mods list.
+      Checked on 2026-09-15.
+- [ ] Jade shows the grade when looking at river water, sea water and a water cauldron.
+- [ ] Drinking by hand works, from water under the crosshair and from water the crosshair misses
+      (`MinecraftMixin`, now in the shared client mixin config).
+- [ ] Filling a bottle from a cauldron and scooping with a bowl keep working after a second right
+      click on the same block (the use events are cancelled with a result, not just stopped).
+- [ ] `./gradlew ":26.2.x-neoforge:runServer"` starts without an error, once as it is and once with
+      Jade in `run/26.2.x-neoforge/mods`.
+- [ ] Set thirst to 8 with `/thirst set @s 8 0`, die, respawn: thirst is full again, as on Fabric.
+      Then leave and rejoin the world with thirst not full: the value survives the save.
+- [ ] **Known, by design:** a world from the Fabric jar opened with the NeoForge jar starts every
+      player at full thirst. The two loaders save the value under different keys.
 
 ## When this file changes
 

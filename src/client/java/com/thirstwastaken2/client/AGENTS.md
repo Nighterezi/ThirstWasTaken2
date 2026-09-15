@@ -23,9 +23,10 @@ except the HUD section.
 | `platform/StatusBarRenderer` | the shape `ClientLoader` draws a HUD row through |
 | `compat/AppleSkinIntegration` | reads AppleSkin's own settings, only after `AppleSkin.isLoaded()` |
 | `compat/JadeIntegration` | the `jade` entrypoint: the grade of the water under the crosshair, see `compat/AGENTS.md` |
+| `mixin/MinecraftMixin` | every version and loader: calls `HandDrinking` at the start of a right click. Listed in `src/client/resources/thirstwastaken2.client.mixins.json` |
 
-Loader code for the client lives in `src/client/fabric/java`, never here, and `checkLoaderSeam` fails
-the build on a loader import in this directory:
+Loader code for the client lives in `src/client/<loader>/java`, never here, and `checkLoaderSeam`
+fails the build on a loader import in this directory:
 
 | File | Owns |
 |---|---|
@@ -34,7 +35,7 @@ the build on a loader import in this directory:
 | `client/compat/ModMenuIntegration` | the `modmenu` entrypoint; Mod Menu is a Fabric-only mod |
 | `fabric/mixin/GuiMixin` | 1.21.1 only: the status bar registry Fabric API gained in 1.21.6 |
 | `fabric/mixin/LocalPlayerMixin` | 1.21.1 only: the thirst sprint gate, on the client player's own food check |
-| `fabric/mixin/MinecraftMixin` | every version: calls `HandDrinking` at the start of a right click |
+| `client/neoforge/ThirstWasTaken2NeoForgeClient` | the NeoForge `@Mod(dist = CLIENT)` class; also registers the config screen as the mods list's `IConfigScreenFactory` |
 
 `ClientVanilla` is the client half of `com.thirstwastaken2.platform.Vanilla` and follows the same
 rules — plumbing only, one signature on every version. A Stonecutter `//?` branch anywhere else in

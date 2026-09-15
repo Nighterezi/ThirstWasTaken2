@@ -52,9 +52,9 @@ val loader = "neoforge"
  * sources compile into `main` here. The four Fabric nodes keep `loom.splitEnvironmentSourceSets()`,
  * so the compiler still catches client code reached from common code on four nodes out of five.
  *
- * `src/gametest`, `src/dev` and `src/datagen` are absent on purpose: the gametest harness is P4's
- * step 6, and the dev tools and the generators stay Fabric only. This node reads the datapack and
- * asset JSON that the 26.2 Fabric node writes.
+ * `src/dev` and `src/datagen` are absent on purpose: the dev tools and the generators stay Fabric
+ * only. This node reads the datapack and asset JSON that the 26.2 Fabric node writes. `src/gametest`
+ * is here, as a mod of its own, below.
  *
  * `src/client` cannot simply be listed as a directory of `main`. Stonecutter preprocesses
  * `src/<name>` only for a source set called `<name>`, so without a `client` source set nothing
@@ -81,12 +81,42 @@ sourceSets.main {
     resources.srcDir(rootProject.file("src/main/generated/${sc.current.version}"))
 }
 
+/*
+ * The same gametests the Fabric nodes run, as their own small mod, so none of it reaches the jar.
+ * `src/gametest/neoforge` holds the harness that finds and registers them, in place of Fabric API's;
+ * the test classes themselves are shared, and stonecutter.gradle.kts swaps their one Fabric import.
+ * See src/gametest/java/AGENTS.md.
+ */
+val gametest: SourceSet = sourceSets.create("gametest") {
+    java.srcDir("src/gametest/$loader/java")
+    resources.srcDir("src/gametest/$loader/resources")
+    compileClasspath += sourceSets.main.get().compileClasspath + sourceSets.main.get().output
+    runtimeClasspath += sourceSets.main.get().runtimeClasspath + sourceSets.main.get().output
+}
+
+/*
+ * The optional mods runClient loads, the same set the Fabric runClient has minus Mod Menu, which is
+ * Fabric only. They go on that run alone: on `runtimeOnly` they would load into runServer and
+ * runGametest too, and the gametests expect a server without AppleSkin. ModDevGradle's per-run
+ * `additionalRuntimeClasspath` would be the place, but it refuses dependencies from Minecraft 26.2 on,
+ * and a run's classpath is its source set's runtime classpath. So runClient gets a source set with no
+ * sources of its own, whose runtime classpath is `main`'s plus these.
+ */
+val clientRunMods: Configuration = configurations.create("clientRunMods")
+val clientRun: SourceSet = sourceSets.create("clientRun") {
+    runtimeClasspath = sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath + clientRunMods
+}
+
 neoForge {
     version = neoForgeVersion
 
     mods {
         create(modId) {
             sourceSet(sourceSets.main.get())
+        }
+        // NeoForge mod ids cannot contain a hyphen; the Fabric nodes use the same id.
+        create("thirstwastaken2_gametest") {
+            sourceSet(gametest)
         }
     }
 
@@ -100,13 +130,26 @@ neoForge {
             gameDirectory.set(rootProject.file(if (name == "gametest") "run/$node/gametest" else "run/$node"))
         }
 
-        create("client") { client() }
+        create("client") {
+            client()
+            sourceSet = clientRun
+        }
         create("server") { server() }
-        // The GameTest runner: a dedicated server that runs every registered test headlessly and
-        // exits with the number of failures. The harness that registers them is P4's step 6, so
-        // until then this run only starts the server, loads the datapack and stops, which is the
-        // cheapest way to see recipe and advancement parse errors on this node.
-        create("gametest") { type = "gameTestServer" }
+        // The GameTest runner: a dedicated server that runs every registered test headlessly, skips
+        // the EULA prompt and exits with the number of failed required tests, the same contract as the
+        // Fabric runner. `runGametest` is the task name on every node.
+        create("gametest") {
+            type = "gameTestServer"
+            sourceSet = gametest
+            // Vanilla's own JUnit report, at the path the Fabric nodes write theirs to, so CI uploads
+            // it the same way.
+            programArguments.addAll("--report", layout.buildDirectory.file("gametest/report.xml").get().asFile.absolutePath)
+        }
+
+        // Only the gametest run loads the gametest mod. ModDevGradle loads every mod by default.
+        val mainMod = mods.named(modId)
+        named("client") { loadedMods.set(mainMod.map { setOf(it) }) }
+        named("server") { loadedMods.set(mainMod.map { setOf(it) }) }
     }
 }
 
@@ -115,12 +158,13 @@ dependencies {
     // takes a hard dependency, and `Loader.isModLoaded` gates every use. Mod Menu is Fabric only, so
     // `ModMenuIntegration` stays in src/client/fabric and the config screen is registered through
     // NeoForge's own IConfigScreenFactory instead.
-    //
-    // Nothing is on the run classpath yet: putting AppleSkin and Jade, both client mods, on a plain
-    // `runtimeOnly` would load them into runServer as well. The client run gets them in P4's step 5,
-    // alongside Cloth Config, which AppleSkin's own config screen needs.
     compileOnly("maven.modrinth:appleskin:${property("deps.appleskin")}")
     compileOnly("maven.modrinth:jade:${property("deps.jade")}")
+
+    clientRunMods("maven.modrinth:appleskin:${property("deps.appleskin")}")
+    clientRunMods("maven.modrinth:jade:${property("deps.jade")}")
+    // AppleSkin's own config screen.
+    clientRunMods("maven.modrinth:cloth-config:${property("deps.cloth_config")}")
 }
 
 /*
@@ -245,6 +289,12 @@ tasks.register("checkNeoForgeResources") {
 // ModDevGradle needs it before it builds the Minecraft artifacts it compiles against.
 tasks.named("processResources") { dependsOn("stonecutterGenerate") }
 tasks.named("createMinecraftArtifacts") { dependsOn("stonecutterGenerate") }
+
+// Vanilla's reporter writes the file but not the directory it goes in.
+tasks.named("runGametest") {
+    val reportDir = layout.buildDirectory.dir("gametest")
+    doFirst { reportDir.get().asFile.mkdirs() }
+}
 
 // The toolchain, the seam checks, the jar excludes and `buildAndCollect` are shared with the Fabric
 // nodes. The Java version is passed in because it follows from the node's Minecraft version, which

@@ -9,10 +9,12 @@ Vanilla hooks. Everything the mod cannot do through a Fabric API event lands her
 - **A new mixin must be added to `src/main/resources/thirstwastaken2.mixins.json`** or it silently
   does nothing. `injectors.defaultRequire` is 1, so a stale target throws at load instead of failing
   quietly — a `runServer` that starts is already proof every injection point still resolves.
-- There are no client-only mixins in this package. The one client mixin, `GuiMixin`, stands in for a
-  Fabric API registry and so is loader code: it lives in `src/client/fabric/java` under
-  `com.thirstwastaken2.fabric.mixin`, with its own `thirstwastaken2.fabric.client.mixins.json` in the
-  client source set, so Loom writes its refmap.
+- There are no client-only mixins in this package. Client mixins live in the client source set, in
+  two configs of their own. `MinecraftMixin` names no loader API and is in `src/client/java` under
+  `com.thirstwastaken2.client.mixin`, listed in `src/client/resources/thirstwastaken2.client.mixins.json`,
+  which both loaders load. `GuiMixin` and `LocalPlayerMixin` stand in for Fabric API on 1.21.1 and so
+  are loader code: `src/client/fabric/java` under `com.thirstwastaken2.fabric.mixin`, listed in
+  `thirstwastaken2.fabric.client.mixins.json`.
 - A mixin that only one version needs still exists on every version, with an empty body elsewhere:
   the mixin config is shared, and a listed class that is missing is a crash. `BlocksMixin` and
   `GuiMixin` are the examples. No block comments inside their `//?` blocks; see the root `AGENTS.md`.

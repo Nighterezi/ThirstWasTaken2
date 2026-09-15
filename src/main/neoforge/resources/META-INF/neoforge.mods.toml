@@ -18,9 +18,13 @@ displayURL = "https://modrinth.com/mod/thirst-was-taken-2"
 # A square icon; NeoForge reads `logoFile` as a deprecated banner.
 iconFile = "assets/thirstwastaken2/icon.png"
 
-# FML has no per-side mixin config: client-only mixins go in a config's own "client" list.
+# FML has no per-side mixin config: client-only mixins go in a config's own "client" list, which is
+# how thirstwastaken2.client.mixins.json keeps them off a dedicated server.
 [[mixins]]
 config = "thirstwastaken2.mixins.json"
+
+[[mixins]]
+config = "thirstwastaken2.client.mixins.json"
 
 # `ordering` and `side` are read with Enum.valueOf, so they must be upper case; `type` is not.
 [[dependencies.thirstwastaken2]]

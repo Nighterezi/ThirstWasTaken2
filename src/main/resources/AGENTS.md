@@ -8,7 +8,7 @@ The loader's own manifest is loader code and lives beside the loader's Java, in
 Everything here is shared by every loader.
 
 ```
-thirstwastaken2.mixins.json  every mixin class must be listed here
+thirstwastaken2.mixins.json  every common mixin class must be listed here
 assets/thirstwastaken2/
   icon.png                   the Mod Menu icon, 512x512
   textures/                  item, gui and font sheets
@@ -26,11 +26,22 @@ that writes them.
 
 ## Manifests
 
-`src/main/fabric/resources/fabric.mod.json` is templated: `${version}` is expanded by
-`processResources`, so it is not valid JSON to a strict parser until built. Its entrypoints are the
-thin Fabric classes `ThirstWasTaken2Fabric` and `ThirstWasTaken2FabricClient`, not the loader
-independent `ThirstWasTaken2`. A new mixin class needs an entry in `thirstwastaken2.mixins.json`
-or it never applies; a new mixin *config* file needs an entry in `fabric.mod.json` too.
+There are two manifests, one per loader, and they must keep saying the same thing: the version,
+name, authors, icon, the Minecraft range, the optional mods and the mixin configs.
+
+- `src/main/fabric/resources/fabric.mod.json` is templated: `${version}` is expanded by
+  `processResources`, so it is not valid JSON to a strict parser until built. Its entrypoints are the
+  thin Fabric classes `ThirstWasTaken2Fabric` and `ThirstWasTaken2FabricClient`, not the loader
+  independent `ThirstWasTaken2`.
+- `src/main/neoforge/resources/META-INF/neoforge.mods.toml` is templated the same way, by
+  `build.neoforge.gradle.kts`, which expands comments too. It names no entrypoints: FML finds the
+  `@Mod` classes `ThirstWasTaken2NeoForge` and `ThirstWasTaken2NeoForgeClient` by annotation.
+  `ordering` and `side` must be upper case.
+
+A new mixin class needs an entry in its config or it never applies. A new mixin *config* file needs
+an entry in both manifests. FML has no per-side mixin config, so a client config keeps its classes in
+its own `"client"` list, which is what `thirstwastaken2.client.mixins.json` in `src/client/resources`
+does; Fabric also marks it `"environment": "client"`.
 
 The Create Fly Sand Filter is the exception to both of the above. Its assets, data files and mixin
 config are hand-written and live in `src/main/createfly/resources`, and `processResources` adds its

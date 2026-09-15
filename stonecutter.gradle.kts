@@ -75,6 +75,14 @@ stonecutter parameters {
             replace(".snapTo(", ".moveTo(")
         }
 
+        // The NeoForge node runs the same tests through a harness of its own, which reads a
+        // @GameTest annotation from src/gametest/neoforge instead of Fabric API's. Only the import
+        // changes, so a test keeps writing `@GameTest` with no arguments. See src/gametest/java/AGENTS.md.
+        string(current.project.endsWith("-neoforge")) {
+            replace("import net.fabricmc.fabric.api.gametest.v1.GameTest;",
+                    "import com.thirstwastaken2.gametest.neoforge.GameTest;")
+        }
+
         // Fabric API's own @GameTest arrived with 1.21.5. Before it a test uses vanilla's annotation and
         // names Fabric's empty structure as its template; no test body changes.
         string(current.parsed < "1.21.5") {

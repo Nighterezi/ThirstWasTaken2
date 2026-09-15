@@ -61,7 +61,8 @@ whether it has anything to drink (`canDrink`) and what a drink removes.
 
 `Loader` does not live in this directory. Each loader has its own copy at
 `src/main/<loader>/java/com/thirstwastaken2/platform/Loader.java`, with the same class name and the
-same public signatures, and `build.gradle.kts` compiles exactly one of them. There is no interface
+same public signatures, and each node's buildscript (`build.gradle.kts` for Fabric,
+`build.neoforge.gradle.kts` for NeoForge) compiles exactly one of them. There is no interface
 and no service lookup: a static call to a class that exists once per jar is the cheapest seam there
 is, and the compiler checks every call site.
 
@@ -79,6 +80,26 @@ What does live here are the types those signatures need, because both copies hav
 | `ClientLoader.addRightStatusBar` | HUD layer registration and the right-hand status bar height |
 | `ClientLoader.appleSkinShowsExhaustionUnderlay` | AppleSkin's own setting, which it keeps in a different class shape on each loader |
 
+### How each loader answers
+
+| Seam | Fabric | NeoForge (26.2 only) |
+|---|---|---|
+| `isDevelopmentEnvironment`, `configDir`, `isModLoaded` | `FabricLoader` | `FMLEnvironment.isProduction`, `FMLPaths.CONFIGDIR`, `ModList` |
+| `onRegister` | runs at once | queued, run from `RegisterEvent` for that registry on the mod bus. NeoForge constructs mods while the built-in registries are frozen, so anything that registers, items included, has to wait for the event. It fires data component types before items on purpose. A registration for a registry whose event already fired throws |
+| `playerData` | a data attachment, `AttachmentSyncPredicate.targetOnly()` | an `AttachmentType` with `serialize(codec.fieldOf("value"))` and `sync((holder, to) -> holder == to, ...)`, registered through `onRegister`. Saved under `neoforge:attachments` rather than `fabric:attachments`, so a world moved between loaders starts every player at full thirst |
+| `creativeTabBuilder` | `FabricCreativeModeTab.builder()`, `FabricItemGroup` before 26.1 | `CreativeModeTab.builder()` |
+| `onServerTickEnd` | `ServerTickEvents.END_SERVER_TICK` | `ServerTickEvent.Post` |
+| `onUseBlock`, `onUseItem` | `UseBlockCallback`, `UseItemCallback`: a non-`PASS` result stops the chain | `PlayerInteractEvent.RightClickBlock`, `RightClickItem`: on a non-`PASS` result, `setCancellationResult` and `setCanceled(true)`, which also skips later listeners |
+| `onTagsLoaded` | `CommonLifecycleEvents.TAGS_LOADED` | `TagsUpdatedEvent` |
+| `onRegisterCommands` | `CommandRegistrationCallback` | `RegisterCommandsEvent` |
+| `onLootTable` | `LootTableEvents.MODIFY` | `LootTableLoadEvent`, `getTable().addPool` |
+| `ClientLoader.addRightStatusBar` | `HudElementRegistry.attachElementAfter(FOOD_BAR)` plus `HudStatusBarHeightRegistry.addRight`; `GuiMixin` on 1.21.1 | a layer `registerAbove(VanillaGuiLayers.FOOD_LEVEL)` that draws at `guiHeight() - hud.rightHeight` and advances `Hud.rightHeight` only when it drew, and only when the player can be hurt, which is when vanilla draws the food bar |
+| `ClientLoader.appleSkinShowsExhaustionUnderlay` | `ModConfig.INSTANCE.showFoodExhaustionHudUnderlay` | `ModConfig.SPEC.isLoaded() && ModConfig.SHOW_FOOD_EXHAUSTION_UNDERLAY.get()`; reading a NeoForge config value before FML loads it throws |
+
+Two mixins reach methods NeoForge patches: `ItemStack#addDetailsToTooltip`, where the mod's rows land
+after NeoForge's own tooltip hook, and `CauldronBlock#receiveStalactiteDrip`, whose `RETURN` injection
+also fires on NeoForge's early return for modded fluids. Both are harmless as written.
+
 Rules:
 
 - **Plumbing only, the same as `Vanilla`.** A method takes the mod's handler and hands it to the
@@ -90,16 +111,23 @@ Rules:
 - **Every copy changes together.** Adding a method to one `Loader` means adding it to all of them;
   the node that lacks it is the one that fails to compile.
 - **Entrypoints are loader code.** `ThirstWasTaken2Fabric`, `ThirstWasTaken2FabricClient` and the NeoForge
-  `@Mod` class `ThirstWasTaken2NeoForge` do one thing: call `ThirstWasTaken2.initialize` and
-  `ThirstWasTaken2Client.initialize`. The NeoForge `Loader` finds the mod event bus itself, through
-  `ModList`, so the mod class passes nothing in. So do the manifest
-  (`src/main/fabric/resources/fabric.mod.json`) and anything written against a loader-only mod, such
-  as `ModMenuIntegration`.
+  `@Mod` classes `ThirstWasTaken2NeoForge` and `ThirstWasTaken2NeoForgeClient` do one thing: call
+  `ThirstWasTaken2.initialize` and `ThirstWasTaken2Client.initialize`. The NeoForge client class also
+  registers the config screen with the mods list, which Mod Menu's entrypoint does on Fabric. The
+  NeoForge `Loader` finds the mod event bus itself, through `ModList`, so the mod class passes nothing
+  in. So are the manifests (`fabric.mod.json`, `neoforge.mods.toml`) and anything written against a
+  loader-only mod, such as `ModMenuIntegration`.
 - **`checkLoaderSeam` fails on a loader import in `src/main/java` or `src/client/java`.** It reads
   imports, so it cannot see the methods Fabric API injects into vanilla classes
   (`getAttachedOrCreate`, `FabricItemStack` and friends). Those compile on Fabric and only fail on the
   next loader. Do not call them outside `src/main/fabric`.
 
-`src/gametest`, `src/dev` and `src/datagen` are still Fabric only, each its own small Fabric mod.
-They sit outside the seam on purpose: none of them ships, and datagen output is shared by every
-loader on a Minecraft version.
+`src/dev` and `src/datagen` are Fabric only, each its own small Fabric mod. They sit outside the seam
+on purpose: neither ships, and datagen output is shared by every loader on a Minecraft version.
+Datagen writes Fabric's spellings once, and the NeoForge node translates the three Fabric-only JSON
+shapes as it copies resources (`build.neoforge.gradle.kts`), rather than datagen writing a second
+copy; see [src/main/resources/AGENTS.md](../../../../resources/AGENTS.md).
+
+`src/gametest` runs on both loaders. Its test classes are shared; the NeoForge node swaps one import
+and adds a harness of its own in `src/gametest/neoforge`, which is test code rather than a seam. See
+[src/gametest/java/AGENTS.md](../../../../../gametest/java/AGENTS.md).

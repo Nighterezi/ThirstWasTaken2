@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "thirstwastaken2-gametest",
+  "id": "thirstwastaken2_gametest",
   "version": "1.0.0",
   "name": "ThirstWasTaken2 Game Tests",
   "description": "Server-side gametests for ThirstWasTaken2. Development only, never published.",

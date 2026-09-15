@@ -7,7 +7,11 @@ player, headlessly and in a few seconds.
 ./gradlew ":26.2.x:runGametest"
 ```
 
-CI runs this for every supported version on every push. A failing test fails the build.
+```bash
+./gradlew ":26.2.x-neoforge:runGametest"
+```
+
+CI runs this for every node, NeoForge included, on every push. A failing test fails the build.
 
 ## What this is
 
@@ -18,14 +22,16 @@ the EULA prompt, never opens a window, places each test in its own patch of a sc
 exits non-zero if any required test failed and writes a JUnit XML report to
 `versions/<version>/build/gametest/report.xml`.
 
-This is an ordinary Gradle source set, not part of the mod. `thirstwastaken2-gametest` is its own
-small mod declared in `src/gametest/resources/fabric.mod.json`, so none of it can reach a published
-jar. Verify that with `unzip -l build/libs/<jar> | grep gametest` after a release build.
+This is an ordinary Gradle source set, not part of the mod. `thirstwastaken2_gametest` is its own
+small mod declared in `src/gametest/resources/fabric.mod.json`, and on NeoForge also in
+`src/gametest/neoforge/resources/META-INF/neoforge.mods.toml`, so none of it can reach a published
+jar. Verify that with `unzip -l build/libs/<jar> | grep gametest` after a release build. The id has an
+underscore rather than a hyphen because NeoForge mod ids cannot contain one.
 
 ## Writing a test
 
 - Test classes are listed under the `fabric-gametest` entrypoint. A class that is not listed is
-  silently never run.
+  silently never run, on either loader: the NeoForge harness reads the same list.
 - A test is a `public`, non-static method taking one `GameTestHelper`, annotated `@GameTest`, ending
   in `helper.succeed()`.
 - `helper.assertTrue` takes a `Component` from 1.21.5 and a string before it. Use
@@ -49,7 +55,33 @@ the annotation, so no test file changes for it. Write `@GameTest` with no argume
 replacement stops matching.
 
 The same 123 tests run on every node. Later nodes report 124 because their runner adds vanilla's own
-`minecraft:alwayspass`; that one is not the mod's.
+`minecraft:always_pass`; that one is not the mod's.
+
+## The NeoForge harness
+
+`26.2.x-neoforge` runs the same 123 test methods, with no test body changed and no NeoForge-only
+branch in any of them. What stands in for Fabric API lives in `src/gametest/neoforge`:
+
+| | Fabric API | NeoForge node |
+|---|---|---|
+| Annotation | `net.fabricmc.fabric.api.gametest.v1.GameTest` | `com.thirstwastaken2.gametest.neoforge.GameTest`, no arguments. `stonecutter.gradle.kts` swaps the import on `-neoforge` nodes only |
+| Discovery | the `fabric-gametest` entrypoints | `ThirstWasTaken2GameTests` reads the same entrypoint list out of this mod's `fabric.mod.json` as plain JSON |
+| Registration | `TEST_FUNCTION` at init, test instances when the dynamic registries load | `RegisterEvent` for `TEST_FUNCTION`, `RegisterGameTestsEvent` for the instances |
+| Ids | `thirstwastaken2_gametest:<class>_<method>`, snake case | the same rule, so the report names match |
+| Defaults | an empty 8x8x8 structure, `minecraft:default`, 20 ticks, required, padding 1 | the same values. The empty structure is this mod's own `data/thirstwastaken2_gametest/structure/empty.nbt`, and the environment an empty one registered as `thirstwastaken2_gametest:default`, the same definition as vanilla's, which the event cannot look up |
+| Runner | `-Dfabric-api.gametest` on the server run | ModDevGradle's `gameTestServer` run type |
+| Report | `fabric-api.gametest.report-file` | vanilla's `--report`, to the same `versions/<node>/build/gametest/report.xml` |
+
+Two things that differ underneath and have not mattered to any test so far:
+
+- Test classes are instantiated on their first test, not while the mod loads: they keep the mod's
+  items in static fields, and NeoForge constructs mods before anything may register.
+- Fabric API makes the test server report itself as a dedicated server; NeoForge leaves vanilla's
+  `false`. Commands are still registered for a dedicated server on both.
+
+After changing the harness, break the NeoForge `Loader` on purpose and watch this node alone go red.
+Skipping `onUseItem` there fails the bowl and waterskin scooping tests; skipping `onUseBlock` fails the
+cauldron bottle draw.
 
 ## Rules that keep these tests worth having
 
