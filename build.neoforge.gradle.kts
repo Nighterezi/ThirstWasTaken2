@@ -19,7 +19,7 @@ val modId = property("mod.id") as String
 val modName = property("mod.name") as String
 val modGroup = property("mod.group") as String
 /** Minecraft range written into neoforge.mods.toml, in Maven range syntax, e.g. `[26.2,26.3)`. */
-val mcRange = property("mod.mc_range") as String
+val mcRange = property("mod.mc_compat") as String
 val neoForgeVersion = property("deps.neoforge") as String
 
 // The loader goes in the version so the jar is `ThirstWasTaken2-1.0.5+26.2-neoforge.jar` and never

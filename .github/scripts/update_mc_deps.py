@@ -14,6 +14,8 @@ Rules:
 - A node compiles against the Minecraft version settings.gradle.kts gives it (`26.1.x` -> `26.1.2`),
   so that is the version a candidate has to list. A newer Minecraft patch is a manual bump.
 - A node whose name ends in `-neoforge` takes NeoForge uploads; every other node takes Fabric ones.
+  Each node's values are read and rewritten in its loader table, `[fabric."26.2.x"]` or
+  `[neoforge."26.2.x"]`, or else in the shared `["26.2.x"]` table.
 - NeoForge itself comes from maven.neoforged.net: the newest build for the same Minecraft version as the
   pinned one, releases only unless the pinned build is a beta. Like Fabric Loader, it raises the
   minimum players need, since neoforge.mods.toml writes it as the lower bound.
@@ -110,7 +112,12 @@ def node_minecraft_versions() -> dict[str, str]:
 
 
 class Properties:
-    """The properties file as lines, so a rewrite keeps every comment and blank line."""
+    """The properties file as lines, so a rewrite keeps every comment and blank line.
+
+    The file is layered by loader, the way stonecutter.gradle.kts tags it: `["26.2.x"]` holds what both
+    loaders of that Minecraft version share, `[fabric."26.2.x"]` and `[neoforge."26.2.x"]` what only one
+    of them has. The node `26.2.x-neoforge` reads its loader table and then the shared one.
+    """
 
     def __init__(self, path: Path):
         self.path = path
@@ -121,20 +128,33 @@ class Properties:
     def _pattern(self, key: str) -> re.Pattern[str]:
         return re.compile(r'^(\s*' + re.escape(key) + r'\s*=\s*")([^"]*)(".*)$', re.DOTALL)
 
-    def find(self, node: str | None, key: str) -> tuple[int, str] | None:
-        """Line index and value of `key` inside `[node]`, or in the top level when node is None."""
-        section: str | None = None
+    def _find_in(self, section: tuple[str | None, str] | None, key: str) -> tuple[int, str] | None:
+        """Line index and value of `key` in one table, `(loader, version)`, or the top level for None."""
+        current: tuple[str | None, str] | None = None
         pattern = self._pattern(key)
         for index, line in enumerate(self.lines):
-            header = re.match(r'^\s*\["([^"]+)"\]\s*$', line)
+            header = re.match(r'^\s*\[(?:(fabric|neoforge)\.)?"([^"]+)"\]\s*$', line)
             if header:
-                section = header.group(1)
+                current = (header.group(1), header.group(2))
                 continue
-            if section == node:
+            if current == section:
                 match = pattern.match(line)
                 if match:
                     return index, match.group(2)
         return None
+
+    def find(self, node: str | None, key: str) -> tuple[int, str] | None:
+        """Line index and value of `key` for `node`, from its loader table or else the shared table of its
+        version, or in the top level when node is None."""
+        if node is None:
+            return self._find_in(None, key)
+        version = node.removesuffix("-neoforge")
+        return self._find_in((node_loader(node), version), key) or self._find_in((None, version), key)
+
+    def has_node(self, node: str) -> bool:
+        """Whether `node` has a loader table, which is what makes it a node to the build and to CI."""
+        header = f'[{node_loader(node)}."{node.removesuffix("-neoforge")}"]'
+        return any(line.strip() == header for line in self.lines)
 
     def set(self, index: int, key: str, value: str) -> None:
         match = self._pattern(key).match(self.lines[index])
@@ -307,8 +327,8 @@ def main() -> int:
 
     check_loader(props, changes)
     for node, minecraft in node_minecraft_versions().items():
-        if props.find(node, "mod.mc_compat") is None:
-            warnings.append(f"`{node}` is in settings.gradle.kts but has no table in {PROPERTIES.name}; skipped.")
+        if not props.has_node(node):
+            warnings.append(f"`{node}` is in settings.gradle.kts but has no loader table in {PROPERTIES.name}; skipped.")
             continue
         for dep in MODRINTH_DEPS:
             check_modrinth(props, node, minecraft, dep, changes, warnings)

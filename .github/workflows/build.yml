@@ -38,13 +38,13 @@ jobs:
       - name: Read supported Minecraft versions
         id: read
         # The matrix is derived from stonecutter.properties.toml rather than written out here.
-        # Every version needs a table in that file because the build reads its dependency versions
-        # from it, so the two cannot drift. A hard-coded list would let a version added to
-        # settings.gradle.kts go silently unbuilt. The NeoForge node, 26.2.x-neoforge, is a table
-        # like any other and gets a job of its own.
+        # Every node needs a loader table in that file because the build reads its dependency
+        # versions from it, so the two cannot drift. A hard-coded list would let a version added to
+        # settings.gradle.kts go silently unbuilt. `[fabric."26.2.x"]` is the node `26.2.x` and
+        # `[neoforge."26.2.x"]` the node `26.2.x-neoforge`; a shared `["26.2.x"]` table is not a node.
         run: |
           set -euo pipefail
-          names=$(grep -oP '^\["\K[^"]+' stonecutter.properties.toml || true)
+          names=$(sed -nE 's/^\[fabric\."([^"]+)"\][[:space:]]*$/\1/p; s/^\[neoforge\."([^"]+)"\][[:space:]]*$/\1-neoforge/p' stonecutter.properties.toml)
           if [ -z "$names" ]; then
             echo "No version tables found in stonecutter.properties.toml." >&2
             exit 1

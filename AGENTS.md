@@ -187,15 +187,20 @@ Two things about Stonecutter that are easy to learn the hard way:
 
 ### Adding a Minecraft version
 
-1. Add it to `stonecutter { create }` in `settings.gradle.kts` and add its matching block to
-   `stonecutter.properties.toml` — Fabric API, Mod Menu, AppleSkin, Cloth Config, Jade, Farmer's
-   Delight, `deps.create_fly` only where Create Fly has a release, and the `mod.mc_compat` and
-   `mod.mc_releases` values. Mod Menu and Cloth Config resolve by version number; AppleSkin publishes
-   one version number for both its Fabric and NeoForge uploads, so it is pinned by Modrinth version
-   id or Maven resolves the wrong jar.
-2. Nothing to add to CI: `.github/workflows/build.yml` builds one job per table in
-   `stonecutter.properties.toml`. A table whose name ends in `-neoforge` gets the NeoForge steps
-   instead of `devClasses` and `checkDatagen`.
+1. Add it to `stonecutter { create }` in `settings.gradle.kts`, once as `<version>` and once as
+   `<version>-neoforge` with `build.neoforge.gradle.kts`, and add its three tables to
+   `stonecutter.properties.toml`. `stonecutter.gradle.kts` tags every node with its version and its
+   loader, so a node reads the top level, `["<version>"]` for what both loaders share
+   (`mod.mc_releases` when it is the same), and `[fabric."<version>"]` or `[neoforge."<version>"]` for
+   the rest. A key goes in one table a node reads, never two. The Fabric table has Fabric API, Mod
+   Menu, AppleSkin, Cloth Config, Jade, Farmer's Delight, `deps.create_fly` only where Create Fly has a
+   release, and `mod.mc_compat` in Fabric's syntax; the NeoForge table has `deps.neoforge`, AppleSkin,
+   Cloth Config, Jade and `mod.mc_compat` as a Maven range. Mod Menu and Cloth Config resolve by
+   version number; AppleSkin publishes one version number for both its Fabric and NeoForge uploads, so
+   it is pinned by Modrinth version id or Maven resolves the wrong jar.
+2. Nothing to add to CI: `.github/workflows/build.yml` builds one job per loader table in
+   `stonecutter.properties.toml`. A `[neoforge."..."]` table is a `-neoforge` node, which gets the
+   NeoForge steps instead of `devClasses` and `checkDatagen`.
 3. Run `./gradlew ":<version>:build"` and fix what the compiler reports, by extending `platform/`
    rather than by branching at the call site.
 4. Smoke-test with `./gradlew ":<version>:runServer"`. The new `run/<version>/` directory needs its
@@ -375,7 +380,7 @@ src/client/neoforge/java/com/thirstwastaken2/client/  NeoForge only, compiled in
   platform/ClientLoader.java           the HUD layer above food, and AppleSkin's NeoForge config
 
 settings.gradle.kts                    the list of nodes: four Minecraft versions, each on both loaders
-stonecutter.properties.toml            every per-node value
+stonecutter.properties.toml            every per-node value, layered: shared per version, then per loader
 stonecutter.gradle.kts                 active version, swaps and renames
 build.gradle.kts                       the build script shared by every Fabric node
 build.neoforge.gradle.kts              the NeoForge nodes' build script, and the datagen translation

@@ -8,6 +8,14 @@ stonecutter active "26.2.x"
 
 
 stonecutter parameters {
+    // Every node is `<version>` on Fabric or `<version>-neoforge` on NeoForge. Tagging both parts lets
+    // stonecutter.properties.toml keep what both loaders share in `["26.2.x"]` and the rest in
+    // `[fabric."26.2.x"]` or `[neoforge."26.2.x"]`; see the top of that file.
+    val loader = if (current.project.endsWith("-neoforge")) "neoforge" else "fabric"
+    properties {
+        tags(current.project.removeSuffix("-neoforge"), loader)
+    }
+
     // Bakes the target Minecraft version into the jar, so the startup log line is never stale.
     swaps["minecraft"] = "\"${node.metadata.version}\";"
 

@@ -215,7 +215,11 @@ at `fb821b0` against this build on 2026-09-15. None of it matters while P4 has o
   `--report` option and registries (`>=1.21.5`) all hold there. Two guesses were wrong and were moved:
   the attachment sync channel check is needed on 21.11 as well (`<26.1`), and 1.21.11's `TestData` has
   no padding (`>=26.1`). None of these thresholds is pinned to the exact release between two nodes.
-- **Layer the properties file by loader once `mod.mc_releases` repeats.** The template calls
+- ~~**Layer the properties file by loader once `mod.mc_releases` repeats.**~~ Done on 2026-09-15:
+  `properties { tags(version, loader) }` in `stonecutter.gradle.kts`, the three tables per version in
+  `stonecutter.properties.toml`, and both readers moved to the loader tables. Every node resolves the
+  same values as before except that NeoForge's range is now `mod.mc_compat` in its own syntax, which
+  replaced `mod.mc_range`. The original note: The template calls
   `properties { tags(version, loader) }` in `stonecutter parameters`, so shared keys sit in
   `["26.2.x"]` and loader keys in `[fabric."26.2.x"]` or `[neoforge."26.2.x"]`. By default Stonecutter
   tags only the project name, which is why a flat `["26.2.x-neoforge"]` table is right for P4. Switching
