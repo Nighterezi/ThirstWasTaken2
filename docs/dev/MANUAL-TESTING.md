@@ -243,19 +243,32 @@ checked by hand. Every 1.21.1 item above that is not about Fabric API applies he
 the item itself, the shadowed tooltip droplets, the sea-water sprites, the config screen headings,
 the water cauldron's name and the advancement background.
 
-- [ ] Every item of the 26.2 NeoForge section above.
+- [ ] Every item of the 26.2 NeoForge section above. Checked on 2026-09-15 with computer use, all but
+      two: the bar above hunger and the bubbles above it, creative and a ridden horse hiding it, the
+      Diamond quenched outline, tooltips (grade line, droplet rows after NeoForge's lines, Salty,
+      waterskin servings), Mods → Config → Done, Jade on still water, a water cauldron and sea water,
+      drinking by hand from targeted water and from water whose floor is out of reach, bottles and
+      bowls filling on a second use of the same block, `runServer` starting with Jade in `mods`, and
+      thirst full after death. **Open:** the exhaustion strip could not be told apart from the
+      drained droplet in an F2 capture with AppleSkin's underlay on or off, and the Fabric-to-NeoForge
+      world item was not tried.
 - [ ] **Sync first.** NeoForge 21.1 only syncs thirst to a connection that negotiated its attachment
       channel, which a NeoForge client does. Run the whole "Sync to the client" section, including a
-      dedicated server with a second client.
-- [ ] **Sprinting is gated by `LocalPlayerMixin`**, now in the shared client mixin config: at thirst 6
-      holding sprint walks, at 7 it runs.
-- [ ] The thirst bar and the air bubbles stack by `Gui.rightHeight`, not `Hud`: same place as on 26.2,
+      dedicated server with a second client. Checked on a dedicated server with one NeoForge client:
+      joining raised no sync error, `/thirst set` updated the bar at once, the value held through the
+      Nether and back and through a disconnect and rejoin, and a singleplayer world kept it through a
+      save and reload. **Open:** a second client, which two dev clients named `Dev` cannot do.
+- [x] **Sprinting is gated by `LocalPlayerMixin`**, now in the shared client mixin config: at thirst 6
+      holding sprint walks, at 7 it runs. Measured over 3 s of Ctrl+W on a flat track: 16.8 blocks at 7,
+      13.2 at 6.
+- [x] The thirst bar and the air bubbles stack by `Gui.rightHeight`, not `Hud`: same place as on 26.2,
       bubbles above the bar underwater.
-- [ ] The purification recipes show in the recipe book and a furnace boils a looted bottle. The recipe
+- [x] The purification recipes show in the recipe book and a furnace boils a looted bottle. The recipe
       JSON is translated differently on 1.21.1 (`type` and `items`), and only the gametests' furnace
-      check has seen it.
+      check has seen it. A dirty bottle came out of the furnace graded clean.
 - [ ] **Known, by design:** a 1.21.1 NeoForge world opened on a later NeoForge version starts every
       player at full thirst; 21.1 saves the attachment without the `value` field later versions use.
+      Not tried.
 
 ### 1.21.11 and 26.1.x NeoForge
 
