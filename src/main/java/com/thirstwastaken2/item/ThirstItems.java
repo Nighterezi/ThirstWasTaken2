@@ -41,7 +41,15 @@ public final class ThirstItems {
 
     private ThirstItems() { }
 
-    public static void register() {
+    /**
+     * Builds and registers the items, which happens in this class's static initializer: calling it is
+     * what triggers that. Nothing may touch the fields before this runs, because on a loader that
+     * freezes the registries early the items cannot be built any sooner.
+     */
+    public static void register() { }
+
+    /** Registers the creative tab. Runs after {@link #register}. */
+    public static void registerCreativeTab() {
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, CREATIVE_TAB_KEY,
                 Loader.creativeTabBuilder()
                         .title(Component.translatable("itemGroup.thirstwastaken2"))

@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
+import squeek.appleskin.ModConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +42,22 @@ public final class ClientLoader {
         // rows at the point vanilla is about to draw the air bubbles, and moves the bubbles up.
         RIGHT_STATUS_BARS.add(new RightStatusBar(height, visible, renderer));
         *///?}
+    }
+
+    /**
+     * Whether AppleSkin's own exhaustion underlay setting is on. Only call once AppleSkin is known to be
+     * loaded: it names AppleSkin's classes.
+     */
+    public static boolean appleSkinShowsExhaustionUnderlay() {
+        return AppleSkinConfig.showsExhaustionUnderlay();
+    }
+
+    /** Loaded only when asked, so {@link ClientLoader} itself never names AppleSkin's classes. */
+    private static final class AppleSkinConfig {
+        private static boolean showsExhaustionUnderlay() {
+            ModConfig config = ModConfig.INSTANCE;
+            return config != null && config.showFoodExhaustionHudUnderlay;
+        }
     }
 
     /**

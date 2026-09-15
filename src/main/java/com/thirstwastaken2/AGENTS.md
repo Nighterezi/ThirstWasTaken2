@@ -24,13 +24,23 @@ thirst, and the client only receives it through the `PlayerData` sync.
 ## Init order
 
 `ThirstWasTaken2.initialize` is the only entry point, called by the loader's entrypoint class
-(`ThirstWasTaken2Fabric` in `src/main/fabric`), and the order matters:
+(`ThirstWasTaken2Fabric` in `src/main/fabric`, `ThirstWasTaken2NeoForge` in `src/main/neoforge`), and the
+order matters:
 `ThirstConfig.load()` → `ThirstData.register()` → `ThirstComponents.register()` →
-`ThirstItems.register()` → `LootIntegration.register()` → events. Nothing in this source set may
-import a mod loader's API; it goes through `platform/Loader` (see `platform/AGENTS.md`).
+`ThirstItems.register()` → `ThirstItems.registerCreativeTab()` → `LootIntegration.register()` → events.
+Nothing in this source set may import a mod loader's API; it goes through `platform/Loader` (see
+`platform/AGENTS.md`).
 
-`ThirstItems` static fields reference `ThirstComponents`, and `WaterPurity.resolve` references
-`ThirstItems`, so registration cannot be reordered without checking those class-init chains.
+The three registration calls go through `Loader.onRegister`, one per registry. Fabric runs them on the
+spot; a loader that freezes its registries before mods start runs them later, from its own registration
+phase, so they must not depend on anything `initialize` does after them.
+
+`ThirstItems.register()` is empty on purpose: calling it triggers the class's static initializer, which
+is where the items are built and registered. **Nothing may touch a `ThirstItems` field before it runs**,
+from a mixin, `ThirstApi` or a static field elsewhere, because an item cannot be built before its
+registry accepts entries. `ThirstComponents` builds its types with the class but registers them only in
+`register()`, so touching one of its fields early is harmless. The items' properties name the components,
+so components are registered first.
 
 Events registered there, in registration order per event:
 

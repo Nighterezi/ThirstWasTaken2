@@ -8,35 +8,39 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 
 public final class ThirstComponents {
-    public static final DataComponentType<Integer> WATER_SERVINGS = Registry.register(
-            BuiltInRegistries.DATA_COMPONENT_TYPE,
-            ThirstWasTaken2.id("water_servings"),
-            DataComponentType.<Integer>builder()
-                    .persistent(Codec.intRange(0, 3))
-                    .networkSynchronized(ByteBufCodecs.VAR_INT)
-                    .build());
+    public static final DataComponentType<Integer> WATER_SERVINGS = DataComponentType.<Integer>builder()
+            .persistent(Codec.intRange(0, 3))
+            .networkSynchronized(ByteBufCodecs.VAR_INT)
+            .build();
 
     /** The grade of the fresh water inside. Salt water carries {@link #WATER_SALTY} instead. */
-    public static final DataComponentType<Integer> WATER_PURITY = Registry.register(
-            BuiltInRegistries.DATA_COMPONENT_TYPE,
-            ThirstWasTaken2.id("water_purity"),
-            DataComponentType.<Integer>builder()
-                    .persistent(Codec.intRange(WaterPurity.MIN, WaterPurity.MAX))
-                    .networkSynchronized(ByteBufCodecs.VAR_INT)
-                    .build());
+    public static final DataComponentType<Integer> WATER_PURITY = DataComponentType.<Integer>builder()
+            .persistent(Codec.intRange(WaterPurity.MIN, WaterPurity.MAX))
+            .networkSynchronized(ByteBufCodecs.VAR_INT)
+            .build();
 
     /**
      * Sea water. It is not a grade: a salty container carries no {@link #WATER_PURITY} at all, so
      * nothing can read a grade off water that has none, and no purification recipe can match it.
      */
-    public static final DataComponentType<Boolean> WATER_SALTY = Registry.register(
-            BuiltInRegistries.DATA_COMPONENT_TYPE,
-            ThirstWasTaken2.id("water_salty"),
-            DataComponentType.<Boolean>builder()
-                    .persistent(Codec.BOOL)
-                    .networkSynchronized(ByteBufCodecs.BOOL)
-                    .build());
+    public static final DataComponentType<Boolean> WATER_SALTY = DataComponentType.<Boolean>builder()
+            .persistent(Codec.BOOL)
+            .networkSynchronized(ByteBufCodecs.BOOL)
+            .build();
 
     private ThirstComponents() { }
-    public static void register() { }
+
+    /**
+     * Registers the component types. They are built with the class, but registered only here, so touching
+     * a field early never writes into a registry a loader may still have frozen.
+     */
+    public static void register() {
+        register("water_servings", WATER_SERVINGS);
+        register("water_purity", WATER_PURITY);
+        register("water_salty", WATER_SALTY);
+    }
+
+    private static void register(String name, DataComponentType<?> type) {
+        Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, ThirstWasTaken2.id(name), type);
+    }
 }

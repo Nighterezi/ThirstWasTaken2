@@ -41,6 +41,9 @@ tasks.withType<ProcessResources>().configureEach {
     exclude("**/AGENTS.md", "**/*.bak")
 }
 
+// The NeoForge node has a third check, `checkNeoForgeResources`, in build.neoforge.gradle.kts beside the
+// translation of datagen's Fabric-only JSON it guards.
+
 /**
  * Fails when loader independent code names a mod loader. `src/main/java` and `src/client/java` are
  * compiled against Fabric API today, so the compiler cannot catch a Fabric import there; this can.

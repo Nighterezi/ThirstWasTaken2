@@ -71,11 +71,13 @@ What does live here are the types those signatures need, because both copies hav
 | `Loader` | What it hides |
 |---|---|
 | `isDevelopmentEnvironment`, `configDir`, `isModLoaded` | the loader's own environment |
+| `onRegister` | when a registry accepts entries: at once on Fabric, from the registration event on a loader that freezes registries early |
 | `playerData` | the attachment system that saves a value on a player and syncs it to its owner |
 | `creativeTabBuilder` | a tab builder that places itself in the tab list |
 | `onServerTickEnd`, `onUseBlock`, `onUseItem`, `onRegisterCommands`, `onTagsLoaded` | the event bus |
 | `onLootTable` | loot table modification, on every table whoever wrote it |
 | `ClientLoader.addRightStatusBar` | HUD layer registration and the right-hand status bar height |
+| `ClientLoader.appleSkinShowsExhaustionUnderlay` | AppleSkin's own setting, which it keeps in a different class shape on each loader |
 
 Rules:
 
@@ -87,8 +89,10 @@ Rules:
   signature has to be implementable by both.
 - **Every copy changes together.** Adding a method to one `Loader` means adding it to all of them;
   the node that lacks it is the one that fails to compile.
-- **Entrypoints are loader code.** `ThirstWasTaken2Fabric` and `ThirstWasTaken2FabricClient` do one
-  thing: call `ThirstWasTaken2.initialize` and `ThirstWasTaken2Client.initialize`. So do the manifest
+- **Entrypoints are loader code.** `ThirstWasTaken2Fabric`, `ThirstWasTaken2FabricClient` and the NeoForge
+  `@Mod` class `ThirstWasTaken2NeoForge` do one thing: call `ThirstWasTaken2.initialize` and
+  `ThirstWasTaken2Client.initialize`. The NeoForge `Loader` finds the mod event bus itself, through
+  `ModList`, so the mod class passes nothing in. So do the manifest
   (`src/main/fabric/resources/fabric.mod.json`) and anything written against a loader-only mod, such
   as `ModMenuIntegration`.
 - **`checkLoaderSeam` fails on a loader import in `src/main/java` or `src/client/java`.** It reads

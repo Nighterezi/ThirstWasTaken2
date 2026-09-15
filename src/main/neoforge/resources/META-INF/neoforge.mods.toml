@@ -1,0 +1,57 @@
+# The NeoForge manifest, the counterpart of src/main/fabric/resources/fabric.mod.json. Templated: the
+# version, minecraft and neoforge placeholders are expanded by processResources in
+# build.neoforge.gradle.kts, which expands comments too, so none are written here. Keep the two
+# manifests saying the same thing.
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "MIT"
+issueTrackerURL = "https://github.com/Nighterezi/ThirstWasTaken2/issues"
+
+[[mods]]
+modId = "thirstwastaken2"
+version = "${version}"
+displayName = "ThirstWasTaken2"
+description = '''Adds a survival thirst bar, drinking, and water purity.'''
+authors = "Nighter, ghen (original ThirstWasTaken)"
+credits = "https://github.com/Nighterezi/ThirstWasTaken2/graphs/contributors"
+displayURL = "https://modrinth.com/mod/thirst-was-taken-2"
+# A square icon; NeoForge reads `logoFile` as a deprecated banner.
+iconFile = "assets/thirstwastaken2/icon.png"
+
+# FML has no per-side mixin config: client-only mixins go in a config's own "client" list.
+[[mixins]]
+config = "thirstwastaken2.mixins.json"
+
+# `ordering` and `side` are read with Enum.valueOf, so they must be upper case; `type` is not.
+[[dependencies.thirstwastaken2]]
+modId = "neoforge"
+type = "required"
+versionRange = "[${neoforge},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.thirstwastaken2]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft}"
+ordering = "NONE"
+side = "BOTH"
+
+# Optional integrations, the same three fabric.mod.json suggests minus Mod Menu, which is Fabric only.
+[[dependencies.thirstwastaken2]]
+modId = "appleskin"
+type = "optional"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.thirstwastaken2]]
+modId = "jade"
+type = "optional"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.thirstwastaken2]]
+modId = "farmersdelight"
+type = "optional"
+ordering = "NONE"
+side = "BOTH"

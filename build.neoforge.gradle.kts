@@ -104,7 +104,8 @@ neoForge {
         create("server") { server() }
         // The GameTest runner: a dedicated server that runs every registered test headlessly and
         // exits with the number of failures. The harness that registers them is P4's step 6, so
-        // this run has nothing to run yet.
+        // until then this run only starts the server, loads the datapack and stops, which is the
+        // cheapest way to see recipe and advancement parse errors on this node.
         create("gametest") { type = "gameTestServer" }
     }
 }
@@ -122,6 +123,64 @@ dependencies {
     compileOnly("maven.modrinth:jade:${property("deps.jade")}")
 }
 
+/*
+ * Datagen runs on Fabric only, so the recipes and advancements it writes use Fabric's spellings for
+ * three things NeoForge also has, under other names. This node rewrites them as it copies the files,
+ * rather than datagen writing a second copy or NeoForge registering Fabric's names: an alias cannot
+ * work, because NeoForge reads the ingredient type from a different key altogether.
+ *
+ * | Fabric                                                   | NeoForge                                             |
+ * |----------------------------------------------------------|------------------------------------------------------|
+ * | `fabric:type` `fabric:components`, `base`, `components`  | `neoforge:ingredient_type` `neoforge:components`, `items`, `components` |
+ * | `fabric:type` `fabric:any`, `ingredients`                | `neoforge:ingredient_type` `neoforge:compound`, `children` |
+ * | `fabric:load_conditions`, `fabric:all_mods_loaded`       | `neoforge:conditions`, one `neoforge:mod_loaded` per mod |
+ *
+ * Both components ingredients take a `DataComponentPatch` and match a stack that carries at least the
+ * listed values, which is NeoForge's default `strict: false`, so `strict` is left out.
+ *
+ * Anything else Fabric-specific fails the build here, naming the file, and `checkNeoForgeResources`
+ * catches whatever this does not look at. A generator that starts writing a new Fabric shape therefore
+ * breaks this node's build rather than loading as a broken recipe.
+ */
+fun neoForgeJson(node: Any?, file: String): Any? = when (node) {
+    is List<*> -> node.map { neoForgeJson(it, file) }
+    is Map<*, *> -> when (val type = node["fabric:type"]) {
+        null -> node.entries.associate { (key, value) ->
+            if (key == "fabric:load_conditions") "neoforge:conditions" to neoForgeConditions(value, file)
+            else key as String to neoForgeJson(value, file)
+        }
+        "fabric:components" -> {
+            requireKeys(node, setOf("fabric:type", "base", "components"), file)
+            mapOf("neoforge:ingredient_type" to "neoforge:components",
+                "items" to node["base"], "components" to node["components"])
+        }
+        "fabric:any" -> {
+            requireKeys(node, setOf("fabric:type", "ingredients"), file)
+            mapOf("neoforge:ingredient_type" to "neoforge:compound",
+                "children" to neoForgeJson(node["ingredients"], file))
+        }
+        else -> throw GradleException("$file: no NeoForge translation for the Fabric ingredient type $type")
+    }
+    else -> node
+}
+
+fun neoForgeConditions(conditions: Any?, file: String): List<Map<String, Any?>> =
+    (conditions as List<*>).flatMap { condition ->
+        condition as Map<*, *>
+        if (condition["condition"] != "fabric:all_mods_loaded") {
+            throw GradleException("$file: no NeoForge translation for the Fabric load condition ${condition["condition"]}")
+        }
+        (condition["values"] as List<*>).map { mapOf("type" to "neoforge:mod_loaded", "modid" to it) }
+    }
+
+fun requireKeys(node: Map<*, *>, keys: Set<String>, file: String) {
+    val unknown = node.keys - keys
+    if (unknown.isNotEmpty()) throw GradleException("$file: no NeoForge translation for $unknown in ${node["fabric:type"]}")
+}
+
+/** Written by `:26.2.x:runDatagen`; the only files whose Fabric spellings are translated. */
+val generatedResources = rootProject.file("src/main/generated/${sc.current.version}")
+
 tasks.processResources {
     val props = mapOf(
         "version" to version,
@@ -130,12 +189,55 @@ tasks.processResources {
         "java" to requiredJava.majorVersion,
     )
     inputs.properties(props)
-    // The manifest arrives in P4's step 4; `filesMatching` is a no-op until it does.
     filesMatching("META-INF/neoforge.mods.toml") { expand(props) }
     filesMatching("*.mixins.json") { expand("java" to "JAVA_${requiredJava.majorVersion}") }
     // Datagen's hash cache, which Loom keeps out of the Fabric mod jar and nothing keeps out of
     // this one.
     exclude("**/.cache/**")
+
+    // Translates the generated JSON in place, once it is copied. Only files that came from the
+    // generated root are read, and only those naming Fabric are rewritten, so the rest keep their
+    // bytes. The Copy task copies every file again whenever any input changes, so a translated file
+    // is never translated twice.
+    val output = destinationDir
+    doLast {
+        generatedResources.walk().filter { it.isFile && it.extension == "json" }.forEach { source ->
+            val relative = source.relativeTo(generatedResources).invariantSeparatorsPath
+            val target = output.resolve(relative)
+            if (!target.isFile) return@forEach
+            val text = target.readText()
+            if (!text.contains("\"fabric:")) return@forEach
+            val translated = neoForgeJson(groovy.json.JsonSlurper().parseText(text), relative)
+            target.writeText(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(translated)))
+        }
+    }
+}
+
+/**
+ * Fails when a Fabric key survives in the processed resources, from datagen or from a hand-written
+ * file, because NeoForge would load it as a broken recipe or ignore the condition. CI runs it on the
+ * NeoForge job; see the translation above processResources.
+ */
+tasks.register("checkNeoForgeResources") {
+    group = "verification"
+    description = "Fails when a Fabric-only JSON key survives into the NeoForge resources"
+
+    val processed = tasks.processResources.map { it.destinationDir }
+    inputs.dir(processed)
+    val fabricKey = Regex(""""fabric:[^"]*"\s*:""")
+
+    doLast {
+        val root = processed.get()
+        val offenders = root.walk().filter { it.isFile && it.extension == "json" }.flatMap { file ->
+            file.readLines().withIndex()
+                .filter { (_, line) -> fabricKey.containsMatchIn(line) }
+                .map { (index, line) -> "${file.relativeTo(root).invariantSeparatorsPath}:${index + 1}: ${line.trim()}" }
+        }.toList()
+        check(offenders.isEmpty()) {
+            "Fabric keys in the NeoForge resources. Translate the shape in build.neoforge.gradle.kts " +
+                "or stop writing it:\n" + offenders.joinToString("\n")
+        }
+    }
 }
 
 // Stonecutter rewrites the versioned comments in `src/` into this node's own source tree, so
@@ -170,13 +272,4 @@ publishing {
         }
     }
     repositories { }
-}
-
-// Temporary, until P4's step 3 gives this node a Loader of its own: it cannot compile before then.
-// A task run on every node at once, such as `./gradlew buildAndCollect`, skips this node rather than
-// failing on it; a task that names it, such as `:26.2.x-neoforge:compileJava`, still runs. Step 3
-// deletes this block.
-val namedOnCommandLine = gradle.startParameter.taskNames.any { it.startsWith(":${project.name}:") }
-if (!namedOnCommandLine) {
-    tasks.configureEach { enabled = false }
 }

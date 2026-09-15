@@ -205,9 +205,10 @@ values in place. `.github/workflows/update-mc-deps.yml` runs it daily and keeps 
 ## Architecture in one pass
 
 [ThirstWasTaken2.java](src/main/java/com/thirstwastaken2/ThirstWasTaken2.java) is the loader
-independent initializer, called by the Fabric entrypoint `ThirstWasTaken2Fabric`: it loads
+independent initializer, called by the Fabric entrypoint `ThirstWasTaken2Fabric` and the NeoForge mod
+class `ThirstWasTaken2NeoForge`: it loads
 configuration (`ThirstConfig.load()`), registers the player data (`ThirstData.register()`), the data
-components, the items and creative tab, and the loot pools, then hooks the server tick, block and item
+components, the items and creative tab (each through `Loader.onRegister`), and the loot pools, then hooks the server tick, block and item
 use, command and tag reload callbacks through `Loader`.
 
 ```mermaid
@@ -327,6 +328,11 @@ src/main/fabric/                        Fabric only, compiled into main
   java/.../platform/Loader.java        every call into Fabric Loader and Fabric API
   resources/fabric.mod.json            entrypoints (main, client, modmenu, jade); templated per version
 
+src/main/neoforge/                      NeoForge only, compiled into main on the 26.2.x-neoforge node
+  java/.../neoforge/ThirstWasTaken2NeoForge.java  @Mod class, calls ThirstWasTaken2.initialize
+  java/.../platform/Loader.java        every call into FML and NeoForge
+  resources/META-INF/neoforge.mods.toml  the manifest; templated
+
 src/client/java/com/thirstwastaken2/client/
   ThirstWasTaken2Client.java            initialize(): HUD row registration
   ThirstHud.java                       thirst bar rendering
@@ -335,7 +341,7 @@ src/client/java/com/thirstwastaken2/client/
   config/ConfigPreview.java            live thirst bar, food bar and tooltip preview
   platform/ClientVanilla.java          client vanilla calls that differ between versions
   platform/StatusBarRenderer.java      the shape ClientLoader draws a HUD row through
-  compat/AppleSkinIntegration.java     reads AppleSkin's own exhaustion-underlay setting
+  compat/AppleSkinIntegration.java     whether to ask ClientLoader for AppleSkin's exhaustion-underlay setting
   compat/JadeIntegration.java          jade entrypoint: the water grade under the crosshair
 
 src/main/createfly/                     Create Fly Sand Filter, compiled only where deps.create_fly is set

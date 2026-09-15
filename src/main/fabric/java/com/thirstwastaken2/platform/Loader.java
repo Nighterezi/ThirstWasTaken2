@@ -13,6 +13,7 @@ import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.Registry;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
@@ -50,6 +51,16 @@ public final class Loader {
 
     public static boolean isModLoaded(String modId) {
         return FabricLoader.getInstance().isModLoaded(modId);
+    }
+
+    /**
+     * Runs {@code registration} when {@code registry} accepts new entries.
+     *
+     * <p>Fabric leaves the built-in registries open while mods initialize, so this runs it straight
+     * away and {@code registry} only matters to loaders that freeze them first.
+     */
+    public static void onRegister(ResourceKey<? extends Registry<?>> registry, Runnable registration) {
+        registration.run();
     }
 
     /** Registers a per-player value, saved with {@code codec} and synced to its owner with {@code streamCodec}. */

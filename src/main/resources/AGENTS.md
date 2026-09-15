@@ -4,7 +4,8 @@ The hand-written half of the mod's assets, plus the mixin config. This file is e
 built jar by `processResources` in `build.gradle.kts`; keep that exclude if you add more notes here.
 
 The loader's own manifest is loader code and lives beside the loader's Java, in
-`src/main/fabric/resources/fabric.mod.json`. Everything here is shared by every loader.
+`src/main/fabric/resources/fabric.mod.json` and `src/main/neoforge/resources/META-INF/neoforge.mods.toml`.
+Everything here is shared by every loader.
 
 ```
 thirstwastaken2.mixins.json  every mixin class must be listed here
@@ -46,6 +47,10 @@ Purity 3 has no recipe because it is already clean.
 - Smelting is `cookingtime` 200, campfire 600, both `experience` 0.35.
 - Matching on a component uses Fabric's ingredient type:
   `{"fabric:type": "fabric:components", "base": …, "components": {"thirstwastaken2:water_purity": N}}`.
+  Datagen only writes Fabric's spelling; the NeoForge node translates it, `fabric:any` and
+  `fabric:load_conditions` as it copies resources, in `build.neoforge.gradle.kts`, and
+  `checkNeoForgeResources` fails if a `fabric:` key survives. A new Fabric-only shape in a generator
+  needs a translation there too.
   Water bottles must also match `"minecraft:potion_contents": "minecraft:water"` on top of the
   `minecraft:potion` base.
 - Every cooking ingredient also requires `water_salty: false`, and every result writes back the new

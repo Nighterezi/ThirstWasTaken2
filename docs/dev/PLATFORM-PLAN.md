@@ -181,7 +181,7 @@ What the seam looks like, so P3 and P4 know where they land
 | `Loader.onLootTable` | unchanged | `LootTableLoadEvent`, on every table; no pack filtering to reproduce |
 | `Loader.creativeTabBuilder` | `FabricItemGroup`, already branched | vanilla's `CreativeModeTab.builder()` |
 | `ClientLoader.addRightStatusBar` | the HUD fork: `HudRenderCallback`, reading the stack height by hand | `RegisterGuiLayersEvent` above the food layer, `Gui.rightHeight` |
-| item registration | still a direct `Registry.register` in `ThirstItems`, not behind the seam | needs registering during the registry event; the one P2 left alone |
+| `Loader.onRegister` | not there yet: a direct `Registry.register` in `ThirstItems`, the one P2 left alone | added in P4 step 2; runs at once on Fabric, from `RegisterEvent` on NeoForge |
 
 Item registration was left out on purpose. Fabric allows registering in the initializer, which is
 all one loader can test, and a seam written without a second loader to check it against would be a

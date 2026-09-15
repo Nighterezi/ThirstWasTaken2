@@ -10,6 +10,7 @@ import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.platform.Loader;
 import com.thirstwastaken2.purity.ThirstComponents;
 import com.thirstwastaken2.purity.WaterInteractions;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +39,11 @@ public final class ThirstWasTaken2 {
     public static void initialize() {
         ThirstConfig.load();
         ThirstData.register();
-        ThirstComponents.register();
-        ThirstItems.register();
+        // Items take a registry holder when they are built, so a loader that freezes the registries
+        // before mods start needs all three of these deferred to its registration phase.
+        Loader.onRegister(Registries.DATA_COMPONENT_TYPE, ThirstComponents::register);
+        Loader.onRegister(Registries.ITEM, ThirstItems::register);
+        Loader.onRegister(Registries.CREATIVE_MODE_TAB, ThirstItems::registerCreativeTab);
         LootIntegration.register();
 
         Loader.onServerTickEnd(ThirstManager::tick);

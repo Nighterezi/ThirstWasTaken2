@@ -5,11 +5,12 @@ with an end state: delete it once P4's gate in [PLATFORM-PLAN.md](PLATFORM-PLAN.
 anything that outlives it into [platform/AGENTS.md](../../src/main/java/com/thirstwastaken2/platform/AGENTS.md)
 and the root [AGENTS.md](../../AGENTS.md).
 
-**Status: steps 0 and 1 done.** Estimate 8 to 15 days. The exit ramp is 20 days: past it, NeoForge
-stays on 26.2 and P5 is dropped. Days spent: 1.
+**Status: steps 0 to 4 done.** Estimate 8 to 15 days. The exit ramp is 20 days: past it, NeoForge
+stays on 26.2 and P5 is dropped. Days spent: 2.5.
 
 Steps 0 and 1 were first written without a network, then built and launched on 2026-09-15. What the
-launch changed is in the answers and in step 1's table. Next is step 2.
+launch changed is in the answers and in step 1's table. Steps 2 to 4 landed the same day, the build
+half of step 4 before step 3 and its runtime check after. Next is step 5.
 
 ## Scope
 
@@ -303,6 +304,19 @@ ahead of `ITEM` on purpose. See step 0's first answer.*
 
 **Check:** `:26.2.x:runGametest` still passes 123 tests. On Fabric the seam changes nothing but order.
 
+**Result, 2026-09-15.** `:26.2.x:runGametest` passes 124 of 124 (the count step 1 recorded; the 123 above
+predates one test). The other Fabric nodes pass too: `buildAndCollect`, both seam checks on all four,
+`:26.2.x:checkDatagen`, and the gametests on `26.1.x` and `1.21.11` (124) and `1.21.1` (123). What landed:
+
+| | |
+|---|---|
+| `Loader.onRegister` | in the Fabric `Loader`, running `registration` at once. The NeoForge copy, which queues it for `RegisterEvent`, is step 3's |
+| `ThirstWasTaken2.initialize` | three `Loader.onRegister` calls in place of the direct ones: `DATA_COMPONENT_TYPE` with `ThirstComponents::register`, `ITEM` with `ThirstItems::register`, `CREATIVE_MODE_TAB` with `ThirstItems::registerCreativeTab` |
+| `ThirstItems` | `register()` is now empty and only triggers the static initializer; the tab moved to `registerCreativeTab()`. That method is a member of the same class, so calling it also initializes the items, which is harmless because `ITEM` is registered first on both loaders |
+| `ThirstComponents` | the fields are built with the class but registered only in `register()`, so a field touched early no longer writes into the registry |
+| Early touches | none found: no mixin, client class or static field in `main` or `client` names `ThirstItems` or `ThirstComponents`. The datagen `Container` constants and Create Fly's `SandFilter` do, but both run after the mod initializes and neither is built on the NeoForge node |
+| Docs | the init order in `src/main/java/com/thirstwastaken2/AGENTS.md`, the `onRegister` row in `platform/AGENTS.md`, and the seam table in `PLATFORM-PLAN.md` |
+
 ### 3. The NeoForge `Loader` (1 to 2 days)
 
 `src/main/neoforge/java/com/thirstwastaken2/platform/Loader.java`, with every public signature the Fabric
@@ -324,6 +338,25 @@ Once it compiles, delete the block at the end of `build.neoforge.gradle.kts` tha
 tasks unless the command line names it. Step 1 added it so `./gradlew buildAndCollect` kept working.
 
 **Check:** `:26.2.x-neoforge:compileJava` passes; `checkLoaderSeam` still passes on every node.
+
+**Result, 2026-09-15.** `compileJava` passes, and `./gradlew buildAndCollect checkLoaderSeam
+checkVersionSeam devClasses` passes on all five nodes, now building
+`ThirstWasTaken2-1.0.5+26.2-neoforge.jar`. The Fabric gametests still pass, 124 on `26.2.x` and 123 on
+`1.21.1`, and `:26.2.x:checkDatagen` too. The node's game test server starts the mod, logs
+`ThirstWasTaken2 initialized for Minecraft 26.2 (dev)` with no warning or error, and stops. Lines: the
+NeoForge `Loader` is 189 and its `ClientLoader` 64, 253 for the pair against a stop at 700. Every API was
+read from the node's own NeoForge `26.2.0.88` and FML `11.0.16` sources. Where it differs from the bullets
+above:
+
+| | |
+|---|---|
+| The mod bus | not handed over by the `@Mod` class. A package-private method cannot be reached from `com.thirstwastaken2.neoforge`, and a public one would be a NeoForge-only signature on `Loader`. `Loader` looks the bus up instead, `ModList.get().getModContainerById(MOD_ID)...getEventBus()`, which works during construction because FML creates every container before constructing any mod. So `ThirstWasTaken2NeoForge` has a no-argument constructor and makes the one call, the same as the Fabric entrypoint |
+| `onRegister` | one `RegisterEvent` listener on the mod bus, added on the first call, runs the queued registrations for the event's registry. A registration for a registry whose event already fired throws rather than never running |
+| `playerData` | no `DeferredRegister` and no lazy `DeferredHolder`. An `AttachmentType` takes no registry holder, so it is built at once and registered through `onRegister` with `NeoForgeRegistries.Keys.ATTACHMENT_TYPES`, and `PlayerData` holds the type itself. Saved as `codec.fieldOf("value")`, synced with `(holder, to) -> holder == to` |
+| `onUseBlock`, `onUseItem` | cancel with the result on non-`PASS`. Listeners added with `addListener` skip cancelled events, which is Fabric's stop-the-chain. Sides match Fabric: the server hooks are in `ServerPlayerGameMode.useItemOn` and `useItem`, the client ones in `MultiPlayerGameMode`, and the client still sends the use packet when the event is cancelled, so the server half runs too. Step 6 proves it |
+| `onLootTable` | `event.getTable().addPool(pool.build())`; NeoForge's `LootTable.addPool` checks the table is not frozen yet, which it is not during the event |
+| Pulled forward from step 5 | the NeoForge `ClientLoader` and the AppleSkin read behind it, because the client sources compile into `main` on this node and `compileJava` cannot pass without them. `addRightStatusBar` registers above `VanillaGuiLayers.FOOD_LEVEL` and advances `Hud.rightHeight` only when it drew, and also checks `gameMode.canHurtPlayer()`: Fabric draws rows attached to the food bar from inside vanilla's `extractPlayerHealth`, which only runs when the player can be hurt, while a NeoForge layer registered this way has no condition. `appleSkinShowsExhaustionUnderlay` is in both `ClientLoader` copies, each with a nested holder class so `ClientLoader` never names AppleSkin until asked, and `AppleSkinIntegration` lost its field read. Still step 5's: the `@Mod(dist = Dist.CLIENT)` class, without which `addRightStatusBar` is never called on NeoForge, the client mixin config, the config screen and the run classpath |
+| Step 1's guard | deleted. Nothing in CI changes: every CI command names its node, and `discover` still leaves the node out until step 7 |
 
 ### 4. Resources (1 to 2 days)
 
@@ -351,6 +384,33 @@ Fabric-only shape in a generator then fails the NeoForge build instead of loadin
 **Check:** the processed recipes load without a parse error in the server log, with Farmer's Delight
 absent, and the four Farmer's Delight files are skipped by their condition rather than reported as an
 unknown recipe type.
+
+**Result, 2026-09-15.** `:26.2.x-neoforge:checkNeoForgeResources` passes, and so does the runtime check,
+run after step 3 on the node's game test server, which needs no EULA. Neither `debug.log` nor the console
+carries NeoForge's debug line for a file skipped by its condition, so the check is a comparison against
+the same server with the untranslated files copied over the processed ones (`runGametest -x
+processResources`):
+
+| | untranslated | translated |
+|---|---|---|
+| parse errors naming `thirstwastaken2` | 21: the 19 components recipes (`No key type`), and the two cooking pot recipes (`farmersdelight:cooking` is an unknown registry key) | none |
+| recipes loaded | 1588 | 1607, the 19 more |
+| advancements loaded | 1704, the two cooking pot ones included | 1702 |
+
+So the translated ingredients parse, which also shows the items and components registered through
+`onRegister`, and the four Farmer's Delight files are dropped by `neoforge:conditions` rather than
+failing. What landed:
+
+| | |
+|---|---|
+| Codecs, read from the node's own jars | NeoForge `26.2.0.88` sources: `DataComponentIngredient` is `items` (a holder set, so one id string works), `components` (a `DataComponentPatch`, the same type Fabric reads) and `strict` defaulting to false; `CompoundIngredient` reads `children` with `ingredients` as an alias; conditions dispatch on `type`, and `mod_loaded` reads `modid`. The patched `SimpleJsonResourceReloadListener` applies `neoforge:conditions` to every file it loads, which covers advancements as well as recipes |
+| Manifest | `src/main/neoforge/resources/META-INF/neoforge.mods.toml`, checked against FML `11.0.16`'s parser: `ordering` and `side` go through `Enum.valueOf` and must be upper case, `type` is upper-cased for you. Required `neoforge` (`[26.2.0.88,)`) and `minecraft` (`mod.mc_range`), optional AppleSkin, Jade and Farmer's Delight. `displayURL`, `credits` and `iconFile` carry what `fabric.mod.json` has in `contact`, `contributors` and `icon`. The first launch warned that `logoFile` is deprecated for `bannerFile` or, for a square icon, `iconFile` |
+| Mixin configs | only `thirstwastaken2.mixins.json`. FML has no per-side `[[mixins]]` entry, so the client config step 5 creates is listed there as a plain entry and keeps its mixins in its own `client` list. Listing it now would name a file that does not exist yet |
+| Translation | in `build.neoforge.gradle.kts`, a `doLast` on `processResources` that parses with `JsonSlurper`, as the Create Fly manifest edit in `build.gradle.kts` already does. It reads only files under `src/main/generated/26.2` and rewrites only those containing `"fabric:`: 23 files, 27 ingredients (25 components, 2 compound) and 4 condition lists. It lives in the NeoForge script rather than beside the seam checks in `gradle/shared.gradle.kts`, because only this node runs it; a comment there points to it |
+| Unknown shapes | an ingredient type other than `components` or `any`, an unexpected key in either, or a load condition other than `all_mods_loaded` fails `processResources` naming the file. Tried with a `fabric:tag` ingredient in a scratch generated file |
+| `checkNeoForgeResources` | fails on any `"fabric:…":` key in any processed JSON, hand-written or generated. Tried with a scratch hand-written file |
+| Not wired to `check` | CI runs it explicitly on the NeoForge job in step 7, the same as the seam checks |
+| Docs | `src/main/resources/AGENTS.md` names both manifests and the translation |
 
 ### 5. Client (1.5 to 3 days)
 
