@@ -158,7 +158,7 @@ Add one seam:
 
 ```java
 /** Runs {@code registration} when {@code registry} accepts new entries. */
-public static void onRegister(ResourceKey<? extends Registry<?>> registry, Runnable registration)
+public static void onRegister(ResourceKey<? extends Registry<?>> registry, Runnable registration);
 ```
 
 - Fabric runs `registration` immediately.

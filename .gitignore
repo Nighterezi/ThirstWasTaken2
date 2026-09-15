@@ -12,3 +12,6 @@ tools/
 
 # Local agent workspace
 .claude/
+
+# Local environment variables
+.env
