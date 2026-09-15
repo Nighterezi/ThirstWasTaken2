@@ -88,19 +88,20 @@ Checked 2026-09-12. Re-check before relying on any of it.
 
 ## Phases
 
-P0, P1 and P2 are done. The remaining day counts are still estimates, but P0 re-anchored them against
-a real build; see [P0-SPIKE.md](P0-SPIKE.md).
+P0 through P3 are done. The remaining day counts are still estimates, but P0 re-anchored them against
+a real build; see [P0-SPIKE.md](P0-SPIKE.md). P4 has its own working plan in
+[P4-NEOFORGE-PLAN.md](P4-NEOFORGE-PLAN.md).
 
 | Phase | Work | Estimate | Gate to move on |
 |---|---|---|---|
 | ~~**P0**~~ | Spike: stand up a `1.21.1` node, run `:1.21.1:build`, record what actually breaks | 1 day | **Done.** [P0-SPIKE.md](P0-SPIKE.md): 23 of 58 Java files and 31 of 57 JSON files break; 4 structural forks; overlap with P1 and P2 is total |
 | ~~**P1**~~ | Move the 90 resource files to datagen, output keyed by Minecraft version | 2 to 3 days | **Done.** 58 of the 90 are generated into `src/main/generated/<minecraft version>/`; `:<version>:checkDatagen` runs in CI on all three nodes and 61 gametests pass on each |
 | ~~**P2**~~ | `platform/Loader`, written while there is still only one loader | 2 to 3 days | **Done.** No loader import left in `src/main/java` or `src/client/java`; `checkLoaderSeam` runs in CI; all three nodes build and pass gametests |
-| **P3** | 1.21.1 Fabric node: sync packet, HUD fork, drink item fork, asset overlay | 4 to 6 days | Gametests green on four nodes, then **release and stop for feedback**. **Built, not released:** 115 of 115 mod gametests on all four nodes; the exit ramp was revised after P3 crossed the old one, see below; the manual pass in [MANUAL-TESTING.md](MANUAL-TESTING.md) is still to do |
-| **P4** | NeoForge on 26.2 only | 8 to 15 days | Gametests green on five nodes |
+| ~~**P3**~~ | 1.21.1 Fabric node: sync packet, HUD fork, drink item fork, asset overlay | 4 to 6 days | **Done.** Released in 1.0.4 on 2026-09-13; 115 of 115 mod gametests on all four nodes at the time; no sync packet was needed; the exit ramp was revised after P3 crossed the old one, see below |
+| **P4** | NeoForge on 26.2 only | 8 to 15 days | Gametests green on five nodes. **Next.** Steps in [P4-NEOFORGE-PLAN.md](P4-NEOFORGE-PLAN.md) |
 | **P5** | NeoForge across the remaining versions, starting with 1.21.1, plus publish automation | 4 to 8 days | Seven nodes green |
 
-Roughly 16 to 29 days of work left. Spread it over months, not weeks.
+Roughly 12 to 23 days of work left. Spread it over months, not weeks.
 
 P0 came first because the ordering of P1 and P2 against P3 rested on an unverified claim: that the
 1.21.1 port touches the same files datagen and the loader seam touch. The spike confirmed it in both
@@ -185,3 +186,28 @@ What the seam looks like, so P3 and P4 know where they land
 Item registration was left out on purpose. Fabric allows registering in the initializer, which is
 all one loader can test, and a seam written without a second loader to check it against would be a
 guess. P4 is where it gets one.
+
+## Carried to P5
+
+Found by reading [stonecutter-template-multiloader](https://github.com/stonecutter-versioning/stonecutter-template-multiloader)
+at `fb821b0` against this build on 2026-09-15. None of it matters while P4 has one NeoForge node.
+
+- **Serialize `createMinecraftArtifacts`.** Every ModDevGradle node decompiles and recompiles
+  Minecraft in that task, and with `org.gradle.parallel=true` several NeoForge nodes do it at once.
+  The template limits it to one at a time with a shared build service:
+  `gradle.sharedServices.registerIfAbsent("createMinecraftArtifactsMutex", ...)` with
+  `maxParallelUsages = 1`, then `usesService` on every task of that name. It keeps this in a `buildSrc`
+  plugin; registering the service directly in `build.neoforge.gradle.kts` does the same without the
+  extra build.
+- **NeoForge's environment API changed in 1.21.9.** From 1.21.9 it is `FMLEnvironment.getDist()` and
+  `FMLLoader.getCurrent().getLoadingModList()`; before, the static field `FMLEnvironment.dist` and
+  `FMLLoader.getLoadingModList()`. The 26.2 `Loader` from P4 uses the new form, so the 1.21.1 NeoForge
+  node needs a version conditional there, inside the loader directory where the invariant allows it.
+- **Layer the properties file by loader once `mod.mc_releases` repeats.** The template calls
+  `properties { tags(version, loader) }` in `stonecutter parameters`, so shared keys sit in
+  `["26.2.x"]` and loader keys in `[fabric."26.2.x"]` or `[neoforge."26.2.x"]`. By default Stonecutter
+  tags only the project name, which is why a flat `["26.2.x-neoforge"]` table is right for P4. Switching
+  costs two things: every Fabric-only key has to move into a `[fabric."..."]` table, or the NeoForge
+  node inherits it (`deps.create_fly` would switch the Sand Filter on); and both readers of
+  `["..."]` headers break, the `discover` job in [build.yml](../../.github/workflows/build.yml) and
+  [update_mc_deps.py](../../.github/scripts/update_mc_deps.py). Worth it at seven nodes, not at five.

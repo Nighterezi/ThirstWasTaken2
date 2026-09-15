@@ -57,8 +57,8 @@ Regenerate every datapack and asset JSON the mod ships:
 Recipes, advancements, tags, the damage type and the item models are all written by `src/datagen`
 into `src/main/generated/<minecraft version>/`, never edited by hand. `":<version>:checkDatagen"`
 regenerates and then fails if the result differs from what is committed; CI runs it for every
-version. See [src/datagen/java/AGENTS.md](src/datagen/java/AGENTS.md), including why the three
-versions produce different bytes from one body of code.
+version. See [src/datagen/java/AGENTS.md](src/datagen/java/AGENTS.md), including why the versions
+produce different bytes from one body of code.
 
 Measure what the mod costs a server, in time and memory, without anyone joining:
 
@@ -84,7 +84,7 @@ Switch it with `./gradlew "Set active project to 1.21.11"` — that rewrites the
 `./gradlew "Reset active project"` before committing.
 
 Gradle needs network access on the first run for `maven.modrinth` artifacts (Mod Menu, AppleSkin,
-Jade).
+Cloth Config, Jade, Farmer's Delight Refabricated, and Create Fly on the nodes that set it).
 Once cached, `--offline` works — except that the client compile-only dependencies must already be
 cached.
 
@@ -107,7 +107,10 @@ cached.
   Dev-only tooling checks it before registering anything and lives in the `dev` source set, its own
   `thirstwastaken2-dev` mod like the gametests, which `main` and `client` never reference.
 - **Mixins live in `com.thirstwastaken2.mixin`**, are package-private, `abstract`, and prefix every
-  injected member with `thirst$`. New mixins must be listed in `thirstwastaken2.mixins.json`.
+  injected member with `thirst$`. New mixins must be listed in `thirstwastaken2.mixins.json`. The
+  two exceptions have configs of their own: Fabric client mixins in
+  `src/client/fabric/resources/thirstwastaken2.fabric.client.mixins.json`, and the Create Fly mixins in
+  `src/main/createfly/resources/thirstwastaken2.createfly.mixins.json`.
 - **Config is a plain POJO** serialized by Gson (`ThirstConfig`). Adding a field means: add it to the
   POJO, clamp it in `sanitize()`, and — if it is user-facing — add a widget and a reset line to its
   page in `client/config/ConfigCategory` plus `en_us`/`vi_vn` keys.
@@ -175,11 +178,13 @@ Two things about Stonecutter that are easy to learn the hard way:
 ### Adding a Minecraft version
 
 1. Add it to `stonecutter { create }` in `settings.gradle.kts` and add its matching block to
-   `stonecutter.properties.toml` — Fabric API, Mod Menu, AppleSkin, Cloth Config, Jade, and the
-   `mod.mc_compat` range. Mod Menu and Cloth Config resolve by version number; AppleSkin publishes
+   `stonecutter.properties.toml` — Fabric API, Mod Menu, AppleSkin, Cloth Config, Jade, Farmer's
+   Delight, `deps.create_fly` only where Create Fly has a release, and the `mod.mc_compat` and
+   `mod.mc_releases` values. Mod Menu and Cloth Config resolve by version number; AppleSkin publishes
    one version number for both its Fabric and NeoForge uploads, so it is pinned by Modrinth version
    id or Maven resolves the wrong jar.
-2. Add it to the matrix in `.github/workflows/build.yml`.
+2. Nothing to add to CI: `.github/workflows/build.yml` builds one job per table in
+   `stonecutter.properties.toml`.
 3. Run `./gradlew ":<version>:build"` and fix what the compiler reports, by extending `platform/`
    rather than by branching at the call site.
 4. Smoke-test with `./gradlew ":<version>:runServer"`. The new `run/<version>/` directory needs its
@@ -201,8 +206,9 @@ values in place. `.github/workflows/update-mc-deps.yml` runs it daily and keeps 
 
 [ThirstWasTaken2.java](src/main/java/com/thirstwastaken2/ThirstWasTaken2.java) is the loader
 independent initializer, called by the Fabric entrypoint `ThirstWasTaken2Fabric`: it loads
-configuration (`ThirstConfig.load()`), registers the player data (`ThirstData.register()`), registers
-items, commands, and server tick/use callbacks through `Loader`.
+configuration (`ThirstConfig.load()`), registers the player data (`ThirstData.register()`), the data
+components, the items and creative tab, and the loot pools, then hooks the server tick, block and item
+use, command and tag reload callbacks through `Loader`.
 
 ```mermaid
 flowchart TD
@@ -312,6 +318,7 @@ src/main/java/com/thirstwastaken2/      common (client + server), loader indepen
   platform/PlayerData.java, Use*Handler.java  types the per-loader Loader signatures share
   tooltip/ThirstTooltip.java           separate thirst/quenched tooltip rows (thirstwastaken2:droplets font)
   compat/AppleSkin.java                AppleSkin presence, the quenched overlay and tooltip droplet gates
+  compat/FarmersDelight.java           Farmer's Delight presence and its Nourishment effect, by id only
   compat/LootIntegration.java          structure chests + Piglin barter water
   mixin/                               vanilla hooks
 
@@ -338,6 +345,7 @@ src/client/fabric/java/com/thirstwastaken2/client/   Fabric only, compiled into 
   fabric/ThirstWasTaken2FabricClient.java  client entrypoint
   platform/ClientLoader.java           HUD layer and status bar height registration
   compat/ModMenuIntegration.java       modmenu entrypoint
+src/client/fabric/java/com/thirstwastaken2/fabric/mixin/MinecraftMixin.java  hand drinking outside the crosshair
 src/client/fabric/java/com/thirstwastaken2/fabric/mixin/GuiMixin.java  the 1.21.1 HUD hook
 src/client/fabric/java/com/thirstwastaken2/fabric/mixin/LocalPlayerMixin.java  the 1.21.1 sprint gate
 src/client/fabric/resources/thirstwastaken2.fabric.client.mixins.json  its mixin config
@@ -351,11 +359,23 @@ src/gametest/java/com/thirstwastaken2/gametest/
   TestFixtures.java                    water source, aimed player, readable assertions
   WaterFillingGameTest.java            bottle and bucket filling, resampling
   WaterEffectsGameTest.java            salt, dirty and purified water, drinking
-  HealthRegenGameTest.java             dehydration halting regen, and the food refund
+  WaterInteractionsGameTest.java       bowl and waterskin scooping, cauldron draw and pour
   WaterskinGameTest.java               mixing, capacity, emptying
+  CauldronGameTest.java                cauldrons keeping the quality poured into them
   PurificationGameTest.java            which water the furnace recipes accept
+  DrinkingGameTest.java                drinking end to end through the real right-click path
+  HealthRegenGameTest.java             dehydration halting regen, and the food refund
+  PlayerStateGameTest.java             the PlayerMixin hooks: exhaustion and the sprint gate
+  ThirstDataGameTest.java              the thirst record's arithmetic and codecs
+  ThirstTickGameTest.java              spending exhaustion, peaceful regen, exemptions
+  ThirstApiGameTest.java               drink and food tables, c:drinks, keywords, clamping
+  CommandGameTest.java                 /thirst through the real dispatcher
   TooltipGameTest.java                 the lines the mod adds to a tooltip
+  ItemAppearanceGameTest.java          custom model data, the sea water model, the waterskin bar
+  LootGameTest.java                    the water pools on chests and bartering, and nowhere else
+  CreativeTabGameTest.java             the mod's creative tab
   AdvancementGameTest.java             the advancements load, and unlock recipes that exist
+  EnvironmentGameTest.java             datapack entries and version-specific vanilla calls
 
 src/dev/java/com/thirstwastaken2/dev/   dev-only tools mod, never packaged
   ThirstDev.java                       entrypoint: /thirst benchmark and the runBenchmark autorun
@@ -368,12 +388,12 @@ src/datagen/java/com/thirstwastaken2/datagen/  datagen-only mod, never packaged
 src/main/resources/                     the hand-written assets only, shared by every loader
   thirstwastaken2.mixins.json           mixin registry
   assets/thirstwastaken2/               textures, lang (9 locales), icon.png
-  assets/thirstwastaken2/font/          droplets.json: tooltip droplet glyphs (U+E000..U+E007)
+  assets/thirstwastaken2/font/          droplets.json: tooltip droplet glyphs (U+E000..U+E00F)
 
 src/main/generated/<minecraft version>/  written by src/datagen, a resource root of main
   assets/thirstwastaken2/               item models and model definitions
-  data/thirstwastaken2/                 recipes, advancements, damage type, biome tag
-  data/minecraft/tags/                 bypasses_armor
+  data/thirstwastaken2/                 recipes, advancements, damage type, stagnant_water biome tag
+  data/minecraft/tags/damage_type/      bypasses_armor, no_impact, no_knockback
 ```
 
 ## Water quality
@@ -397,12 +417,14 @@ a separate salinity flag makes every new cauldron read as sea water.
 biomes return `Salt` immediately; everything else is scored - biome tag baseline, then temperature,
 altitude, flow and nearby mud or agriculture - and the score is graded on the spot. The score itself
 is never stored, so nothing carries a number a player cannot see, and no environmental scan runs on
-a tick or item tooltip path. The Jade overlay is the one client-side caller; see
+a tick or item tooltip path. The Jade overlay is the one client-side caller, and the Create Fly Sand
+Filter samples the water its pipes draw; see
 [purity/AGENTS.md](src/main/java/com/thirstwastaken2/purity/AGENTS.md).
 
 `WaterPurity.INFO` caches, per `Item`, whether it counts as a water container and what static purity
-it carries — this is how the optional Tough As Nails / Farmer's Delight / Farmer's Respite /
-Brewin' and Chewin' / Collector's Reap support stays dependency-free.
+it carries. Beyond water bottles, water buckets and the terracotta water bowl, the only other
+containers it knows are Farmer's Delight's melon juice and apple cider, matched by registry id so the
+support stays dependency-free.
 
 ## Mixins
 
@@ -416,6 +438,7 @@ Brewin' and Chewin' / Collector's Reap support stays dependency-free.
 | `LayeredCauldronBlockMixin` | `#createBlockStateDefinition`, `#handlePrecipitation`, `#receiveStalactiteDrip` | add the stored-quality property; grade the water rain or a dripstone added |
 | `CauldronBlockMixin` | `#handlePrecipitation`, `#receiveStalactiteDrip` | the same, for the empty cauldron those two turn into a water cauldron |
 | `BlocksMixin` | `Blocks` static init, 1.21.1 only | mark the water cauldron's construction, which cannot be identified from inside its constructor there |
+| `MinecraftMixin` (Fabric, client) | `Minecraft#startUseItem` | drink by hand from water the crosshair misses, then let vanilla go on with the click |
 | `LocalPlayerMixin` (Fabric, client) | `LocalPlayer#hasEnoughFoodToStartSprinting`, 1.21.1 only | the sprint gate, where 1.21.1 keeps that check on the client player |
 | `GuiMixin` (Fabric, client) | `Gui#renderPlayerHealth`, 1.21.1 only | draw the thirst bar after the food bar and move the air bubbles up, which Fabric API's HUD registry does from 1.21.6 |
 
@@ -426,15 +449,22 @@ attaches it after `VanillaHudElements.FOOD_BAR` and reserves 10px of right-stack
 neither registry, so there `GuiMixin` draws the bar at the same place and moves the air bubbles up.
 `ThirstHud.render` draws, in order:
 
-1. when AppleSkin is present and its exhaustion-underlay option is enabled, a right-to-left dither
-   strip from `appleskin_icons.png` at v=18, proportional to the client's exhaustion (0..4);
+1. when AppleSkin is present, the Quenched Outline setting is not Off, and AppleSkin's own
+   exhaustion-underlay option is enabled, a right-to-left dither strip from `appleskin_icons.png` at
+   v=18, proportional to the client's exhaustion (0..4);
 2. ten droplet slots from `thirst_icons.png` (41x9: empty, quarter, half, three quarter and full on an
    8px stride, so u = 0/8/16/24/32), shaken when quenched hits zero, exactly like the vanilla hunger
    bar. Frames share their transparent edge columns, which is why the stride is 8 and not 9. Each
    droplet holds two thirst points; the quarter and three-quarter frames come from
    `drainedFraction`, which spends the client's `exhaustion` (0..4) against the next point once
    quenched is empty. There is no setting for this, the five-frame drain is the only behaviour;
-3. the quenched outline from `appleskin_icons.png` at v=0, u = 0/9/18/27 by quarter.
+3. only when AppleSkin is present and `appleskinQuenchedOverlay` is not `OFF`, the quenched outline
+   from `quenched_overlay.png` (36x36, one row per coloured `QuenchedOverlay`, so v = ordinal x 9),
+   u = 0/9/18/27 by how full the droplet's share of quenched is.
+
+Without AppleSkin the bar is droplets only, the way vanilla's food bar has no saturation outline.
+`AppleSkin.quenchedOverlay()` is the gate. The item tooltip droplet rows have the same kind of gate,
+`AppleSkin.showsTooltipDroplets()`, behind their own `appleskinTooltipDroplets` setting.
 
 ## Config
 
@@ -451,6 +481,10 @@ takes effect in singleplayer or when edited on the server.
 | Integration | Gate | Notes |
 |---|---|---|
 | Mod Menu | `modmenu` entrypoint | class only loads if Mod Menu resolves it |
+| AppleSkin | `AppleSkin.isLoaded()` | the quenched outline, the exhaustion strip and the tooltip droplet rows; without it none of them is drawn |
+| Jade | `jade` entrypoint, `@WailaPlugin` | the water grade, or Salty, when looking at water, a waterlogged block or a water cauldron |
+| Farmer's Delight | registry ids, recipe load conditions | its drinks and meals in `ThirstConfig`, Cooking Pot purification recipes, Nourishment stopping the drain |
+| Drinks from other mods | `c:drinks` tag, `enableDrinkTagMatching` | restores `drinkTagValue` for a tagged item neither table names |
 | Loot | always | `Loader.onLootTable` on 5 vanilla chests + Piglin bartering, including tables a data pack replaced |
 | Food mods | always | resolved by registry id in `ThirstConfig.drinks` / `foods`, no classes referenced |
 | Create Fly | `deps.create_fly` at build time, then `CreateFlyPresence` | the Sand Filter, 26.1.x and 26.2.x for now; see [src/main/createfly/AGENTS.md](src/main/createfly/AGENTS.md) |
@@ -468,11 +502,15 @@ takes effect in singleplayer or when edited on the server.
 
 ## Things that are deliberately not 1:1 with upstream
 
-- Structure-chest water uses one Fabric loot pool per table instead of the original's
-  Farmer's-Respite / Brewin'-and-Chewin' loot variants.
-- The quenched overlay is drawn by this mod directly, always on, with no setting. When AppleSkin is
-  installed, its exhaustion-underlay setting also controls a thirst exhaustion strip drawn from the
-  `v = 18` row of `appleskin_icons.png`.
-- Water quality is sampled from biome and a fixed local neighborhood only when water is collected.
-  Sea water is its own kind of water rather than a fifth grade, and shows one line and one sprite of
-  its own instead of a grade it cannot have.
+- Structure-chest water is one loot pool per table, added through `Loader.onLootTable`, instead of
+  the original's separate Farmer's Respite and Brewin' and Chewin' loot modifier variants.
+- The quenched outline and the tooltip droplet rows still need AppleSkin, as in the original, but
+  they are drawn by the mod's own HUD and tooltip code, gated on AppleSkin being loaded, rather than
+  from a separate AppleSkin overlay handler. The original's outline followed AppleSkin's saturation
+  overlay option; here it has its own colour setting whose `OFF` also hides the thirst exhaustion
+  strip, and the tooltip rows have their own toggle. The strip otherwise follows AppleSkin's exhaustion-underlay
+  option and is drawn from the `v = 18` row of `appleskin_icons.png`.
+- Water quality is sampled from biome and a fixed local neighbourhood only when water is collected,
+  drunk by hand, or looked at with Jade, and a cauldron keeps what was poured into it. Sea water is its
+  own kind of water rather than a fifth grade, and shows one line and one sprite of its own instead of
+  a grade it cannot have.

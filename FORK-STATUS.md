@@ -31,12 +31,12 @@ Drinking straight from a water source restores **1 thirst and 1 quenched**, down
 3 and 2. Free, unlimited water refilling both bars that fast made every other drink pointless. Both
 values are still configurable.
 
-### 2. Tooltips show droplets, and no longer need AppleSkin
+### 2. Tooltip droplets can be turned off
 
-The original printed `Hydration: +6, Quenched: +8` as plain text, and only drew a graphical version
-when AppleSkin was installed. Here the sprites are part of the mod and always there. Thirst uses a
-top row of filled droplets, while quenched uses a lower row of outline droplets. A drink worth 6
-thirst and 8 quenched reads as three filled droplets above four outline droplets.
+As in the original, tooltips only show what an item restores when AppleSkin is installed. Thirst
+uses a top row of filled droplets, while quenched uses a lower row of outline droplets. A drink worth
+6 thirst and 8 quenched reads as three filled droplets above four outline droplets. Here the rows can
+be turned off to keep tooltips short, and the outline droplets take the colour of the quenched outline.
 
 ### 3. New droplet sprites
 
@@ -49,11 +49,12 @@ exhaustion builds instead of jumping straight from full to half to empty.
 |---|---|
 | ![The original droplet sprites: empty, half and full](docs/public/screenshots/droplets-original.png) | ![The fork's droplet sprites: empty, quarter, half, three quarter and full](docs/public/screenshots/droplets-fork.png) |
 
-### 4. Quenched is always on; AppleSkin adds exhaustion
+### 4. The quenched outline has its own colours
 
-Same story as the tooltips. The original only drew the lighter reserve outline over the droplets when
-AppleSkin was present; here it is simply part of the bar. AppleSkin remains optional, but installing
-it adds a dithered thirst-exhaustion strip that follows AppleSkin's exhaustion-underlay option.
+As in the original, the quenched outline over the thirst bar and the dithered exhaustion strip behind
+it only appear when AppleSkin is installed. Without AppleSkin, thirst and quenched work the same, and
+the bar shows droplets only. The outline no longer follows AppleSkin's saturation option. It has its
+own setting instead: Diamond, Ice, Gold, AppleSkin's own gold, or Off, which also hides the strip.
 
 ### Smaller additions
 

@@ -26,7 +26,7 @@ import net.minecraft.world.phys.Vec3;
 /**
  * Cauldrons remember the quality of the water poured into them.
  *
- * <p>The two extra blockstate properties come from {@code LayeredCauldronBlockMixin}, and the
+ * <p>The extra {@code purity} blockstate property comes from {@code LayeredCauldronBlockMixin}, and the
  * transfer itself is deferred to the end of the tick because vanilla resolves the interaction after
  * the callback returns.
  */
