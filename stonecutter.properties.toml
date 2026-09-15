@@ -4,7 +4,7 @@ mod.name = "ThirstWasTaken2"
 mod.group = "com.thirstwastaken2"
 mod.version = "1.0.5"
 
-deps.fabric_loader = "0.19.3"
+deps.fabric_loader = "0.19.5"
 loomx.loom_version = "1.17-SNAPSHOT"
 
 ["1.21.1"]
@@ -36,7 +36,7 @@ mod.mc_compat = "~26.1"
 mod.mc_releases = ["26.1", "26.1.1", "26.1.2"]
 
 deps.fabric_api = "0.155.3+26.1.2"
-deps.modmenu = "18.0.0"
+deps.modmenu = "18.0.1"
 deps.appleskin = "zLlqqiTA"
 deps.cloth_config = "26.1.154+fabric"
 deps.jade = "26.1.11+fabric"
@@ -53,7 +53,7 @@ deps.fabric_api = "0.160.0+26.2"
 # Mod Menu, Cloth Config and Jade resolve by version number; Jade's carries its loader as a suffix.
 # AppleSkin shares one version number across its Fabric and NeoForge uploads, so it is pinned by
 # Modrinth version id instead.
-deps.modmenu = "20.0.1"
+deps.modmenu = "20.0.2"
 deps.appleskin = "uo5bAN1Y"
 deps.cloth_config = "26.2.155+fabric"
 deps.jade = "26.2.11+fabric"
