@@ -142,8 +142,11 @@ neoForge {
             type = "gameTestServer"
             sourceSet = gametest
             // Vanilla's own JUnit report, at the path the Fabric nodes write theirs to, so CI uploads
-            // it the same way.
-            programArguments.addAll("--report", layout.buildDirectory.file("gametest/report.xml").get().asFile.absolutePath)
+            // it the same way. The server's --report option arrived with 1.21.5; before it the harness
+            // installs the same reporter itself when this property names a file.
+            val report = layout.buildDirectory.file("gametest/report.xml").get().asFile.absolutePath
+            if (sc.current.parsed >= "1.21.5") programArguments.addAll("--report", report)
+            else systemProperty("thirstwastaken2.gametest.report", report)
         }
 
         // Only the gametest run loads the gametest mod. ModDevGradle loads every mod by default.
@@ -182,10 +185,17 @@ dependencies {
  * Both components ingredients take a `DataComponentPatch` and match a stack that carries at least the
  * listed values, which is NeoForge's default `strict: false`, so `strict` is left out.
  *
+ * On 1.21.1 NeoForge 21.1 reads the ingredient type from vanilla's own `type` key, and Fabric writes
+ * `base` as a whole ingredient, `{"item": ...}`, where NeoForge's `items` is a holder set, so the item
+ * id is taken out of it. Later versions write `base` as the holder set already.
+ *
  * Anything else Fabric-specific fails the build here, naming the file, and `checkNeoForgeResources`
  * catches whatever this does not look at. A generator that starts writing a new Fabric shape therefore
  * breaks this node's build rather than loading as a broken recipe.
  */
+/** The key NeoForge reads a custom ingredient's type from: vanilla's `type` until it took one of its own. */
+val ingredientTypeKey = if (sc.current.parsed > "1.21.1") "neoforge:ingredient_type" else "type"
+
 fun neoForgeJson(node: Any?, file: String): Any? = when (node) {
     is List<*> -> node.map { neoForgeJson(it, file) }
     is Map<*, *> -> when (val type = node["fabric:type"]) {
@@ -195,17 +205,29 @@ fun neoForgeJson(node: Any?, file: String): Any? = when (node) {
         }
         "fabric:components" -> {
             requireKeys(node, setOf("fabric:type", "base", "components"), file)
-            mapOf("neoforge:ingredient_type" to "neoforge:components",
-                "items" to node["base"], "components" to node["components"])
+            mapOf(ingredientTypeKey to "neoforge:components",
+                "items" to neoForgeItems(node["base"], file), "components" to node["components"])
         }
         "fabric:any" -> {
             requireKeys(node, setOf("fabric:type", "ingredients"), file)
-            mapOf("neoforge:ingredient_type" to "neoforge:compound",
+            mapOf(ingredientTypeKey to "neoforge:compound",
                 "children" to neoForgeJson(node["ingredients"], file))
         }
         else -> throw GradleException("$file: no NeoForge translation for the Fabric ingredient type $type")
     }
     else -> node
+}
+
+/**
+ * A components ingredient's `base` as the holder set NeoForge's `items` reads: an id, a `#tag` or a list
+ * of ids. It already is one from 1.21.2; on 1.21.1 it is a vanilla ingredient, a single item or tag.
+ */
+fun neoForgeItems(base: Any?, file: String): Any? = when {
+    base is String -> base
+    base is List<*> && base.all { it is String } -> base
+    base is Map<*, *> && base.keys == setOf("item") -> base["item"]
+    base is Map<*, *> && base.keys == setOf("tag") -> "#${base["tag"]}"
+    else -> throw GradleException("$file: no NeoForge translation for the components ingredient base $base")
 }
 
 fun neoForgeConditions(conditions: Any?, file: String): List<Map<String, Any?>> =
@@ -288,7 +310,21 @@ tasks.register("checkNeoForgeResources") {
 // everything that reads those files has to wait for it. Loom needs this for processResources;
 // ModDevGradle needs it before it builds the Minecraft artifacts it compiles against.
 tasks.named("processResources") { dependsOn("stonecutterGenerate") }
-tasks.named("createMinecraftArtifacts") { dependsOn("stonecutterGenerate") }
+
+/*
+ * Every NeoForge node decompiles and recompiles Minecraft in createMinecraftArtifacts, which takes
+ * minutes and gigabytes each. With org.gradle.parallel=true several nodes would do it at once, so a
+ * shared build service lets one run at a time. The class is compiled once for this script, so every
+ * node that applies it registers the same service.
+ */
+abstract class CreateMinecraftArtifactsMutex : BuildService<BuildServiceParameters.None>
+val createMinecraftArtifactsMutex = gradle.sharedServices
+    .registerIfAbsent("createMinecraftArtifactsMutex", CreateMinecraftArtifactsMutex::class) { maxParallelUsages = 1 }
+
+tasks.named("createMinecraftArtifacts") {
+    dependsOn("stonecutterGenerate")
+    usesService(createMinecraftArtifactsMutex)
+}
 
 // Vanilla's reporter writes the file but not the directory it goes in.
 tasks.named("runGametest") {

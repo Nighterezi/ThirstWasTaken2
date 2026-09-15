@@ -26,7 +26,11 @@ plugins {
 stonecutter {
     create(rootProject) {
         versions("1.21.1", "1.21.11")
+        // NeoForge on 1.21.1 only: 1.21 is a separate NeoForge generation (21.0), unlike on Fabric.
+        version("1.21.1-neoforge", "1.21.1").buildscript = "build.neoforge.gradle.kts"
+        version("1.21.11-neoforge", "1.21.11").buildscript = "build.neoforge.gradle.kts"
         version("26.1.x", "26.1.2")
+        version("26.1.x-neoforge", "26.1.2").buildscript = "build.neoforge.gradle.kts"
         version("26.2.x", "26.2")
         // The NeoForge node: the same Minecraft version as 26.2.x, its own buildscript, and a name
         // of its own so the Fabric nodes keep theirs. `sc.current.version` is "26.2" on both, so

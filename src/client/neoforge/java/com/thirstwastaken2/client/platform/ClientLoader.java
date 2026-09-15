@@ -2,7 +2,6 @@ package com.thirstwastaken2.client.platform;
 
 import com.thirstwastaken2.ThirstWasTaken2;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Hud;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.fml.ModList;
@@ -24,7 +23,8 @@ public final class ClientLoader {
      * holds it takes {@code height} pixels of the stack, so vanilla's air bubbles and other mods' rows
      * move up past it.
      *
-     * <p>NeoForge has no height registry: each layer reads {@link Hud#rightHeight}, draws there and
+     * <p>NeoForge has no height registry: each layer reads {@code rightHeight} (on {@code Hud} from
+     * 26.2, on {@code Gui} before), draws there and
      * advances it, and the air layer above does the same. So the row only advances it when it is
      * visible. Fabric draws rows attached to the food bar only where vanilla draws the food bar, that is
      * when the player can be hurt; a NeoForge layer has no such condition of its own, so it is checked
@@ -40,7 +40,12 @@ public final class ClientLoader {
                                     || !visible.test(player)) {
                                 return;
                             }
-                            Hud hud = minecraft.gui.hud;
+                            // 26.2 moved the status bar stack heights from Gui into its Hud.
+                            //? if >=26.2 {
+                            net.minecraft.client.gui.Hud hud = minecraft.gui.hud;
+                            //?} else {
+                            /*net.minecraft.client.gui.Gui hud = minecraft.gui;
+                            *///?}
                             renderer.render(graphics, graphics.guiHeight() - hud.rightHeight);
                             hud.rightHeight += height;
                         }));

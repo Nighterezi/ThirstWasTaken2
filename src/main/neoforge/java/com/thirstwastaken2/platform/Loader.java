@@ -63,7 +63,12 @@ public final class Loader {
 
     /** True under every development run task, false in the jar players install. */
     public static boolean isDevelopmentEnvironment() {
+        // FML turned its environment fields into methods in NeoForge 21.9.
+        //? if >=1.21.9 {
         return !FMLEnvironment.isProduction();
+        //?} else {
+        /*return !FMLEnvironment.production;
+        *///?}
     }
 
     /** The directory config files are read from and written to. */
@@ -98,13 +103,36 @@ public final class Loader {
     public static <T> PlayerData<T> playerData(Identifier id, Supplier<T> initial, Codec<T> codec,
                                                StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
         // An attachment type takes no registry holder, so it can be built now and registered later.
+        // NeoForge 21.1 saves an attachment through a plain codec; later versions take a map codec, so
+        // the value goes under a field there. A world carried from one to the other starts at full thirst.
+        //? if >1.21.1 {
         AttachmentType<T> type = AttachmentType.builder(initial)
                 .serialize(codec.fieldOf("value"))
-                .sync((holder, to) -> holder == to, streamCodec)
+                .sync(Loader::syncsTo, streamCodec)
                 .build();
+        //?} else {
+        /*AttachmentType<T> type = AttachmentType.builder(initial)
+                .serialize(codec)
+                .sync(Loader::syncsTo, streamCodec)
+                .build();
+        *///?}
         onRegister(NeoForgeRegistries.Keys.ATTACHMENT_TYPES,
                 () -> Registry.register(NeoForgeRegistries.ATTACHMENT_TYPES, id, type));
         return new AttachmentPlayerData<>(type);
+    }
+
+    /**
+     * Whether a player's value is synced to {@code to}: only to the player it belongs to. Before 26.1
+     * NeoForge sends the packet to whoever this accepts and throws when that connection never negotiated
+     * the channel, which a gametest mock player and a vanilla client have not, so it asks first there.
+     */
+    private static boolean syncsTo(Object holder, Object to) {
+        //? if >=26.1 {
+        return holder == to;
+        //?} else {
+        /*return holder == to && ((net.minecraft.server.level.ServerPlayer) to).connection.hasChannel(
+                net.neoforged.neoforge.network.payload.SyncAttachmentsPayload.TYPE);
+        *///?}
     }
 
     /** Builder for a creative tab that finds its own place in the tab list. */

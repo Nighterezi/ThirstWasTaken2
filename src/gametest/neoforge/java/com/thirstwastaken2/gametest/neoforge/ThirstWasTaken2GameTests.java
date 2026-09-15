@@ -2,20 +2,13 @@ package com.thirstwastaken2.gametest.neoforge;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.FunctionGameTestInstance;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Rotation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Consumer;
 
 /**
  * The gametest mod on NeoForge: finds the same test methods Fabric API finds and registers them the
@@ -43,6 +35,10 @@ import java.util.function.Consumer;
  *       attempt, padding 1. NeoForge ships no empty structure, so this mod has its own. The
  *       environment is an empty one registered here, the same definition as vanilla's
  *       {@code minecraft:default}, which the registration event gives no way to look up.</li>
+ *   <li><b>Before 1.21.5</b> a test is a {@code TestFunction} in vanilla's static registry rather
+ *       than a registry entry, and there are no environments or padding. NeoForge only turns methods
+ *       carrying vanilla's own annotation into one, and takes the structure's namespace from a
+ *       NeoForge annotation on the test class, so the harness builds the functions itself.</li>
  * </ul>
  *
  * <p>This is test harness, not a loader seam: nothing in the mod calls it, and no test body changes
@@ -52,6 +48,11 @@ import java.util.function.Consumer;
 public final class ThirstWasTaken2GameTests {
     /** NeoForge mod ids cannot contain a hyphen, so both loaders use this one. */
     static final String MOD_ID = "thirstwastaken2_gametest";
+    /**
+     * Where to write the JUnit report before 1.21.5, whose server has no {@code --report} option. Set
+     * by build.neoforge.gradle.kts.
+     */
+    static final String REPORT_PROPERTY = "thirstwastaken2.gametest.report";
 
     private static final int MAX_TICKS = 20;
     private static final int PADDING = 1;
@@ -60,29 +61,61 @@ public final class ThirstWasTaken2GameTests {
 
     public ThirstWasTaken2GameTests(IEventBus modBus, ModContainer container) {
         tests = findTests(container);
+        //? if >=1.21.5 {
         modBus.addListener(this::registerFunctions);
+        //?}
         modBus.addListener(this::registerTests);
     }
 
-    private void registerFunctions(RegisterEvent event) {
-        event.register(Registries.TEST_FUNCTION, helper -> tests.forEach(test -> helper.register(test.id(), test::run)));
+    //? if >=1.21.5 {
+    private void registerFunctions(net.neoforged.neoforge.registries.RegisterEvent event) {
+        event.register(net.minecraft.core.registries.Registries.TEST_FUNCTION,
+                helper -> tests.forEach(test -> helper.register(test.id(), test::run)));
     }
 
     private void registerTests(RegisterGameTestsEvent event) {
-        Holder<TestEnvironmentDefinition<?>> environment =
-                event.registerEnvironment(Identifier.fromNamespaceAndPath(MOD_ID, "default"));
-        TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment,
-                Identifier.fromNamespaceAndPath(MOD_ID, "empty"), MAX_TICKS, 0, true, Rotation.NONE,
-                false, 1, 1, false, PADDING);
+        // `var`, because TestEnvironmentDefinition only takes a type parameter from 26.1 on.
+        var environment = event.registerEnvironment(Identifier.fromNamespaceAndPath(MOD_ID, "default"));
+        // Test padding arrived with 26.1; before it the runner spaces tests out itself.
+        //? if >=26.1 {
+        var data = new net.minecraft.gametest.framework.TestData<>(environment,
+                        Identifier.fromNamespaceAndPath(MOD_ID, "empty"), MAX_TICKS, 0, true, Rotation.NONE,
+                        false, 1, 1, false, PADDING);
+        //?} else {
+        /*var data = new net.minecraft.gametest.framework.TestData<>(environment,
+                        Identifier.fromNamespaceAndPath(MOD_ID, "empty"), MAX_TICKS, 0, true, Rotation.NONE,
+                        false, 1, 1, false);
+        *///?}
         for (TestMethod test : tests) {
-            event.registerTest(test.id(), new FunctionGameTestInstance(
-                    ResourceKey.create(Registries.TEST_FUNCTION, test.id()), data));
+            event.registerTest(test.id(), new net.minecraft.gametest.framework.FunctionGameTestInstance(
+                    net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.TEST_FUNCTION, test.id()),
+                    data));
         }
     }
+    //?} else {
+    /*private void registerTests(RegisterGameTestsEvent event) {
+        String report = System.getProperty(REPORT_PROPERTY);
+        if (report != null) {
+            try {
+                net.minecraft.gametest.framework.GlobalTestReporter.replaceWith(
+                        new net.minecraft.gametest.framework.JUnitLikeTestReporter(new java.io.File(report)));
+            } catch (javax.xml.parsers.ParserConfigurationException e) {
+                throw new IllegalStateException("Cannot write the gametest report to " + report, e);
+            }
+        }
+        String structure = MOD_ID + ":empty";
+        for (TestMethod test : tests) {
+            // Vanilla's default batch, and Fabric API's defaults for everything else.
+            net.minecraft.gametest.framework.GameTestRegistry.getAllTestFunctions().add(
+                    new net.minecraft.gametest.framework.TestFunction("defaultBatch", test.id().toString(), structure,
+                            Rotation.NONE, MAX_TICKS, 0L, true, false, 1, 1, false, test::run));
+        }
+    }
+    *///?}
 
     private static List<TestMethod> findTests(ModContainer container) {
         JsonObject manifest;
-        try (InputStream in = container.getModInfo().getOwningFile().getFile().getContents().openFile("fabric.mod.json")) {
+        try (InputStream in = openManifest(container)) {
             if (in == null) throw new IllegalStateException(MOD_ID + " has no fabric.mod.json to read its test classes from");
             manifest = JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8)).getAsJsonObject();
         } catch (IOException e) {
@@ -102,6 +135,16 @@ public final class ThirstWasTaken2GameTests {
             tests.addAll(found);
         }
         return tests;
+    }
+
+    /** This mod's {@code fabric.mod.json}, or null. FML hands out a path before NeoForge 21.9 and a stream after. */
+    private static InputStream openManifest(ModContainer container) throws IOException {
+        //? if >=1.21.9 {
+        return container.getModInfo().getOwningFile().getFile().getContents().openFile("fabric.mod.json");
+        //?} else {
+        /*java.nio.file.Path path = container.getModInfo().getOwningFile().getFile().findResource("fabric.mod.json");
+        return java.nio.file.Files.exists(path) ? java.nio.file.Files.newInputStream(path) : null;
+        *///?}
     }
 
     /**

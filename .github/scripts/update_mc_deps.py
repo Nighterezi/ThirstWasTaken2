@@ -237,14 +237,14 @@ def neoforge_versions() -> list[str]:
 
 
 def check_neoforge(props: Properties, node: str, changes: list[Change]) -> None:
-    """NeoForge's version starts with the Minecraft version it is built for, `26.2.0.88` for 26.2, so
-    only builds with the pinned version's first three parts are candidates. Betas are skipped unless
-    the pinned build is one."""
+    """NeoForge's version starts with the Minecraft version it is built for and ends with the build
+    number, `26.2.0.88` for 26.2 and `21.1.250` for 1.21.1, so only builds sharing everything but the
+    pinned version's last part are candidates. Betas are skipped unless the pinned build is one."""
     found = props.find(node, "deps.neoforge")
     if found is None:
         return
     index, pinned = found
-    prefix = ".".join(pinned.split("-")[0].split(".")[:3]) + "."
+    prefix = ".".join(pinned.split("-")[0].split(".")[:-1]) + "."
     allow_beta = "-" in pinned
     candidates = [v for v in neoforge_versions() if v.startswith(prefix) and (allow_beta or "-" not in v)]
     if not candidates:

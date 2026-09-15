@@ -3,8 +3,7 @@
   "package": "com.thirstwastaken2.fabric.mixin",
   "compatibilityLevel": "${java}",
   "client": [
-    "GuiMixin",
-    "LocalPlayerMixin"
+    "GuiMixin"
   ],
   "injectors": { "defaultRequire": 1 }
 }

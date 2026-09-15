@@ -10,11 +10,11 @@ Vanilla hooks. Everything the mod cannot do through a Fabric API event lands her
   does nothing. `injectors.defaultRequire` is 1, so a stale target throws at load instead of failing
   quietly — a `runServer` that starts is already proof every injection point still resolves.
 - There are no client-only mixins in this package. Client mixins live in the client source set, in
-  two configs of their own. `MinecraftMixin` names no loader API and is in `src/client/java` under
-  `com.thirstwastaken2.client.mixin`, listed in `src/client/resources/thirstwastaken2.client.mixins.json`,
-  which both loaders load. `GuiMixin` and `LocalPlayerMixin` stand in for Fabric API on 1.21.1 and so
-  are loader code: `src/client/fabric/java` under `com.thirstwastaken2.fabric.mixin`, listed in
-  `thirstwastaken2.fabric.client.mixins.json`.
+  two configs of their own. `MinecraftMixin` and `LocalPlayerMixin` name no loader API and are in
+  `src/client/java` under `com.thirstwastaken2.client.mixin`, listed in
+  `src/client/resources/thirstwastaken2.client.mixins.json`, which both loaders load. `GuiMixin` stands
+  in for Fabric API's HUD registry on 1.21.1 and so is loader code: `src/client/fabric/java` under
+  `com.thirstwastaken2.fabric.mixin`, listed in `thirstwastaken2.fabric.client.mixins.json`.
 - A mixin that only one version needs still exists on every version, with an empty body elsewhere:
   the mixin config is shared, and a listed class that is missing is a crash. `BlocksMixin` and
   `GuiMixin` are the examples. No block comments inside their `//?` blocks; see the root `AGENTS.md`.
@@ -27,7 +27,7 @@ Vanilla hooks. Everything the mod cannot do through a Fabric API event lands her
 
 | Mixin | Target | Purpose |
 |---|---|---|
-| `PlayerMixin` | `causeFoodExhaustion` (HEAD), `hasEnoughFoodToDoExhaustiveManoeuvres` (`@ModifyReturnValue`, after 1.21.1); implements `ExhaustionTracker.Holder` | buffer hunger exhaustion for the thirst tick; block sprinting at thirst ≤ 6 through `ThirstManager.allowsSprinting`. Not `Player#canSprint`: that only asks whether a rider may sprint the player, and hooking it blocked nothing. On 1.21.1 the check lives on `LocalPlayer`, so `LocalPlayerMixin` in `src/client/fabric` gates it there |
+| `PlayerMixin` | `causeFoodExhaustion` (HEAD), `hasEnoughFoodToDoExhaustiveManoeuvres` (`@ModifyReturnValue`, after 1.21.1); implements `ExhaustionTracker.Holder` | buffer hunger exhaustion for the thirst tick; block sprinting at thirst ≤ 6 through `ThirstManager.allowsSprinting`. Not `Player#canSprint`: that only asks whether a rider may sprint the player, and hooking it blocked nothing. On 1.21.1 the check lives on `LocalPlayer`, so `LocalPlayerMixin` in `src/client/java` gates it there, on both loaders |
 | `FoodDataMixin` | `FoodData#tick`, both `ServerPlayer#heal` call sites (`Player#heal` on 1.21.1) | dehydration halts natural regen and refunds the food cost vanilla would have charged |
 | `ItemStackMixin` | `use` (HEAD), `finishUsingItem` (HEAD), `addDetailsToTooltip` (TAIL); on 1.21.1 a `@WrapOperation` round the `appendHoverText` call in `getTooltipLines` | block plain water at full thirst; restore thirst on consume; append waterskin, purity and droplet lines |
 | `BottleItemMixin` | `BottleItem#use` | stamp sampled quality onto a bottle filled from a water block |

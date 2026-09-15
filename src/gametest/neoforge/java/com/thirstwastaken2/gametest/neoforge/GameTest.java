@@ -12,8 +12,8 @@ import java.lang.annotation.Target;
  * class itself.
  *
  * <p>It takes no arguments on purpose. Every test runs with Fabric API's defaults, which
- * {@link ThirstWasTaken2GameTests} copies, and the 1.21.1 replacement relies on {@code @GameTest}
- * being written bare too.
+ * {@link ThirstWasTaken2GameTests} copies on every Minecraft version, and the Fabric 1.21.1
+ * replacement relies on {@code @GameTest} being written bare too.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

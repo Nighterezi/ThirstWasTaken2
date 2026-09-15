@@ -82,7 +82,7 @@ What does live here are the types those signatures need, because both copies hav
 
 ### How each loader answers
 
-| Seam | Fabric | NeoForge (26.2 only) |
+| Seam | Fabric | NeoForge |
 |---|---|---|
 | `isDevelopmentEnvironment`, `configDir`, `isModLoaded` | `FabricLoader` | `FMLEnvironment.isProduction`, `FMLPaths.CONFIGDIR`, `ModList` |
 | `onRegister` | runs at once | queued, run from `RegisterEvent` for that registry on the mod bus. NeoForge constructs mods while the built-in registries are frozen, so anything that registers, items included, has to wait for the event. It fires data component types before items on purpose. A registration for a registry whose event already fired throws |
@@ -96,21 +96,41 @@ What does live here are the types those signatures need, because both copies hav
 | `ClientLoader.addRightStatusBar` | `HudElementRegistry.attachElementAfter(FOOD_BAR)` plus `HudStatusBarHeightRegistry.addRight`; `GuiMixin` on 1.21.1 | a layer `registerAbove(VanillaGuiLayers.FOOD_LEVEL)` that draws at `guiHeight() - hud.rightHeight` and advances `Hud.rightHeight` only when it drew, and only when the player can be hurt, which is when vanilla draws the food bar |
 | `ClientLoader.appleSkinShowsExhaustionUnderlay` | `ModConfig.INSTANCE.showFoodExhaustionHudUnderlay` | `ModConfig.SPEC.isLoaded() && ModConfig.SHOW_FOOD_EXHAUSTION_UNDERLAY.get()`; reading a NeoForge config value before FML loads it throws |
 
-### The NeoForge node's scope
+### What older NeoForge versions change
 
-`26.2.x-neoforge` is the one NeoForge node. What it leaves out, and why:
+Every NeoForge node answers every seam the way the table says. Where an older NeoForge differs, the
+difference is a version conditional inside the NeoForge loader directories:
+
+| Seam | Differs on | What it does there |
+|---|---|---|
+| `isDevelopmentEnvironment` | 1.21.1 (NeoForge 21.1) | the static field `FMLEnvironment.production`; the method arrived with 21.9 |
+| `playerData` saving | 1.21.1 | `serialize(codec)` rather than a map codec under `value`, so the saved shape differs from later versions |
+| `playerData` syncing | before 26.1 (NeoForge 21.1 and 21.11) | the predicate, `Loader.syncsTo`, also asks `connection.hasChannel(SyncAttachmentsPayload.TYPE)`: those versions throw when they send the payload to a connection that never negotiated it, which is what a gametest mock player has, and a vanilla client too |
+| `ClientLoader.addRightStatusBar` | before 26.2 | `Gui.rightHeight`; 26.2 moved it to `Hud` |
+
+The resource translation in `build.neoforge.gradle.kts` also differs on 1.21.1: the ingredient type
+goes under vanilla's `type` key, and the components ingredient's `base`, a whole ingredient there, is
+turned into the `items` holder set. From 1.21.11 on it is `neoforge:ingredient_type` and the holder set.
+
+### The NeoForge nodes' scope
+
+`26.2.x-neoforge`, `26.1.x-neoforge`, `1.21.11-neoforge` and `1.21.1-neoforge` are the NeoForge nodes.
+What they leave out, and why:
 
 - **Create Fly.** A Fabric port; `src/main/createfly` never compiles here, because the node does not
   set `deps.create_fly`.
-- **Farmer's Delight at runtime.** No NeoForge build for 26.2 when this was written. Its recipes still
-  load or are skipped correctly, through the translated `neoforge:conditions`.
-- **`src/dev` and `src/datagen`.** Fabric only; this node reads the 26.2 Fabric node's generated files.
+- **Farmer's Delight at runtime.** No NeoForge build for 26.2 when this was written, and the older
+  nodes were kept the same. Its recipes still load or are skipped correctly, through the translated `neoforge:conditions`.
+- **`src/dev` and `src/datagen`.** Fabric only; each node reads the files the Fabric node on its
+  Minecraft version generates.
+- **Minecraft 1.21.** The Fabric 1.21.1 jar covers it; NeoForge 21.0 is a generation of its own.
 - **Carrying a world between loaders.** Fabric saves the thirst attachment under `fabric:attachments`,
   NeoForge under `neoforge:attachments`, so a moved world starts every player at full thirst. There is
   no migration, on purpose.
 
-Its jar is `ThirstWasTaken2-<version>+26.2-neoforge.jar`. It is not released on its own: NeoForge ships,
-marked beta, once older Minecraft versions have NeoForge nodes too (P5 in
+The jars are `ThirstWasTaken2-<version>+<minecraft>-neoforge.jar`. They are not released yet: every
+Minecraft version now has a NeoForge node, and NeoForge ships, marked beta, once the manual passes in
+[docs/dev/MANUAL-TESTING.md](../../../../../../docs/dev/MANUAL-TESTING.md) are done (P5 in
 [docs/dev/PLATFORM-PLAN.md](../../../../../../docs/dev/PLATFORM-PLAN.md)).
 
 Two mixins reach methods NeoForge patches: `ItemStack#addDetailsToTooltip`, where the mod's rows land

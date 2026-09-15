@@ -21,6 +21,19 @@ deps.cloth_config = "15.0.140+fabric"
 deps.jade = "15.10.6+fabric"
 deps.farmersdelight = "1.21.1-3.3.6"
 
+["1.21.1-neoforge"]
+# NeoForge on 1.21.1 only. 1.21 is NeoForge 21.0, a separate generation, so unlike the Fabric jar this
+# one does not claim it. Farmer's Delight is left out for the reason 26.2.x-neoforge gives.
+mod.mc_compat = "1.21.1"
+mod.mc_releases = ["1.21.1"]
+mod.mc_range = "[1.21.1,1.21.2)"
+
+deps.neoforge = "21.1.250"
+# 3.0.9+mc1.21, the NeoForge upload.
+deps.appleskin = "uAKA6Laj"
+deps.cloth_config = "15.0.140+neoforge"
+deps.jade = "15.10.6+neoforge"
+
 ["1.21.11"]
 mod.mc_compat = "1.21.11"
 mod.mc_releases = ["1.21.11"]
@@ -31,6 +44,18 @@ deps.appleskin = "59ti1rvg"
 deps.cloth_config = "21.11.153+fabric"
 deps.jade = "21.1.6+fabric"
 deps.farmersdelight = "1.21.11-3.6.16"
+
+["1.21.11-neoforge"]
+# NeoForge on 1.21.11. Farmer's Delight is left out for the reason 26.2.x-neoforge gives.
+mod.mc_compat = "1.21.11"
+mod.mc_releases = ["1.21.11"]
+mod.mc_range = "[1.21.11,1.21.12)"
+
+deps.neoforge = "21.11.45"
+# 3.0.8+mc1.21.11, the NeoForge upload.
+deps.appleskin = "MH9ov9DW"
+deps.cloth_config = "21.11.153+neoforge"
+deps.jade = "21.1.7+neoforge"
 
 ["26.1.x"]
 mod.mc_compat = "~26.1"
@@ -43,6 +68,20 @@ deps.cloth_config = "26.1.154+fabric"
 deps.jade = "26.1.11+fabric"
 deps.farmersdelight = "26.1-3.6.21"
 deps.create_fly = "26.1.2-6.0.9-4"
+
+["26.1.x-neoforge"]
+# NeoForge on 26.1.x, compiled against 26.1.2 like the Fabric node. Create Fly and Farmer's Delight are
+# left out for the reason 26.2.x-neoforge gives.
+mod.mc_compat = "~26.1"
+mod.mc_releases = ["26.1", "26.1.1", "26.1.2"]
+mod.mc_range = "[26.1,26.2)"
+
+deps.neoforge = "26.1.2.109"
+# 3.0.9+mc26.1, the NeoForge upload.
+deps.appleskin = "i8MiVItH"
+deps.cloth_config = "26.1.154+neoforge"
+# The newest release; 26.1.11+neoforge is a beta.
+deps.jade = "26.1.10+neoforge"
 
 ["26.2.x"]
 # Range written into fabric.mod.json.

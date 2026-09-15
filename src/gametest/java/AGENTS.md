@@ -8,7 +8,7 @@ player, headlessly and in a few seconds.
 ```
 
 ```bash
-./gradlew ":26.2.x-neoforge:runGametest"
+./gradlew ":1.21.1-neoforge:runGametest"
 ```
 
 CI runs this for every node, NeoForge included, on every push. A failing test fails the build.
@@ -59,7 +59,7 @@ The same 123 tests run on every node. Later nodes report 124 because their runne
 
 ## The NeoForge harness
 
-`26.2.x-neoforge` runs the same 123 test methods, with no test body changed and no NeoForge-only
+The `-neoforge` nodes run the same 123 test methods, with no test body changed and no NeoForge-only
 branch in any of them. What stands in for Fabric API lives in `src/gametest/neoforge`:
 
 | | Fabric API | NeoForge node |
@@ -72,6 +72,18 @@ branch in any of them. What stands in for Fabric API lives in `src/gametest/neof
 | Runner | `-Dfabric-api.gametest` on the server run | ModDevGradle's `gameTestServer` run type |
 | Report | `fabric-api.gametest.report-file` | vanilla's `--report`, to the same `versions/<node>/build/gametest/report.xml` |
 
+On 1.21.1 (`1.21.1-neoforge`) there are no test registries, environments or padding yet. The harness
+adds a vanilla `TestFunction` per method to `GameTestRegistry.getAllTestFunctions()` from
+`RegisterGameTestsEvent`, in `defaultBatch`, with the same structure, ticks and id; it bypasses
+NeoForge's own registration, which only accepts vanilla's annotation and takes the structure's
+namespace from a NeoForge annotation on the test class. That server has no `--report` option either,
+so the build passes the report path as `-Dthirstwastaken2.gametest.report` and the harness installs
+vanilla's `JUnitLikeTestReporter` itself. The report lists 123 tests there, without
+`minecraft:always_pass`.
+
+On 1.21.11 `TestData` has no padding and `TestEnvironmentDefinition` takes no type parameter; the
+harness leaves padding out before 26.1 and holds both values in `var`s.
+
 Two things that differ underneath and have not mattered to any test so far:
 
 - Test classes are instantiated on their first test, not while the mod loads: they keep the mod's
@@ -79,7 +91,7 @@ Two things that differ underneath and have not mattered to any test so far:
 - Fabric API makes the test server report itself as a dedicated server; NeoForge leaves vanilla's
   `false`. Commands are still registered for a dedicated server on both.
 
-After changing the harness, break the NeoForge `Loader` on purpose and watch this node alone go red.
+After changing the harness, break the NeoForge `Loader` on purpose and watch the NeoForge nodes alone go red.
 Skipping `onUseItem` there fails the bowl and waterskin scooping tests; skipping `onUseBlock` fails the
 cauldron bottle draw.
 

@@ -17,7 +17,7 @@ For gameplay ideas see [ROADMAP.md](ROADMAP.md). That file is open ended; this o
 | 1.21.1 | yes, range `>=1.21 <=1.21.1` | yes, 1.21.1 only |
 | 1.21 | covered by the node above | **no** |
 
-Seven build nodes. 1.21 and 1.21.1 share one Fabric jar because nothing in the API surface moved
+Eight build nodes. 1.21 and 1.21.1 share one Fabric jar because nothing in the API surface moved
 between them, but they are separate NeoForge generations (21.0 against 21.1), so a shared NeoForge
 jar is not on the table. Almost nobody stayed on 1.21 once 1.21.1 landed three weeks later, so the
 node is not worth its cost.
@@ -25,7 +25,7 @@ node is not worth its cost.
 ## Settled decisions
 
 **One branch.** Git branches are for divergence in time; Stonecutter is for divergence in target.
-All seven nodes ship the same feature set under the same version number, so they belong to one
+All eight nodes ship the same feature set under the same version number, so they belong to one
 trunk. Short lived feature branches and PRs stay exactly as they are. Revisit only if 1.21.1 stops
 receiving features, and prefer retiring it over branching it.
 
@@ -100,7 +100,7 @@ and [src/gametest/java/AGENTS.md](../../src/gametest/java/AGENTS.md).
 | ~~**P2**~~ | `platform/Loader`, written while there is still only one loader | 2 to 3 days | **Done.** No loader import left in `src/main/java` or `src/client/java`; `checkLoaderSeam` runs in CI; all three nodes build and pass gametests |
 | ~~**P3**~~ | 1.21.1 Fabric node: sync packet, HUD fork, drink item fork, asset overlay | 4 to 6 days | **Done.** Released in 1.0.4 on 2026-09-13; 115 of 115 mod gametests on all four nodes at the time; no sync packet was needed; the exit ramp was revised after P3 crossed the old one, see below |
 | ~~**P4**~~ | NeoForge on 26.2 only | 8 to 15 days | **Done** on 2026-09-15, in about 3.5 days. Five green CI jobs, the NeoForge one 2m26s against 2m04s to 2m26s for Fabric; 124 of 124 gametests on `26.2.x-neoforge` with no test body changed; NeoForge `Loader` 189 lines and `ClientLoader` 64; manual pass ticked. Not released on its own: the NeoForge jar ships once P5 has older NeoForge versions |
-| **P5** | NeoForge across the remaining versions, starting with 1.21.1, plus publish automation | 4 to 8 days | Seven nodes green |
+| **P5** | NeoForge across the remaining versions, starting with 1.21.1 | 4 to 8 days | Eight nodes green. **Automated part done** on 2026-09-15: `1.21.1-neoforge` (123 of 123), `1.21.11-neoforge` and `26.1.x-neoforge` (124 of 124 each) build, pass their gametests and go red when `onUseItem` is broken. Manual passes open |
 
 Roughly 12 to 23 days of work left. Spread it over months, not weeks.
 
@@ -196,17 +196,25 @@ guess. P4 is where it gets one.
 Found by reading [stonecutter-template-multiloader](https://github.com/stonecutter-versioning/stonecutter-template-multiloader)
 at `fb821b0` against this build on 2026-09-15. None of it matters while P4 has one NeoForge node.
 
-- **Serialize `createMinecraftArtifacts`.** Every ModDevGradle node decompiles and recompiles
+- ~~**Serialize `createMinecraftArtifacts`.**~~ Done with the 1.21.1 node, as a build service in
+  `build.neoforge.gradle.kts`. Every ModDevGradle node decompiles and recompiles
   Minecraft in that task, and with `org.gradle.parallel=true` several NeoForge nodes do it at once.
   The template limits it to one at a time with a shared build service:
   `gradle.sharedServices.registerIfAbsent("createMinecraftArtifactsMutex", ...)` with
   `maxParallelUsages = 1`, then `usesService` on every task of that name. It keeps this in a `buildSrc`
   plugin; registering the service directly in `build.neoforge.gradle.kts` does the same without the
   extra build.
-- **NeoForge's environment API changed in 1.21.9.** From 1.21.9 it is `FMLEnvironment.getDist()` and
+- ~~**NeoForge's environment API changed in 1.21.9.**~~ Done: `Loader.isDevelopmentEnvironment` reads
+  `FMLEnvironment.production` before 1.21.9, and the gametest harness reads its manifest through
+  `IModFile.findResource` there. The 1.21.11 NeoForge node compiles and runs the newer form, so the
+  threshold holds for every node there is. From 1.21.9 it is `FMLEnvironment.getDist()` and
   `FMLLoader.getCurrent().getLoadingModList()`; before, the static field `FMLEnvironment.dist` and
-  `FMLLoader.getLoadingModList()`. The 26.2 `Loader` from P4 uses the new form, so the 1.21.1 NeoForge
-  node needs a version conditional there, inside the loader directory where the invariant allows it.
+  `FMLLoader.getLoadingModList()`.
+- ~~**Thresholds still to confirm on the next nodes.**~~ Confirmed by the 1.21.11 and 26.1.x nodes:
+  `playerData`'s map codec (`>1.21.1`), the `neoforge:ingredient_type` key (`>1.21.1`) and the gametest
+  `--report` option and registries (`>=1.21.5`) all hold there. Two guesses were wrong and were moved:
+  the attachment sync channel check is needed on 21.11 as well (`<26.1`), and 1.21.11's `TestData` has
+  no padding (`>=26.1`). None of these thresholds is pinned to the exact release between two nodes.
 - **Layer the properties file by loader once `mod.mc_releases` repeats.** The template calls
   `properties { tags(version, loader) }` in `stonecutter parameters`, so shared keys sit in
   `["26.2.x"]` and loader keys in `[fabric."26.2.x"]` or `[neoforge."26.2.x"]`. By default Stonecutter
@@ -214,4 +222,4 @@ at `fb821b0` against this build on 2026-09-15. None of it matters while P4 has o
   costs two things: every Fabric-only key has to move into a `[fabric."..."]` table, or the NeoForge
   node inherits it (`deps.create_fly` would switch the Sand Filter on); and both readers of
   `["..."]` headers break, the `discover` job in [build.yml](../../.github/workflows/build.yml) and
-  [update_mc_deps.py](../../.github/scripts/update_mc_deps.py). Worth it at seven nodes, not at five.
+  [update_mc_deps.py](../../.github/scripts/update_mc_deps.py). Worth it at eight nodes, not at five.

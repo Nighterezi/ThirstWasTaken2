@@ -20,9 +20,9 @@ check, and every item below belongs to one of them:
 
 ## How to run a pass
 
-1. `./gradlew ":<node>:runClient"`, where `<node>` is `26.2.x`, `26.1.x`, `1.21.11`, `1.21.1` or
-   `26.2.x-neoforge`. The dev client already has AppleSkin, Cloth Config and Jade, and Mod Menu on
-   the Fabric nodes.
+1. `./gradlew ":<node>:runClient"`, where `<node>` is `26.2.x`, `26.1.x`, `1.21.11` or `1.21.1`, or
+   one of those with a `-neoforge` suffix. The dev client already has AppleSkin, Cloth Config and Jade,
+   and Mod Menu on the Fabric nodes.
 2. Create a new **survival** world on **Normal**, cheats on. Keep the world per version; saves do
    not move between versions.
 3. Work down the general checklist, then the section for that version.
@@ -235,6 +235,39 @@ Mod Menu and no Farmer's Delight or Create Fly.
 Checked on 2026-09-15 with computer use, except the last item, read from the save files. Sneaking has
 to be held by a real key press for hand drinking: a Shift modifier on a single click is released
 before the server sees the player crouch.
+
+### 1.21.1 NeoForge
+
+The 26.2 NeoForge list, on `1.21.1-neoforge`, plus what is only true of 1.21.1 on this loader. Not yet
+checked by hand. Every 1.21.1 item above that is not about Fabric API applies here too: drinking by
+the item itself, the shadowed tooltip droplets, the sea-water sprites, the config screen headings,
+the water cauldron's name and the advancement background.
+
+- [ ] Every item of the 26.2 NeoForge section above.
+- [ ] **Sync first.** NeoForge 21.1 only syncs thirst to a connection that negotiated its attachment
+      channel, which a NeoForge client does. Run the whole "Sync to the client" section, including a
+      dedicated server with a second client.
+- [ ] **Sprinting is gated by `LocalPlayerMixin`**, now in the shared client mixin config: at thirst 6
+      holding sprint walks, at 7 it runs.
+- [ ] The thirst bar and the air bubbles stack by `Gui.rightHeight`, not `Hud`: same place as on 26.2,
+      bubbles above the bar underwater.
+- [ ] The purification recipes show in the recipe book and a furnace boils a looted bottle. The recipe
+      JSON is translated differently on 1.21.1 (`type` and `items`), and only the gametests' furnace
+      check has seen it.
+- [ ] **Known, by design:** a 1.21.1 NeoForge world opened on a later NeoForge version starts every
+      player at full thirst; 21.1 saves the attachment without the `value` field later versions use.
+
+### 1.21.11 and 26.1.x NeoForge
+
+The 26.2 NeoForge list, on `1.21.11-neoforge` and on `26.1.x-neoforge`, plus the items of the Fabric
+section for the same version. Not yet checked by hand.
+
+- [ ] Every item of the 26.2 NeoForge section above, on each node.
+- [ ] **Sync first on 1.21.11.** Like 21.1, NeoForge 21.11 only syncs thirst to a connection that
+      negotiated the attachment channel. Run the whole "Sync to the client" section there.
+- [ ] The thirst bar and the air bubbles stack by `Gui.rightHeight` on both: same place as on 26.2,
+      bubbles above the bar underwater.
+- [ ] F1 hides the bar on both (read from the options, as on the Fabric nodes of these versions).
 
 ## When this file changes
 
