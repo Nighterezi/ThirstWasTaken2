@@ -16,7 +16,7 @@ plugins {
     id("dev.kikugie.loom-back-compat") version "0.4.2"
     // NeoForge's build plugin, for the one NeoForge node. Resolved here and applied only by
     // build.neoforge.gradle.kts: applying it to a Fabric node would put a second Minecraft provider
-    // on a project Loom already owns. See docs/dev/P4-NEOFORGE-PLAN.md.
+    // on a project Loom already owns.
     id("net.neoforged.moddev") version "2.0.147" apply false
     // Provisions the JDK a version needs when it is not installed locally: 26.1+ wants Java 25,
     // 1.21.x wants Java 21.

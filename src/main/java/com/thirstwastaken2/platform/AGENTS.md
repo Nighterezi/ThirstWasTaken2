@@ -96,6 +96,23 @@ What does live here are the types those signatures need, because both copies hav
 | `ClientLoader.addRightStatusBar` | `HudElementRegistry.attachElementAfter(FOOD_BAR)` plus `HudStatusBarHeightRegistry.addRight`; `GuiMixin` on 1.21.1 | a layer `registerAbove(VanillaGuiLayers.FOOD_LEVEL)` that draws at `guiHeight() - hud.rightHeight` and advances `Hud.rightHeight` only when it drew, and only when the player can be hurt, which is when vanilla draws the food bar |
 | `ClientLoader.appleSkinShowsExhaustionUnderlay` | `ModConfig.INSTANCE.showFoodExhaustionHudUnderlay` | `ModConfig.SPEC.isLoaded() && ModConfig.SHOW_FOOD_EXHAUSTION_UNDERLAY.get()`; reading a NeoForge config value before FML loads it throws |
 
+### The NeoForge node's scope
+
+`26.2.x-neoforge` is the one NeoForge node. What it leaves out, and why:
+
+- **Create Fly.** A Fabric port; `src/main/createfly` never compiles here, because the node does not
+  set `deps.create_fly`.
+- **Farmer's Delight at runtime.** No NeoForge build for 26.2 when this was written. Its recipes still
+  load or are skipped correctly, through the translated `neoforge:conditions`.
+- **`src/dev` and `src/datagen`.** Fabric only; this node reads the 26.2 Fabric node's generated files.
+- **Carrying a world between loaders.** Fabric saves the thirst attachment under `fabric:attachments`,
+  NeoForge under `neoforge:attachments`, so a moved world starts every player at full thirst. There is
+  no migration, on purpose.
+
+Its jar is `ThirstWasTaken2-<version>+26.2-neoforge.jar`. It is not released on its own: NeoForge ships,
+marked beta, once older Minecraft versions have NeoForge nodes too (P5 in
+[docs/dev/PLATFORM-PLAN.md](../../../../../../docs/dev/PLATFORM-PLAN.md)).
+
 Two mixins reach methods NeoForge patches: `ItemStack#addDetailsToTooltip`, where the mod's rows land
 after NeoForge's own tooltip hook, and `CauldronBlock#receiveStalactiteDrip`, whose `RETURN` injection
 also fires on NeoForge's early return for modded fluids. Both are harmless as written.

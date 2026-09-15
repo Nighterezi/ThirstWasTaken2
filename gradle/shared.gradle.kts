@@ -10,7 +10,7 @@
  *
  * - **The source directory wiring.** Loom splits `main` and `client`; ModDevGradle has no split, so
  *   the NeoForge node compiles the client sources into `main`. The two scripts wire their source
- *   sets differently on purpose. See docs/dev/P4-NEOFORGE-PLAN.md.
+ *   sets differently on purpose, as build.neoforge.gradle.kts explains.
  * - **What `buildAndCollect` copies.** The jar a node ships is Loom's remapped jar on Fabric and the
  *   plain `jar` on NeoForge, so each script adds its own inputs to the task registered below.
  */

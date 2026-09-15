@@ -88,17 +88,18 @@ Checked 2026-09-12. Re-check before relying on any of it.
 
 ## Phases
 
-P0 through P3 are done. The remaining day counts are still estimates, but P0 re-anchored them against
-a real build; see [P0-SPIKE.md](P0-SPIKE.md). P4 has its own working plan in
-[P4-NEOFORGE-PLAN.md](P4-NEOFORGE-PLAN.md).
+P0 through P4 are done. The remaining day counts are still estimates; P0 re-anchored them against a
+real build. The P0 spike and the P4 working plan were deleted once their phases landed, and what
+outlives them is in [platform/AGENTS.md](../../src/main/java/com/thirstwastaken2/platform/AGENTS.md)
+and [src/gametest/java/AGENTS.md](../../src/gametest/java/AGENTS.md).
 
 | Phase | Work | Estimate | Gate to move on |
 |---|---|---|---|
-| ~~**P0**~~ | Spike: stand up a `1.21.1` node, run `:1.21.1:build`, record what actually breaks | 1 day | **Done.** [P0-SPIKE.md](P0-SPIKE.md): 23 of 58 Java files and 31 of 57 JSON files break; 4 structural forks; overlap with P1 and P2 is total |
+| ~~**P0**~~ | Spike: stand up a `1.21.1` node, run `:1.21.1:build`, record what actually breaks | 1 day | **Done.** 23 of 58 Java files and 31 of 57 JSON files break; 4 structural forks; overlap with P1 and P2 is total |
 | ~~**P1**~~ | Move the 90 resource files to datagen, output keyed by Minecraft version | 2 to 3 days | **Done.** 58 of the 90 are generated into `src/main/generated/<minecraft version>/`; `:<version>:checkDatagen` runs in CI on all three nodes and 61 gametests pass on each |
 | ~~**P2**~~ | `platform/Loader`, written while there is still only one loader | 2 to 3 days | **Done.** No loader import left in `src/main/java` or `src/client/java`; `checkLoaderSeam` runs in CI; all three nodes build and pass gametests |
 | ~~**P3**~~ | 1.21.1 Fabric node: sync packet, HUD fork, drink item fork, asset overlay | 4 to 6 days | **Done.** Released in 1.0.4 on 2026-09-13; 115 of 115 mod gametests on all four nodes at the time; no sync packet was needed; the exit ramp was revised after P3 crossed the old one, see below |
-| **P4** | NeoForge on 26.2 only | 8 to 15 days | Gametests green on five nodes. **In progress:** steps 0 to 7 done, 124 of 124 gametests on `26.2.x-neoforge` locally; the manual pass and the release remain. Steps in [P4-NEOFORGE-PLAN.md](P4-NEOFORGE-PLAN.md) |
+| ~~**P4**~~ | NeoForge on 26.2 only | 8 to 15 days | **Done** on 2026-09-15, in about 3.5 days. Five green CI jobs, the NeoForge one 2m26s against 2m04s to 2m26s for Fabric; 124 of 124 gametests on `26.2.x-neoforge` with no test body changed; NeoForge `Loader` 189 lines and `ClientLoader` 64; manual pass ticked. Not released on its own: the NeoForge jar ships once P5 has older NeoForge versions |
 | **P5** | NeoForge across the remaining versions, starting with 1.21.1, plus publish automation | 4 to 8 days | Seven nodes green |
 
 Roughly 12 to 23 days of work left. Spread it over months, not weeks.
@@ -142,14 +143,15 @@ work between the two phases.
 Proposed here, to be promoted to [AGENTS.md](../../AGENTS.md) once P3 lands, because it is a
 standing rule rather than a plan.
 
-- **At most four version nodes.** Adding one means retiring one.
+- **At most four version nodes.** Adding one means retiring one. A NeoForge node on a Minecraft
+  version that already has a Fabric node does not count as another version.
 - The shape is one long lived old version, the two newest, and one in transition.
 - When 26.3 arrives, 26.1.x is the one to drop. It is the shortest lived of the four.
 - 1.21.1 is the deliberate exception, kept for the modpack ecosystem rather than for being current.
 
 ## Open questions
 
-P0's four are all answered in [P0-SPIKE.md](P0-SPIKE.md): the 1.21.1 dependency block is resolved and
+P0's four are all answered: the 1.21.1 dependency block is resolved and
 built, `loomx.loom_version` needs no per-version value, the rename is two `replacements` lines rather
 than one, and the gametests run on 1.21.1 at the cost of a forked harness and no forked assertions.
 
@@ -169,8 +171,9 @@ The output directory is already keyed by Minecraft version, so a NeoForge node r
 node on its version wrote, and `checkDatagen` keeps running on Fabric nodes only. That also makes
 **byte-identical output across loaders moot**: there is one writer. What P4 still has to check is
 that NeoForge *reads* those files, and the one real risk is the `fabric:components` ingredient in
-the 22 recipes. NeoForge has its own components ingredient under a different type key, so either
-the recipes fork per loader or a NeoForge node registers a `fabric:components` alias. Decide there.
+the 22 recipes. NeoForge has its own components ingredient under a different type key. P4 settled
+it: an alias cannot work, because NeoForge reads the type from another key, so the NeoForge node
+translates the Fabric shapes as it copies resources and `checkNeoForgeResources` guards it.
 
 What the seam looks like, so P3 and P4 know where they land
 ([platform/AGENTS.md](../../src/main/java/com/thirstwastaken2/platform/AGENTS.md) has the rules):

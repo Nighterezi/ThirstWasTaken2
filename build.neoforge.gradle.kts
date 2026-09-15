@@ -8,7 +8,7 @@ plugins {
 /*
  * The NeoForge node, `26.2.x-neoforge`. One Minecraft version, one loader, the same sources as
  * `26.2.x`. Everything both this and the Fabric nodes need is in gradle/shared.gradle.kts, applied
- * below. See docs/dev/P4-NEOFORGE-PLAN.md.
+ * below. See src/main/java/com/thirstwastaken2/platform/AGENTS.md.
  */
 
 // Stonecutter supplies `mod.*` and `deps.*` for this node from stonecutter.properties.toml.

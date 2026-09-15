@@ -5,7 +5,8 @@ mod.group = "com.thirstwastaken2"
 mod.version = "1.0.5"
 
 deps.fabric_loader = "0.19.5"
-loomx.loom_version = "1.17-SNAPSHOT"
+# Pinned to a release rather than `1.17-SNAPSHOT`, so the same commit builds the same jars later.
+loomx.loom_version = "1.17.21"
 
 ["1.21.1"]
 # One jar for both: nothing the mod touches moved between 1.21 and 1.21.1.
@@ -66,7 +67,8 @@ deps.create_fly = "26.2-rc-2-6.0.9-1"
 
 ["26.2.x-neoforge"]
 # The NeoForge node, on the same Minecraft version as 26.2.x and from the same sources. See
-# docs/dev/P4-NEOFORGE-PLAN.md. Create Fly and Farmer's Delight are deliberately absent: neither has
+# src/main/java/com/thirstwastaken2/platform/AGENTS.md. Create Fly and Farmer's Delight are
+# deliberately absent: neither has
 # a NeoForge build for 26.2, and `deps.create_fly` is what decides whether a node compiles the Sand
 # Filter at all.
 mod.mc_compat = "~26.2"

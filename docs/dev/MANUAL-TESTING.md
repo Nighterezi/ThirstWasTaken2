@@ -136,8 +136,10 @@ The server owns thirst. These are the checks that the client is told.
 - [x] Remove Mod Menu, AppleSkin and Cloth Config from the run: the game loads and the bar draws
       without the exhaustion strip or the quenched outline, and tooltips have no droplet rows.
 - [x] A dedicated server (`runServer`) starts and a client joins it without a crash on either side.
-- [ ] A dedicated server with Jade in its mods folder starts without a crash. Jade loads the plugin
-      on the server too.
+- [x] A dedicated server with Jade in its mods folder starts without a crash. Jade loads the plugin
+      on the server too. `runServer` with Jade copied into `run/<node>/mods` is enough on both loaders:
+      the Fabric dev server has the client classes on its classpath, as the released jar does.
+      Checked on 26.2 on 2026-09-15.
 
 ## Per version
 
@@ -206,26 +208,33 @@ Mod Menu and no Farmer's Delight or Create Fly.
 
 - [x] The thirst bar sits above the hunger bar, and underwater the air bubbles sit above the thirst
       bar. NeoForge stacks the right-hand bars by a shared height rather than Fabric's registry.
-      Checked on 2026-09-15.
-- [ ] In creative the thirst bar disappears with the hearts and hunger, and a living mount's health
+- [x] In creative the thirst bar disappears with the hearts and hunger, and a living mount's health
       replaces it, as on Fabric.
-- [ ] With AppleSkin, the quenched outline and the exhaustion strip draw on the thirst bar, and
-      turning AppleSkin's own exhaustion underlay off in its config screen removes the strip.
-- [ ] Item tooltips show the purity line and the thirst and quenched droplet rows. The rows come
+- [x] With AppleSkin, the quenched outline and the exhaustion strip draw on the thirst bar, and
+      turning AppleSkin's own exhaustion underlay off removes the strip. Setting
+      `showFoodExhaustionHudUnderlay = false` in `config/appleskin-client.toml` while in game is
+      enough: NeoForge reloads the file and the strip goes from both bars at once.
+- [x] Item tooltips show the purity line and the thirst and quenched droplet rows. The rows come
       after NeoForge's own tooltip lines here, so check they are still together and in order.
 - [x] Mods, ThirstWasTaken2, Config opens the mod's config screen, and Done returns to the mods list.
-      Checked on 2026-09-15.
-- [ ] Jade shows the grade when looking at river water, sea water and a water cauldron.
-- [ ] Drinking by hand works, from water under the crosshair and from water the crosshair misses
-      (`MinecraftMixin`, now in the shared client mixin config).
-- [ ] Filling a bottle from a cauldron and scooping with a bowl keep working after a second right
+- [x] Jade shows the grade when looking at river water, sea water and a water cauldron.
+- [x] Drinking by hand works, from water under the crosshair and from water the crosshair misses
+      (`MinecraftMixin`, now in the shared client mixin config). F3 showing no Targeted Block is the
+      way to be sure the crosshair missed.
+- [x] Filling a bottle from a cauldron and scooping with a bowl keep working after a second right
       click on the same block (the use events are cancelled with a result, not just stopped).
-- [ ] `./gradlew ":26.2.x-neoforge:runServer"` starts without an error, once as it is and once with
-      Jade in `run/26.2.x-neoforge/mods`.
-- [ ] Set thirst to 8 with `/thirst set @s 8 0`, die, respawn: thirst is full again, as on Fabric.
+- [x] `./gradlew ":26.2.x-neoforge:runServer"` starts without an error, once as it is and once with
+      Jade in `run/26.2.x-neoforge/mods`. Jade loads the mod's plugin on the server too.
+- [x] Set thirst to 8 with `/thirst set @s 8 0`, die, respawn: thirst is full again, as on Fabric.
       Then leave and rejoin the world with thirst not full: the value survives the save.
-- [ ] **Known, by design:** a world from the Fabric jar opened with the NeoForge jar starts every
-      player at full thirst. The two loaders save the value under different keys.
+- [x] **Known, by design:** a world from the Fabric jar opened with the NeoForge jar starts every
+      player at full thirst. The two loaders save the value under different keys: both player files
+      hold `thirstwastaken2:player_data`, under `fabric:attachments` on one and
+      `neoforge:attachments` on the other.
+
+Checked on 2026-09-15 with computer use, except the last item, read from the save files. Sneaking has
+to be held by a real key press for hand drinking: a Shift modifier on a single click is released
+before the server sees the player crouch.
 
 ## When this file changes
 

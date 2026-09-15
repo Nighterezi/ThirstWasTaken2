@@ -60,9 +60,10 @@ Create Fly jar through `clientRuntimeOnly`, where Fabric Loader applies its twea
 
 That copy is unremapped, which is fine from 26.1 on. It also leaves out the members Create Fly widens
 for itself, which is why `SandFilter` uses Fabric's `FabricBlockEntityTypeBuilder`: vanilla's
-`BlockEntityType` constructor is private on 26.1. **An obfuscated version (1.21.11) needs a
-different answer** before it can set `deps.create_fly`; see
-[docs/dev/CREATE-FLY-1.21.11-PLAN.md](../../docs/dev/CREATE-FLY-1.21.11-PLAN.md).
+`BlockEntityType` constructor is private on 26.1. **1.21.11 and 1.21.1 will not get the Sand
+Filter.** Both are obfuscated: Create Fly's 1.21.11 jar is in intermediary names, so a classes-only
+copy would not remap, and compiling against the real jar brings back the `Container` crash above.
+Decided on 2026-09-15; do not set `deps.create_fly` on an obfuscated node.
 
 ## The transfer
 

@@ -214,6 +214,11 @@ gametest.compileClasspath += sourceSets.main.get().compileClasspath + sourceSets
 gametest.runtimeClasspath += sourceSets.main.get().runtimeClasspath + sourceSets.main.get().output
 dev.compileClasspath += sourceSets.main.get().compileClasspath + sourceSets.main.get().output
 dev.runtimeClasspath += sourceSets.main.get().runtimeClasspath + sourceSets.main.get().output
+// runServer and runBenchmark run the dev source set. The published jar carries the client classes on
+// a dedicated server too, and a mod that loads one of them by name there, as Jade does with the `jade`
+// entrypoint, crashes a dev server that lacks them. Only the classes are added, not the client's
+// runtime mods, so the client-only dependencies stay out of the server.
+dev.runtimeClasspath += sourceSets["client"].output
 
 /**
  * Adds a client-only mod dependency. Loom prefixes these configurations with `mod` where it remaps

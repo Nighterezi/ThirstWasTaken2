@@ -14,7 +14,6 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 
 - Create Fly and Farmer's Delight have no NeoForge release for 26.2, so the Sand Filter and the
   Farmer's Delight support are Fabric only for now.
-- A world moved between Fabric and NeoForge starts every player at full thirst.
 
 ## [1.0.5] - 2026-09-14
 

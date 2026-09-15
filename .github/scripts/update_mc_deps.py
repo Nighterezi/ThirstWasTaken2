@@ -14,7 +14,9 @@ Rules:
 - A node compiles against the Minecraft version settings.gradle.kts gives it (`26.1.x` -> `26.1.2`),
   so that is the version a candidate has to list. A newer Minecraft patch is a manual bump.
 - A node whose name ends in `-neoforge` takes NeoForge uploads; every other node takes Fabric ones.
-  NeoForge itself is not bumped here.
+- NeoForge itself comes from maven.neoforged.net: the newest build for the same Minecraft version as the
+  pinned one, releases only unless the pinned build is a beta. Like Fabric Loader, it raises the
+  minimum players need, since neoforge.mods.toml writes it as the lower bound.
 - Only release uploads are taken, unless the pinned version is itself a beta or alpha: a node on a
   pre-release dependency stays on that channel until a release catches up.
 - A candidate has to be published after the pinned version. Nothing is ever downgraded.
@@ -43,6 +45,7 @@ SETTINGS = ROOT / "settings.gradle.kts"
 
 MODRINTH = "https://api.modrinth.com/v2"
 FABRIC_META = "https://meta.fabricmc.net/v2/versions/loader"
+NEOFORGE_METADATA = "https://maven.neoforged.net/releases/net/neoforged/neoforge/maven-metadata.xml"
 # Modrinth asks every client for a User-Agent that identifies the project.
 USER_AGENT = "Nighterezi/ThirstWasTaken2 dependency updater (github.com/Nighterezi/ThirstWasTaken2)"
 
@@ -227,6 +230,33 @@ def check_loader(props: Properties, changes: list[Change]) -> None:
                           "https://github.com/FabricMC/fabric-loader/releases"))
 
 
+def neoforge_versions() -> list[str]:
+    request = urllib.request.Request(NEOFORGE_METADATA, headers={"User-Agent": USER_AGENT})
+    with urllib.request.urlopen(request, timeout=30) as response:
+        return re.findall(r"<version>([^<]+)</version>", response.read().decode("utf-8"))
+
+
+def check_neoforge(props: Properties, node: str, changes: list[Change]) -> None:
+    """NeoForge's version starts with the Minecraft version it is built for, `26.2.0.88` for 26.2, so
+    only builds with the pinned version's first three parts are candidates. Betas are skipped unless
+    the pinned build is one."""
+    found = props.find(node, "deps.neoforge")
+    if found is None:
+        return
+    index, pinned = found
+    prefix = ".".join(pinned.split("-")[0].split(".")[:3]) + "."
+    allow_beta = "-" in pinned
+    candidates = [v for v in neoforge_versions() if v.startswith(prefix) and (allow_beta or "-" not in v)]
+    if not candidates:
+        return
+    newest = max(candidates, key=numeric)
+    if numeric(newest) <= numeric(pinned):
+        return
+    props.set(index, "deps.neoforge", newest)
+    changes.append(Change(node, "neoforge", pinned, newest, pinned, newest,
+                          "https://projects.neoforged.net/neoforged/neoforge"))
+
+
 def files_mentioning(value: str) -> list[str]:
     """Tracked files other than the properties file that still name an old version, for the PR body."""
     result = subprocess.run(["git", "grep", "-l", "-w", "-F", value, "--", ".", f":!{PROPERTIES.name}",
@@ -249,6 +279,9 @@ def summary(changes: list[Change], warnings: list[str]) -> str:
     if any(change.key == "fabric_loader" for change in changes):
         notes.append("Fabric Loader is written into `fabric.mod.json` as `>=`, so this raises the minimum loader "
                      "players need.")
+    if any(change.key == "neoforge" for change in changes):
+        notes.append("NeoForge is written into `neoforge.mods.toml` as the lower bound, so this raises the minimum "
+                     "NeoForge players need.")
     stale = {}
     for change in changes:
         for path in files_mentioning(change.old_label):
@@ -279,6 +312,8 @@ def main() -> int:
             continue
         for dep in MODRINTH_DEPS:
             check_modrinth(props, node, minecraft, dep, changes, warnings)
+        if node_loader(node) == "neoforge":
+            check_neoforge(props, node, changes)
 
     for change in changes:
         print(f"{change.node or 'all'}: {change.key} {change.old_label} -> {change.new_label}")
