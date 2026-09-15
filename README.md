@@ -53,9 +53,9 @@ There is one download per Minecraft version, named after it, for example
 | Component | Minecraft 26.2 | Minecraft 26.1.x | Minecraft 1.21.11 | Minecraft 1.21.1 |
 |---|---|---|---|---|
 | Java | 25 | 25 | 21 | 21 |
-| Fabric Loader | 0.19.3 or newer | 0.19.3 or newer | 0.19.3 or newer | 0.19.3 or newer |
+| Fabric Loader | 0.19.5 or newer | 0.19.5 or newer | 0.19.5 or newer | 0.19.5 or newer |
 | Fabric API | 0.160.0+26.2 | 0.155.3+26.1.2 | 0.141.6+1.21.11 | 0.116.17+1.21.1 |
-| Mod Menu | Optional, 20.0.1 tested | Optional, 18.0.0 tested | Optional, 17.0.0 tested | Optional, 11.0.4 tested |
+| Mod Menu | Optional, 20.0.2 tested | Optional, 18.0.1 tested | Optional, 17.0.0 tested | Optional, 11.0.4 tested |
 | AppleSkin | Optional, 3.0.10+mc26.2 tested | Optional, 3.0.10+mc26.1.2 tested | Optional, 3.0.8+mc1.21.11 tested | Optional, 3.0.6+mc1.21 tested |
 | Cloth Config | Optional, needed for AppleSkin's Mod Menu screen | Same | Same | Same |
 | Jade | Optional, 26.2.11 | Optional, 26.1.11 | Optional, 21.1.6 | Optional, 15.10.6 |

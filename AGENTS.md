@@ -1,7 +1,7 @@
 # ThirstWasTaken2
 
 A Fabric fork of [Thirst Was Taken](https://github.com/ghen-git/Thirst-Mod) (originally Forge,
-Minecraft 1.19.2) for **Minecraft 26.2, 26.1.x, 1.21.11 and 1.21.1** on **Fabric Loader 0.19.3**. It adds a
+Minecraft 1.19.2) for **Minecraft 26.2, 26.1.x, 1.21.11 and 1.21.1** on **Fabric Loader 0.19.5**. It adds a
 survival thirst bar, drinking, and water purity to Minecraft and further extends the original mod. It
 started as a port and has since diverged, so upstream is a reference, not a spec.
 
@@ -90,7 +90,7 @@ cached.
 
 ## Stack and constraints
 
-- **Minecraft 26.2, 26.1.x, 1.21.11 and 1.21.1**, **Fabric Loader 0.19.3**, **Fabric Loom 1.17**. 26.1+
+- **Minecraft 26.2, 26.1.x, 1.21.11 and 1.21.1**, **Fabric Loader 0.19.5**, **Fabric Loom 1.17**. 26.1+
   runs on **Java 25**, 1.21.x on **Java 21**; the build sets the toolchain and `--release` per version,
   so do not use a language feature newer than Java 21.
 - **Multi-version via [Stonecutter](https://stonecutter.kikugie.dev)**. `settings.gradle.kts` lists

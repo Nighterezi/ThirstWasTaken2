@@ -53,7 +53,7 @@ body:
     id: loader
     attributes:
       label: Fabric Loader version
-      placeholder: 0.19.3
+      placeholder: 0.19.5
     validations:
       required: true
 
