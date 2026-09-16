@@ -105,7 +105,7 @@ difference is a version conditional inside the NeoForge loader directories:
 |---|---|---|
 | `isDevelopmentEnvironment` | 1.21.1 (NeoForge 21.1) | the static field `FMLEnvironment.production`; the method arrived with 21.9 |
 | `playerData` saving | 1.21.1 | `serialize(codec)` rather than a map codec under `value`, so the saved shape differs from later versions |
-| `playerData` syncing | before 26.1 (NeoForge 21.1 and 21.11) | the predicate, `Loader.syncsTo`, also asks `connection.hasChannel(SyncAttachmentsPayload.TYPE)`: those versions throw when they send the payload to a connection that never negotiated it, which is what a gametest mock player has, and a vanilla client too |
+| `playerData` syncing | before 26.1 (NeoForge 21.1 and 21.11) | the predicate, `Loader.syncsTo`, turns away a fake player and then asks `connection.hasChannel(SyncAttachmentsPayload.TYPE)`: those versions throw when they send the payload to a connection that never negotiated it, which is what a gametest mock player has, and a vanilla client too, and throw again from `hasChannel` itself for a fake player, whose connection has no channel to read the negotiation off |
 | `ClientLoader.addRightStatusBar` | before 26.2 | `Gui.rightHeight`; 26.2 moved it to `Hud` |
 
 The resource translation in `build.neoforge.gradle.kts` also differs on 1.21.1: the ingredient type

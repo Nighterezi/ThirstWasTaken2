@@ -41,6 +41,57 @@ tasks.withType<ProcessResources>().configureEach {
     exclude("**/AGENTS.md", "**/*.bak")
 }
 
+/**
+ * Prepares what `runBenchmark` writes into and works in: the directory the report and any flight
+ * recording land in, and a world whose terrain is the same on every machine.
+ *
+ * The benchmark opens a world of its own, `-Pthirst.benchmark.world`, passed to the server as
+ * `--world` by each node's own buildscript; only the seed it is generated with lives here, because
+ * a seed is read from `server.properties` and nothing on the command line can set it.
+ *
+ * Only an empty or missing `level-seed` is filled in, so a seed someone put there by hand is left
+ * alone, and only a world created afterwards is affected: the dev world `runServer` opens already
+ * exists with a seed of its own inside its `level.dat`, and is untouched either way. The report's
+ * `environment.levelSeed` says what a run actually measured, so a reader never has to trust this.
+ */
+// Not `prepareBenchmarkRun`: ModDevGradle already names a task of its own that, for the
+// `benchmark` run it creates.
+tasks.register("benchmarkRunDirectory") {
+    description = "Makes the benchmark's output directory and fills in its seed when there is none"
+
+    val seed = providers.gradleProperty("thirst.benchmark.seed").get()
+    val properties = rootProject.file("run/${project.name}/server.properties")
+    // JFR writes its recording as the JVM starts and does not create the directory for it.
+    val output = rootProject.file("run/${project.name}/benchmark")
+    // The run directory is shared with runServer and edited by the server itself, so this is never
+    // up to date in Gradle's sense; it is a few lines of text either way.
+    outputs.upToDateWhen { false }
+
+    doLast {
+        output.mkdirs()
+        val key = "level-seed="
+        if (!properties.isFile) {
+            properties.parentFile.mkdirs()
+            // The server fills in every other property with its default on the first start and keeps
+            // this one. It still writes eula.txt and refuses to start until that is accepted by hand.
+            properties.writeText(key + seed + System.lineSeparator())
+            logger.lifecycle("Wrote $properties with the benchmark seed $seed")
+            return@doLast
+        }
+        val lines = properties.readLines()
+        val index = lines.indexOfFirst { it.startsWith(key) }
+        if (index >= 0 && lines[index].substring(key.length).isNotBlank()) return@doLast
+        val updated = if (index >= 0) lines.toMutableList().also { it[index] = key + seed }
+        else lines + (key + seed)
+        properties.writeText(updated.joinToString(System.lineSeparator(), postfix = System.lineSeparator()))
+        logger.lifecycle("Set the benchmark seed $seed in $properties")
+    }
+}
+
+// Both plugins create their run tasks while the buildscript is evaluated, and this file is applied at
+// the end of it, so the task is matched by name rather than looked up.
+tasks.matching { it.name == "runBenchmark" }.configureEach { dependsOn("benchmarkRunDirectory") }
+
 // The NeoForge node has a third check, `checkNeoForgeResources`, in build.neoforge.gradle.kts beside the
 // translation of datagen's Fabric-only JSON it guards.
 

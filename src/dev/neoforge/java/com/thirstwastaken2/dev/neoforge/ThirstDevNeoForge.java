@@ -5,12 +5,12 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.Mod;
 
 /**
- * The dev tools mod on NeoForge, dedicated server side: the agent's queue, polled on the server tick.
+ * The dev tools mod on NeoForge, dedicated server side: the agent's queue, polled on the server tick,
+ * and {@code /thirst benchmark}.
  *
  * <p>The mod is declared in {@code META-INF/neoforge.mods.toml} and has one class per side rather than
- * one class that asks which side it is on, which is the same shape the mod itself uses. The benchmark
- * is not here: it simulates players with Fabric's {@code FakePlayer} and stays on that loader, as
- * {@code src/dev/java/AGENTS.md} records.
+ * one class that asks which side it is on, which is the same shape the mod itself uses. Both tools are
+ * installed from {@link ThirstDev}, which names no loader.
  */
 @Mod(value = ThirstDevNeoForge.MOD_ID, dist = Dist.DEDICATED_SERVER)
 public final class ThirstDevNeoForge {
@@ -19,5 +19,6 @@ public final class ThirstDevNeoForge {
 
     public ThirstDevNeoForge() {
         ThirstDev.initializeServer();
+        ThirstDev.installBenchmark();
     }
 }

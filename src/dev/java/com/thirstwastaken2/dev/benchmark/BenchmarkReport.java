@@ -50,7 +50,8 @@ final class BenchmarkReport {
     static List<String> format(JsonObject report, Path file) {
         List<String> lines = new ArrayList<>();
         JsonObject environment = object(report, "environment");
-        lines.add("Minecraft " + text(environment, "minecraft") + ", mod " + text(environment, "modVersion")
+        lines.add("Minecraft " + text(environment, "minecraft") + " on " + text(environment, "loader")
+                + ", mod " + text(environment, "modVersion")
                 + ", Java " + text(environment, "java") + ", " + text(environment, "availableProcessors") + " CPUs, "
                 + text(environment, "maxHeapMiB") + " MiB max heap, profile " + text(object(report, "profile"), "name"));
         lines.add("Area: " + text(environment, "benchmarkArea"));

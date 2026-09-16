@@ -8,6 +8,7 @@ import com.thirstwastaken2.dev.platform.DevLoader;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.level.storage.LevelResource;
 
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
@@ -191,6 +192,9 @@ final class BenchmarkRun {
         // The field order is the report's, so a reader diffing two runs sees only what changed;
         // what each field says is DevEnvironment's, which the agent answers probe out of as well.
         json.addProperty("minecraft", DevEnvironment.minecraft());
+        // Both loaders write reports, and they are not comparable with each other, so each one says
+        // which it came from rather than leaving it to be read out of modVersion.
+        json.addProperty("loader", DevEnvironment.loader());
         json.addProperty("modVersion", DevEnvironment.modVersion());
         json.addProperty("dev", DevEnvironment.dev());
         json.addProperty("createFly", DevLoader.isModLoaded("create"));
@@ -199,10 +203,20 @@ final class BenchmarkRun {
         json.addProperty("vm", System.getProperty("java.vm.name") + " " + System.getProperty("java.vm.version"));
         json.addProperty("os", System.getProperty("os.name") + " " + System.getProperty("os.version")
                 + " (" + System.getProperty("os.arch") + ")");
+        json.addProperty("cpu", DevEnvironment.cpu());
         json.addProperty("availableProcessors", Runtime.getRuntime().availableProcessors());
         json.addProperty("maxHeapMiB", Metrics.round(Runtime.getRuntime().maxMemory() / MIB));
         json.addProperty("allocationTracking", Metrics.allocationTracking());
+        // True under -Pprofile, and under any profiler or debugger somebody attached by hand: every
+        // figure below is then slower than the mod really is, and the run is not a measurement.
+        json.addProperty("profiling", DevEnvironment.profiling());
         json.addProperty("difficulty", world.level.getDifficulty().name());
+        // Which world this measured and what it was generated from. runBenchmark opens a world of its
+        // own with a fixed seed, so two reports that agree here worked in the same terrain; two that do
+        // not are not comparable below the aggregate figures.
+        json.addProperty("levelDirectory", server.getWorldPath(LevelResource.ROOT)
+                .toAbsolutePath().normalize().getFileName().toString());
+        json.addProperty("levelSeed", world.level.getSeed());
         json.addProperty("benchmarkArea", world.describe());
         return json;
     }

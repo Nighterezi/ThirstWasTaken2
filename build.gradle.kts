@@ -39,6 +39,23 @@ val gametest: SourceSet = sourceSets.create("gametest")
 // src/dev/java/AGENTS.md.
 val dev: SourceSet = sourceSets.create("dev")
 
+/**
+ * The JVM arguments that record a run with JFR, which `-Pprofile` adds to runBenchmark.
+ *
+ * `settings=profile` is the heavier of JFR's two built-in configurations, and the recording is dumped
+ * when the server stops, which is what an unattended benchmark does on its own. The other three are
+ * what make the recording worth opening: a stack depth far past JFR's default of 64, because a
+ * Minecraft stack is deeper than that and a truncated one merges call sites that are not the same,
+ * and the two diagnostic flags that let a sample land where the code actually was instead of at the
+ * nearest safepoint.
+ */
+fun flightRecorder(file: File): List<String> = listOf(
+    "-XX:StartFlightRecording=settings=profile,dumponexit=true,filename=${file.absolutePath}",
+    "-XX:FlightRecorderOptions:stackdepth=1024",
+    "-XX:+UnlockDiagnosticVMOptions",
+    "-XX:+DebugNonSafepoints",
+)
+
 loom {
     splitEnvironmentSourceSets()
 
@@ -83,6 +100,21 @@ loom {
             sourceSet = dev.name
             systemProperties.put("thirstwastaken2.benchmark", providers.gradleProperty("benchmark").getOrElse("standard"))
             systemProperties.put("thirstwastaken2.benchmark.exit", "true")
+            // A world of its own inside runServer's directory, generated with the fixed seed
+            // gradle/shared.gradle.kts puts in server.properties, so a run measures the same terrain
+            // on every machine and on both loaders of this Minecraft version, and never the dev world.
+            programArguments.addAll("--world", providers.gradleProperty("thirst.benchmark.world").get())
+
+            // `-Pprofile` records the run with JFR, which is in every JDK, and writes
+            // run/<node>/benchmark/latest.jfr for JDK Mission Control to open. `settings=profile` is the
+            // heavier of JFR's two built-in profiles; the deep stack depth is what makes an allocation
+            // event name the mod's own call site rather than a truncated vanilla frame, and
+            // DebugNonSafepoints lets a sample land where the code really was rather than at the nearest
+            // safepoint. A recording slows the run down and skews every figure in the report, which is
+            // why the report says so and aggregate.py refuses a set with one in it.
+            if (providers.gradleProperty("profile").isPresent) {
+                jvmArguments.addAll(flightRecorder(rootProject.file("run/${project.name}/benchmark/latest.jfr")))
+            }
         }
     }
 

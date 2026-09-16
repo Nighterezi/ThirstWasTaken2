@@ -97,7 +97,7 @@ jobs:
         # seam shows up.
         run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:devClasses" ":${{ matrix.version }}:checkAgentCore" ":${{ matrix.version }}:checkLoaderSeam" ":${{ matrix.version }}:checkVersionSeam" --stacktrace
 
-      # The NeoForge node has the dev tools too, carrying the agent but not the benchmark, and no
+      # The NeoForge node has the dev tools too, both the agent and the benchmark, and no
       # generators of its own; it reads what the 26.2 Fabric node generates. checkNeoForgeResources
       # fails when a Fabric-only key survives the translation of that JSON. The seam checks read the
       # same files on every node and are cheap to repeat here.

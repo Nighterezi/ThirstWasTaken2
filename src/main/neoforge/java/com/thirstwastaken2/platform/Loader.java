@@ -125,13 +125,22 @@ public final class Loader {
      * Whether a player's value is synced to {@code to}: only to the player it belongs to. Before 26.1
      * NeoForge sends the packet to whoever this accepts and throws when that connection never negotiated
      * the channel, which a gametest mock player and a vanilla client have not, so it asks first there.
+     *
+     * <p>Asking is itself unsafe for a fake player, the kind {@code FakePlayerFactory} hands out and the
+     * benchmark's simulated players are: NeoForge reads the negotiated channels off the connection's
+     * Netty channel, and a fake player's connection has none, so {@code hasChannel} throws instead of
+     * answering false. From 26.1 on NeoForge answers false there itself. Nothing is synced to a player
+     * with no client either way, and a fake player reaches this whenever one drinks, through
+     * {@code ItemStackMixin}, so it is turned away before the channel is asked about.
      */
     private static boolean syncsTo(Object holder, Object to) {
         //? if >=26.1 {
         return holder == to;
         //?} else {
-        /*return holder == to && ((net.minecraft.server.level.ServerPlayer) to).connection.hasChannel(
-                net.neoforged.neoforge.network.payload.SyncAttachmentsPayload.TYPE);
+        /*if (holder != to) return false;
+        net.minecraft.server.level.ServerPlayer player = (net.minecraft.server.level.ServerPlayer) to;
+        return !player.isFakePlayer()
+                && player.connection.hasChannel(net.neoforged.neoforge.network.payload.SyncAttachmentsPayload.TYPE);
         *///?}
     }
 

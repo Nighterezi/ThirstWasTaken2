@@ -101,7 +101,7 @@ never see it.
 | Fabric's data generation output and tag provider were renamed | replacement |
 | Recipe results became `ItemStackTemplate`, cooking recipes gained new constructors, and building a result no longer takes the registries | `ThirstRecipeProvider`, `FarmersDelightRecipeProvider`, `TestFixtures.assemble` |
 | Model texture mappings take a `Material` | `ThirstModelProvider` |
-| NeoForge stopped throwing when an attachment syncs to a connection that never negotiated the channel | NeoForge `Loader.syncsTo` |
+| NeoForge stopped throwing when an attachment syncs to a connection that never negotiated the channel, and answers for a fake player's channelless connection rather than throwing | NeoForge `Loader.syncsTo` |
 | Gametests gained padding between them, and `TestEnvironmentDefinition` a type parameter | NeoForge `ThirstWasTaken2GameTests` |
 
 Result: 1.21.11 writes shorter recipe files, because a live `ItemStack` omits components the item

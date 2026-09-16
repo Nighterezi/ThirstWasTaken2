@@ -1,6 +1,6 @@
 # The dev tools mod on NeoForge, the counterpart of src/dev/resources/fabric.mod.json. Development
-# only, never published. It carries the agent alone: the benchmark simulates players with Fabric's
-# FakePlayer and stays on that loader. See src/dev/java/AGENTS.md.
+# only, never published. It carries both tools, the agent and /thirst benchmark, the same pair the
+# Fabric mod carries. See src/dev/java/AGENTS.md.
 modLoader = "javafml"
 loaderVersion = "[1,)"
 license = "MIT"
@@ -9,7 +9,7 @@ license = "MIT"
 modId = "thirstwastaken2_dev"
 version = "1.0.0"
 displayName = "ThirstWasTaken2 Dev Tools"
-description = '''Development-only tooling for ThirstWasTaken2: the agent queue. Never published.'''
+description = '''Development-only tooling for ThirstWasTaken2: the agent queue and the benchmark. Never published.'''
 
 # Records where the thirst bar was drawn, for the agent's client.hud probe. Client only, so a
 # dedicated server never loads the target class and the mixin simply does not apply there.

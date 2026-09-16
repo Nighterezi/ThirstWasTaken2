@@ -12,9 +12,11 @@ src/main/generated/*/.cache/
 # `tools/*` rather than `tools/`, because git cannot re-include anything under an excluded directory,
 # and tools/agent below has to be re-included.
 tools/*
-# What an agent sends to a running game. src/dev/java/AGENTS.md documents these as part of the
-# workflow, so they belong in the repository rather than on one machine.
+# What an agent sends to a running game, and what runs the benchmark over every node and reduces the
+# reports. src/dev/java/AGENTS.md documents both as part of the workflow, so they belong in the
+# repository rather than on one machine.
 !tools/agent/
+!tools/benchmark/
 
 # Bytecode from running .github/scripts by hand.
 __pycache__/

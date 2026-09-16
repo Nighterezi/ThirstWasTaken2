@@ -102,16 +102,15 @@ val gametest: SourceSet = sourceSets.create("gametest") {
 }
 
 /*
- * The dev tools, as their own small mod, the same arrangement as the gametests. This node carries the
- * agent alone: `/thirst benchmark` simulates players with Fabric's `FakePlayer`, which has no
- * counterpart here and nothing to do with driving a client, so the benchmark package is excluded
- * rather than ported. `src/dev/neoforge` holds the entrypoints and the loader seam the agent needs.
+ * The dev tools, as their own small mod, the same arrangement as the gametests: the agent and
+ * `/thirst benchmark`, both of them here. `src/dev/neoforge` holds the entrypoints, the loader seam the
+ * agent needs and this loader's `BenchmarkPlayer`, which is the one class of the benchmark that names a
+ * loader: it extends NeoForge's `FakePlayer` where the Fabric copy extends Fabric API's.
  * See src/dev/java/AGENTS.md.
  */
 val dev: SourceSet = sourceSets.create("dev") {
     java.srcDir("src/dev/$loader/java")
     resources.srcDir("src/dev/$loader/resources")
-    java.exclude("com/thirstwastaken2/dev/benchmark/**")
     compileClasspath += sourceSets.main.get().compileClasspath + sourceSets.main.get().output
     runtimeClasspath += sourceSets.main.get().runtimeClasspath + sourceSets.main.get().output
 }
@@ -140,6 +139,23 @@ val clientRun: SourceSet = sourceSets.create("clientRun") {
 val serverRun: SourceSet = sourceSets.create("serverRun") {
     runtimeClasspath += dev.output + sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
 }
+
+/**
+ * The JVM arguments that record a run with JFR, which `-Pprofile` adds to runBenchmark.
+ *
+ * `settings=profile` is the heavier of JFR's two built-in configurations, and the recording is dumped
+ * when the server stops, which is what an unattended benchmark does on its own. The other three are
+ * what make the recording worth opening: a stack depth far past JFR's default of 64, because a
+ * Minecraft stack is deeper than that and a truncated one merges call sites that are not the same,
+ * and the two diagnostic flags that let a sample land where the code actually was instead of at the
+ * nearest safepoint.
+ */
+fun flightRecorder(file: File): List<String> = listOf(
+    "-XX:StartFlightRecording=settings=profile,dumponexit=true,filename=${file.absolutePath}",
+    "-XX:FlightRecorderOptions:stackdepth=1024",
+    "-XX:+UnlockDiagnosticVMOptions",
+    "-XX:+DebugNonSafepoints",
+)
 
 neoForge {
     version = neoForgeVersion
@@ -178,6 +194,8 @@ neoForge {
             // one Minecraft version is not readable by another, and a failed test run must not
             // leave a broken world behind for runServer. The extra clients get one each as well:
             // two running clients cannot share a directory, and theirs must not touch runClient's.
+            // The benchmark falls into the last branch on purpose: it shares runServer's world and
+            // accepted EULA, exactly as it does on the Fabric nodes.
             gameDirectory.set(rootProject.file(when (name) {
                 "gametest" -> "run/$node/gametest"
                 "manualA", "manualB" -> "run/manual-$node-${name.last()}"
@@ -192,6 +210,31 @@ neoForge {
         create("server") {
             server()
             sourceSet = serverRun
+        }
+        // Unattended benchmark: starts the dedicated server, runs `/thirst benchmark <-Pbenchmark>` from
+        // the console once it is up, writes run/<node>/benchmark/latest.json and stops the server. It
+        // shares runServer's directory, world and accepted EULA, so the two cannot run at the same time.
+        create("benchmark") {
+            server()
+            sourceSet = serverRun
+            systemProperty("thirstwastaken2.benchmark",
+                providers.gradleProperty("benchmark").getOrElse("standard"))
+            systemProperty("thirstwastaken2.benchmark.exit", "true")
+            // A world of its own inside runServer's directory, generated with the fixed seed
+            // gradle/shared.gradle.kts puts in server.properties, so a run measures the same terrain
+            // on every machine and on both loaders of this Minecraft version, and never the dev world.
+            programArguments.addAll("--world", providers.gradleProperty("thirst.benchmark.world").get())
+
+            // `-Pprofile` records the run with JFR, which is in every JDK, and writes
+            // run/<node>/benchmark/latest.jfr for JDK Mission Control to open. `settings=profile` is the
+            // heavier of JFR's two built-in profiles; the deep stack depth is what makes an allocation
+            // event name the mod's own call site rather than a truncated vanilla frame, and
+            // DebugNonSafepoints lets a sample land where the code really was rather than at the nearest
+            // safepoint. A recording slows the run down and skews every figure in the report, which is
+            // why the report says so and aggregate.py refuses a set with one in it.
+            if (providers.gradleProperty("profile").isPresent) {
+                jvmArguments.addAll(flightRecorder(rootProject.file("run/$node/benchmark/latest.jfr")))
+            }
         }
         // Two more clients, for the checklist items that need a second player: MANUAL-TESTING.md's
         // "Sync to the client" section, where each player has to see their own bar and no one else's.
@@ -232,7 +275,7 @@ neoForge {
         val mainMod = mods.named(modId)
         val devMod = mods.named(devModId)
         val gametestMod = mods.named("thirstwastaken2_gametest")
-        listOf("client", "server", "manualA", "manualB").forEach { run ->
+        listOf("client", "server", "benchmark", "manualA", "manualB").forEach { run ->
             named(run) { loadedMods.set(mainMod.zip(devMod) { main, agent -> setOf(main, agent) }) }
         }
         named("gametest") { loadedMods.set(mainMod.zip(gametestMod) { main, tests -> setOf(main, tests) }) }

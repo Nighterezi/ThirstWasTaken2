@@ -3,10 +3,18 @@
 What the mod costs a server, in time and in memory, with nobody joining. Players are simulated
 entirely on the server, and the results land in a JSON report plus a console summary.
 
-Fabric nodes only: the simulated players are Fabric `FakePlayer`s, which have no counterpart on
-NeoForge, so `build.neoforge.gradle.kts` excludes this package from its dev source set rather than
-porting it. [src/dev/java/AGENTS.md](../../../../AGENTS.md) is the source set this belongs to, and
-holds the rules every tool here follows and the harness this one shares with the agent client.
+Every node runs it, the `-neoforge` ones included. The simulated players are the loader's own fake
+player — Fabric API's `FakePlayer` or NeoForge's — and that is the whole of the difference: everything
+in this package is loader independent, and `BenchmarkPlayer` has one copy per loader, in
+`src/dev/fabric` and `src/dev/neoforge`, under the same name, package and signatures.
+[src/dev/java/AGENTS.md](../../../../AGENTS.md) is the source set this belongs to, and holds the rules
+every tool here follows and the harness this one shares with the agent client.
+
+A report is worth comparing with another from the same node and not across loaders. Fabric and
+NeoForge keep a player's thirst in machinery of their own — an attachment API each, with sync rules of
+their own — so the same mod code costs different amounts on the two, especially the allocation
+figures. Both are real; neither is the other's baseline. `environment.loader` says which one wrote a
+report, and the summary's first line begins with it.
 
 ## Running it unattended (the way an agent should)
 
@@ -14,18 +22,32 @@ holds the rules every tool here follows and the harness this one shares with the
 ./gradlew ":26.2.x:runBenchmark"
 ```
 
+Any node's name works there, `26.2.x-neoforge` as much as `26.2.x`.
+
 Run it in the background and wait for the task to exit. It starts the dedicated server in
-`run/<version>/`, runs `/thirst benchmark` from the console as soon as the server is up, writes the report
+`run/<node>/`, runs `/thirst benchmark` from the console as soon as the server is up, writes the report
 and stops the server. Progress is printed as `[ThirstBenchmark] ...` lines, and the last one is
 
     [ThirstBenchmark] DONE status=ok in 41.3 s report=<absolute path>
 
 The Gradle task exits 0 even when the benchmark itself failed, so always read `status` in the report:
 `ok`, `cancelled` or `failed`, with `message` explaining the last two. The newest report is also copied to
-`run/<version>/benchmark/latest.json`.
+`run/<node>/benchmark/latest.json`.
 
-`runBenchmark` shares `runServer`'s run directory, world and accepted EULA. The two cannot run at the same
-time, and neither can two versions' benchmarks when something else holds port 25565.
+`runBenchmark` shares `runServer`'s run directory and accepted EULA, but **not its world**. It opens
+`thirst-benchmark` beside it, with `--world`, generated from the fixed `thirst.benchmark.seed` in
+`gradle.properties` that the `benchmarkWorldSeed` task writes into the node's `server.properties` when
+that file has no seed of its own. So a run never depends on what somebody built in the dev world, a
+crash mid-run cannot leave the dev world altered, and the two nodes of one Minecraft version -- the
+Fabric one and the NeoForge one -- measure the same terrain. Worldgen differs between Minecraft
+versions, so the same seed still gives different terrain across versions; `environment.levelSeed` and
+`environment.levelDirectory` say what a run actually measured, and `environment.cpu` says where.
+
+`-Pthirst.benchmark.seed=<seed>` measures somewhere else on purpose, and only takes hold for a world
+that does not exist yet: delete `run/<node>/thirst-benchmark/` first.
+
+The benchmark and `runServer` still cannot run at the same time, and neither can two nodes' benchmarks
+when something else holds port 25565.
 
 `-Pbenchmark=<arguments>` picks what runs, exactly as typed after `/thirst benchmark`:
 
@@ -64,6 +86,32 @@ line first: .NET puts a UTF-8 byte order mark in front of the first write, which
 `Unknown or incomplete command`. `runBenchmark` needs none of this and is the better choice unless the
 point is to test the command itself.
 
+## Profiling a run
+
+A report says what something cost. It does not say where the cost is, and the benchmark is the wrong
+place to grow an answer to that: the JDK already has one.
+
+```bash
+./gradlew ":26.2.x-neoforge:runBenchmark" -Pprofile
+```
+
+`-Pprofile` starts JFR with `settings=profile`, a stack depth of 1024 and `DebugNonSafepoints`, and
+writes `run/<node>/benchmark/latest.jfr` when the server stops. Open it with JDK Mission Control, or
+read it without one:
+
+```bash
+jfr summary run/<node>/benchmark/latest.jfr
+jfr print --events jdk.ObjectAllocationSample --stack-depth 24 run/<node>/benchmark/latest.jfr
+```
+
+`jdk.ObjectAllocationSample` is the event worth reading first, because allocation is the figure the
+benchmark measures most reliably. Filtering the samples to the ones whose stack passes through
+`dev.benchmark` keeps the run's own work and drops class loading and server startup.
+
+A recorded run is **not a measurement**: sampling makes it slower and skews every number in its report.
+The report says so in `environment.profiling`, which is true under `-Pprofile` and under any profiler
+or debugger attached by hand, and `aggregate.py` refuses a set with one in it.
+
 ## What it measures
 
 ### Tick scenarios
@@ -96,6 +144,16 @@ batches of 64, because one alone is quicker than the clock resolves; their perce
 means. Each operation checks once that it actually did something and fails the run otherwise, so spawn
 protection refusing a fill cannot pass as an impressively fast result.
 
+A drink carries vanilla's advancement criteria with it, and that is most of what the drink operations
+allocate rather than anything the mod does: on 1.21.11-neoforge, 63% of everything the benchmark
+allocates on the server thread is advancement machinery, and `DrinkItem.drinkEffects` alone is a third
+of the drink operations' allocation. It is fair -- a real player fires those criteria too -- but it
+means a drink operation's figures move when vanilla changes, not only when the mod does. One node is
+the exception: NeoForge 21.1 hands a fake player a no-op `PlayerAdvancements`, so on 1.21.1-neoforge
+the criteria do nothing and `drink_water_bottle` allocates 338 B where every other node is between
+1800 and 2700. That is the loader, not the mod, and it is the second reason a figure compares within a
+node and not across nodes.
+
 `sample_water`, `fill_bottle`, `fill_bucket`, `fill_bowl`, `fill_waterskin`, `drink_water_bottle`,
 `drink_waterskin`, `drink_by_hand`, `cauldron_pour`, `full_bar_guard`, `tooltip_water_bottle`,
 `tooltip_waterskin`, `tooltip_food`, `thirst_lookup`, `water_quality_read`, `waterskin_mix`,
@@ -106,6 +164,9 @@ protection refusing a fill cannot pass as an impressively fast result.
 ```bash
 ./gradlew ":26.2.x:runBenchmark" -Pcreate
 ```
+
+Fabric nodes only, because Create Fly is: the NeoForge nodes build no Sand Filter, `-Pcreate` does
+nothing there and `environment.createFly` is false.
 
 `-Pcreate` puts Create Fly on the benchmark server's classpath, on the nodes that build the Sand Filter
 (`deps.create_fly`). The report's `environment.createFly` says whether it was loaded, and six operations
@@ -152,16 +213,47 @@ JVM cannot count them, `environment.allocationTracking` is false and every byte 
 
 ## Comparing two versions of the code
 
-Use the same Minecraft version, the same profile and the same machine, with nothing else heavy running.
-Run each side at least twice, three times if the difference you are chasing is small, and know what
-each kind of figure is worth. Two identical runs back to back on one desktop differ by about 10% in the
-aggregate tick figures — `msPerTick.mean` at a given player count moved 8 to 11% — and by far more per
-operation: `interactions[].microsPerOp.mean` moved by a median of 25 to 30%, and by as much as 70% on
-the operations that take single-digit microseconds, where one scheduling hiccup moves a batch mean.
-Allocation is much steadier but not fixed: most operations repeat their `bytesPerOp` to within half a
-percent, a few drift 5 to 10%, and `allocatedBytesPerPlayerPerTick` moved 9 to 20%. So a changed byte
-figure is good evidence rather than proof; treat anything under about 10% as noise on either kind, and
-believe a difference once it reproduces. The fields that matter:
+One report is a measurement; it takes a set of them to answer whether anything changed.
+[`tools/benchmark`](../../../../../../../tools/benchmark) is that loop:
+
+```bash
+python tools/benchmark/bench.py --repeats 3
+python tools/benchmark/aggregate.py run/benchmark-sets/<before> --compare run/benchmark-sets/<after>
+```
+
+`bench.py` compiles every node first, so no build ever runs between two timed runs, then repeats in the
+outer loop and iterates nodes in the inner one, so a machine that warms up or gets busier over the hour
+biases every node the same way rather than only the ones at the end. It keeps every report.
+
+[docs/dev/BENCHMARK-BASELINE.md](../../../../../../../docs/dev/BENCHMARK-BASELINE.md) is what every node
+measured on 2026-09-16, three runs each, and the machine it was measured on. That is the set to compare
+a new one against; take a fresh baseline on a different machine rather than comparing across two.
+
+`aggregate.py` reduces a set to a median and a **spread**, `(max - min) / median`, and `--compare` puts
+two sets side by side and calls a change `noise` when it is smaller than the spread of the runs behind
+it -- the rule below, made mechanical. It refuses a set with a failed run in it, and refuses to compare
+two sets whose `environment.cpu` or `environment.levelSeed` disagree.
+
+Use the same node — the same Minecraft version and the same loader — the same profile and the same
+machine, with nothing else heavy running.
+Run each side three times, and know what each kind of figure is worth. Three `standard` runs of every
+node on one desktop, all eight of them measured back to back, put the spread at:
+
+| Figure | Spread over three runs | What it can answer |
+|---|---|---|
+| `interactions[].bytesPerOp` | median 3%, worst 79% | a few percent is already evidence |
+| `tickScenarios[].allocatedBytesPerPlayerPerTick` | 0 to 15% on six nodes of eight | the same |
+| `memory.steadyTickBytesPerPlayer`, `firstTouchBytesPerPlayer` | 0 to 16% | the same |
+| `tickScenarios[].msPerTick.mean`, `microsPerPlayerPerTick` | 14 to 73% | only a change of that size or more |
+| `interactions[].microsPerOp.mean` | median 45%, worst 222% | almost nothing on its own |
+
+The time figures are that unsteady because of how small they are: the mod's whole per-tick cost at 200
+players is tens of microseconds, so a scheduling hiccup or one garbage collection moves the mean by
+half. Allocation is counted rather than timed, and is steady to a few percent. **So chase regressions
+in the byte figures, and treat a time figure as an order of magnitude** unless it moved by more than
+its own spread. `aggregate.py --compare` does exactly that comparison and labels the rest `noise`.
+
+The fields that matter:
 
 - `tickScenarios[].msPerTick.mean` and `.p99`, `microsPerPlayerPerTick`
 - `tickScenarios[].sections.*.sharePercent` and `microsPerTick`, to see which part moved
@@ -172,8 +264,15 @@ believe a difference once it reproduces. The fields that matter:
 ## What it does not measure
 
 - Client work: HUD drawing, tooltip rendering (building the tooltip lines is measured), the config screen.
-- The wire. Changed attachments are counted and their `ThirstData` encoded, but Fabric's payload wrapping,
+- The wire. Changed attachments are counted and their `ThirstData` encoded, but payload wrapping,
   compression and Netty are not.
+- What the loader itself does around a sync, which is not the same on both and not the same on every
+  NeoForge. A simulated player has no client, and each loader works that out somewhere else: NeoForge
+  from 26.1 builds the sync payload first and drops it when it finds no channel, which a recording puts
+  at about a sixth of everything the benchmark allocates on the server thread, against under a
+  hundredth for Fabric's; before 26.1 the mod's own predicate turns a fake player away first, so the
+  payload is never built and those two nodes report less sync cost than a real player would cause. So
+  `allocatedBytesPerPlayerPerTick` is comparable between two runs of one node and not between nodes.
 - Vanilla's own per-player cost, such as movement, chunk sending and entity tracking. Percentages are of a
   50 ms budget, not of a real server's tick.
 - Other dimensions, so the Nether branch of the exhaustion modifier.
@@ -190,18 +289,24 @@ believe a difference once it reproduces. The fields that matter:
   minute after startup never advances, and a long run stalls a minute in. The pause behaves normally
   again once the run ends.
 
-- Force-loads 5x5 chunks around chunk (0, 0), or around the nearest of a grid of candidates 32 chunks
+- Works in `thirst-benchmark`, a world of its own, so nothing here touches the dev world `runServer`
+  opens. Force-loads 5x5 chunks around chunk (0, 0), or around the nearest of a grid of candidates 32 chunks
   apart that is outside spawn protection and not an ocean or a beach (sea water has no grade to stamp
   and never hydrates, so the fill and drink interactions would fail there), and builds a small water fixture a few blocks below the build limit. Both are
   undone when the run ends: completed, cancelled, failed, or cut short by the server stopping. Only a
   crash mid-run can leave them behind.
-- Simulated players are `BenchmarkPlayer`s, Fabric `FakePlayer`s built fresh per run: not in the player
-  list, not in the level, invulnerable, and every packet to them is dropped. Nothing is saved for them.
+- Simulated players are `BenchmarkPlayer`s, the loader's own fake player built fresh per run: not in the
+  player list, not in the level, invulnerable, and every packet to them is dropped. Nothing is saved for
+  them. The mod turns a fake player away from its NeoForge sync predicate before 26.1, where asking
+  whether such a connection carries the mod's channel throws rather than answering; from 26.1 on
+  NeoForge answers it itself.
 - Vanilla creates a stats object and full advancement progress for every player it constructs, keyed by
   UUID, and only forgets them when a player disconnects. That progress costs hundreds of kilobytes a
   player, so `BenchmarkWorld.releasePlayers` removes the simulated players' entries from `PlayerList` by
   reflection when the run ends, unregistering the advancement listeners the way `PlayerList#remove`
-  does. Any player the benchmark creates must go through `BenchmarkWorld.player` or `extraPlayer`, or it
+  does. NeoForge hands a fake player a throwaway advancements object on some versions and caches a real
+  one per UUID on others, so there the cleanup drops whatever did end up in those maps, and nothing when
+  nothing did. Any player the benchmark creates must go through `BenchmarkWorld.player` or `extraPlayer`, or it
   is not forgotten. The UUIDs are derived from the player index, so even a missed cleanup is reused by the
   next run rather than piling up.
 

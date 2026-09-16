@@ -77,8 +77,24 @@ Measure what the mod costs a server, in time and memory, without anyone joining:
 
 It starts the dedicated server with the dev tools, runs `/thirst benchmark` from the console once the
 server is up, simulates 1 to 200 players plus every interaction, writes
-`run/<version>/benchmark/latest.json` and stops the server again. `-Pbenchmark=quick`, `stress` or
-`"players 500 1200"` changes the scale. The same command works typed into a `runServer` console. Read
+`run/<node>/benchmark/latest.json` and stops the server again. `-Pbenchmark=quick`, `stress` or
+`"players 500 1200"` changes the scale. The same command works typed into a `runServer` console. Every
+node has it, the `-neoforge` ones included, and a report only means something next to another from the
+same node: the two loaders keep a player's thirst in machinery of their own. It runs in a world of its
+own, `thirst-benchmark`, generated from a fixed seed, so it never depends on the dev world and both
+nodes of a Minecraft version measure the same terrain.
+
+`-Pprofile` records the run with JFR into `run/<node>/benchmark/latest.jfr`, for when the question is
+where the cost is rather than what it is.
+
+One run answers what something cost; it takes a set of runs to answer whether anything changed:
+
+```bash
+python tools/benchmark/bench.py --repeats 3
+python tools/benchmark/aggregate.py run/benchmark-sets/<before> --compare run/benchmark-sets/<after>
+```
+
+Read
 [src/dev/java/com/thirstwastaken2/dev/benchmark/AGENTS.md](src/dev/java/com/thirstwastaken2/dev/benchmark/AGENTS.md) before comparing two reports.
 
 Drive a running game from a script, so a client-side check answers with a number instead of a
@@ -333,6 +349,7 @@ Each area of the tree carries its own `AGENTS.md` with rules and conventions loc
 | Automated in-game tests | [src/gametest/java/AGENTS.md](src/gametest/java/AGENTS.md) |
 | Development-only tooling: the source set, its gate and the harness the two tools share | [src/dev/java/AGENTS.md](src/dev/java/AGENTS.md) |
 | Performance and memory benchmark | [.../dev/benchmark/AGENTS.md](src/dev/java/com/thirstwastaken2/dev/benchmark/AGENTS.md) |
+| What the mod costs on every node today, as the mark to read a later run against | [docs/dev/BENCHMARK-BASELINE.md](docs/dev/BENCHMARK-BASELINE.md) |
 | The agent client that drives a real client and reads numbers out of it | [.../dev/agent/AGENTS.md](src/dev/java/com/thirstwastaken2/dev/agent/AGENTS.md) |
 | Client HUD element rendering & config screen contract | [src/client/java/com/thirstwastaken2/client/AGENTS.md](src/client/java/com/thirstwastaken2/client/AGENTS.md) |
 | Manifests, textures, fonts, lang keys, and what the generated JSON means | [src/main/resources/AGENTS.md](src/main/resources/AGENTS.md) |
@@ -448,13 +465,18 @@ src/dev/java/com/thirstwastaken2/dev/   dev-only tools mod, never packaged
                                        record, framebuffer samples, key state
   mixin/ThirstHudMixin.java            records where the HUD drew the bar, for the agent to read
   benchmark/                           simulated players, tick and interaction scenarios, JSON report
-src/dev/fabric/, src/dev/neoforge/      each loader's entrypoints and the DevLoader seam
-src/dev/createfly/                      the benchmark's Create Fly operations
+src/dev/fabric/, src/dev/neoforge/      each loader's entrypoints, the DevLoader seam and its
+                                        BenchmarkPlayer, the one simulated player each loader has
+src/dev/createfly/                      the benchmark's Create Fly operations, Fabric nodes only
 
 tools/agent/                            what an agent sends to a running game
   drive.py                             writes in.jsonl, waits for out.jsonl, matches the two up
   server-probe.jsonl                   what a server answers with nobody online
   client-sync.jsonl                    MANUAL-TESTING.md's "Sync to the client", as requests
+
+tools/benchmark/                        running the benchmark often enough to believe the answer
+  bench.py                             every node, k times, one Gradle invocation per run
+  aggregate.py                         a set to a median and a spread; --compare calls a change noise
 
 src/datagen/java/com/thirstwastaken2/datagen/  datagen-only mod, never packaged
   ThirstDatagen.java                   entrypoint: every provider has to be listed here

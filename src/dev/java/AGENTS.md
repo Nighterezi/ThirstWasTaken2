@@ -5,15 +5,20 @@ its own small mod, so none of it can reach a published jar: `thirstwastaken2-dev
 in `src/dev/resources/fabric.mod.json`, and `thirstwastaken2_dev` on NeoForge, declared in
 `src/dev/neoforge/resources/META-INF/neoforge.mods.toml`, because a NeoForge mod id cannot contain a
 hyphen. `runGametest` and `runDatagen` do not load it; every other run task does — `runServer`,
-`runBenchmark` and `runClient` on Fabric, and `runServer`, `runClient`, `runManualA` and `runManualB`
-on NeoForge.
+`runBenchmark` and `runClient` on Fabric, and `runServer`, `runBenchmark`, `runClient`, `runManualA`
+and `runManualB` on NeoForge.
 
 Two tools live here.
 
 | Tool | What it is for | Where | Its own file |
 |---|---|---|---|
-| `/thirst benchmark` | what the mod costs a server, with nobody joining | Fabric nodes only | [benchmark/AGENTS.md](com/thirstwastaken2/dev/benchmark/AGENTS.md) |
+| `/thirst benchmark` | what the mod costs a server, with nobody joining | every node | [benchmark/AGENTS.md](com/thirstwastaken2/dev/benchmark/AGENTS.md) |
 | the agent client | driving a real client and reading numbers out of it | every node | [agent/AGENTS.md](com/thirstwastaken2/dev/agent/AGENTS.md) |
+
+Each has a directory under `tools/` for what is sent to it or read back out of it from outside the
+game: `tools/agent/` writes a client's request queue, `tools/benchmark/` runs the benchmark over every
+node k times and reduces the reports to a median and a spread. Both are documented in the tool's own
+file, not here.
 
 Each tool documents itself beside its own code — how to run it, what it answers and the rules that
 keep it worth having. This file is what they have in common: where things live, the gate they are
@@ -23,8 +28,9 @@ The split of the directory follows that. `benchmark/` is the first; `agent/core`
 are the second; [`harness/`](#the-shared-harness) is the little both of them need; `mixin/` is how
 the agent reads the HUD's real draw calls and refuses the mouse grab; `ThirstDev` and `ThirstDevClient` are
 the two halves of the entrypoint, kept apart so that a dedicated server never loads a class naming
-`Minecraft`; `fabric/` and `neoforge/` hold each loader's entrypoints and the small
-`DevLoader`/`DevClientLoader` seam for the calls the mod's own `Loader` does not cover.
+`Minecraft`; `fabric/` and `neoforge/` hold each loader's entrypoints, the small
+`DevLoader`/`DevClientLoader` seam for the calls the mod's own `Loader` does not cover, and one copy
+each of `BenchmarkPlayer`, which is the whole of the benchmark that names a loader.
 
 `ThirstDev` registers nothing unless `ThirstWasTaken2.DEV` is true. That flag is the loader's own
 development-environment check, true under every run task and false in the jar players install.
@@ -49,7 +55,9 @@ Two rules hold this together.
 
 - **The harness names no mod loader.** Everything loader-specific goes through `DevLoader`. No Gradle
   task checks it and none is needed: `harness/` is compiled into the NeoForge dev mod too, and CI
-  builds `devClasses` on every node, so a Fabric import here fails four of them.
+  builds `devClasses` on every node, so a Fabric import here fails four of them. The same now holds
+  for `benchmark/` and for `agent/`: both are built on every node, and the loader classes each needs
+  live in `fabric/` and `neoforge/` under one name.
 - **It may name Minecraft and the mod**, unlike `agent/core`, which `checkAgentCore` holds to plain
   Java and Gson. The harness is the half that is allowed to know where it is running.
 

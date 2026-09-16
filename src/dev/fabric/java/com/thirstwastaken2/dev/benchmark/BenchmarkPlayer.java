@@ -16,12 +16,17 @@ import java.util.UUID;
  * starts from a fresh entity instead of one still carrying the previous run's effects and attachments. The
  * UUID is derived from the index, so the stats and advancement objects vanilla caches per UUID are reused by
  * the next run instead of piling up until the server stops.
+ *
+ * <p>One copy per loader, same name, same package and same signatures, the way {@code DevLoader} is done:
+ * everything else in {@code benchmark/} is loader independent, and this is the one class that has to name
+ * a loader, because each has a fake player of its own. See {@link #uuid} for what the two share.
  */
 final class BenchmarkPlayer extends FakePlayer {
     BenchmarkPlayer(ServerLevel level, int index) {
         super(level, new GameProfile(uuid(index), "thirstbench" + index));
     }
 
+    /** The same derivation on both loaders, so a report from either names the same simulated players. */
     private static UUID uuid(int index) {
         return UUID.nameUUIDFromBytes(("thirstwastaken2-benchmark:" + index).getBytes(StandardCharsets.UTF_8));
     }
