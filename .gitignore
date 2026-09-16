@@ -16,6 +16,9 @@ tools/*
 # workflow, so they belong in the repository rather than on one machine.
 !tools/agent/
 
+# Bytecode from running .github/scripts by hand.
+__pycache__/
+
 # Local agent workspace
 .claude/
 

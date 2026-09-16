@@ -6,14 +6,20 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 
 ### Added
 
-- A NeoForge version for Minecraft 26.2, released as a beta. It has the same features as the Fabric
-  version, with the config screen opened from the NeoForge mods list.
+- A NeoForge version for every supported Minecraft version: 26.2, 26.1, 26.1.1, 26.1.2, 1.21.11 and
+  1.21.1. It has the same features as the Fabric version, with the config screen opened from the
+  NeoForge mods list. The NeoForge file has `-neoforge` after the Minecraft version in its name.
 - AppleSkin and Jade work on NeoForge too.
 
 ### Notes
 
-- Create Fly and Farmer's Delight have no NeoForge release for 26.2, so the Sand Filter and the
-  Farmer's Delight support are Fabric only for now.
+- Create Fly and Farmer's Delight have no NeoForge release, so the Sand Filter and the Farmer's
+  Delight support are Fabric only for now.
+- On NeoForge, Minecraft 1.21 is not covered. The 1.21.1 file is for 1.21.1 only, where the Fabric
+  one covers both.
+- A world made with the Fabric version and then opened with the NeoForge version, or the other way
+  round, starts every player at full thirst. Everything else in the world is unchanged.
+- Nothing changes for existing Fabric worlds or config files.
 
 ## [1.0.5] - 2026-09-14
 

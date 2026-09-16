@@ -202,6 +202,19 @@ Two things about Stonecutter that are easy to learn the hard way:
 - **No block comments inside a `//?` block.** A disabled branch is itself one `/* */` comment, and a
   `*/` inside it ends it early. Javadoc goes outside the block, or becomes line comments.
 
+### Version support policy
+
+Promoted from [docs/dev/PLATFORM-PLAN.md](docs/dev/PLATFORM-PLAN.md), which is where the reasoning is.
+
+- **At most four version nodes.** Adding one means retiring one. A NeoForge node on a Minecraft
+  version that already has a Fabric node does not count as another version.
+- The shape is one long lived old version, the two newest, and one in transition.
+- When 26.3 arrives, 26.1.x is the one to drop. It is the shortest lived of the four.
+- 1.21.1 is the deliberate exception, kept for the modpack ecosystem rather than for being current.
+  If a feature cannot be written for it without forking core code, retire it rather than branch for
+  it; its conditionals are written against its own thresholds, so retiring it deletes them
+  mechanically.
+
 ### Adding a Minecraft version
 
 1. Add it to `stonecutter { create }` in `settings.gradle.kts`, once as `<version>` and once as

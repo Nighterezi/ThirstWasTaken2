@@ -5,6 +5,12 @@ loaders, in what order, and what has to be true before each step starts. This is
 an end state, not a standing rule: delete it once the last phase lands, and promote anything that
 outlives it to [AGENTS.md](../../AGENTS.md).
 
+**Finished on 2026-09-16.** Every phase has landed and all eight nodes build, pass their gametests
+and have had a manual pass. The one thing here that outlives the plan, the support policy, is
+promoted: it is now "Version support policy" in [AGENTS.md](../../AGENTS.md). What is left of this
+file is the record of how the matrix was reached and why each decision went the way it did, so it can
+be deleted whenever that stops being worth keeping.
+
 For gameplay ideas see [ROADMAP.md](ROADMAP.md). That file is open ended; this one finishes.
 
 ## The target
@@ -88,7 +94,7 @@ Checked 2026-09-12. Re-check before relying on any of it.
 
 ## Phases
 
-P0 through P4 are done. The remaining day counts are still estimates; P0 re-anchored them against a
+Every phase is done. The day counts were estimates; P0 re-anchored them against a
 real build. The P0 spike and the P4 working plan were deleted once their phases landed, and what
 outlives them is in [platform/AGENTS.md](../../src/main/java/com/thirstwastaken2/platform/AGENTS.md)
 and [src/gametest/java/AGENTS.md](../../src/gametest/java/AGENTS.md).
@@ -100,9 +106,13 @@ and [src/gametest/java/AGENTS.md](../../src/gametest/java/AGENTS.md).
 | ~~**P2**~~ | `platform/Loader`, written while there is still only one loader | 2 to 3 days | **Done.** No loader import left in `src/main/java` or `src/client/java`; `checkLoaderSeam` runs in CI; all three nodes build and pass gametests |
 | ~~**P3**~~ | 1.21.1 Fabric node: sync packet, HUD fork, drink item fork, asset overlay | 4 to 6 days | **Done.** Released in 1.0.4 on 2026-09-13; 115 of 115 mod gametests on all four nodes at the time; no sync packet was needed; the exit ramp was revised after P3 crossed the old one, see below |
 | ~~**P4**~~ | NeoForge on 26.2 only | 8 to 15 days | **Done** on 2026-09-15, in about 3.5 days. Five green CI jobs, the NeoForge one 2m26s against 2m04s to 2m26s for Fabric; 124 of 124 gametests on `26.2.x-neoforge` with no test body changed; NeoForge `Loader` 189 lines and `ClientLoader` 64; manual pass ticked. Not released on its own: the NeoForge jar ships once P5 has older NeoForge versions |
-| **P5** | NeoForge across the remaining versions, starting with 1.21.1 | 4 to 8 days | Eight nodes green. **Automated part done** on 2026-09-15: `1.21.1-neoforge` (123 of 123), `1.21.11-neoforge` and `26.1.x-neoforge` (124 of 124 each) build, pass their gametests and go red when `onUseItem` is broken. Manual passes open |
+| ~~**P5**~~ | NeoForge across the remaining versions, starting with 1.21.1 | 4 to 8 days | **Done** on 2026-09-16, in about 1.5 days. Eight nodes green: `1.21.1-neoforge` (123 of 123), `1.21.11-neoforge` and `26.1.x-neoforge` (124 of 124 each) build, pass their gametests and go red when `onUseItem` is broken. The manual passes closed on 2026-09-16, the exact client seams answered numerically by the agent client rather than off screenshots; two of them became gametests on the way |
 
-Roughly 12 to 23 days of work left. Spread it over months, not weeks.
+Nothing left. The six phases ran from P0 to P5 between 2026-09-12 and 2026-09-16, against an estimate
+of 21 to 36 days, and the two that were meant to be the expensive ones came in at about 3.5 days for
+P4 and a day and a half for P5. What made them cheap is written down in each row and in "Carried to P5" below; the short
+version is that `platform/` already carried the loader seam before there was a second loader, and
+that the agent client turned the manual pass from a screenshot-reading exercise into a script.
 
 P0 came first because the ordering of P1 and P2 against P3 rested on an unverified claim: that the
 1.21.1 port touches the same files datagen and the loader seam touch. The spike confirmed it in both
@@ -140,8 +150,8 @@ work between the two phases.
 
 ## Support policy
 
-Proposed here, to be promoted to [AGENTS.md](../../AGENTS.md) once P3 lands, because it is a
-standing rule rather than a plan.
+**Promoted** on 2026-09-16 to "Version support policy" in [AGENTS.md](../../AGENTS.md), which is
+where it is maintained. Kept here because the phase rows above refer to it.
 
 - **At most four version nodes.** Adding one means retiring one. A NeoForge node on a Minecraft
   version that already has a Fabric node does not count as another version.

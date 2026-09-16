@@ -1,5 +1,6 @@
 package com.thirstwastaken2.dev;
 
+import com.thirstwastaken2.dev.agent.thirst.ClientWindow;
 import com.thirstwastaken2.dev.agent.thirst.ThirstAgent;
 import com.thirstwastaken2.dev.platform.DevClientLoader;
 import net.minecraft.client.Minecraft;
@@ -30,6 +31,9 @@ public final class ThirstDevClient {
                 // keep opening PauseScreen and make client.hold report stationary keys rather than
                 // the player's movement state the probe is meant to exercise.
                 Minecraft.getInstance().options.pauseOnLostFocus = false;
+                // And, when this client is driven rather than played, it opens maximised and stops
+                // taking the mouse pointer, so the desktop around it stays usable. See ClientWindow.
+                ClientWindow.open(Minecraft.getInstance());
                 ThirstAgent.start();
             }
             ThirstAgent.tick();

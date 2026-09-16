@@ -79,6 +79,10 @@ final class ClientProbes {
             // and it changes what holding one of those keys means. See Keys.
             result.addProperty("toggleCrouch", minecraft.options.toggleCrouch().get());
             result.addProperty("toggleSprint", minecraft.options.toggleSprint().get());
+            // Whether this client was launched to be driven, and whether it is holding the mouse
+            // pointer inside its window. A driven one never does; see ClientWindow.
+            result.addProperty("driven", ClientWindow.driven());
+            result.addProperty("mouseGrabbed", minecraft.mouseHandler.isMouseGrabbed());
             reply.ok(result);
         });
 

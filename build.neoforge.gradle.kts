@@ -19,6 +19,9 @@ val modId = property("mod.id") as String
 val devModId = "thirstwastaken2_dev"
 /** `-Pagent=<file>`: a file of agent requests to answer once, unattended. See docs/dev/AGENT-CLIENT-PLAN.md. */
 val agentScript: String? = providers.gradleProperty("agent").orNull?.let { rootProject.file(it).absolutePath }
+
+/** `-Pdriven`: this client is driven by an agent, not played. See src/dev/java/AGENTS.md. */
+val drivenClient: Boolean = providers.gradleProperty("driven").isPresent
 /** Published artifact name; deliberately not the lowercase mod id. */
 val modName = property("mod.name") as String
 val modGroup = property("mod.group") as String
@@ -165,6 +168,11 @@ neoForge {
                 systemProperty("thirstwastaken2.agent.script", it)
                 systemProperty("thirstwastaken2.agent.exit", "true")
             }
+
+            // `-Pdriven` says this client is driven by an agent rather than played: it opens
+            // maximised and never takes the mouse pointer, so the desktop stays usable while a
+            // script drives it. An unattended `-Pagent=<file>` run implies it.
+            if (drivenClient) systemProperty("thirstwastaken2.agent.driven", "true")
 
             // One run directory per node, for the reason build.gradle.kts gives: a world saved by
             // one Minecraft version is not readable by another, and a failed test run must not

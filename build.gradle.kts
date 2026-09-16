@@ -95,6 +95,13 @@ loom {
             systemProperties.put("thirstwastaken2.agent.exit", "true")
         }
 
+        // `-Pdriven` says this client is driven by an agent rather than played: it opens maximised
+        // and never takes the mouse pointer, so the desktop stays usable while a script drives it.
+        // An unattended `-Pagent=<file>` run implies it. See src/dev/java/AGENTS.md.
+        if (providers.gradleProperty("driven").isPresent) {
+            systemProperties.put("thirstwastaken2.agent.driven", "true")
+        }
+
         // One run directory per version. Sharing a single one would hand a 26.2 world to a 1.21.11
         // server, which fails on world format rather than on anything the mod did. The gametest
         // runner and datagen get their own again, so a failed run cannot leave a broken world behind

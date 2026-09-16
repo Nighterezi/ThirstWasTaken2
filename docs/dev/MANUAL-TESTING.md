@@ -34,6 +34,18 @@ A pass can be driven with computer use, but checks with an exact answer should u
 `client-sync.jsonl` asserts the client-owned values. The `manual-testing` skill in `.claude/skills`
 remains useful for the genuinely qualitative parts such as whether text is comfortable to read.
 
+Add `-Pdriven` when the agent client is doing the work and you want the machine back:
+
+```bash
+./gradlew ":26.1.x-neoforge:runManualA" -Pdriven
+```
+
+The client then opens maximised and never takes the mouse pointer, so it can sit there being driven
+while you work in another window; clicking it to look at the bar no longer traps the cursor inside
+the frame. Leave it off for the qualitative items below, which are played by hand or by computer use:
+without the grab there is no mouse look and no click reaches the world.
+[src/dev/java/AGENTS.md](../../src/dev/java/AGENTS.md) has the rest.
+
 Useful commands while testing:
 
 ```

@@ -41,6 +41,18 @@ final class AgentClientVanilla {
         return minecraft.getWindow().getGuiScale();
     }
 
+    /**
+     * The GLFW handle of the game window, for the few things no Minecraft call covers: maximising a
+     * driven client's window. 1.21.11 renamed the accessor from {@code getWindow} to {@code handle}.
+     */
+    static long windowHandle(Minecraft minecraft) {
+        //? if >1.21.1 {
+        return minecraft.getWindow().handle();
+        //?} else {
+        /*return minecraft.getWindow().getWindow();
+        *///?}
+    }
+
     /** Toggles the same HUD-hidden state as F1 without depending on a physical keyboard event. */
     static void toggleHud(Minecraft minecraft) {
         // 26.2 moved the flag into Hud and made the toggle its public operation.

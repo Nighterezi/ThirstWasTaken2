@@ -4,28 +4,45 @@ Everything that differs between the supported Minecraft versions, in one place: 
 can see, then what differs underneath and where the code handles it. Unlike the plan files beside it,
 this page is a standing reference. It stays for as long as more than one version is supported.
 
-Supported versions and their jars:
+Supported nodes and their jars:
 
-| Node | Jar suffix | Runs on | Java | Fabric API |
+| Node | Jar suffix | Runs on | Java | Loader API |
 |---|---|---|---|---|
-| `26.2.x` | `+26.2` | 26.2 | 25 | 0.160.0+26.2 |
-| `26.1.x` | `+26.1.2` | 26.1, 26.1.1, 26.1.2 | 25 | 0.155.3+26.1.2 |
-| `1.21.11` | `+1.21.11` | 1.21.11 | 21 | 0.141.6+1.21.11 |
-| `1.21.1` | `+1.21.1` | 1.21, 1.21.1 | 21 | 0.116.17+1.21.1 |
+| `26.2.x` | `+26.2` | 26.2 | 25 | Fabric API 0.160.0+26.2 |
+| `26.1.x` | `+26.1.2` | 26.1, 26.1.1, 26.1.2 | 25 | Fabric API 0.155.3+26.1.2 |
+| `1.21.11` | `+1.21.11` | 1.21.11 | 21 | Fabric API 0.141.6+1.21.11 |
+| `1.21.1` | `+1.21.1` | 1.21, 1.21.1 | 21 | Fabric API 0.116.17+1.21.1 |
+| `26.2.x-neoforge` | `+26.2-neoforge` | 26.2 | 25 | NeoForge 26.2.0.88 |
+| `26.1.x-neoforge` | `+26.1.2-neoforge` | 26.1, 26.1.1, 26.1.2 | 25 | NeoForge 26.1.2.109 |
+| `1.21.11-neoforge` | `+1.21.11-neoforge` | 1.21.11 | 21 | NeoForge 21.11.45 |
+| `1.21.1-neoforge` | `+1.21.1-neoforge` | 1.21.1 | 21 | NeoForge 21.1.250 |
 
-Checked against the code on 2026-09-13: 58 `//? if` blocks and the replacements in
-`stonecutter.gradle.kts`.
+The NeoForge jars are built and tested on every node but not released yet; see
+[PLATFORM-PLAN.md](PLATFORM-PLAN.md). A NeoForge node builds the same Minecraft version as the Fabric
+node it sits under, so everything on this page applies to both. 1.21 is the one exception: the Fabric
+1.21.1 jar claims it, and NeoForge 21.0 is a generation of its own.
+
+**This page is the version axis only.** What differs between Fabric and NeoForge on the *same*
+Minecraft version, and which seam hides it, is in
+[src/main/java/com/thirstwastaken2/platform/AGENTS.md](../../src/main/java/com/thirstwastaken2/platform/AGENTS.md).
+Where an older NeoForge differs from a newer one, that is a version difference and it is on this page,
+under the release that changed it.
+
+Checked against the code on 2026-09-16: 87 `//? if` blocks, 8 replacement rules with 22 replacements
+in `stonecutter.gradle.kts`, and the version branches in `build.gradle.kts` and
+`build.neoforge.gradle.kts`.
 
 ## What a player can see
 
 Gameplay is the same on every version: the same thirst rules, water grades, recipes, loot, commands
-and config. The gametests hold all four to that. Only these differ:
+and config. The gametests hold every node to that. Only these differ:
 
 | | 26.2 | 26.1.x | 1.21.11 | 1.21.1 |
 |---|---|---|---|---|
 | Sea water in a bottle or bucket has its own sprite | yes | yes | yes | **no**, it looks like ordinary water |
 | Droplets in item tooltips | no shadow | no shadow | no shadow | **with a shadow** |
 | Config screen section headings | vanilla heading | vanilla heading | vanilla heading | **a centred text row** |
+| The Sand Filter (Create Fly, Fabric only) | yes | yes | **no** | **no** |
 
 Everything else a player sees, the thirst bar, the bowl and waterskin sprites, the Salty tooltip line,
 the drinking animation and sound, is the same. On some versions it is produced differently, which is
@@ -47,6 +64,14 @@ colour, since vanilla's potion model already tints by it. The cost is that sea-w
 different potion contents from ordinary ones, which other mods comparing contents would notice. The
 bucket has no tint layer, and the shadow has no per-text switch, so those two stay.
 
+### Why the Sand Filter is missing
+
+Not a Minecraft difference: Create Fly has no release for 1.21.11 or 1.21.1, and it is a Fabric port,
+so no NeoForge node has it either. A node compiles `src/main/createfly` only when it sets
+`deps.create_fly`; see [src/main/createfly/AGENTS.md](../../src/main/createfly/AGENTS.md). Farmer's
+Delight is absent from the NeoForge nodes for the same kind of reason, but nothing a player sees
+depends on it being there at build time: its recipes load or are skipped by their conditions.
+
 ## What differs underneath
 
 Grouped by the release that introduced the newer form, newest first. A version is affected by every
@@ -59,8 +84,11 @@ never see it.
 
 | Difference | Code |
 |---|---|
-| Whether the HUD is hidden (F1) moved from the options into the HUD object | `ClientVanilla.isHudHidden` |
+| Whether the HUD is hidden (F1) moved from the options into the HUD object | `ClientVanilla.isHudHidden`; the agent client's `AgentClientVanilla.toggleHud` flips the same state |
+| Opening a screen moved from the client onto the GUI | `ClientVanilla.setScreen`, `AgentClientVanilla.screen` |
 | Options lists gained a full-width widget row | `ClientVanilla.addFullWidthRow` |
+| The right-hand status bar stack heights moved from `Gui` to `Hud` | NeoForge `ClientLoader.addRightStatusBar` |
+| The main render target moved from the client onto its game renderer | `AgentClientVanilla.screenshot` |
 | Entity type constants moved from `EntityType` to `EntityTypes` | `TestFixtures.mountType`, `piglinType` |
 | Advancement trigger classes moved into `triggers` | replacement |
 
@@ -69,10 +97,13 @@ never see it.
 | Difference | Code |
 |---|---|
 | The HUD draw target was renamed `GuiGraphicsExtractor` | replacement |
+| A widget draws in `extractWidgetRenderState` rather than `renderWidget`, and `drawString` became `text` | `ClientVanilla.canvas`, `ClientVanilla.text` |
 | Fabric's creative tab builder was renamed `FabricCreativeModeTab` | `Loader.creativeTabBuilder` |
 | Fabric's data generation output and tag provider were renamed | replacement |
-| Recipe results became `ItemStackTemplate`, cooking recipes gained new constructors, and building a result no longer takes the registries | `ThirstRecipeProvider`, `TestFixtures.assemble` |
+| Recipe results became `ItemStackTemplate`, cooking recipes gained new constructors, and building a result no longer takes the registries | `ThirstRecipeProvider`, `FarmersDelightRecipeProvider`, `TestFixtures.assemble` |
 | Model texture mappings take a `Material` | `ThirstModelProvider` |
+| NeoForge stopped throwing when an attachment syncs to a connection that never negotiated the channel | NeoForge `Loader.syncsTo` |
+| Gametests gained padding between them, and `TestEnvironmentDefinition` a type parameter | NeoForge `ThirstWasTaken2GameTests` |
 
 Result: 1.21.11 writes shorter recipe files, because a live `ItemStack` omits components the item
 already has by default. The stack the furnace hands out is the same; see
@@ -85,6 +116,8 @@ already has by default. The stack the furnace hands out is the same; see
 | `ResourceLocation` became `Identifier`, `ResourceKey#location` became `#identifier`, `Util` moved package | replacement |
 | The advancement criterion package lost its `critereon` spelling | replacement, chosen inside the 26.2 rule because replacements do not chain |
 | Command permission levels became permission sets | `Vanilla.isGameMaster`, `Vanilla.isOwner` |
+| The window handle accessor was renamed from `getWindow` to `handle` | `AgentClientVanilla.windowHandle` (written `>1.21.1`) |
+| A connection's send listener became Netty's own | NeoForge `CapturingConnection` (written `>1.21.1`) |
 
 ### 1.21.9 (affects 1.21.1)
 
@@ -92,12 +125,14 @@ already has by default. The stack the furnace hands out is the same; see
 |---|---|
 | Fonts are named through `FontDescription` | `Vanilla.dropletFont` |
 | "Water evaporates here" moved from the dimension type to environment attributes | `Vanilla.waterEvaporates` |
+| FML turned its environment fields into methods, and hands a mod's manifest out as a stream rather than a path | NeoForge `Loader.isDevelopmentEnvironment`, `ThirstWasTaken2GameTests.openManifest` |
 
 ### 1.21.6 (affects 1.21.1)
 
 | Difference | Code |
 |---|---|
 | Fabric API gained the HUD element and status bar height registries | `ClientLoader.addRightStatusBar`; on 1.21.1 `GuiMixin` draws the bar after the food bar and moves the air bubbles up |
+| Saving and loading an entity take a `ValueOutput` / `ValueInput` rather than a `CompoundTag` | `TestFixtures.savePlayer`, `loadPlayer` |
 
 ### 1.21.5 (affects 1.21.1)
 
@@ -107,6 +142,7 @@ already has by default. The stack the furnace hands out is the same; see
 | The Confusion effect was renamed Nausea, `Entity#moveTo` became `snapTo` | replacement |
 | Fabric API gained its own `@GameTest` annotation | replacement; on 1.21.1 tests use vanilla's with Fabric's empty structure |
 | `GameTestHelper#assertTrue` takes a `Component` | `TestFixtures.check` |
+| Tests register through the test function registry, and the server writes its own JUnit report with `--report` | NeoForge `ThirstWasTaken2GameTests` and `build.neoforge.gradle.kts`; before it the harness registers and reports itself |
 
 ### 1.21.4 (affects 1.21.1)
 
@@ -123,12 +159,15 @@ already has by default. The stack the furnace hands out is the same; see
 |---|---|
 | Items are given their id before construction | `Vanilla.registerItem` |
 | Drinking became the consumable component | `DrinkItem`; on 1.21.1 it overrides use, animation, duration and finishing |
-| The `item_model` component | `Vanilla.swapItemModel` (visible, see above) |
+| The `item_model` component | `Vanilla.swapItemModel` (visible, see above); `ItemAppearanceGameTest` only asserts the swap where the component exists |
 | `Item#use` returns a result without the resulting stack; `CONSUME` became `SUCCESS_SERVER` | `ItemStackMixin`, `Loader.onUseItem`; the constant is a replacement |
 | Server-side damage became `hurtServer` | `Vanilla.hurt` |
 | `FoodData#tick` takes a `ServerPlayer` | `FoodDataMixin` |
 | `Registry#get` became `getValue` | replacement |
 | `Registry#get(id)` returns a holder, where `getHolder` did | `Vanilla.mobEffect` |
+| Every `Ingredient` became non-empty, so the codec lost its `CODEC_NONEMPTY` twin | `FarmersDelightRecipeProvider` |
+| A components ingredient's `base` became a holder set rather than a whole ingredient | `build.neoforge.gradle.kts`, translating Fabric's JSON as it copies it |
+| GUI draw calls take a render pipeline | the dev-only `GuiDrawMixin`, which records vanilla's food and air sprite rectangles |
 | A potion's crafting remainder is a glass bottle, so the Cooking Pot serves boiled water into one | `FarmersDelightRecipeProvider` names no container either way (visible in game only) |
 | Recipes are registry entries with keys, built by a separate recipe provider | `ThirstRecipeProvider`, `ThirstAdvancementProvider`, `AdvancementGameTest` |
 | The shapeless recipe builder can give its result components | `ThirstRecipeProvider`; on 1.21.1 the filled-bowl recipe is written out by hand |
@@ -141,20 +180,23 @@ it makes no difference to any jar.
 | Difference | Code |
 |---|---|
 | A block's description id is known inside its constructor (on 1.21.1 asking caches a wrong name) | `Vanilla.isWaterCauldron`; on 1.21.1 `BlocksMixin` marks the water cauldron's construction |
-| GUI blits take a render pipeline and a tint | `ClientVanilla.blit`; on 1.21.1 the tint is render state |
+| GUI blits take a render pipeline and a tint | `ClientVanilla.blit`, `ClientVanilla.blitSprite`; on 1.21.1 both are render state, set before the draw and reset after it |
 | Options lists gained section headings | `ClientVanilla.addHeader` (visible, see above) |
 | `ServerPlayer#level` returns a `ServerLevel` | `Vanilla.level` |
 | The drinking sound became a registry holder | `Vanilla.drinkSound` |
 | Bucket pickup takes any living entity | `BucketItemMixin` |
+| The food check a sprint asks moved from the client's `LocalPlayer` onto `Player` | `PlayerMixin`; on 1.21.1 `LocalPlayerMixin` hooks the client's own copy, and `TestFixtures.canSprint` answers from vanilla's rule there, because a server test cannot reach it |
+| A NeoForge attachment saves through a map codec, so the value goes under a field | NeoForge `Loader.playerData`; a world carried from one to the other starts at full thirst |
 | Advancement backgrounds are named by texture id | `ThirstAdvancementProvider` |
 | Fabric's tag builder was renamed `builder` | `ThirstBiomeTagProvider`, `ThirstDamageTypeTagProvider` |
+| NeoForge reads a custom ingredient's type from `neoforge:ingredient_type` rather than vanilla's `type` | `build.neoforge.gradle.kts` |
 | `Entity#startRiding` gained a second flag | `PlayerStateGameTest` |
 | Levels expose their highest buildable y | `BenchmarkWorld` |
 
 ## Differences in Fabric API rather than Minecraft
 
 - **Attachment sync** exists on every version, including 1.21.1, where Fabric API backported it.
-  `Loader.playerData` is the same on all four.
+  `Loader.playerData` is the same on all four Fabric nodes.
 - **Loot tables from vanilla's experiment packs** are reported as built in by Fabric API on 1.21.1 and
   as a data pack's on later versions. The mod adds its loot to every table regardless of source, so
   this has no effect; it is recorded because it is why the mod stopped filtering by source.
@@ -164,7 +206,10 @@ it makes no difference to any jar.
 - A new `//? if` block or replacement gets a row under the release that introduced the newer form. If
   a player can see it, it also gets a row in the first table and a line on the
   [installation page](../docs/installation.md).
+- A difference between the loaders is not a version difference: it belongs in
+  [platform/AGENTS.md](../../src/main/java/com/thirstwastaken2/platform/AGENTS.md). A `//? if` inside
+  `src/main/neoforge`, `src/client/neoforge` or `src/gametest/neoforge` is both, and belongs here too.
 - Retiring a node deletes the sections that only affect it. For 1.21.1 that is every section from
   1.21.9 down, plus the unpinned one.
-- `grep -rn "//? if" src --include=*.java` and `stonecutter.gradle.kts` are the source of truth; this
-  page is their index.
+- `grep -rn "//? if" src --include=*.java`, `stonecutter.gradle.kts` and the `sc.current.parsed`
+  branches in both buildscripts are the source of truth; this page is their index.

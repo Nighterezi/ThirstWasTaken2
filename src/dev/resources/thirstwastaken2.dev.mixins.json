@@ -4,6 +4,7 @@
   "compatibilityLevel": "${java}",
   "client": [
     "GuiDrawMixin",
+    "MouseGrabMixin",
     "ThirstHudMixin"
   ],
   "injectors": { "defaultRequire": 1 }

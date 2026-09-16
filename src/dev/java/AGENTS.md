@@ -294,6 +294,35 @@ Unattended, without an agent at all:
 `-Pagent=<file>` answers that file once the game is up and then stops the game. The path is relative
 to the repository root. It applies to every run task of the node, clients included.
 
+### Driving a client while the machine is in use
+
+A client that is being driven is not being played, and two things a played client does get in the way
+of using the desktop it opened on. `-Pdriven` turns both around:
+
+```bash
+./gradlew ":26.1.x-neoforge:runManualA" -Pdriven
+```
+
+- **It never takes the mouse pointer.** Minecraft grabs the cursor as soon as a window with a world
+  open is focused, and holds it inside the frame until a screen opens, so clicking the window to
+  glance at the bar costs the pointer everywhere else on the desktop. A driven client refuses the
+  grab outright, which costs nothing: every key the agent holds goes through the game's own key state
+  and every command through the player's connection, so nothing here was ever steered by a physical
+  mouse. Refusing it rather than releasing it a tick later is what keeps the cursor from being hidden
+  and warped to the middle of the window on every click.
+- **It opens maximised**, rather than at the small size the run tasks ask for, which is what makes the
+  HUD worth looking at while a script drives it. Maximised and not full screen, on purpose: exclusive
+  full screen takes over the display the person is working on.
+
+`-Pagent=<file>` implies `-Pdriven`, because an unattended run has nobody at the keyboard. It is off
+by default otherwise, because it is the opposite of what a manual pass needs: with no grab there is
+no mouse look and no click reaches the world, so a person — or computer use standing in for one —
+cannot play the client at all. `client.info` answers `driven` and `mouseGrabbed`, so a script can
+tell which kind of client it is talking to rather than assuming.
+
+It is client side only. `-Pdriven` on `runServer` does nothing, and passing it to every task of a
+node is harmless.
+
 ### The commands
 
 `ready.json` lists what the process it belongs to answers; a server answers the first two groups and
@@ -309,7 +338,7 @@ a client answers all three.
 | `server.thirst.get` | `player` | the same, for one player |
 | `server.thirst.set` | `player`, `thirst`, `quenched`, `exhaustion`, `enabled` | what it was and what it is now. Writes the state directly, not through `/thirst set` |
 | `server.command` | `command`, `as` | what the command returned and what it said, collected rather than logged |
-| `client.info` | | window and GUI size, GUI scale, fps, screen, server, player, key names, `toggleCrouch`, `toggleSprint` |
+| `client.info` | | window and GUI size, GUI scale, fps, screen, server, player, key names, `toggleCrouch`, `toggleSprint`, and whether this client is `driven` and `mouseGrabbed` |
 | `client.state` | | what this client holds: thirst, sprinting, sneaking, health, food, dimension, position, whether the bar should render |
 | `client.hud` | | the rectangle the mod drew the bar in, the values it drew, the ten droplet rectangles, and the config preview's |
 | `client.hud.toggle` | | the new hidden state after toggling the same vanilla state as F1 |
