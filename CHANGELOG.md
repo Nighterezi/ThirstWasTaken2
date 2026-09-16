@@ -11,6 +11,11 @@ All notable changes to ThirstWasTaken2 are documented in this file.
   NeoForge mods list. The NeoForge file has `-neoforge` after the Minecraft version in its name.
 - AppleSkin and Jade work on NeoForge too.
 
+### Fixed
+
+- The thirst bar vanished on the death screen. It now stays on screen with the hunger bar, showing
+  the thirst the player died with.
+
 ### Notes
 
 - Create Fly and Farmer's Delight have no NeoForge release, so the Sand Filter and the Farmer's

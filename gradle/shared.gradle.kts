@@ -78,8 +78,8 @@ tasks.register("checkLoaderSeam") {
 /**
  * Fails when core code carries a Stonecutter version conditional. Minecraft version differences belong
  * in `platform/` and, for injection signatures, `mixin/`; a `//?` block anywhere else in `src/main/java`
- * or `src/client/java` means a seam is missing. This replaced counting blocks as the exit ramp; see
- * docs/dev/PLATFORM-PLAN.md. Loader directories, datagen, gametests and dev tools are outside it.
+ * or `src/client/java` means a seam is missing. This replaced counting blocks as the exit ramp.
+ * Loader directories, datagen, gametests and dev tools are outside it.
  */
 tasks.register("checkVersionSeam") {
     group = "verification"

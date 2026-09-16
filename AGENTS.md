@@ -204,8 +204,6 @@ Two things about Stonecutter that are easy to learn the hard way:
 
 ### Version support policy
 
-Promoted from [docs/dev/PLATFORM-PLAN.md](docs/dev/PLATFORM-PLAN.md), which is where the reasoning is.
-
 - **At most four version nodes.** Adding one means retiring one. A NeoForge node on a Minecraft
   version that already has a Fabric node does not count as another version.
 - The shape is one long lived old version, the two newest, and one in transition.

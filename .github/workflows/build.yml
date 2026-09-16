@@ -93,8 +93,8 @@ jobs:
         # nothing else would notice them breaking on one version. checkAgentCore fails when the agent's
         # loader independent half starts naming Minecraft or a loader. checkLoaderSeam fails on a mod
         # loader import in loader independent code, which compiles fine against one loader.
-        # checkVersionSeam fails on a version conditional in core code, which is the exit ramp in
-        # docs/dev/PLATFORM-PLAN.md.
+        # checkVersionSeam fails on a version conditional in core code, which is where a missing
+        # seam shows up.
         run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:devClasses" ":${{ matrix.version }}:checkAgentCore" ":${{ matrix.version }}:checkLoaderSeam" ":${{ matrix.version }}:checkVersionSeam" --stacktrace
 
       # The NeoForge node has the dev tools too, carrying the agent but not the benchmark, and no

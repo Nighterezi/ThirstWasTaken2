@@ -25,8 +25,8 @@ are identical on every version.
 - **Same signature on every version.** A caller must never need to know which branch is live.
 - **Add to `Vanilla` rather than to the caller.** A `//?` block anywhere outside this package and
   `mixin/` is a signal the seam is missing, and in `src/main/java` or `src/client/java`
-  `checkVersionSeam` fails the build on it. That check is the exit ramp in
-  `docs/dev/PLATFORM-PLAN.md`; the number of blocks in here is not.
+  `checkVersionSeam` fails the build on it. That check is the exit ramp; the number of blocks in
+  here is not.
 - Mixins are the documented exception: their `@Inject` signatures track the target method and cannot
   be abstracted away. Keep their bodies one line regardless.
 
@@ -128,10 +128,10 @@ What they leave out, and why:
   NeoForge under `neoforge:attachments`, so a moved world starts every player at full thirst. There is
   no migration, on purpose.
 
-The jars are `ThirstWasTaken2-<version>+<minecraft>-neoforge.jar`. They are not released yet: every
-Minecraft version now has a NeoForge node, and NeoForge ships, marked beta, once the manual passes in
-[docs/dev/MANUAL-TESTING.md](../../../../../../docs/dev/MANUAL-TESTING.md) are done (P5 in
-[docs/dev/PLATFORM-PLAN.md](../../../../../../docs/dev/PLATFORM-PLAN.md)).
+The jars are `ThirstWasTaken2-<version>+<minecraft>-neoforge.jar`. Every Minecraft version has a
+NeoForge node and the manual passes in
+[docs/dev/MANUAL-TESTING.md](../../../../../../docs/dev/MANUAL-TESTING.md) are done, so NeoForge
+ships marked beta.
 
 Two mixins reach methods NeoForge patches: `ItemStack#addDetailsToTooltip`, where the mod's rows land
 after NeoForge's own tooltip hook, and `CauldronBlock#receiveStalactiteDrip`, whose `RETURN` injection

@@ -17,10 +17,9 @@ Supported nodes and their jars:
 | `1.21.11-neoforge` | `+1.21.11-neoforge` | 1.21.11 | 21 | NeoForge 21.11.45 |
 | `1.21.1-neoforge` | `+1.21.1-neoforge` | 1.21.1 | 21 | NeoForge 21.1.250 |
 
-The NeoForge jars are built and tested on every node but not released yet; see
-[PLATFORM-PLAN.md](PLATFORM-PLAN.md). A NeoForge node builds the same Minecraft version as the Fabric
-node it sits under, so everything on this page applies to both. 1.21 is the one exception: the Fabric
-1.21.1 jar claims it, and NeoForge 21.0 is a generation of its own.
+The NeoForge jars are built and tested on every node. A NeoForge node builds the same Minecraft
+version as the Fabric node it sits under, so everything on this page applies to both. 1.21 is the
+one exception: the Fabric 1.21.1 jar claims it, and NeoForge 21.0 is a generation of its own.
 
 **This page is the version axis only.** What differs between Fabric and NeoForge on the *same*
 Minecraft version, and which seam hides it, is in

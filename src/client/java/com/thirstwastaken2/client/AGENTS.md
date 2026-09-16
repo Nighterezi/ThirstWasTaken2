@@ -84,6 +84,10 @@ Sprite geometry, which is easy to break:
 - `tools/generate_quenched_overlay.py` draws `quenched_overlay.png` and the matching tooltip glyphs.
   Edit the palettes there and rerun it rather than touching the PNGs.
 - The bar shakes when quenched hits zero, mirroring vanilla hunger (`shakePeriod = thirst * 3 + 1`).
+- `shouldRender` deliberately does not ask whether the player is alive. Vanilla draws the food bar
+  for a dead player, so the hunger bar stays on screen behind the death screen, and a thirst row
+  that hid itself there would leave a gap above it. `tools/agent/hud-death-screen.jsonl` is the
+  check.
 
 `ThirstTooltip` (common) uses the same two-units-per-droplet rule with its own bitmap font. If the
 fill thresholds change here, change them there too.

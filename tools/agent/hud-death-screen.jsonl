@@ -1,0 +1,29 @@
+// MANUAL-TESTING.md's "the bar stays on the death screen". Vanilla keeps drawing the hunger bar for a
+// dead player, so the thirst row above it has to be drawn too, with the values it had when the player
+// died. Run it against a client that is in a survival world and is an operator, with the immediate
+// respawn game rule off, which is its default on every version (26.2 renamed the rule, so the script
+// does not set it):
+//     python tools/agent/drive.py run/<node>/agent/client tools/agent/hud-death-screen.jsonl
+// Expectations are checked by drive.py. A wrong value makes it exit 1 just like a refused request.
+{"id":"survival","command":"client.command","args":{"command":"gamemode survival @s"}}
+{"id":"set","command":"client.command","args":{"command":"thirst set @s 9 3"}}
+{"id":"settle","command":"wait","args":{"ticks":20}}
+
+// Alive: the row is drawn, so the draw calls the death screen is compared against are this run's.
+{"id":"alive","command":"client.state","expect":{"result.alive":true,"result.barShouldRender":true,"result.thirst":9,"result.quenched":3}}
+{"id":"aliveHud","command":"client.hud","expect":{"result.bar.thirst":9,"result.bar.quenched":3},"checks":[{"left":"result.bar.drawnMsAgo","op":"lt","value":500}]}
+
+// Dead: still drawn, still above vanilla's food row, still holding the values it died with.
+{"id":"kill","command":"client.command","args":{"command":"kill @s"}}
+{"id":"dying","command":"wait","args":{"ticks":40}}
+{"id":"dead","command":"client.state","expect":{"result.alive":false,"result.barShouldRender":true},"checks":[{"left":"result.screen","op":"contains","value":"DeathScreen"}]}
+{"id":"deadHud","command":"client.hud","expect":{"result.bar.thirst":9,"result.bar.quenched":3},"checks":[{"left":"result.bar.drawnMsAgo","op":"lt","value":500},{"left":"result.food.drawnMsAgo","op":"lt","value":500},{"left":"result.bar.right","op":"eq","right":"result.food.right"},{"left":"result.bar.bottom","op":"le","right":"result.food.top"}]}
+{"id":"evidence","command":"client.capture","args":{"name":"death-screen-thirst-bar"}}
+
+// And back, so the client is left usable for the next script. client.respawn answers a few ticks
+// after the button, which on a dedicated server can still be a round trip short of the new player, so
+// the assertion is on the state a moment later rather than on its own reply.
+{"id":"respawn","command":"client.respawn"}
+{"id":"back","command":"wait","args":{"ticks":40}}
+{"id":"revived","command":"client.state","expect":{"result.alive":true,"result.barShouldRender":true}}
+{"id":"revivedHud","command":"client.hud","checks":[{"left":"result.bar.drawnMsAgo","op":"lt","value":500}]}

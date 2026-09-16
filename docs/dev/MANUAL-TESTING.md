@@ -30,7 +30,8 @@ check, and every item below belongs to one of them:
 
 A pass can be driven with computer use, but checks with an exact answer should use the agent client.
 `tools/agent/hud-layout.jsonl` compares the real thirst, food and air draw rectangles,
-`hud-hidden.jsonl` proves the bar stops receiving draw calls while the HUD is hidden, and
+`hud-hidden.jsonl` proves the bar stops receiving draw calls while the HUD is hidden,
+`hud-death-screen.jsonl` proves it keeps receiving them on the death screen, and
 `client-sync.jsonl` asserts the client-owned values. The `manual-testing` skill in `.claude/skills`
 remains useful for the genuinely qualitative parts such as whether text is comfortable to read.
 
@@ -78,6 +79,10 @@ Useful commands while testing:
       sprinting; turning the AppleSkin option off removes it. Nothing drawn after it (air bubbles,
       the hotbar) is left tinted.
 - [x] `/thirst enable @s false` hides the bar; `true` brings it back.
+- [x] The bar stays on the death screen, holding the values the player died with, the way vanilla
+      keeps the hunger bar there. [tools/agent/hud-death-screen.jsonl](../../tools/agent/hud-death-screen.jsonl)
+      asserts it against the real draw calls of both rows; run last on `26.2.x`, `1.21.1` and
+      `26.2.x-neoforge` on 2026-09-16.
 
 ### Sync to the client
 

@@ -43,8 +43,12 @@ public final class ThirstHud {
 
     private ThirstHud() { }
 
+    /**
+     * Vanilla draws the food bar for a dead player too, so the hunger bar stays on screen behind the
+     * death screen; the thirst bar follows it and is deliberately not gated on {@code isAlive}.
+     */
     public static boolean shouldRender(Player player) {
-        if (player == null || !player.isAlive() || player.getVehicle() instanceof LivingEntity) return false;
+        if (player == null || player.getVehicle() instanceof LivingEntity) return false;
         Minecraft minecraft = Minecraft.getInstance();
         return !ClientVanilla.isHudHidden(minecraft) && ThirstManager.get(player).enabled();
     }
