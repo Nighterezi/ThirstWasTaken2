@@ -74,7 +74,7 @@ deps.modmenu = "18.0.1"
 deps.appleskin = "zLlqqiTA"
 deps.cloth_config = "26.1.154+fabric"
 deps.jade = "26.1.11+fabric"
-deps.farmersdelight = "26.1-3.6.21"
+deps.farmersdelight = "26.1-3.6.22"
 deps.create_fly = "26.1.2-6.0.9-4"
 
 [neoforge."26.1.x"]
@@ -107,7 +107,7 @@ deps.cloth_config = "26.2.155+fabric"
 deps.jade = "26.2.11+fabric"
 # Farmer's Delight Refabricated, only on the runClient classpath. Its version numbers carry the
 # Minecraft version as a prefix.
-deps.farmersdelight = "26.2-3.6.21"
+deps.farmersdelight = "26.2-3.6.22"
 # Create Fly, the Fabric port of Create. Only nodes that set this compile the Sand Filter; see
 # src/main/createfly/AGENTS.md. Its version numbers carry the Minecraft version as a prefix too.
 deps.create_fly = "26.2-rc-2-6.0.9-1"
