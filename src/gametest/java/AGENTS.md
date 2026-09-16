@@ -54,8 +54,8 @@ Fabric's empty structure as its template, and `stonecutter.gradle.kts` rewrites 
 the annotation, so no test file changes for it. Write `@GameTest` with no arguments, or that
 replacement stops matching.
 
-The same 124 tests run on every node. Later nodes report 125 because their runner adds vanilla's own
-`minecraft:always_pass`; that one is not the mod's.
+The same 126 mod tests run on every node. The 1.21.1 runner reports 127 and later runners report 128
+because they also include vanilla smoke tests; those are not the mod's.
 
 ## The NeoForge harness
 

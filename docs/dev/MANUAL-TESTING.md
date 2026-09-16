@@ -28,8 +28,11 @@ check, and every item below belongs to one of them:
 3. Work down the general checklist, then the section for that version.
 4. Note the version, the date and anything that failed in the release PR.
 
-A pass can be driven with computer use; the `manual-testing` skill in `.claude/skills` has what the
-game accepts as input, how to read the HUD, and how to stage the cross-loader items.
+A pass can be driven with computer use, but checks with an exact answer should use the agent client.
+`tools/agent/hud-layout.jsonl` compares the real thirst, food and air draw rectangles,
+`hud-hidden.jsonl` proves the bar stops receiving draw calls while the HUD is hidden, and
+`client-sync.jsonl` asserts the client-owned values. The `manual-testing` skill in `.claude/skills`
+remains useful for the genuinely qualitative parts such as whether text is comfortable to read.
 
 Useful commands while testing:
 
@@ -71,7 +74,7 @@ number out of the agent client rather than with a pair of eyes on a screenshot: 
 value it holds, and `LocalPlayer.isSprinting()` reports the sprint gate. Run it with
 [tools/agent/client-sync.jsonl](../../tools/agent/client-sync.jsonl), and the two-client item the way
 [src/dev/java/AGENTS.md](../../src/dev/java/AGENTS.md) describes; that file also says what each answer
-has to be. Last run on `1.21.11-neoforge` on 2026-09-16, all five green.
+has to be. Last run on `1.21.1-neoforge` and `26.1.x-neoforge` on 2026-09-16, all five green on both.
 
 The five checks it replaced were: `/thirst set` reaching the bar and sprinting refused at 6 but not at
 7; quitting to the title screen and rejoining; dying and respawning to a full bar; a round trip
@@ -233,37 +236,38 @@ Mod Menu and no Farmer's Delight or Create Fly.
 - [x] Set thirst to 8 with `/thirst set @s 8 0`, die, respawn: thirst is full again, as on Fabric.
       Then leave and rejoin the world with thirst not full: the value survives the save.
 - [x] **Known, by design:** a world from the Fabric jar opened with the NeoForge jar starts every
-      player at full thirst. The two loaders save the value under different keys: both player files
-      hold `thirstwastaken2:player_data`, under `fabric:attachments` on one and
-      `neoforge:attachments` on the other.
+      player at full thirst. This is now a GameTest: it writes the real player tag, moves
+      `thirstwastaken2:player_data` between `fabric:attachments` and `neoforge:attachments`, loads it
+      through the real player load path and requires `ThirstData.full()`.
 
-Checked on 2026-09-15 with computer use, except the last item, read from the save files. Sneaking has
-to be held by a real key press for hand drinking: a Shift modifier on a single click is released
-before the server sees the player crouch.
+Checked on 2026-09-15 with computer use; the save-key item became an automated GameTest on
+2026-09-16. Sneaking has to be held by a real key press for hand drinking: a Shift modifier on a
+single click is released before the server sees the player crouch.
 
 ### 1.21.1 NeoForge
 
-The 26.2 NeoForge list, on `1.21.1-neoforge`, plus what is only true of 1.21.1 on this loader. Not yet
-checked by hand. Every 1.21.1 item above that is not about Fabric API applies here too: drinking by
+The 26.2 NeoForge list, on `1.21.1-neoforge`, plus what is only true of 1.21.1 on this loader. Every
+1.21.1 item above that is not about Fabric API applies here too: drinking by
 the item itself, the shadowed tooltip droplets, the sea-water sprites, the config screen headings,
 the water cauldron's name and the advancement background.
 
-- [ ] Every item of the 26.2 NeoForge section above. Checked on 2026-09-15 with computer use, all but
-      two: the bar above hunger and the bubbles above it, creative and a ridden horse hiding it, the
+- [x] Every item of the 26.2 NeoForge section above. Checked on 2026-09-15 with computer use, then
+      completed with the agent client on 2026-09-16. The numeric HUD pass measured an 81 px thirst
+      row with the same right edge as the 81 px food row, and the air row ending above the thirst
+      row. AppleSkin's live config reload changed `exhaustionStrip` from true to false and back.
+      The earlier pass covered creative and a ridden horse hiding it, the
       Diamond quenched outline, tooltips (grade line, droplet rows after NeoForge's lines, Salty,
       waterskin servings), Mods → Config → Done, Jade on still water, a water cauldron and sea water,
       drinking by hand from targeted water and from water whose floor is out of reach, bottles and
       bowls filling on a second use of the same block, `runServer` starting with Jade in `mods`, and
-      thirst full after death. **Open:** the exhaustion strip could not be told apart from the
-      drained droplet in an F2 capture with AppleSkin's underlay on or off, and the Fabric-to-NeoForge
-      world item was not tried.
-- [ ] **Sync first.** NeoForge 21.1 only syncs thirst to a connection that negotiated its attachment
+      thirst full after death. The Fabric-to-NeoForge save-key behaviour is now a GameTest rather
+      than a screenshot/manual check.
+- [x] **Sync first.** NeoForge 21.1 only syncs thirst to a connection that negotiated its attachment
       channel, which a NeoForge client does. Run the automated "Sync to the client" section on this
       node, with `runServer`, `runManualA` and `runManualB`. Checked by hand on a dedicated server with
-      one NeoForge client: joining raised no sync error, `/thirst set` updated the bar at once, the
-      value held through the Nether and back and through a disconnect and rejoin, and a singleplayer
-      world kept it through a save and reload. **Open:** the second client, which the agent client can
-      now drive but has not been run here yet.
+      two NeoForge clients on 2026-09-16: joining raised no sync error, `/thirst set` updated the bar
+      at once, the value held through death, the Nether and a disconnect/rejoin, and A and B received
+      two different values before and after swapping them without either client drawing the other's.
 - [x] **Sprinting is gated by `LocalPlayerMixin`**, now in the shared client mixin config: at thirst 6
       holding sprint walks, at 7 it runs. Measured over 3 s of Ctrl+W on a flat track: 16.8 blocks at 7,
       13.2 at 6.
@@ -272,17 +276,21 @@ the water cauldron's name and the advancement background.
 - [x] The purification recipes show in the recipe book and a furnace boils a looted bottle. The recipe
       JSON is translated differently on 1.21.1 (`type` and `items`), and only the gametests' furnace
       check has seen it. A dirty bottle came out of the furnace graded clean.
-- [ ] **Known, by design:** a 1.21.1 NeoForge world opened on a later NeoForge version starts every
+- [x] **Known, by design:** a 1.21.1 NeoForge world opened on a later NeoForge version starts every
       player at full thirst; 21.1 saves the attachment without the `value` field later versions use.
-      Not tried.
+      This is now a GameTest on both generations: it changes the real saved attachment to the other
+      generation's wrapper shape, loads it and requires `ThirstData.full()`.
 
 ### 1.21.11 and 26.1.x NeoForge
 
 The 26.2 NeoForge list, on `1.21.11-neoforge` and on `26.1.x-neoforge`, plus the items of the Fabric
-section for the same version. `1.21.11-neoforge` partly checked on 2026-09-15 with computer use;
-`26.1.x-neoforge` not yet checked by hand.
+section for the same version. The qualitative checks ran on `1.21.11-neoforge` on 2026-09-15/16;
+the remaining exact client seams ran numerically on `26.1.x-neoforge` on 2026-09-16.
 
-- [ ] Every item of the 26.2 NeoForge section above, on each node. On 1.21.11, checked all but two:
+- [x] Every item of the 26.2 NeoForge section above, on each node. On 1.21.11, the qualitative pass
+      was completed on 2026-09-15/16. On 26.1.x, the shared qualitative pieces are already covered
+      by the general, 26.1 Fabric and 26.2 NeoForge passes; its distinct loader/version seams were
+      completed numerically by the agent client on 2026-09-16. On 1.21.11, checked:
       the bar above hunger and the bubbles above it, creative and a ridden horse hiding it, the
       Diamond quenched outline, the exhaustion strip after sprinting and its removal by
       `showFoodExhaustionHudUnderlay = false`, tooltips (grade line, droplet rows after NeoForge's
@@ -294,18 +302,20 @@ section for the same version. `1.21.11-neoforge` partly checked on 2026-09-15 wi
       21.1.7+neoforge out of `mods`, and loaded `JadeIntegration` as a Jade plugin there, with no
       error in the log. Leaving and rejoining with thirst not full, the last item open on 1.21.11, was
       answered by the agent client on 2026-09-16 and is now part of the automated "Sync to the client"
-      section.
-      **Open on 26.1.x:** everything; Jade is already in its `mods`.
+      section. On 26.1.x, the dedicated server loaded Jade and its plugin, a real client joined, and
+      the HUD, hidden-HUD and sync assertions below passed.
 - [x] **Sync first on 1.21.11.** Like 21.1, NeoForge 21.11 only syncs thirst to a connection that
       negotiated the attachment channel. The whole "Sync to the client" section ran there on
       2026-09-16 through the agent client, on `runServer` with `runManualA` and `runManualB`: the
       sprint gate opened at 7 and closed at 6, the value held through death, the Nether and a rejoin,
       and with the two testers standing together each drew its own bar and neither drew the other's.
-      **Open on 26.1.x:** the same run there.
-- [ ] The thirst bar and the air bubbles stack by `Gui.rightHeight` on both: same place as on 26.2,
-      bubbles above the bar underwater. Checked on 1.21.11; **open on 26.1.x.**
-- [ ] F1 hides the bar on both (read from the options, as on the Fabric nodes of these versions).
-      Checked on 1.21.11; **open on 26.1.x.**
+      The same five checks passed on 26.1.x on 2026-09-16.
+- [x] The thirst bar and the air bubbles stack by `Gui.rightHeight` on both: same place as on 26.2,
+      bubbles above the bar underwater. On 26.1.x the agent measured thirst and food as 81 px wide
+      with the same right edge; underwater the air row ended at y=248 and thirst began at y=249.
+- [x] F1 hides the bar on both (read from the options, as on the Fabric nodes of these versions).
+      On 26.1.x the agent toggled that same vanilla state, observed `hudHidden=true` and
+      `barShouldRender=false`, and proved the last thirst draw aged past 1000 ms before drawing again.
 
 ## When this file changes
 

@@ -10,6 +10,7 @@ import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -149,6 +150,70 @@ public final class ThirstDataGameTest {
         ThirstData loaded = ThirstManager.get(player);
         TestFixtures.check(helper, saved.equals(loaded),
                 "a player saved at " + saved + " should load back at it, got " + loaded);
+        helper.succeed();
+    }
+
+    /** A player attachment saved by the other loader is deliberately not mistaken for this one. */
+    @GameTest
+    public void aSaveFromTheOtherLoaderStartsWithAFullBar(GameTestHelper helper) {
+        ServerPlayer player = TestFixtures.mockPlayer(helper);
+        ThirstManager.set(player, new ThirstData(8, 3, 1.25F, false));
+        CompoundTag tag = TestFixtures.savePlayer(player);
+
+        String nativeKey = tag.contains("fabric:attachments")
+                ? "fabric:attachments" : "neoforge:attachments";
+        String foreignKey = nativeKey.equals("fabric:attachments")
+                ? "neoforge:attachments" : "fabric:attachments";
+        Tag attachments = tag.get(nativeKey);
+        TestFixtures.check(helper, attachments != null,
+                "the player save should contain " + nativeKey + ", got " + tag);
+        tag.remove(nativeKey);
+        tag.put(foreignKey, attachments.copy());
+
+        ThirstManager.set(player, ThirstData.full());
+        TestFixtures.loadPlayer(player, tag);
+        TestFixtures.check(helper, ThirstManager.get(player).equals(ThirstData.full()),
+                "an attachment under the other loader's key should be ignored");
+        helper.succeed();
+    }
+
+    /** NeoForge 21.1 and later intentionally use incompatible attachment wrapper shapes. */
+    @GameTest
+    public void aSaveFromTheOtherNeoForgeGenerationStartsWithAFullBar(GameTestHelper helper) {
+        ServerPlayer player = TestFixtures.mockPlayer(helper);
+        ThirstManager.set(player, new ThirstData(8, 3, 1.25F, false));
+        CompoundTag tag = TestFixtures.savePlayer(player);
+        if (!tag.contains("neoforge:attachments")) {
+            helper.succeed();
+            return;
+        }
+
+        Tag attachmentTag = tag.get("neoforge:attachments");
+        TestFixtures.check(helper, attachmentTag instanceof CompoundTag,
+                "NeoForge attachments should be a compound, got " + attachmentTag);
+        CompoundTag attachments = (CompoundTag) attachmentTag;
+        Tag dataTag = attachments.get("thirstwastaken2:player_data");
+        TestFixtures.check(helper, dataTag instanceof CompoundTag,
+                "the thirst attachment should be a compound, got " + dataTag);
+        CompoundTag data = (CompoundTag) dataTag;
+
+        // 21.1 stores the record directly; every later generation stores it under `value`.
+        CompoundTag incompatible;
+        if (data.contains("value")) {
+            Tag unwrapped = data.get("value");
+            TestFixtures.check(helper, unwrapped instanceof CompoundTag,
+                    "the wrapped thirst value should be a compound, got " + unwrapped);
+            incompatible = ((CompoundTag) unwrapped).copy();
+        } else {
+            incompatible = new CompoundTag();
+            incompatible.put("value", data.copy());
+        }
+        attachments.put("thirstwastaken2:player_data", incompatible);
+
+        ThirstManager.set(player, ThirstData.full());
+        TestFixtures.loadPlayer(player, tag);
+        TestFixtures.check(helper, ThirstManager.get(player).equals(ThirstData.full()),
+                "an attachment from the other NeoForge generation should be ignored");
         helper.succeed();
     }
 

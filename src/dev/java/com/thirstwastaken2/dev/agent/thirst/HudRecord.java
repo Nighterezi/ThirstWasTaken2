@@ -42,8 +42,25 @@ public final class HudRecord {
         }
     }
 
+    /** Bounds of one vanilla HUD row, built from the sprite draw calls in its latest frame. */
+    public record SpriteRow(int left, int top, int right, int bottom, int lastX, int sprites, long at) {
+        public int width() {
+            return right - left;
+        }
+
+        public int height() {
+            return bottom - top;
+        }
+
+        public long ageMillis() {
+            return System.currentTimeMillis() - at;
+        }
+    }
+
     private static volatile Bar hud;
     private static volatile Bar preview;
+    private static volatile SpriteRow food;
+    private static volatile SpriteRow air;
     /** Set while {@code ThirstHud.render} is running, so a preview draw is not mistaken for the HUD. */
     private static volatile boolean inHud;
     /** How many times the HUD row has been asked to draw, whether or not it decided to. */
@@ -71,6 +88,14 @@ public final class HudRecord {
         return installed;
     }
 
+    public static SpriteRow food() {
+        return food;
+    }
+
+    public static SpriteRow air() {
+        return air;
+    }
+
     /** Called by the mixin as {@code ThirstHud.render} starts. */
     public static void beginHud() {
         installed = true;
@@ -91,5 +116,25 @@ public final class HudRecord {
                 System.currentTimeMillis());
         if (inHud) hud = drawn;
         else preview = drawn;
+    }
+
+    /** Called for atlas sprite draws; only vanilla food backgrounds and air bubbles are retained. */
+    public static synchronized void sprite(String id, int x, int y, int width, int height) {
+        if (id.contains("hud/food_empty")) {
+            food = extend(food, x, y, width, height);
+        } else if (id.contains("hud/air")) {
+            air = extend(air, x, y, width, height);
+        }
+    }
+
+    /** A row starts at its rightmost icon and proceeds left; a larger x therefore starts a new frame. */
+    private static SpriteRow extend(SpriteRow row, int x, int y, int width, int height) {
+        long now = System.currentTimeMillis();
+        if (row == null || x > row.lastX() || now - row.at() > 250L) {
+            return new SpriteRow(x, y, x + width, y + height, x, 1, now);
+        }
+        return new SpriteRow(Math.min(row.left(), x), Math.min(row.top(), y),
+                Math.max(row.right(), x + width), Math.max(row.bottom(), y + height),
+                x, row.sprites() + 1, now);
     }
 }

@@ -126,6 +126,8 @@ final class ClientProbes {
             result.addProperty("guiScale", AgentClientVanilla.guiScale(minecraft));
             result.add("bar", bar(HudRecord.hud()));
             result.add("preview", bar(HudRecord.preview()));
+            result.add("food", row(HudRecord.food()));
+            result.add("air", row(HudRecord.air()));
             JsonObject geometry = new JsonObject();
             geometry.addProperty("iconSize", HudRecord.ICON_SIZE);
             geometry.addProperty("iconStride", HudRecord.ICON_STRIDE);
@@ -230,6 +232,15 @@ final class ClientProbes {
                     ? new ThirstConfigScreen(AgentClientVanilla.screen(minecraft)) : null);
             JsonObject result = new JsonObject();
             result.addProperty("screen", screenName(minecraft));
+            reply.ok(result);
+        });
+
+        /* Toggles F1's HUD state so scripts can prove both the flag and the absence of fresh draws. */
+        dispatcher.register("client.hud.toggle", (request, reply) -> {
+            Minecraft minecraft = client();
+            AgentClientVanilla.toggleHud(minecraft);
+            JsonObject result = new JsonObject();
+            result.addProperty("hidden", ClientVanilla.isHudHidden(minecraft));
             reply.ok(result);
         });
 
@@ -437,6 +448,20 @@ final class ClientProbes {
             droplets.add(droplet);
         }
         result.add("droplets", droplets);
+        return result;
+    }
+
+    private static JsonElement row(HudRecord.SpriteRow drawn) {
+        if (drawn == null) return JsonNull.INSTANCE;
+        JsonObject result = new JsonObject();
+        result.addProperty("left", drawn.left());
+        result.addProperty("top", drawn.top());
+        result.addProperty("right", drawn.right());
+        result.addProperty("bottom", drawn.bottom());
+        result.addProperty("width", drawn.width());
+        result.addProperty("height", drawn.height());
+        result.addProperty("sprites", drawn.sprites());
+        result.addProperty("drawnMsAgo", drawn.ageMillis());
         return result;
     }
 

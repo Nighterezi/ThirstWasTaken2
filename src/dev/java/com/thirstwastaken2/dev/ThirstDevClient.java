@@ -26,6 +26,10 @@ public final class ThirstDevClient {
         DevClientLoader.onClientTickEnd(() -> {
             if (!started) {
                 started = true;
+                // An unattended client has no focused window. Leaving vanilla's focus pause on would
+                // keep opening PauseScreen and make client.hold report stationary keys rather than
+                // the player's movement state the probe is meant to exercise.
+                Minecraft.getInstance().options.pauseOnLostFocus = false;
                 ThirstAgent.start();
             }
             ThirstAgent.tick();

@@ -1,0 +1,10 @@
+// Numeric equivalent of pressing F1: toggle the same vanilla state, then prove the thirst row stops
+// receiving draw calls. Toggle it back so the client remains usable for the next script.
+{"id":"hide","command":"client.hud.toggle","expect":{"result.hidden":true}}
+{"id":"hiddenWait","command":"wait","args":{"ticks":20}}
+{"id":"hiddenState","command":"client.state","expect":{"result.hudHidden":true,"result.barShouldRender":false}}
+{"id":"stale","command":"client.hud","checks":[{"left":"result.bar.drawnMsAgo","op":"gt","value":500}]}
+{"id":"show","command":"client.hud.toggle","expect":{"result.hidden":false}}
+{"id":"visibleWait","command":"wait","args":{"ticks":20}}
+{"id":"visibleState","command":"client.state","expect":{"result.hudHidden":false,"result.barShouldRender":true}}
+{"id":"fresh","command":"client.hud","checks":[{"left":"result.bar.drawnMsAgo","op":"lt","value":500}]}

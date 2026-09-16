@@ -41,6 +41,16 @@ final class AgentClientVanilla {
         return minecraft.getWindow().getGuiScale();
     }
 
+    /** Toggles the same HUD-hidden state as F1 without depending on a physical keyboard event. */
+    static void toggleHud(Minecraft minecraft) {
+        // 26.2 moved the flag into Hud and made the toggle its public operation.
+        //? if >=26.2 {
+        minecraft.gui.hud.toggle();
+        //?} else {
+        /*minecraft.options.hideGui = !minecraft.options.hideGui;
+        *///?}
+    }
+
     /**
      * Writes the framebuffer to {@code <directory>/screenshots/<name>} and calls {@code done} with
      * vanilla's own message once the file is on disk — which is not in this tick: from 1.21.11 the

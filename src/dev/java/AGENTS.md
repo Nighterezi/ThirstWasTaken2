@@ -253,6 +253,15 @@ time.** A command that takes ticks to finish — `wait`, `client.hold`, `client.
 `client.respawn` — holds the next request up until it has answered, so a file of requests is a
 sequence rather than a batch of things that all happen in one tick.
 
+`drive.py` also accepts an `expect` object keyed by dotted reply paths, plus relational `checks`.
+Expectations use exact JSON equality; a mismatch is printed as `assertionErrors` and exits 1. A check
+has `left`, `op`, and either another reply path in `right` or a literal in `value`. The operations are
+`eq`, `ne`, `lt`, `le`, `gt`, `ge`, `contains`, `not_contains`, and `within` (with `tolerance`).
+
+`client.hud` includes numeric rectangles from the real thirst, food and air draw calls.
+`client.hud.toggle` changes the same vanilla hidden-HUD state as F1, so a script can assert both the
+flag and that the thirst row's last-draw age stops refreshing, then toggle it back.
+
 **Wait for this run's `ready.json`, not for the file.** The previous run leaves one behind, and a
 game takes most of a minute to come up; a request written into `in.jsonl` before the game opens the
 queue is rotated into `previous-in.jsonl` and never answered. `startedAt` is there to tell the two
@@ -303,6 +312,7 @@ a client answers all three.
 | `client.info` | | window and GUI size, GUI scale, fps, screen, server, player, key names, `toggleCrouch`, `toggleSprint` |
 | `client.state` | | what this client holds: thirst, sprinting, sneaking, health, food, dimension, position, whether the bar should render |
 | `client.hud` | | the rectangle the mod drew the bar in, the values it drew, the ten droplet rectangles, and the config preview's |
+| `client.hud.toggle` | | the new hidden state after toggling the same vanilla state as F1 |
 | `client.capture` | `name` | a PNG beside the queue, once it is on disk |
 | `client.pixels` | `points`, `space`, `capture`, `name` | the framebuffer colour at each point, in GUI pixels by default |
 | `client.command` | `command` | after sending it through the player's own connection |
@@ -323,7 +333,9 @@ key the agent holds stays held for as many ticks as it asks — which is what ma
 readable. But vanilla's Sneak and Sprint accessibility settings turn those two keys into toggles, and
 the dev clients here have `toggleCrouch:true`, so holding sneak for thirty ticks crouches the player
 and leaves them crouching. `client.info` answers both settings; read the state back rather than
-assuming.
+assuming. The dev client also turns `pauseOnLostFocus` off when it opens the agent: an unattended
+window is necessarily unfocused, and otherwise vanilla repeatedly opens `PauseScreen` and suppresses
+the movement keys the agent is deliberately holding.
 
 ### What a check looks like
 

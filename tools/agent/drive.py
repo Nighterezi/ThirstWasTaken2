@@ -9,8 +9,14 @@ exists so a person, or a script, does not have to match answers to requests by h
 `ready.json` before writing, gives every request an id if it has none, and waits for the answer to
 each one, so what it prints is in the order asked rather than the order the game finished.
 
-Exits 1 when a request was refused or went unanswered, so a shell can tell a failed check from a
-passed one without reading the JSON.
+Requests may carry an ``expect`` object and relational ``checks``. They are evaluated against the
+reply, so a shell gets exit 1 when the game answered the wrong value as well as when it refused or
+failed to answer a request::
+
+    {"command":"client.state","expect":{"result.thirst":7}}
+    {"command":"client.hud","checks":[
+      {"left":"result.bar.bottom","op":"le","right":"result.food.top"}
+    ]}
 """
 
 import argparse
@@ -24,10 +30,97 @@ IN = "in.jsonl"
 OUT = "out.jsonl"
 
 
+class MissingPath(Exception):
+    pass
+
+
+def value_at(value, path):
+    """Reads a dotted path from a JSON value; numeric components index arrays."""
+    current = value
+    for component in path.split(".") if path else []:
+        try:
+            if isinstance(current, list):
+                current = current[int(component)]
+            else:
+                current = current[component]
+        except (KeyError, IndexError, TypeError, ValueError):
+            raise MissingPath(path)
+    return current
+
+
+def comparison(left, operation, right, tolerance=None):
+    if operation == "eq":
+        return left == right
+    if operation == "ne":
+        return left != right
+    if operation == "lt":
+        return left < right
+    if operation == "le":
+        return left <= right
+    if operation == "gt":
+        return left > right
+    if operation == "ge":
+        return left >= right
+    if operation == "contains":
+        return right in left
+    if operation == "not_contains":
+        return right not in left
+    if operation == "within":
+        if tolerance is None:
+            raise ValueError("the 'within' operation needs 'tolerance'")
+        return abs(left - right) <= tolerance
+    raise ValueError("unknown assertion operation %r" % operation)
+
+
+def assertions(request, answer):
+    """Returns human-readable failures for the expectations attached to one request."""
+    failures = []
+    expected = request.get("expect", {})
+    if not isinstance(expected, dict):
+        return ["expect must be an object of dotted reply paths to exact values"]
+    for path, wanted in expected.items():
+        try:
+            actual = value_at(answer, path)
+        except MissingPath:
+            failures.append("%s is missing (expected %r)" % (path, wanted))
+            continue
+        if actual != wanted:
+            failures.append("%s: expected %r, got %r" % (path, wanted, actual))
+
+    checks = request.get("checks", [])
+    if not isinstance(checks, list):
+        return failures + ["checks must be an array"]
+    for number, check in enumerate(checks, start=1):
+        if not isinstance(check, dict) or "left" not in check or "op" not in check:
+            failures.append("check %d needs left and op" % number)
+            continue
+        try:
+            left = value_at(answer, check["left"])
+            if "right" in check:
+                right = value_at(answer, check["right"])
+                right_label = check["right"]
+            elif "value" in check:
+                right = check["value"]
+                right_label = repr(right)
+            else:
+                failures.append("check %d needs right or value" % number)
+                continue
+            operation = check["op"]
+            if not comparison(left, operation, right, check.get("tolerance")):
+                failures.append("check %d failed: %s (%r) %s %s (%r)" %
+                                (number, check["left"], left, operation, right_label, right))
+        except MissingPath as error:
+            failures.append("check %d path is missing: %s" % (number, error))
+        except (TypeError, ValueError) as error:
+            failures.append("check %d is invalid: %s" % (number, error))
+    return failures
+
+
 def load(source):
     """The requests to send, from a file or standard input, one JSON object per line."""
     text = sys.stdin.read() if source == "-" else pathlib.Path(source).read_text(encoding="utf-8")
     requests = []
+    ids = set()
     for number, line in enumerate(text.splitlines(), start=1):
         line = line.strip()
         if not line or line.startswith("//"):
@@ -37,6 +130,9 @@ def load(source):
         except ValueError as error:
             raise SystemExit("%s:%d is not JSON: %s" % (source, number, error))
         request.setdefault("id", "r%d" % len(requests))
+        if request["id"] in ids:
+            raise SystemExit("%s:%d repeats request id %r" % (source, number, request["id"]))
+        ids.add(request["id"])
         requests.append(request)
     return requests
 
@@ -108,6 +204,11 @@ def drive(queue, requests, timeout):
             continue
         if not answer.get("ok"):
             failed = True
+        assertion_failures = assertions(request, answer)
+        if assertion_failures:
+            failed = True
+            answer = dict(answer)
+            answer["assertionErrors"] = assertion_failures
         print(json.dumps(answer))
     return failed
 
