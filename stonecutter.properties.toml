@@ -47,6 +47,7 @@ mod.mc_compat = "1.21.11"
 
 deps.fabric_api = "0.141.6+1.21.11"
 deps.modmenu = "17.0.0"
+# 3.0.8+mc1.21.11, the Fabric upload.
 deps.appleskin = "59ti1rvg"
 deps.cloth_config = "21.11.153+fabric"
 deps.jade = "21.1.6+fabric"
@@ -69,6 +70,7 @@ mod.mc_compat = "~26.1"
 
 deps.fabric_api = "0.155.3+26.1.2"
 deps.modmenu = "18.0.1"
+# 3.0.10+mc26.1.2, the Fabric upload.
 deps.appleskin = "zLlqqiTA"
 deps.cloth_config = "26.1.154+fabric"
 deps.jade = "26.1.11+fabric"
@@ -99,6 +101,7 @@ deps.fabric_api = "0.160.0+26.2"
 # AppleSkin shares one version number across its Fabric and NeoForge uploads, so it is pinned by
 # Modrinth version id instead.
 deps.modmenu = "20.0.2"
+# 3.0.10+mc26.2, the Fabric upload.
 deps.appleskin = "uo5bAN1Y"
 deps.cloth_config = "26.2.155+fabric"
 deps.jade = "26.2.11+fabric"

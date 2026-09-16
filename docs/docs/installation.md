@@ -45,9 +45,10 @@ The game plays the same, with two small differences in how things look:
 None of these are required. The mod loads and plays exactly the same without them, it only unlocks
 the extra behaviour listed here when it finds one.
 
-Versions tested are listed per Minecraft version, in the order 26.2, 26.1.x, 1.21.11, 1.21.1.
+The versions the mod is built with are listed per Minecraft version, in the order 26.2, 26.1.x,
+1.21.11, 1.21.1.
 
-| Mod | Versions tested | What it adds | If it is missing |
+| Mod | Versions built with | What it adds | If it is missing |
 |---|---|---|---|
 | [Fabric API](https://modrinth.com/mod/fabric-api) | 0.160.0+26.2, 0.155.3+26.1.2, 0.141.6+1.21.11, 0.116.17+1.21.1 | Required. Events, networking and the HUD hooks the mod is built on. | The mod will not load. |
 | [Mod Menu](https://modrinth.com/mod/modmenu) | 20.0.2, 18.0.1, 17.0.0, 11.0.4 | A Config button in the Mods list that opens the [settings screen](/docs/configuration). | Edit `config/thirstwastaken2.json` by hand. |
