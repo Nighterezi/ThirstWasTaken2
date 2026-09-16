@@ -1,4 +1,4 @@
-"""Publishes one release of ThirstWasTaken2: every jar to Modrinth, then a tag and a GitHub release.
+"""Publishes one release of ThirstWasTaken2: every jar to Modrinth, and with --github the tag too.
 
 A release is eight uploads -- four Minecraft versions on two loaders -- each with its own file, its own
 list of Minecraft releases and its own list of optional mods. Done by hand in Modrinth's web form that is
@@ -13,9 +13,13 @@ Everything a release needs is already written down in the repository, so it is r
 - the release notes, from the matching section of `CHANGELOG.md`.
 
     python tools/release/publish.py --dry-run   # print every upload, send nothing
-    python tools/release/publish.py             # build, upload to Modrinth, tag, GitHub release
+    python tools/release/publish.py             # build and upload to Modrinth
     python tools/release/publish.py --no-build  # publish the jars already in build/libs
-    python tools/release/publish.py --only modrinth
+    python tools/release/publish.py --github    # the tag and the GitHub release as well
+
+Modrinth is where players get the mod, so that is all a plain run does. The tag and the GitHub release
+are a second, separate thing to publish and are opt-in: `--github` makes them, `--no-modrinth --github`
+makes only them, for finishing a release whose uploads already went through.
 
 The token comes from `MODRINTH_TOKEN` in `.env`, which is git-ignored, or from the environment; it needs
 Modrinth's create-version scope. The GitHub half shells out to `gh`, which carries its own login, and is
@@ -324,7 +328,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Publish a ThirstWasTaken2 release.")
     parser.add_argument("--dry-run", action="store_true", help="print every upload and send nothing")
     parser.add_argument("--no-build", action="store_true", help="publish the jars already in build/libs")
-    parser.add_argument("--only", choices=("modrinth", "github"), help="publish to one of the two only")
+    parser.add_argument("--github", action="store_true", help="also tag the commit and make a GitHub release")
+    parser.add_argument("--no-modrinth", action="store_true", help="skip the Modrinth uploads")
     parser.add_argument("--version", help="fail unless stonecutter.properties.toml says this version")
     parser.add_argument("--allow-dirty", action="store_true", help="release with uncommitted changes")
     args = parser.parse_args()
@@ -347,7 +352,7 @@ def main() -> None:
         fail("not in build/libs: " + ", ".join(missing)
              + "\n       build first, or drop --no-build")
 
-    if args.only != "github":
+    if not args.no_modrinth:
         token = load_token()
         if not token:
             fail(f"no MODRINTH_TOKEN in the environment or in {ENV_FILE.name}")
@@ -372,11 +377,13 @@ def main() -> None:
                 print(f"    -> uploaded, {created}")
             print()
 
-    if args.only != "modrinth":
+    if args.github:
         release_github(tag, mod_version, changelog, [node.jar for node in nodes], args.dry_run)
 
     if args.dry_run:
         print("\nDry run: nothing was published.")
+    elif args.no_modrinth:
+        print("\nDone.")
     else:
         print(f"\nDone. https://modrinth.com/mod/{PROJECT}/versions")
 

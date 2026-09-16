@@ -1,10 +1,13 @@
 # Releasing
 
 A release of ThirstWasTaken2 is eight files: four Minecraft versions on Fabric and the same four on
-NeoForge. `tools/release/publish.py` builds them, uploads each to Modrinth with the Minecraft releases
-and the optional mods that node actually has, tags the commit and puts the same jars on a GitHub
-release. It reads `stonecutter.properties.toml`, `settings.gradle.kts` and `CHANGELOG.md` for all of
-that, so a node added to the build is released without editing the script.
+NeoForge. `tools/release/publish.py` builds them and uploads each to Modrinth with the Minecraft
+releases and the optional mods that node actually has. It reads `stonecutter.properties.toml`,
+`settings.gradle.kts` and `CHANGELOG.md` for all of that, so a node added to the build is released
+without editing the script.
+
+Modrinth is where players get the mod, so that is all a plain run does. A tag and a GitHub release with
+the same jars attached are a separate thing to publish, and are made only when you pass `--github`.
 
 ## Before publishing
 
@@ -34,14 +37,15 @@ lists -- and sends nothing. Read it once, then:
 python tools/release/publish.py
 ```
 
-which builds every node (`gradlew buildAndCollect`), uploads each jar to Modrinth, tags `v<version>`,
-pushes the tag and creates the GitHub release with the same jars attached.
+which builds every node (`gradlew buildAndCollect`) and uploads each jar to Modrinth. Add `--github` to
+tag `v<version>`, push the tag and create the GitHub release with the same jars attached.
 
 | Flag | What it does |
 |---|---|
 | `--dry-run` | Prints the plan, publishes nothing. |
 | `--no-build` | Publishes the jars already in `build/libs`, skipping Gradle. |
-| `--only modrinth` / `--only github` | One of the two halves. |
+| `--github` | Also tags the commit and makes the GitHub release. Off by default. |
+| `--no-modrinth` | Skips the uploads. With `--github`, finishes a release whose uploads already went through. |
 | `--version 1.0.6` | Fails unless the properties file says that version. A guard against releasing the wrong one. |
 | `--allow-dirty` | Releases with uncommitted changes. |
 

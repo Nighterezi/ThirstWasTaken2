@@ -121,17 +121,18 @@ Switch it with `./gradlew "Set active project to 1.21.11"` — that rewrites the
 `src/` in place, which is what makes the IDE resolve against that version. Run
 `./gradlew "Reset active project"` before committing.
 
-Publish a release — every jar to Modrinth, then the tag and the GitHub release:
+Publish a release — every jar to Modrinth:
 
 ```bash
 python tools/release/publish.py --dry-run
 ```
 
-`--dry-run` prints each of the eight uploads and sends nothing; without it the script builds every
-node, uploads, tags `v<mod.version>` and creates the GitHub release. What every upload says is read
-from `stonecutter.properties.toml` and `CHANGELOG.md`, so a node added to the build is released
-without editing the script. [docs/dev/RELEASING.md](docs/dev/RELEASING.md) has the checklist that comes
-first and what each flag does.
+`--dry-run` prints each of the eight uploads and sends nothing; without it the script builds every node
+and uploads. What every upload says is read from `stonecutter.properties.toml` and `CHANGELOG.md`, so a
+node added to the build is released without editing the script. The tag and a GitHub release are a
+separate thing to publish and are made only with `--github`.
+[docs/dev/RELEASING.md](docs/dev/RELEASING.md) has the checklist that comes first and what each flag
+does.
 
 Gradle needs network access on the first run for `maven.modrinth` artifacts (Mod Menu, AppleSkin,
 Cloth Config, Jade, Farmer's Delight Refabricated, and Create Fly on the nodes that set it).
@@ -492,7 +493,7 @@ tools/benchmark/                        running the benchmark often enough to be
   aggregate.py                         a set to a median and a spread; --compare calls a change noise
 
 tools/release/                          publishing a release
-  publish.py                           every jar to Modrinth, then the tag and the GitHub release
+  publish.py                           every jar to Modrinth; the tag and GitHub release with --github
 
 src/datagen/java/com/thirstwastaken2/datagen/  datagen-only mod, never packaged
   ThirstDatagen.java                   entrypoint: every provider has to be listed here
