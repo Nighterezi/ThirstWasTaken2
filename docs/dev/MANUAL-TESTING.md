@@ -28,6 +28,9 @@ check, and every item below belongs to one of them:
 3. Work down the general checklist, then the section for that version.
 4. Note the version, the date and anything that failed in the release PR.
 
+A pass can be driven with computer use; the `manual-testing` skill in `.claude/skills` has what the
+game accepts as input, how to read the HUD, and how to stage the cross-loader items.
+
 Useful commands while testing:
 
 ```
@@ -292,10 +295,6 @@ section for the same version. `1.21.11-neoforge` partly checked on 2026-09-15 wi
       bubbles above the bar underwater. Checked on 1.21.11; **open on 26.1.x.**
 - [ ] F1 hides the bar on both (read from the options, as on the Fabric nodes of these versions).
       Checked on 1.21.11; **open on 26.1.x.**
-
-A click from computer use moves the cursor, and Minecraft turns the camera on any mouse move, so a
-right click on a block misses. Send the click with `mouse_event` and no movement, and hold Shift with
-`keybd_event`, from PowerShell.
 
 ## When this file changes
 
