@@ -129,8 +129,8 @@ python tools/release/publish.py --dry-run
 
 `--dry-run` prints each of the eight uploads and sends nothing; without it the script builds every node
 and uploads. What every upload says is read from `stonecutter.properties.toml` and `CHANGELOG.md`, so a
-node added to the build is released without editing the script. The tag and a GitHub release are a
-separate thing to publish and are made only with `--github`.
+node added to the build is released without editing the script. Releases go to Modrinth only: no tag and
+no GitHub release.
 [docs/dev/RELEASING.md](docs/dev/RELEASING.md) has the checklist that comes first and what each flag
 does.
 
@@ -359,7 +359,7 @@ Each area of the tree carries its own `AGENTS.md` with rules and conventions loc
 | Minecraft version and mod loader differences | [.../platform/AGENTS.md](src/main/java/com/thirstwastaken2/platform/AGENTS.md) |
 | Every difference between the supported versions, visible and underneath | [docs/dev/VERSION-DIFFERENCES.md](docs/dev/VERSION-DIFFERENCES.md) |
 | What to check by hand before a release, per version | [docs/dev/MANUAL-TESTING.md](docs/dev/MANUAL-TESTING.md) |
-| Publishing a release: the eight uploads, Modrinth, the tag | [docs/dev/RELEASING.md](docs/dev/RELEASING.md) |
+| Publishing a release: the eight uploads to Modrinth | [docs/dev/RELEASING.md](docs/dev/RELEASING.md) |
 | Automated in-game tests | [src/gametest/java/AGENTS.md](src/gametest/java/AGENTS.md) |
 | Development-only tooling: the source set, its gate and the harness the two tools share | [src/dev/java/AGENTS.md](src/dev/java/AGENTS.md) |
 | Performance and memory benchmark | [.../dev/benchmark/AGENTS.md](src/dev/java/com/thirstwastaken2/dev/benchmark/AGENTS.md) |
@@ -493,7 +493,7 @@ tools/benchmark/                        running the benchmark often enough to be
   aggregate.py                         a set to a median and a spread; --compare calls a change noise
 
 tools/release/                          publishing a release
-  publish.py                           every jar to Modrinth; the tag and GitHub release with --github
+  publish.py                           every jar to Modrinth, nothing else
 
 src/datagen/java/com/thirstwastaken2/datagen/  datagen-only mod, never packaged
   ThirstDatagen.java                   entrypoint: every provider has to be listed here

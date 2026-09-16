@@ -6,8 +6,7 @@ releases and the optional mods that node actually has. It reads `stonecutter.pro
 `settings.gradle.kts` and `CHANGELOG.md` for all of that, so a node added to the build is released
 without editing the script.
 
-Modrinth is where players get the mod, so that is all a plain run does. A tag and a GitHub release with
-the same jars attached are a separate thing to publish, and are made only when you pass `--github`.
+Releases are published to Modrinth only. The script makes no git tag and no GitHub release.
 
 ## Before publishing
 
@@ -15,14 +14,13 @@ the same jars attached are a separate thing to publish, and are made only when y
    the jar name, `fabric.mod.json` and `neoforge.mods.toml` all come from it.
 2. **Write the changelog.** A `## [<version>] - <date>` section in `CHANGELOG.md`, in the plain,
    non-technical style the `write-docs` skill describes. The script sends that section, whole, to
-   Modrinth as the version's changelog and to GitHub as the release notes, and refuses to publish
-   without it.
+   Modrinth as the version's changelog, and refuses to publish without it.
 3. **Check the documented versions.** `python .github/scripts/update_mc_deps.py --check` fails when
    `README.md` or `docs/docs/installation.md` names a dependency version the build no longer pins.
 4. **Test by hand.** [MANUAL-TESTING.md](MANUAL-TESTING.md) is the per-version checklist. CI has already
    run the game tests on every node.
-5. **Commit and push.** The script stops on an uncommitted change, because the tag has to name a commit
-   someone can check out again.
+5. **Commit and push.** The script stops on an uncommitted change, because what is published has to be
+   built from a commit someone can check out again.
 
 ## Publishing
 
@@ -37,26 +35,21 @@ lists -- and sends nothing. Read it once, then:
 python tools/release/publish.py
 ```
 
-which builds every node (`gradlew buildAndCollect`) and uploads each jar to Modrinth. Add `--github` to
-tag `v<version>`, push the tag and create the GitHub release with the same jars attached.
+which builds every node (`gradlew buildAndCollect`) and uploads each jar to Modrinth.
 
 | Flag | What it does |
 |---|---|
 | `--dry-run` | Prints the plan, publishes nothing. |
 | `--no-build` | Publishes the jars already in `build/libs`, skipping Gradle. |
-| `--github` | Also tags the commit and makes the GitHub release. Off by default. |
-| `--no-modrinth` | Skips the uploads. With `--github`, finishes a release whose uploads already went through. |
 | `--version 1.0.6` | Fails unless the properties file says that version. A guard against releasing the wrong one. |
 | `--allow-dirty` | Releases with uncommitted changes. |
 
 The Modrinth token comes from `MODRINTH_TOKEN` in `.env`, which is git-ignored and stays on your
-machine; it needs the create-version scope. The GitHub half uses `gh`, and is skipped with a warning if
-`gh` is not installed.
+machine; it needs the create-version scope.
 
 ## When something goes wrong
 
-Re-running finishes a half-done release: a version already on Modrinth is skipped by its version number,
-an existing tag is left alone, and an existing GitHub release is only given the jars it is missing.
+Re-running finishes a half-done release: a version already on Modrinth is skipped by its version number.
 Nothing published is ever overwritten, so a bad upload is deleted on Modrinth by hand first and then
 published again from here.
 

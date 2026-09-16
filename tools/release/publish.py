@@ -1,4 +1,4 @@
-"""Publishes one release of ThirstWasTaken2: every jar to Modrinth, and with --github the tag too.
+"""Publishes one release of ThirstWasTaken2: every jar to Modrinth.
 
 A release is eight uploads -- four Minecraft versions on two loaders -- each with its own file, its own
 list of Minecraft releases and its own list of optional mods. Done by hand in Modrinth's web form that is
@@ -15,19 +15,15 @@ Everything a release needs is already written down in the repository, so it is r
     python tools/release/publish.py --dry-run   # print every upload, send nothing
     python tools/release/publish.py             # build and upload to Modrinth
     python tools/release/publish.py --no-build  # publish the jars already in build/libs
-    python tools/release/publish.py --github    # the tag and the GitHub release as well
 
-Modrinth is where players get the mod, so that is all a plain run does. The tag and the GitHub release
-are a second, separate thing to publish and are opt-in: `--github` makes them, `--no-modrinth --github`
-makes only them, for finishing a release whose uploads already went through.
+Modrinth is where players get the mod, and it is the only place a release is published: there is no tag
+and no GitHub release.
 
 The token comes from `MODRINTH_TOKEN` in `.env`, which is git-ignored, or from the environment; it needs
-Modrinth's create-version scope. The GitHub half shells out to `gh`, which carries its own login, and is
-skipped with a warning when `gh` is missing.
+Modrinth's create-version scope.
 
 Re-running is safe, and is how a half-finished release is finished: a version already on Modrinth is
-skipped by its version number, an existing tag is left alone, and an existing GitHub release is only
-given the jars it is missing. Nothing already published is overwritten, so a bad upload is deleted on
+skipped by its version number. Nothing already published is overwritten, so a bad upload is deleted on
 Modrinth by hand and then re-run here.
 
 Standard library only, like the rest of the Python in this repository.
@@ -187,8 +183,7 @@ def read_nodes(props: dict, mod_version: str) -> list[Node]:
 def changelog_section(mod_version: str) -> str:
     """The body of `## [1.0.6] - <date>`, up to the next release heading.
 
-    Taken whole rather than summarised, for both Modrinth and GitHub: the file is already written for
-    players to read.
+    Taken whole rather than summarised: the file is already written for players to read.
     """
     text = CHANGELOG.read_text(encoding="utf-8")
     pattern = re.compile(r"^## \[" + re.escape(mod_version) + r"\][^\n]*\n(.*?)(?=^## \[|\Z)", re.S | re.M)
@@ -273,7 +268,7 @@ def check_worktree(allow_dirty: bool) -> None:
     if git("status", "--porcelain"):
         if not allow_dirty:
             fail("the working tree has uncommitted changes; commit them or pass --allow-dirty")
-        print("warning: releasing with uncommitted changes; the tag will not contain them")
+        print("warning: releasing with uncommitted changes; no commit matches what is published")
     branch = git("rev-parse", "--abbrev-ref", "HEAD")
     if branch != "main":
         print(f"warning: on branch `{branch}`, not `main`")
@@ -287,49 +282,10 @@ def gradle_build() -> None:
         fail("the build failed; nothing was published")
 
 
-def release_github(tag: str, mod_version: str, changelog: str, jars: list[Path], dry_run: bool) -> None:
-    """Tags the commit and puts the same jars on GitHub, for people who do not use Modrinth."""
-    if run(["gh", "--version"], capture_output=True).returncode != 0:
-        print("warning: `gh` is not installed or not logged in; skipping the GitHub release")
-        return
-
-    tagged = bool(git("tag", "--list", tag))
-    if dry_run:
-        print(f"GitHub: tag {tag} " + ("already exists" if tagged else f"would be made at {git('rev-parse', '--short', 'HEAD')}"))
-        print(f"GitHub: would create the release {tag} with {len(jars)} jars")
-        return
-
-    if not tagged:
-        git("tag", "-a", tag, "-m", f"ThirstWasTaken2 {mod_version}")
-        print(f"GitHub: tagged {tag}")
-    if run(["git", "push", "origin", tag], capture_output=True).returncode != 0:
-        fail(f"could not push the tag {tag}")
-
-    files = [str(jar) for jar in jars]
-    if run(["gh", "release", "view", tag], capture_output=True).returncode == 0:
-        print(f"GitHub: the release {tag} exists; uploading any jars it is missing")
-        if run(["gh", "release", "upload", tag, *files, "--clobber"]).returncode != 0:
-            fail("could not upload the jars to the existing GitHub release")
-        return
-
-    # gh reads the notes from a file so the markdown survives the command line intact.
-    notes = ROOT / "build" / "release-notes.md"
-    notes.parent.mkdir(parents=True, exist_ok=True)
-    notes.write_text(changelog + "\n", encoding="utf-8")
-    created = run(["gh", "release", "create", tag,
-                   "--title", f"ThirstWasTaken2 {mod_version}",
-                   "--notes-file", str(notes), *files])
-    if created.returncode != 0:
-        fail("could not create the GitHub release")
-    print(f"GitHub: created the release {tag}")
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description="Publish a ThirstWasTaken2 release.")
     parser.add_argument("--dry-run", action="store_true", help="print every upload and send nothing")
     parser.add_argument("--no-build", action="store_true", help="publish the jars already in build/libs")
-    parser.add_argument("--github", action="store_true", help="also tag the commit and make a GitHub release")
-    parser.add_argument("--no-modrinth", action="store_true", help="skip the Modrinth uploads")
     parser.add_argument("--version", help="fail unless stonecutter.properties.toml says this version")
     parser.add_argument("--allow-dirty", action="store_true", help="release with uncommitted changes")
     args = parser.parse_args()
@@ -340,7 +296,6 @@ def main() -> None:
         fail(f"{PROPERTIES.name} says `{mod_version}`, not `{args.version}`")
     changelog = changelog_section(mod_version)
     nodes = read_nodes(props, mod_version)
-    tag = f"v{mod_version}"
 
     print(f"ThirstWasTaken2 {mod_version}, {len(nodes)} files\n")
     check_worktree(args.allow_dirty)
@@ -352,38 +307,32 @@ def main() -> None:
         fail("not in build/libs: " + ", ".join(missing)
              + "\n       build first, or drop --no-build")
 
-    if not args.no_modrinth:
-        token = load_token()
-        if not token:
-            fail(f"no MODRINTH_TOKEN in the environment or in {ENV_FILE.name}")
-        project = modrinth_request(f"/project/{PROJECT}", token=token)
-        published = {version["version_number"]
-                     for version in modrinth_request(f"/project/{PROJECT}/version", token=token)}
+    token = load_token()
+    if not token:
+        fail(f"no MODRINTH_TOKEN in the environment or in {ENV_FILE.name}")
+    project = modrinth_request(f"/project/{PROJECT}", token=token)
+    published = {version["version_number"]
+                 for version in modrinth_request(f"/project/{PROJECT}/version", token=token)}
 
-        for node in nodes:
-            number = version_number(node, mod_version)
-            print(f"  {number}  ({node.name})")
-            print(f"    file      {node.jar.name}, {node.jar.stat().st_size // 1024} KiB")
-            print(f"    loader    {node.loader}")
-            print(f"    minecraft {', '.join(node.game_versions)}")
-            print(f"    mods      {', '.join(node.dependency_names) or 'none'}")
-            if number in published:
-                print("    -> already on Modrinth, skipped")
-            elif args.dry_run:
-                print("    -> would upload")
-            else:
-                created = publish_modrinth(node, mod_version, project["id"], project["title"],
-                                           changelog, token)
-                print(f"    -> uploaded, {created}")
-            print()
-
-    if args.github:
-        release_github(tag, mod_version, changelog, [node.jar for node in nodes], args.dry_run)
+    for node in nodes:
+        number = version_number(node, mod_version)
+        print(f"  {number}  ({node.name})")
+        print(f"    file      {node.jar.name}, {node.jar.stat().st_size // 1024} KiB")
+        print(f"    loader    {node.loader}")
+        print(f"    minecraft {', '.join(node.game_versions)}")
+        print(f"    mods      {', '.join(node.dependency_names) or 'none'}")
+        if number in published:
+            print("    -> already on Modrinth, skipped")
+        elif args.dry_run:
+            print("    -> would upload")
+        else:
+            created = publish_modrinth(node, mod_version, project["id"], project["title"],
+                                       changelog, token)
+            print(f"    -> uploaded, {created}")
+        print()
 
     if args.dry_run:
         print("\nDry run: nothing was published.")
-    elif args.no_modrinth:
-        print("\nDone.")
     else:
         print(f"\nDone. https://modrinth.com/mod/{PROJECT}/versions")
 
