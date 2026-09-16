@@ -125,12 +125,17 @@ val dev: SourceSet = sourceSets.create("dev") {
  * run/<node>/agent/<name>/.
  */
 val clientRunMods: Configuration = configurations.create("clientRunMods")
+/*
+ * Added to, never replaced. A source set's own runtime classpath is where ModDevGradle puts DevLaunch,
+ * whose `Main` is the class every run is launched through, so a source set that assigns its classpath
+ * outright launches nothing: `Could not find or load main class net.neoforged.devlaunch.Main`.
+ */
 val clientRun: SourceSet = sourceSets.create("clientRun") {
-    runtimeClasspath = dev.output + sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath +
+    runtimeClasspath += dev.output + sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath +
         clientRunMods
 }
 val serverRun: SourceSet = sourceSets.create("serverRun") {
-    runtimeClasspath = dev.output + sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
+    runtimeClasspath += dev.output + sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
 }
 
 neoForge {

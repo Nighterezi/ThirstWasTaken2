@@ -19,6 +19,13 @@ import java.util.Map;
  * <p>Only the keys every supported version has are listed. Vanilla has added and removed others around
  * them, and a name that resolves on one version and not on another would make a script version
  * specific for no gain.
+ *
+ * <p>Two of them are not simply held. Vanilla's own Sneak and Sprint accessibility settings turn those
+ * keys into toggles, and a toggled key that the agent presses for thirty ticks crouches the player and
+ * leaves them crouching, rather than crouching them for thirty ticks. The dev clients in this
+ * repository have {@code toggleCrouch:true} in their options, so that is what a script gets unless it
+ * changes it. {@code client.info} answers both settings for exactly this reason: read them before
+ * holding sneak or sprint, and read the state back afterwards rather than assuming.
  */
 final class Keys {
     private Keys() { }

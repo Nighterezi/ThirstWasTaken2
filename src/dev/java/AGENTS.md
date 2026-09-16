@@ -1,11 +1,28 @@
 # src/dev — development-only tooling
 
 Tools for working on the mod that must never ship. Like `src/gametest`, this is its own source set and
-its own small mod, `thirstwastaken2-dev`, declared in `src/dev/resources/fabric.mod.json`, so none of it
-can reach a published jar. `runServer` and `runBenchmark` load it; `runClient` and `runGametest` do not.
+its own small mod, so none of it can reach a published jar: `thirstwastaken2-dev` on Fabric, declared
+in `src/dev/resources/fabric.mod.json`, and `thirstwastaken2_dev` on NeoForge, declared in
+`src/dev/neoforge/resources/META-INF/neoforge.mods.toml`, because a NeoForge mod id cannot contain a
+hyphen. `runGametest` and `runDatagen` do not load it; every other run task does — `runServer`,
+`runBenchmark` and `runClient` on Fabric, and `runServer`, `runClient`, `runManualA` and `runManualB`
+on NeoForge.
 
-`ThirstDev` registers nothing unless `ThirstWasTaken2.DEV` is true. That flag is Fabric Loader's
-development-environment check, true under every Loom run task and false in the jar players install.
+Two tools live here.
+
+| Tool | What it is for | Where |
+|---|---|---|
+| [`/thirst benchmark`](#thirst-benchmark) | what the mod costs a server, with nobody joining | Fabric nodes only |
+| [the agent client](#the-agent-client) | driving a real client and reading numbers out of it | every node |
+
+The split of the directory follows that. `benchmark/` is the first; `agent/core` and `agent/thirst`
+are the second; `ThirstDev` and `ThirstDevClient` are the two halves of the entrypoint, kept apart so
+that a dedicated server never loads a class naming `Minecraft`; `fabric/` and `neoforge/` hold each
+loader's entrypoints and the small `DevLoader`/`DevClientLoader` seam for the four calls the mod's own
+`Loader` does not cover.
+
+`ThirstDev` registers nothing unless `ThirstWasTaken2.DEV` is true. That flag is the loader's own
+development-environment check, true under every run task and false in the jar players install.
 `-Dthirstwastaken2.dev=true|false` overrides it either way.
 
 ## /thirst benchmark
@@ -195,7 +212,164 @@ not move at all, so a changed `bytes` value is always real. The fields that matt
   is not forgotten. The UUIDs are derived from the player index, so even a missed cleanup is reused by the
   next run rather than piling up.
 
+## The agent client
+
+A way for an agent to drive a real Minecraft client and read real numbers out of it, in place of
+counting droplets in a screenshot. It exists for the checks in
+[docs/dev/MANUAL-TESTING.md](../../docs/dev/MANUAL-TESTING.md) that a gametest cannot reach because
+they are client side: the HUD, what a client is told, the config screen. The design and what is left
+to do are in [docs/dev/AGENT-CLIENT-PLAN.md](../../docs/dev/AGENT-CLIENT-PLAN.md); this is how to use
+it.
+
+It is on every node, Fabric and NeoForge, on every run task except `runGametest` and `runDatagen`.
+The two extra clients, `runManualA` and `runManualB`, are on the NeoForge nodes only.
+
+### The queue
+
+Two text files in a directory, one line of JSON each way. No port, no firewall prompt, and the whole
+exchange is still on disk to read afterwards.
+
+    run/<node>/agent/<name>/
+        ready.json    written once the game will answer; holds startedAt, pid and the command list
+        in.jsonl      the agent appends one request a line
+        out.jsonl     the game appends one reply a line
+        previous-*    the run before this one, kept rather than overwritten
+        screenshots/  what client.capture wrote
+
+`<name>` is `server` or `client` by default and `A` or `B` on the two extra clients, so a server and
+a client of the same node never share a file. One queue per process: a client with an integrated
+server is one process and has one queue, polled on the client tick, and `server.*` reaches its
+integrated server from there.
+
+A request is `{"id": "...", "command": "...", "args": {...}}`; `id` is echoed back and may be left
+out, in which case the position in the queue stands in for it. A reply is
+
+```json
+{"id":"set","sequence":3,"command":"server.thirst.set","ok":true,"result":{...},"tookMs":1.1}
+```
+
+with `error` instead of `result` when `ok` is false. **Requests are answered in order, one at a
+time.** A command that takes ticks to finish — `wait`, `client.hold`, `client.capture`,
+`client.respawn` — holds the next request up until it has answered, so a file of requests is a
+sequence rather than a batch of things that all happen in one tick.
+
+**Wait for this run's `ready.json`, not for the file.** The previous run leaves one behind, and a
+game takes most of a minute to come up; a request written into `in.jsonl` before the game opens the
+queue is rotated into `previous-in.jsonl` and never answered. `startedAt` is there to tell the two
+apart.
+
+### Driving it
+
+Appending a line and reading `out.jsonl` is the whole protocol, so an agent with only file tools
+needs nothing else. [tools/agent/drive.py](../../../tools/agent/drive.py) does the matching up:
+
+```bash
+python tools/agent/drive.py run/1.21.11-neoforge/agent/server tools/agent/server-probe.jsonl
+```
+
+```bash
+echo '{"command": "client.state"}' | python tools/agent/drive.py run/manual-1.21.11-neoforge-A/agent/A -
+```
+
+It waits for each answer, prints them in the order asked, and exits 1 if any was refused. Pass
+`--ready <seconds>` when the game is still starting: it then waits for a `ready.json` newer than the
+moment the command began. Requests can be read from a file or from standard input, and a line
+starting with `//` is a comment.
+
+Unattended, without an agent at all:
+
+```bash
+./gradlew ":1.21.11-neoforge:runServer" -Pagent=tools/agent/server-probe.jsonl
+```
+
+`-Pagent=<file>` answers that file once the game is up and then stops the game. The path is relative
+to the repository root. It applies to every run task of the node, clients included.
+
+### The commands
+
+`ready.json` lists what the process it belongs to answers; a server answers the first two groups and
+a client answers all three.
+
+| Command | Arguments | Answers |
+|---|---|---|
+| `probe` | | side, loader, Minecraft version, run directory, queue, whether a server is running, the command list |
+| `wait` | `ticks` | after that many game ticks have run. The way to let the game catch up |
+| `stop` | | after stopping this process: halting a server, closing a client's window |
+| `server.info` | | dedicated, tick count, players, difficulty, levels |
+| `server.players` | | every online player's thirst, position, health, food and flags |
+| `server.thirst.get` | `player` | the same, for one player |
+| `server.thirst.set` | `player`, `thirst`, `quenched`, `exhaustion`, `enabled` | what it was and what it is now. Writes the state directly, not through `/thirst set` |
+| `server.command` | `command`, `as` | what the command returned and what it said, collected rather than logged |
+| `client.info` | | window and GUI size, GUI scale, fps, screen, server, player, key names, `toggleCrouch`, `toggleSprint` |
+| `client.state` | | what this client holds: thirst, sprinting, sneaking, health, food, dimension, position, whether the bar should render |
+| `client.hud` | | the rectangle the mod drew the bar in, the values it drew, the ten droplet rectangles, and the config preview's |
+| `client.capture` | `name` | a PNG beside the queue, once it is on disk |
+| `client.pixels` | `points`, `space`, `capture`, `name` | the framebuffer colour at each point, in GUI pixels by default |
+| `client.command` | `command` | after sending it through the player's own connection |
+| `client.chat` | `message` | after sending it |
+| `client.hold` | `keys`, `ticks` | the movement state before and after holding those keys for that long |
+| `client.key` | `key`, `down` | after setting one key's state and leaving it there |
+| `client.screen` | `open` (`none`, `config`) | which screen is open now |
+| `client.tooltip` | `item`, `count`, `advanced` | the tooltip lines that item produced, as text, with their colours |
+| `client.respawn` | | after pressing the death screen's button through the connection |
+| `client.disconnect` | | after leaving to the title screen |
+| `client.connect` | `address` | after starting a connection; `wait` for it to finish |
+
+`/thirst agent probe` in game says the same thing `probe` does, for the moment before an agent is
+wired up at all. It needs permission level 4.
+
+Two things about input. It goes through the game's own key state, never the operating system, so a
+key the agent holds stays held for as many ticks as it asks — which is what makes the sprint gate
+readable. But vanilla's Sneak and Sprint accessibility settings turn those two keys into toggles, and
+the dev clients here have `toggleCrouch:true`, so holding sneak for thirty ticks crouches the player
+and leaves them crouching. `client.info` answers both settings; read the state back rather than
+assuming.
+
+### What a check looks like
+
+[tools/agent/client-sync.jsonl](../../../tools/agent/client-sync.jsonl) is MANUAL-TESTING.md's "Sync
+to the client" section, the four items one client can answer, with the expected answer written above
+each one. Start `runServer` and `runManualA`, put the player somewhere flat with `fall_damage` off,
+and:
+
+```bash
+python tools/agent/drive.py run/manual-1.21.11-neoforge-A/agent/A tools/agent/client-sync.jsonl
+```
+
+The fifth item, that each player sees only their own bar, needs three queues and so is not one file.
+Start `runServer`, `runManualA` and `runManualB`, stand the two testers together, then write
+different values from the server's queue and read both clients' `client.hud` back:
+
+```bash
+python tools/agent/drive.py run/1.21.11-neoforge/agent/server - <<'EOF'
+{"command": "server.command", "args": {"command": "tp TesterB 21 103 20"}}
+{"command": "server.thirst.set", "args": {"player": "TesterA", "thirst": 6, "quenched": 0}}
+{"command": "server.thirst.set", "args": {"player": "TesterB", "thirst": 14, "quenched": 2}}
+{"command": "wait", "args": {"ticks": 20}}
+EOF
+```
+
+Then `client.hud` on each of `run/manual-<node>-A/agent/A` and `run/manual-<node>-B/agent/B`, and
+swap the two values and read again, so that "each client kept what it already had" cannot pass for
+"each client was told its own".
+
+### Rules
+
+- **Every probe answers a number or a string, never a picture.** `client.capture` exists so a person
+  can look at the frame afterwards. The moment an assertion depends on a screenshot, the item is not
+  automated.
+- **No change to the mod for the agent's sake.** Where a probe cannot reach something, read it from
+  this source set instead — that is what `dev/mixin/ThirstHudMixin` and `HudRecord` are, rather than
+  the mod recording its own rectangles.
+- **`dev/agent/core` knows nothing of Minecraft, of a loader or of the mod.** `checkAgentCore`, in
+  `gradle/shared.gradle.kts`, fails the build when a class there imports one. Everything that names
+  them lives in `dev/agent/thirst`.
+- **A check that becomes a number leaves MANUAL-TESTING.md**, the same rule that file already states
+  for gametests.
+
 ## Rules
+
+These are the benchmark's; the agent's are in its own section above.
 
 - Nothing in `main` or `client` may reference this source set.
 - The benchmark compiles unchanged on every supported version. If a vanilla call here ever needs a

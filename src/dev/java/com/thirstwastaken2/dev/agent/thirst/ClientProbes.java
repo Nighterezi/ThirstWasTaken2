@@ -50,6 +50,8 @@ final class ClientProbes {
     /** Ticks between two looks at a capture that has not finished, and how many looks to take. */
     private static final int CAPTURE_POLL_TICKS = 2;
     private static final int CAPTURE_ATTEMPTS = 30;
+    /** Ticks a respawn is given to reach the server and come back before the answer is written. */
+    private static final int RESPAWN_TICKS = 10;
 
     private ClientProbes() { }
 
@@ -73,6 +75,10 @@ final class ClientProbes {
             JsonArray keys = new JsonArray();
             Keys.names(minecraft).forEach(keys::add);
             result.add("keys", keys);
+            // Whether sneak and sprint are held or toggled is the player's own accessibility setting,
+            // and it changes what holding one of those keys means. See Keys.
+            result.addProperty("toggleCrouch", minecraft.options.toggleCrouch().get());
+            result.addProperty("toggleSprint", minecraft.options.toggleSprint().get());
             reply.ok(result);
         });
 
@@ -93,6 +99,7 @@ final class ClientProbes {
             result.addProperty("health", ServerProbes.round(player.getHealth()));
             result.addProperty("food", player.getFoodData().getFoodLevel());
             result.addProperty("creative", player.isCreative());
+            result.addProperty("alive", player.isAlive());
             result.addProperty("dimension", player.level().dimension().identifier().toString());
             result.addProperty("x", ServerProbes.round(player.getX()));
             result.addProperty("y", ServerProbes.round(player.getY()));
@@ -250,6 +257,32 @@ final class ClientProbes {
             result.add("lines", text);
             result.add("colours", colours);
             reply.ok(result);
+        });
+
+        /*
+         * Dying and coming back is one of the checks, so it is one of the commands. Vanilla has only
+         * one way in: the button on the death screen. A click at the coordinates that button happens to
+         * be at is exactly the kind of assertion-about-a-picture the agent exists to avoid, so this
+         * presses it the way the screen does, through the player's own connection.
+         */
+        dispatcher.register("client.respawn", (request, reply) -> {
+            Minecraft minecraft = client();
+            LocalPlayer player = player(minecraft);
+            if (player.isAlive()) {
+                throw new AgentException("client.respawn: " + player.getScoreboardName()
+                        + " is alive; kill them first, with server.command 'kill' or client.command");
+            }
+            player.respawn();
+            ClientVanilla.setScreen(minecraft, null);
+            // Answered a few ticks later, not now: closing a screen takes effect on the client's next
+            // pass, and the respawn itself is a round trip to the server, so an answer written here
+            // would report the death screen still open and the player still dead.
+            dispatcher.defer(RESPAWN_TICKS, reply, () -> {
+                JsonObject result = new JsonObject();
+                result.addProperty("screen", screenName(minecraft));
+                result.addProperty("alive", minecraft.player != null && minecraft.player.isAlive());
+                reply.ok(result);
+            });
         });
 
         /*

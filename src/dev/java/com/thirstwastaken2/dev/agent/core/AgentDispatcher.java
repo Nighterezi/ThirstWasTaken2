@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,14 @@ import java.util.Map;
  * the framebuffer from another thread would read a half-updated one. Polling is a file size check
  * every {@link #POLL_TICKS} ticks, which is cheap enough to leave on for every development run.
  *
+ * <p>Requests are answered <em>in order, one at a time</em>. A handler that takes a deferral - holding
+ * a key for thirty ticks, waiting for a capture to reach disk - stops the next request being started
+ * until it has answered. Without that a script is a batch rather than a sequence: every line of it
+ * runs in the tick the poll read it, so "hold sprint at 7, set 6, hold sprint again" sends both
+ * {@code /thirst set} commands in the same tick and starts both holds together, and the two answers
+ * come out identical and meaningless. The cost is one request per deferral rather than many at once,
+ * which at one command a second is nothing.
+ *
  * <p>This class knows nothing of Minecraft, of a mod loader or of the mod. It is the half that would
  * survive being lifted into another project, and {@code checkAgentCore} fails the build when a class
  * in this package starts importing one of them.
@@ -31,7 +41,12 @@ import java.util.Map;
 public final class AgentDispatcher {
     /** Ticks between two looks at {@code in.jsonl}: five times a second, against one command a second. */
     public static final int POLL_TICKS = 4;
-    /** Refused rather than run, so a runaway agent cannot stall the game inside one tick. */
+    /**
+     * How many requests may be started in one tick. Requests that answer on the spot are cheap enough
+     * to run several of in a row, and the ones that are not take a deferral and stop the run anyway;
+     * the cap is only so that a file of a thousand lines cannot stall a single tick. Whatever is left
+     * waits for the next tick rather than being refused.
+     */
     public static final int MAX_REQUESTS_PER_TICK = 32;
 
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
@@ -40,6 +55,8 @@ public final class AgentDispatcher {
     private final Logger log;
     private final Map<String, AgentHandler> handlers = new LinkedHashMap<>();
     private final List<Deferred> deferred = new ArrayList<>();
+    /** Lines read from the queue that have not been started yet, oldest first. */
+    private final Deque<String> waiting = new ArrayDeque<>();
     private final JsonObject about;
 
     private long sequence;
@@ -75,7 +92,11 @@ public final class AgentDispatcher {
 
     /**
      * Empties the queue and writes {@code ready.json}. Nothing is read before this, so an agent that
-     * waits for {@code ready.json} never has a request rotated away underneath it.
+     * waits for {@code ready.json} never has a request rotated away underneath it - as long as it can
+     * tell this run's {@code ready.json} from the one the last run left in the same directory, which is
+     * what {@code startedAt} and {@code pid} are for. Waiting for the file alone is not enough: a game
+     * takes the better part of a minute to come up, and for all of it the previous run's file is still
+     * sitting there saying the queue is open.
      */
     public void start() {
         if (started) return;
@@ -87,6 +108,8 @@ public final class AgentDispatcher {
         }
         started = true;
         JsonObject ready = about.deepCopy();
+        ready.addProperty("startedAt", System.currentTimeMillis());
+        ready.addProperty("pid", ProcessHandle.current().pid());
         JsonArray commands = new JsonArray();
         handlers.keySet().forEach(commands::add);
         ready.add("commands", commands);
@@ -118,8 +141,9 @@ public final class AgentDispatcher {
         this.onDrained = whenDone;
         for (String line : lines) {
             String trimmed = line.strip();
-            if (!trimmed.isEmpty() && !trimmed.startsWith("//")) accept(trimmed);
+            if (!trimmed.isEmpty() && !trimmed.startsWith("//")) waiting.add(trimmed);
         }
+        run();
         checkDrained();
     }
 
@@ -146,31 +170,28 @@ public final class AgentDispatcher {
         });
     }
 
-    /** How many answers are still waiting on a later tick. */
+    /** How many requests are still to be answered: started and deferred, or read and not yet started. */
     public int pending() {
-        return deferred.size();
+        return deferred.size() + waiting.size();
     }
 
     /** Called once per game tick, on the side that owns this queue. */
     public void tick() {
         if (!started) return;
         runDeferred();
-        if (++sinceLastPoll < POLL_TICKS) return;
-        sinceLastPoll = 0;
-        List<String> lines = queue.poll();
-        int taken = 0;
-        for (String line : lines) {
-            if (taken++ >= MAX_REQUESTS_PER_TICK) {
-                // The queue has already moved past them, so they are refused rather than dropped.
-                refuse(line, "more than " + MAX_REQUESTS_PER_TICK + " requests arrived in one poll");
-                continue;
-            }
-            accept(line);
+        if (++sinceLastPoll >= POLL_TICKS) {
+            sinceLastPoll = 0;
+            waiting.addAll(queue.poll());
         }
+        run();
         checkDrained();
     }
 
-    /** Runs every deferred answer now, so a shutdown leaves nothing in the queue unanswered. */
+    /**
+     * Answers whatever is outstanding now, so a shutdown leaves nothing in the queue unanswered: every
+     * deferral is run early, and every request still waiting its turn is refused with the reason,
+     * rather than never being answered at all.
+     */
     public void stop() {
         if (!started) return;
         for (Deferred entry : List.copyOf(deferred)) {
@@ -181,7 +202,20 @@ public final class AgentDispatcher {
             }
         }
         deferred.clear();
+        for (String line : waiting) refuse(line, "the game stopped before this request was started");
+        waiting.clear();
         started = false;
+    }
+
+    /**
+     * Starts as many waiting requests as may be started now: none while an earlier one is still
+     * deferred, and at most {@link #MAX_REQUESTS_PER_TICK} in one tick.
+     */
+    private void run() {
+        for (int begun = 0; begun < MAX_REQUESTS_PER_TICK; begun++) {
+            if (!deferred.isEmpty() || waiting.isEmpty()) return;
+            accept(waiting.removeFirst());
+        }
     }
 
     private void runDeferred() {
@@ -250,7 +284,7 @@ public final class AgentDispatcher {
     }
 
     private void checkDrained() {
-        if (onDrained == null || !deferred.isEmpty()) return;
+        if (onDrained == null || !deferred.isEmpty() || !waiting.isEmpty()) return;
         Runnable done = onDrained;
         onDrained = null;
         done.run();

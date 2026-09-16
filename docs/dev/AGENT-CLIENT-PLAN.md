@@ -8,15 +8,15 @@ and promote anything that outlives it to [src/dev/java/AGENTS.md](../../src/dev/
 ## What it is for
 
 Everything a gametest cannot reach is client side: the HUD, the config screen, and everything synced
-to a client. Today those are read off screenshots with computer use, which is slow and not always
-conclusive. The 1.21.1 NeoForge pass has one item still open for exactly that reason: the exhaustion
+to a client. Those used to be read off screenshots with computer use, which is slow and not always
+conclusive. The 1.21.1 NeoForge pass still has one item open for exactly that reason: the exhaustion
 strip could not be told apart from a drained droplet in an F2 capture.
 
 An agent client replaces the picture with a number. The client itself answers what thirst it holds,
 whether it is sprinting, where it drew the bar and what colour a given pixel is. A screenshot stays
 useful as evidence for a human, never as the assertion.
 
-| Check | Today | With the agent client |
+| Check | Before | With the agent client |
 |---|---|---|
 | `/thirst set` reaches the client | count droplets in a screenshot | the client reports the value it holds |
 | sprint gate at 6 and 7 | walk a measured track, compare distances | `LocalPlayer.isSprinting()` after the key is held |
@@ -58,11 +58,11 @@ ever a handful of those. See [Many players](#many-players).
 
 | Phase | Work | Estimate | Gate to move on |
 |---|---|---|---|
-| **P0** | `dev` source set on the NeoForge nodes, carrying the agent only, not the benchmark | 1 to 2 days | `/thirst agent probe` answers on `1.21.11-neoforge`, and the published jar still has nothing of it |
-| **P1** | Server-side agent: the file queue, the autorun property, a probe of every online player | ~1 day | an agent sets thirst and reads it back out of `out.jsonl`, with nothing parsed out of chat |
-| **P2** | Client-side probe: client state, HUD rectangles, framebuffer samples, input, screenshots on demand | 2 to 3 days | the whole "Sync to the client" section ticked on `1.21.11-neoforge` from JSON alone |
-| **P3** | Two clients driven at once, one queue each | ~half a day | "each player sees only their own bar" ticked from two JSON answers |
-| **P4** | Experimental: a simulated player whose connection reports the mod's channel, with outgoing payloads captured | open | a gametest asserts per-player sync for N players and goes red when `syncsTo` accepts everyone |
+| **P0** ✅ | `dev` source set on the NeoForge nodes, carrying the agent only, not the benchmark | 1 to 2 days | `/thirst agent probe` answers on `1.21.11-neoforge`, and the published jar still has nothing of it |
+| **P1** ✅ | Server-side agent: the file queue, the autorun property, a probe of every online player | ~1 day | an agent sets thirst and reads it back out of `out.jsonl`, with nothing parsed out of chat |
+| **P2** ✅ | Client-side probe: client state, HUD rectangles, framebuffer samples, input, screenshots on demand | 2 to 3 days | the whole "Sync to the client" section ticked on `1.21.11-neoforge` from JSON alone |
+| **P3** ✅ | Two clients driven at once, one queue each | ~half a day | "each player sees only their own bar" ticked from two JSON answers |
+| **P4** ✅ | Experimental: a simulated player whose connection reports the mod's channel, with outgoing payloads captured | open | a gametest asserts per-player sync for N players and goes red when `syncsTo` accepts everyone |
 | **P5** | Extract the shared harness out of the benchmark and the agent | ~1 day | `runBenchmark` behaves exactly as `src/dev/java/AGENTS.md` describes, report shape unchanged |
 
 ### Where this has got to
@@ -72,22 +72,72 @@ half-finished parts named. Update it as phases close, and delete the whole file 
 
 | Phase | State | What is left |
 |---|---|---|
-| **P0** | Code complete, gate half proven | `/thirst agent probe` has not been typed into a running game yet |
-| **P1** | Code complete, never run | the whole gate: no request has gone through a real `in.jsonl` |
-| **P2** | Code complete, never run | the whole gate: nothing has been run with a window |
-| **P3** | Build wiring done, never run | the whole gate |
-| **P4** | Runs green, **but does not yet fail when it should** | see below |
+| **P0** | **Done**, gate proven on 2026-09-16 | |
+| **P1** | **Done**, gate proven on 2026-09-16 | |
+| **P2** | **Done** on `1.21.11-neoforge`, gate proven on 2026-09-16 | the same run on the other three NeoForge nodes and on Fabric |
+| **P3** | **Done** on `1.21.11-neoforge`, gate proven on 2026-09-16 | the same |
+| **P4** | **Done**: the test now goes red under the mutation | |
 | **P5** | Not started | all of it |
 
-**What is on disk.** `src/dev` is now split the way the settled decisions describe: `dev/agent/core`
+**How each gate was met.** All four ran against `1.21.11-neoforge` on 2026-09-16. Every request and
+every answer is still in that node's queues under `run/`, which is not committed, so the summary here
+is the record: re-run the two request files to see it again.
+
+- **P0.** `runServer -Pagent=tools/agent/server-probe.jsonl` opened the queue, answered four requests
+  and stopped the server. One of them was `server.command` running `thirst agent probe`, whose reply
+  carries the command's own output. The published jar has nothing of `dev`, `agent`, `benchmark` or
+  `gametest` in it, on this node as on 26.2.
+- **P1.** With a client joined, `server.thirst.set` wrote `TesterA`'s thirst and `server.thirst.get`
+  read it back, both out of `out.jsonl`, with nothing parsed out of chat.
+- **P2.** [tools/agent/client-sync.jsonl](../../tools/agent/client-sync.jsonl) ran the whole "Sync to
+  the client" section in one pass: the client held 7 and sprinted, held 6 and walked, the HUD record
+  said what it drew each time, the bar came back full after a death, held 9/3 through the Nether and
+  back, and held 9/3 through a disconnect and a rejoin. `client.pixels` read the quenched outline off
+  the framebuffer as `#FF47ACF7` at the droplet the HUD record named.
+- **P3.** `runManualA` and `runManualB` on one `runServer`, standing together, written to from the
+  server's queue: A drew 6/0 and B drew 14/2, then the two values were swapped and each drew the
+  other's. Two JSON answers, no screenshots.
+- **P4.** `PlayerSyncGameTest` goes red with `Loader.syncsTo` changed to accept everyone, which is the
+  mutation the gate names. See below.
+
+**What running them changed.** Four things were wrong and are now fixed; all four were invisible until
+something was actually run.
+
+1. *Nothing launched at all.* The NeoForge run source sets assigned `runtimeClasspath` rather than
+   adding to it, which threw away the source set's own configuration — where ModDevGradle puts
+   DevLaunch, whose `Main` every run is started through. Every NeoForge run task failed with
+   `Could not find or load main class net.neoforged.devlaunch.Main`.
+2. *A script was a batch, not a sequence.* `wait` deferred its own answer and nothing else, so every
+   line the poll read ran in that one tick: "hold sprint at 7, set 6, hold sprint again" sent both
+   commands two milliseconds apart and started both holds together, and the two answers came out
+   identical. `AgentDispatcher` now starts one request at a time and holds the next until an
+   outstanding deferral has answered.
+3. *A stale `ready.json` swallowed the first request.* Waiting for the file is not enough: the last
+   run leaves one behind, and a game takes most of a minute to come up, so a request written in that
+   window goes into the file the new run is about to rotate away. `ready.json` now carries `startedAt`
+   and `pid`, and `drive.py` waits for one newer than the moment it started.
+4. *An empty dedicated server stopped answering.* It pauses after `pause-when-empty-seconds` and a
+   paused server fires no tick, so the queue died a minute after startup, before a client could be
+   brought up. `ServerAwake` holds the pause off while the queue is open, the way `BenchmarkRunner`
+   already did for a run. Those two are one of the things P5 has to extract.
+
+Two commands were added because a check needed them and nothing in the list could reach them:
+`client.respawn`, since vanilla's only way back from a death screen is that button and clicking at its
+coordinates is exactly the assertion-about-a-picture this exists to avoid; and `toggleCrouch` /
+`toggleSprint` in `client.info`, because the dev clients have Sneak set to toggle, so a key held for
+thirty ticks crouches the player and leaves them crouching.
+
+**What is on disk.** `src/dev` is split the way the settled decisions describe: `dev/agent/core`
 is the queue, the reply envelope and the dispatch loop in plain Java and Gson, and `checkAgentCore`
 (in `gradle/shared.gradle.kts`, run by CI on every node) fails the build if a class there imports
-Minecraft, a loader or the mod. `dev/agent/thirst` is everything that names them. The dev tools now
-have loader directories of their own — `src/dev/fabric` and `src/dev/neoforge` — holding the
+Minecraft, a loader or the mod. `dev/agent/thirst` is everything that names them. The dev tools have
+loader directories of their own — `src/dev/fabric` and `src/dev/neoforge` — holding the
 entrypoints and a small `DevLoader`/`DevClientLoader` seam for the four calls the mod's own `Loader`
 does not cover. `ThirstDev` is the server half and names no client class; `ThirstDevClient` is the
 client half. The NeoForge nodes carry the dev tools as `thirstwastaken2_dev`, with the benchmark
-package excluded from the source set rather than ported.
+package excluded from the source set rather than ported. `tools/agent/` holds `drive.py` and the two
+request files; [src/dev/java/AGENTS.md](../../src/dev/java/AGENTS.md) documents the queue, the command
+list and what a check looks like.
 
 The queue is `run/<node>/agent/<name>/`, holding `ready.json`, `in.jsonl` and `out.jsonl`, with the
 previous run's pair kept beside them. `<name>` is `server` or `client` by default and `A`/`B` on the
@@ -95,61 +145,49 @@ two extra NeoForge clients, so a server and a client of one node never share a f
 process, polled on that process's own tick: `server.*` reaches an integrated server as readily as a
 dedicated one. `-Pagent=<file>` answers a file of requests once and stops the game.
 
-Commands registered: `probe`, `wait`, `stop`; `server.info`, `server.players`, `server.thirst.get`,
-`server.thirst.set`, `server.command`; `client.info`, `client.state`, `client.hud`, `client.capture`,
-`client.pixels`, `client.command`, `client.chat`, `client.hold`, `client.key`, `client.screen`,
-`client.tooltip`, `client.disconnect`, `client.connect`.
-
-**What has actually been proven.** All eight nodes compile `devClasses` and `gametestClasses`. The
-26.2 Fabric and NeoForge jars contain nothing of `dev`, `agent`, `benchmark` or `gametest`, which is
-the second half of P0's gate. The NeoForge gametest suite runs 126 of 126 green with the new test in
-it. Nothing else has been run: no server, no client, no queue exchange.
-
-**Where P4 is stuck, precisely.** `PlayerSyncGameTest` places three `SyncPlayer`s — real
+**P4, and what was wrong with it.** `PlayerSyncGameTest` places three `SyncPlayer`s — real
 `ServerPlayer`s in the level whose connection reports the mod's channel and keeps every packet sent to
 it — and asserts that writing one player's thirst produces a payload for that player and for nobody
-else. It passes. It also passes with `Loader.syncsTo` changed to `return true`, which is the mutation
-the gate names, so as it stands it proves less than it claims.
+else. It used to pass with `Loader.syncsTo` changed to `return true`, which is the mutation the gate
+names, so it proved less than it claimed.
 
-The cause is that both loaders build their sync list from who is *tracking* the player, and the
-tracking never completes for a player outside `PlayerList`:
+The cause was that both loaders build their sync list from who is *tracking* the player, and the
+tracking never completed. `ChunkMap.addEntity` does ask once who can see a new player, but that is
+before a single chunk has been sent, so `isChunkTracked` refuses and the answer is nobody; afterwards
+`ChunkMap.tick` only asks again for an entity whose section has changed since the last tick, and three
+players standing still never change section. `seenBy` stayed empty, the sync list was `[self]`
+whatever the predicate said, and the mutation went unnoticed.
 
-1. `ChunkMap.isChunkTracked` needs the player's pending chunks to have been sent, and
-   `MinecraftServer` only calls `chunkSender.sendNextChunks` for players in its player list. The
-   fixture now does that itself (`SyncPlayer.sendChunks`), and that half works — the "are they
-   watching the test chunk" assertion passes.
-2. `TrackedEntity.seenBy`, which is what `getPlayersWatching` reads, is only filled from
-   `ChunkMap.tick` when a tracked entity's section position changes. Three players standing still
-   never change section, so `seenBy` stays empty, the sync list is `[self]` whatever the predicate
-   says, and the mutation goes unnoticed.
+`SyncPlayer.settle` now does both halves once a tick: it sends the chunks the tracking view is waiting
+on, and it moves each player a section up and back down again — vertically, so the chunk they are in
+never changes while the section this is read from does. And the fixture is no longer trusted on
+reasoning: `SyncPlayer.reachedByBroadcastAbout` broadcasts about one of them through the same
+mechanism the sync uses and requires all three to receive it, so a run where nobody is watching anybody
+fails as a broken fixture rather than passing on nothing. With that in place the mutation makes the
+test red, checked on 2026-09-16 on `1.21.11-neoforge` and on `26.2.x-neoforge` — one node either side
+of the version branch in `syncsTo` — and reverted afterwards. All four NeoForge nodes and 26.2 Fabric
+run their whole suite green without it: 125 tests on 1.21.1, 126 on the rest.
 
-The likely fix is to make the fixture move each player across a section boundary and back during the
-settle window, or otherwise force `trackedEntity.updatePlayers(level.players())`, and then to re-run
-the mutation and confirm it goes red before trusting the test. Until that is done the test is a
-placeholder: it should not be taken as covering the per-player sync item in
-[MANUAL-TESTING.md](MANUAL-TESTING.md), and nothing should be deleted from that file on its account.
+**What is left.** P5, and running P2 and P3 on the other seven nodes. Neither is blocked: the same two
+request files and the same two-client procedure answer on any of them.
 
-**Also still to do, across all phases.** Run P1 and P2's gates. Write the agent's own section of
-[src/dev/java/AGENTS.md](../../src/dev/java/AGENTS.md) — the queue's shape, the command list, and what
-a script looks like — and add the new directories to the layout table in the root
-[AGENTS.md](../../AGENTS.md). Only once a check actually answers from JSON does it leave
-MANUAL-TESTING.md, per the last rule below.
+**Why the order was this**, kept because it still explains the shape of what landed. P0 came first
+because `src/dev` was Fabric only, by a decision `build.neoforge.gradle.kts` used to record where it
+now explains carrying the agent across, and every open manual item was on a NeoForge node. Carrying the
+benchmark across at the same time would have doubled that phase for no gain, so the NeoForge `dev` mod
+carries the agent alone; `FakePlayer` has no counterpart there and belongs to the benchmark, which
+stayed behind. What P0 had to translate was small, because `platform/Loader` already covered the
+entrypoint and the command and tick hooks on both loaders, and `Loader.isDevelopmentEnvironment`
+already answered the DEV gate on both.
 
-P0 comes first because `src/dev` is Fabric only today, by the decision recorded at
-`build.neoforge.gradle.kts:55`, and every open manual item is on a NeoForge node. Carrying the
-benchmark across at the same time would double that phase for no gain, so the NeoForge `dev` mod
-starts with the agent alone. What P0 has to translate is small: the entrypoint and its command and
-tick hooks, which `platform/Loader` already covers on both loaders, and the DEV gate, which
-`Loader.isDevelopmentEnvironment` already answers on both. The one thing with no counterpart is
-`FakePlayer`, and that belongs to the benchmark, which stays behind.
-
-P4 is the one phase that may not be worth its cost, and it is deliberately last. It would move the
-hardest remaining item, that a player is told their own thirst and no one else's, into CI without a
-client at all. It also means setting a loader's negotiated channel set from dev code: on NeoForge
-`syncsTo` asks `connection.hasChannel(SyncAttachmentsPayload.TYPE)` before 26.1, Fabric answers the
-same question through its own registry, and both differ across four Minecraft versions. Start it only
-if P1 to P3 have paid for themselves and the sync items are still eating time. Even then it proves the
-server sent the right payload, never that the client drew it.
+P4 was last because it was the one phase that might not be worth its cost. It proves only that the
+server sent the right payload, never that the client drew it, and it means reporting a loader's
+negotiated channel set from dev code: on NeoForge `syncsTo` asks
+`connection.hasChannel(SyncAttachmentsPayload.TYPE)` before 26.1 and simply compares the holder after
+it. It turned out cheap — `ServerGamePacketListenerImpl` answers `hasChannel` itself, so
+`CapturingConnection` is one override — and what cost the time was not the channel at all but getting
+the chunk map to have the simulated players watching each other. Fabric has no counterpart and is not
+covered: there the check is two agent clients.
 
 ## What P2 has to read
 

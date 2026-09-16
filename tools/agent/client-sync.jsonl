@@ -1,0 +1,66 @@
+// MANUAL-TESTING.md's "Sync to the client", the four items one client can answer. The fifth needs a
+// second client and is driven from the two queues separately; see src/dev/java/AGENTS.md.
+//
+// Run a dedicated server and one of its clients, then
+//     python tools/agent/drive.py run/manual-<node>-A/agent/A tools/agent/client-sync.jsonl
+// The client has to be in the world already and standing somewhere flat, and the server needs
+// fall_damage off, or walking for thirty ticks is a check of the terrain rather than of the mod.
+//
+// What each answer has to say is in the comment above it. Nothing here asserts; a person or a script
+// reads the JSON, which is the point.
+
+// 1. /thirst set reaches the client, and the sprint gate opens at 7 and closes at 6.
+//    state7.thirst == 7, hud7.bar.thirst == 7, sprint7.after.sprinting == true
+{"id": "set7", "command": "client.command", "args": {"command": "thirst set @s 7 0"}}
+{"id": "w1", "command": "wait", "args": {"ticks": 10}}
+{"id": "state7", "command": "client.state"}
+{"id": "hud7", "command": "client.hud"}
+{"id": "sprint7", "command": "client.hold", "args": {"keys": ["forward", "sprint"], "ticks": 30}}
+{"id": "back7", "command": "client.hold", "args": {"keys": ["back"], "ticks": 30}}
+//    state6.thirst == 6, hud6.bar.thirst == 6, sprint6.after.sprinting == false
+{"id": "set6", "command": "client.command", "args": {"command": "thirst set @s 6 0"}}
+{"id": "w2", "command": "wait", "args": {"ticks": 10}}
+{"id": "state6", "command": "client.state"}
+{"id": "hud6", "command": "client.hud"}
+{"id": "sprint6", "command": "client.hold", "args": {"keys": ["forward", "sprint"], "ticks": 30}}
+
+// 2. Die and respawn: the bar is full again. dead.alive == false, revived.thirst == 20
+{"id": "low", "command": "client.command", "args": {"command": "thirst set @s 4 0"}}
+{"id": "w3", "command": "wait", "args": {"ticks": 10}}
+{"id": "kill", "command": "client.command", "args": {"command": "kill @s"}}
+{"id": "w4", "command": "wait", "args": {"ticks": 20}}
+{"id": "dead", "command": "client.state"}
+{"id": "respawn", "command": "client.respawn"}
+{"id": "w5", "command": "wait", "args": {"ticks": 40}}
+{"id": "revived", "command": "client.state"}
+{"id": "revivedHud", "command": "client.hud"}
+
+// 3. Through the Nether and back: the bar is right on both sides.
+//    nether.thirst == 9 and nether.dimension is the_nether; back.thirst == 9 in the overworld
+{"id": "set93", "command": "client.command", "args": {"command": "thirst set @s 9 3"}}
+{"id": "guard", "command": "client.command", "args": {"command": "effect give @s minecraft:fire_resistance 600 4 true"}}
+{"id": "guard2", "command": "client.command", "args": {"command": "effect give @s minecraft:resistance 600 4 true"}}
+{"id": "w6", "command": "wait", "args": {"ticks": 10}}
+{"id": "here", "command": "client.state"}
+{"id": "toNether", "command": "client.command", "args": {"command": "execute in minecraft:the_nether run tp @s 20 70 20"}}
+{"id": "w7", "command": "wait", "args": {"ticks": 60}}
+{"id": "floor", "command": "client.command", "args": {"command": "execute at @s run fill ~-3 ~-1 ~-3 ~3 ~-1 ~3 minecraft:stone"}}
+{"id": "air", "command": "client.command", "args": {"command": "execute at @s run fill ~-3 ~ ~-3 ~3 ~2 ~3 minecraft:air"}}
+{"id": "w8", "command": "wait", "args": {"ticks": 40}}
+{"id": "nether", "command": "client.state"}
+{"id": "netherHud", "command": "client.hud"}
+{"id": "toOverworld", "command": "client.command", "args": {"command": "execute in minecraft:overworld run tp @s 20 103 20"}}
+{"id": "w9", "command": "wait", "args": {"ticks": 60}}
+{"id": "back", "command": "client.state"}
+{"id": "backHud", "command": "client.hud"}
+
+// 4. Quit to the title screen and rejoin: the bar shows the value it had.
+//    title.screen is TitleScreen; rejoined.thirst == 9 and rejoinedHud.bar.thirst == 9
+{"id": "leave", "command": "client.disconnect"}
+{"id": "w10", "command": "wait", "args": {"ticks": 100}}
+{"id": "title", "command": "client.info"}
+{"id": "rejoin", "command": "client.connect", "args": {"address": "localhost:25565"}}
+{"id": "w11", "command": "wait", "args": {"ticks": 240}}
+{"id": "rejoined", "command": "client.state"}
+{"id": "rejoinedHud", "command": "client.hud"}
+{"id": "evidence", "command": "client.capture", "args": {"name": "sync-to-the-client"}}

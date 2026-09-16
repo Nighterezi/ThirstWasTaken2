@@ -8,7 +8,13 @@ out/
 src/main/generated/*/.cache/
 *.iml
 .idea/
-tools/
+# The sprite and logo workbench: generated images and the scripts that draw them, kept locally.
+# `tools/*` rather than `tools/`, because git cannot re-include anything under an excluded directory,
+# and tools/agent below has to be re-included.
+tools/*
+# What an agent sends to a running game. src/dev/java/AGENTS.md documents these as part of the
+# workflow, so they belong in the repository rather than on one machine.
+!tools/agent/
 
 # Local agent workspace
 .claude/

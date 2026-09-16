@@ -28,6 +28,9 @@ import java.util.UUID;
  * <p>They cost what a real player costs, so a test makes a handful and removes them again.
  */
 final class SyncPlayer extends ServerPlayer {
+    /** A chunk section's height: how far one of these is moved to make the chunk map look at it again. */
+    private static final int SECTION = 16;
+
     private final List<Packet<?>> captured = new ArrayList<>();
 
     private SyncPlayer(ServerLevel level, int index) {
@@ -54,17 +57,48 @@ final class SyncPlayer extends ServerPlayer {
     }
 
     /**
-     * Does for these players what the server does every tick for the players in its player list, which
-     * these are not in: sends the chunks their tracking view is waiting on, and acknowledges the batch
-     * the way a real client would. Until those chunks are sent, the chunk map says the chunk is not
-     * tracked, no player ever ends up watching another, and the check below would have nothing to
-     * prove.
+     * Does for these players, once a tick, the two things the server does for the players in its player
+     * list — which these are not in — and that together decide whether anyone ends up watching anyone.
+     *
+     * <p>The first is sending the chunks their tracking view is waiting on, and acknowledging the batch
+     * the way a real client would. Until those are sent, {@code ChunkMap.isChunkTracked} says no, so
+     * every {@code updatePlayer} refuses.
+     *
+     * <p>The second is moving. {@code ChunkMap.addEntity} does ask, once, who can see a new player, but
+     * that happens before a single chunk has been sent, so the answer is nobody; afterwards
+     * {@code ChunkMap.tick} only asks again for an entity whose section has changed since the last
+     * tick. Three players standing still therefore never enter each other's {@code seenBy}, the sync
+     * list stays {@code [self]} whatever the mod's predicate says, and a test built on them proves
+     * nothing. So each one is moved a section up and back down again, one step a tick: vertical, so the
+     * chunk they are in — and hence what has been sent to them — never changes, while the section this
+     * is read from does.
      */
-    static void sendChunks(List<SyncPlayer> players) {
+    static void settle(List<SyncPlayer> players, BlockPos at, int step) {
+        double y = at.getY() + (step % 2 == 0 ? 0 : SECTION);
         for (SyncPlayer player : players) {
             player.connection.chunkSender.sendNextChunks(player);
             player.connection.chunkSender.onChunkBatchReceivedByClient(64.0F);
+            player.snapTo(at.getX() + 0.5, y, at.getZ() + 0.5, 0.0F, 0.0F);
         }
+    }
+
+    /**
+     * Whether the tracking the fixture depends on has actually happened, asked through the mechanism the
+     * sync itself uses: a level broadcast reaches the entity and everyone watching it, so a broadcast
+     * about one of these players that reaches all of them means each is in the others' {@code seenBy}.
+     * Fewer than that and the fixture cannot show an over-broad sync, and has to fail rather than pass.
+     */
+    static int reachedByBroadcastAbout(ServerLevel level, List<SyncPlayer> players, SyncPlayer about) {
+        players.forEach(SyncPlayer::clear);
+        // Any clientbound event would do; 35 is the totem animation, and nothing here has a client to
+        // play it. What is read is who the packet was handed to, never what it says.
+        level.broadcastEntityEvent(about, (byte) 35);
+        int reached = 0;
+        for (SyncPlayer player : players) {
+            if (!player.captured.isEmpty()) reached++;
+        }
+        players.forEach(SyncPlayer::clear);
+        return reached;
     }
 
     /**

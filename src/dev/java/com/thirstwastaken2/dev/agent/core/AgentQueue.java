@@ -59,6 +59,9 @@ public final class AgentQueue {
      */
     public void open() throws IOException {
         Files.createDirectories(directory);
+        // Taken away before anything else, so that for the moment the queue is being emptied there is
+        // no file saying it is open. It is written again, with this run's own stamp, by the dispatcher.
+        Files.deleteIfExists(file(READY));
         rotate(IN);
         rotate(OUT);
         Files.writeString(file(IN), "", StandardCharsets.UTF_8);

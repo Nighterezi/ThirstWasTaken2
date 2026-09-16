@@ -119,6 +119,16 @@ public final class ThirstAgent {
         if (dispatcher != null) dispatcher.tick();
     }
 
+    /**
+     * The same, on a dedicated server's tick, where the queue also has to keep the server from pausing:
+     * an empty one stops ticking after {@code pause-when-empty-seconds} and stops answering with it.
+     */
+    public static void serverTick(MinecraftServer running) {
+        if (dispatcher == null) return;
+        ServerAwake.keep(running);
+        dispatcher.tick();
+    }
+
     private static String queueName() {
         String name = System.getProperty(NAME_PROPERTY);
         return name == null || name.isBlank() ? side : name.trim();

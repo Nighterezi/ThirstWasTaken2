@@ -81,6 +81,19 @@ server is up, simulates 1 to 200 players plus every interaction, writes
 `"players 500 1200"` changes the scale. The same command works typed into a `runServer` console. Read
 [src/dev/java/AGENTS.md](src/dev/java/AGENTS.md) before comparing two reports.
 
+Drive a running game from a script, so a client-side check answers with a number instead of a
+screenshot:
+
+```bash
+./gradlew ":1.21.11-neoforge:runServer" -Pagent=tools/agent/server-probe.jsonl
+```
+
+That answers a file of requests once the game is up and stops it again. Without `-Pagent` the same
+agent is there waiting on `run/<node>/agent/<name>/in.jsonl`, which is how a client that has to stay
+open is driven: `tools/agent/drive.py` writes the requests and reads the answers back. The commands,
+the queue's shape and what a check looks like are in
+[src/dev/java/AGENTS.md](src/dev/java/AGENTS.md).
+
 `runServer` is the fastest smoke test: it applies every mixin, loads the datapack registries, then
 idles. A clean run prints `ThirstWasTaken2 initialized for Minecraft <version>` and no exceptions.
 Each version gets its own `run/<subproject>/` directory, because a world saved by one Minecraft
@@ -307,8 +320,8 @@ Each area of the tree carries its own `AGENTS.md` with rules and conventions loc
 | Every difference between the supported versions, visible and underneath | [docs/dev/VERSION-DIFFERENCES.md](docs/dev/VERSION-DIFFERENCES.md) |
 | What to check by hand before a release, per version | [docs/dev/MANUAL-TESTING.md](docs/dev/MANUAL-TESTING.md) |
 | Automated in-game tests | [src/gametest/java/AGENTS.md](src/gametest/java/AGENTS.md) |
-| Performance and memory benchmark, dev-only tooling | [src/dev/java/AGENTS.md](src/dev/java/AGENTS.md) |
-| Plan for the agent client that drives a real client unattended | [docs/dev/AGENT-CLIENT-PLAN.md](docs/dev/AGENT-CLIENT-PLAN.md) |
+| Performance and memory benchmark, and the agent client that drives a real client | [src/dev/java/AGENTS.md](src/dev/java/AGENTS.md) |
+| What is left to do on the agent client, and why it is built this way | [docs/dev/AGENT-CLIENT-PLAN.md](docs/dev/AGENT-CLIENT-PLAN.md) |
 | Client HUD element rendering & config screen contract | [src/client/java/com/thirstwastaken2/client/AGENTS.md](src/client/java/com/thirstwastaken2/client/AGENTS.md) |
 | Manifests, textures, fonts, lang keys, and what the generated JSON means | [src/main/resources/AGENTS.md](src/main/resources/AGENTS.md) |
 | The generators for every recipe, advancement, tag and model | [src/datagen/java/AGENTS.md](src/datagen/java/AGENTS.md) |
@@ -415,8 +428,21 @@ src/gametest/java/com/thirstwastaken2/gametest/
 src/gametest/neoforge/                  the NeoForge harness: @GameTest, discovery, registration, empty structure
 
 src/dev/java/com/thirstwastaken2/dev/   dev-only tools mod, never packaged
-  ThirstDev.java                       entrypoint: /thirst benchmark and the runBenchmark autorun
+  ThirstDev.java                       the server half: the agent's queue, its command, its tick
+  ThirstDevClient.java                 the client half, kept apart so a server loads no Minecraft class
+  agent/core/                          the file queue, the reply envelope, the dispatch loop; no
+                                       Minecraft, no loader, no mod, enforced by checkAgentCore
+  agent/thirst/                        what the agent answers: server probes, client probes, the HUD
+                                       record, framebuffer samples, key state
+  mixin/ThirstHudMixin.java            records where the HUD drew the bar, for the agent to read
   benchmark/                           simulated players, tick and interaction scenarios, JSON report
+src/dev/fabric/, src/dev/neoforge/      each loader's entrypoints and the DevLoader seam
+src/dev/createfly/                      the benchmark's Create Fly operations
+
+tools/agent/                            what an agent sends to a running game
+  drive.py                             writes in.jsonl, waits for out.jsonl, matches the two up
+  server-probe.jsonl                   what a server answers with nobody online
+  client-sync.jsonl                    MANUAL-TESTING.md's "Sync to the client", as requests
 
 src/datagen/java/com/thirstwastaken2/datagen/  datagen-only mod, never packaged
   ThirstDatagen.java                   entrypoint: every provider has to be listed here

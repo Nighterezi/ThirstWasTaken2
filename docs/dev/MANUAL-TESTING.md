@@ -66,20 +66,18 @@ Useful commands while testing:
 
 ### Sync to the client
 
-The server owns thirst. These are the checks that the client is told.
+**Automated.** The server owns thirst, and every check that the client is told now answers with a
+number out of the agent client rather than with a pair of eyes on a screenshot: the client reports the
+value it holds, and `LocalPlayer.isSprinting()` reports the sprint gate. Run it with
+[tools/agent/client-sync.jsonl](../../tools/agent/client-sync.jsonl), and the two-client item the way
+[src/dev/java/AGENTS.md](../../src/dev/java/AGENTS.md) describes; that file also says what each answer
+has to be. Last run on `1.21.11-neoforge` on 2026-09-16, all five green.
 
-- [x] `/thirst set @s 6 0` updates the bar immediately, and sprinting is refused at 6. Hold sprint and
-      walk: at 7 the player runs, at 6 they walk. A gametest cannot see this, because the client decides
-      sprinting.
-- [x] Quit to the title screen and rejoin: the bar shows the value it had. The value's own trip
-      through the player's save tag is a gametest; what is left here is the client being told after
-      the rejoin.
-- [x] Die and respawn: the bar is full again.
-- [x] Go through a Nether portal and back: the bar is still correct on both sides.
-- [x] Open the world to LAN or use `runServer` with a second client: each player sees only their own bar,
-      and it is right for each. On the NeoForge nodes `runManualA` and `runManualB` are that second
-      client: named `TesterA` and `TesterB`, with their own game directories, joining `localhost`
-      from the title screen. Two clients both named `Dev` cannot join one server.
+The five checks it replaced were: `/thirst set` reaching the bar and sprinting refused at 6 but not at
+7; quitting to the title screen and rejoining; dying and respawning to a full bar; a round trip
+through the Nether; and two clients each seeing their own bar and no one else's. Do not put them back
+here. What stays manual is only what a number cannot settle — whether the bar, the tooltips and the
+config screen *read* well, which is the sections below.
 
 ### Tooltips
 
@@ -260,11 +258,12 @@ the water cauldron's name and the advancement background.
       drained droplet in an F2 capture with AppleSkin's underlay on or off, and the Fabric-to-NeoForge
       world item was not tried.
 - [ ] **Sync first.** NeoForge 21.1 only syncs thirst to a connection that negotiated its attachment
-      channel, which a NeoForge client does. Run the whole "Sync to the client" section, including a
-      dedicated server with a second client. Checked on a dedicated server with one NeoForge client:
-      joining raised no sync error, `/thirst set` updated the bar at once, the value held through the
-      Nether and back and through a disconnect and rejoin, and a singleplayer world kept it through a
-      save and reload. **Open:** a second client, which two dev clients named `Dev` cannot do.
+      channel, which a NeoForge client does. Run the automated "Sync to the client" section on this
+      node, with `runServer`, `runManualA` and `runManualB`. Checked by hand on a dedicated server with
+      one NeoForge client: joining raised no sync error, `/thirst set` updated the bar at once, the
+      value held through the Nether and back and through a disconnect and rejoin, and a singleplayer
+      world kept it through a save and reload. **Open:** the second client, which the agent client can
+      now drive but has not been run here yet.
 - [x] **Sprinting is gated by `LocalPlayerMixin`**, now in the shared client mixin config: at thirst 6
       holding sprint walks, at 7 it runs. Measured over 3 s of Ctrl+W on a flat track: 16.8 blocks at 7,
       13.2 at 6.
@@ -293,12 +292,16 @@ section for the same version. `1.21.11-neoforge` partly checked on 2026-09-15 wi
       from water filling on a second use, and thirst full after death. `runServer` with Jade in
       `mods` checked from the console on 2026-09-16: the server reached "Done", loaded Jade
       21.1.7+neoforge out of `mods`, and loaded `JadeIntegration` as a Jade plugin there, with no
-      error in the log. **Open on 1.21.11:** leaving and rejoining with thirst not full, which is
-      now only the client half: the attachment under it round-trips through a player's save tag in
-      `ThirstDataGameTest`, on every node and both loaders.
+      error in the log. Leaving and rejoining with thirst not full, the last item open on 1.21.11, was
+      answered by the agent client on 2026-09-16 and is now part of the automated "Sync to the client"
+      section.
       **Open on 26.1.x:** everything; Jade is already in its `mods`.
-- [ ] **Sync first on 1.21.11.** Like 21.1, NeoForge 21.11 only syncs thirst to a connection that
-      negotiated the attachment channel. Run the whole "Sync to the client" section there. Not tried.
+- [x] **Sync first on 1.21.11.** Like 21.1, NeoForge 21.11 only syncs thirst to a connection that
+      negotiated the attachment channel. The whole "Sync to the client" section ran there on
+      2026-09-16 through the agent client, on `runServer` with `runManualA` and `runManualB`: the
+      sprint gate opened at 7 and closed at 6, the value held through death, the Nether and a rejoin,
+      and with the two testers standing together each drew its own bar and neither drew the other's.
+      **Open on 26.1.x:** the same run there.
 - [ ] The thirst bar and the air bubbles stack by `Gui.rightHeight` on both: same place as on 26.2,
       bubbles above the bar underwater. Checked on 1.21.11; **open on 26.1.x.**
 - [ ] F1 hides the bar on both (read from the options, as on the Fabric nodes of these versions).

@@ -29,7 +29,7 @@ public final class ThirstDev {
         if (!enabled()) return;
         ThirstAgent.install(false, ThirstDev::halt);
         registerCommand();
-        Loader.onServerTickEnd(server -> ThirstAgent.tick());
+        Loader.onServerTickEnd(ThirstAgent::serverTick);
         DevLoader.onServerStarted(server -> ThirstAgent.start());
         DevLoader.onServerStopping(server -> ThirstAgent.flush());
     }

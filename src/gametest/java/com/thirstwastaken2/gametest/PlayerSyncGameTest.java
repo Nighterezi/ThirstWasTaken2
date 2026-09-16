@@ -24,14 +24,19 @@ import java.util.List;
  * <p>The mechanism matters to how this is written. Both loaders work out who to sync to from who is
  * watching the player, so a simulated player nobody watches would be told only about itself whatever
  * the predicate said, and the test would pass even with the predicate broken wide open. So the players
- * are really added to the level, the sequence waits for the chunk map to pick them up, and the first
- * assertion is that it did: a run where nobody is watching anybody fails rather than quietly proving
- * nothing.
+ * are really added to the level, {@link SyncPlayer#settle} does the two things the server would do for
+ * them until the chunk map has each of them watching the others, and the first two assertions are that
+ * it worked: that they are watching the chunk, and that a broadcast about one of them reaches all
+ * three. A run where that is not so fails as a broken fixture rather than passing on nothing.
+ *
+ * <p>Those two are what make the rest worth reading. Change {@code Loader.syncsTo} to {@code return
+ * true} and this test goes red; before the control was there it did not, and the note in
+ * {@code docs/dev/AGENT-CLIENT-PLAN.md} said so.
  */
 public final class PlayerSyncGameTest {
     /** Three is enough: one owner, and two others who must be told nothing. */
     private static final int PLAYERS = 3;
-    /** Ticks for the chunk map to register the new players and their trackers. */
+    /** Ticks of {@link SyncPlayer#settle} for the chunk map to end up with everyone watching everyone. */
     private static final int SETTLE = 8;
 
     @GameTest
@@ -48,8 +53,9 @@ public final class PlayerSyncGameTest {
         List<SyncPlayer> players = SyncPlayer.place(level, at, PLAYERS);
         List<String> problems = new ArrayList<>();
 
+        int[] step = {0};
         helper.startSequence()
-                .thenExecuteFor(SETTLE, () -> SyncPlayer.sendChunks(players))
+                .thenExecuteFor(SETTLE, () -> SyncPlayer.settle(players, at, step[0]++))
                 .thenExecute(() -> {
                     int watching = SyncPlayer.watching(level, at, players);
                     if (watching < PLAYERS) {
@@ -57,6 +63,18 @@ public final class PlayerSyncGameTest {
                                 + "watching the test chunk after " + SETTLE + " ticks (the level holds "
                                 + level.players().size() + " players), so nothing here would be sent to "
                                 + "anyone and the check proves nothing");
+                    }
+                })
+                // The control: until the others really are watching the owner, "only the owner was told"
+                // is true of a fixture that could not tell anyone anything, and the mutation this test
+                // exists to catch — a predicate that accepts everybody — goes unnoticed.
+                .thenExecute(() -> {
+                    int reached = SyncPlayer.reachedByBroadcastAbout(level, players, players.get(0));
+                    if (reached < PLAYERS) {
+                        problems.add("a broadcast about " + players.get(0).who() + " reached " + reached
+                                + " of " + PLAYERS + " simulated players, so they are not in each other's "
+                                + "tracking sets and a sync to everyone would look the same as a sync to "
+                                + "one; the fixture is broken, not the mod");
                     }
                 })
                 .thenExecute(() -> change(players, 0, 6, 0))
