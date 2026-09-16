@@ -17,6 +17,9 @@ tools/*
 # repository rather than on one machine.
 !tools/agent/
 !tools/benchmark/
+# What publishes a release to Modrinth and GitHub. docs/dev/RELEASING.md documents it, and it reads the
+# properties file every node is described in, so it belongs beside them rather than on one machine.
+!tools/release/
 
 # Bytecode from running .github/scripts by hand.
 __pycache__/
