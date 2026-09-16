@@ -65,6 +65,76 @@ ever a handful of those. See [Many players](#many-players).
 | **P4** | Experimental: a simulated player whose connection reports the mod's channel, with outgoing payloads captured | open | a gametest asserts per-player sync for N players and goes red when `syncsTo` accepts everyone |
 | **P5** | Extract the shared harness out of the benchmark and the agent | ~1 day | `runBenchmark` behaves exactly as `src/dev/java/AGENTS.md` describes, report shape unchanged |
 
+### Where this has got to
+
+Written down here rather than in a commit message, because the next person to pick this up needs the
+half-finished parts named. Update it as phases close, and delete the whole file once P5 lands.
+
+| Phase | State | What is left |
+|---|---|---|
+| **P0** | Code complete, gate half proven | `/thirst agent probe` has not been typed into a running game yet |
+| **P1** | Code complete, never run | the whole gate: no request has gone through a real `in.jsonl` |
+| **P2** | Code complete, never run | the whole gate: nothing has been run with a window |
+| **P3** | Build wiring done, never run | the whole gate |
+| **P4** | Runs green, **but does not yet fail when it should** | see below |
+| **P5** | Not started | all of it |
+
+**What is on disk.** `src/dev` is now split the way the settled decisions describe: `dev/agent/core`
+is the queue, the reply envelope and the dispatch loop in plain Java and Gson, and `checkAgentCore`
+(in `gradle/shared.gradle.kts`, run by CI on every node) fails the build if a class there imports
+Minecraft, a loader or the mod. `dev/agent/thirst` is everything that names them. The dev tools now
+have loader directories of their own — `src/dev/fabric` and `src/dev/neoforge` — holding the
+entrypoints and a small `DevLoader`/`DevClientLoader` seam for the four calls the mod's own `Loader`
+does not cover. `ThirstDev` is the server half and names no client class; `ThirstDevClient` is the
+client half. The NeoForge nodes carry the dev tools as `thirstwastaken2_dev`, with the benchmark
+package excluded from the source set rather than ported.
+
+The queue is `run/<node>/agent/<name>/`, holding `ready.json`, `in.jsonl` and `out.jsonl`, with the
+previous run's pair kept beside them. `<name>` is `server` or `client` by default and `A`/`B` on the
+two extra NeoForge clients, so a server and a client of one node never share a file. One queue per
+process, polled on that process's own tick: `server.*` reaches an integrated server as readily as a
+dedicated one. `-Pagent=<file>` answers a file of requests once and stops the game.
+
+Commands registered: `probe`, `wait`, `stop`; `server.info`, `server.players`, `server.thirst.get`,
+`server.thirst.set`, `server.command`; `client.info`, `client.state`, `client.hud`, `client.capture`,
+`client.pixels`, `client.command`, `client.chat`, `client.hold`, `client.key`, `client.screen`,
+`client.tooltip`, `client.disconnect`, `client.connect`.
+
+**What has actually been proven.** All eight nodes compile `devClasses` and `gametestClasses`. The
+26.2 Fabric and NeoForge jars contain nothing of `dev`, `agent`, `benchmark` or `gametest`, which is
+the second half of P0's gate. The NeoForge gametest suite runs 126 of 126 green with the new test in
+it. Nothing else has been run: no server, no client, no queue exchange.
+
+**Where P4 is stuck, precisely.** `PlayerSyncGameTest` places three `SyncPlayer`s — real
+`ServerPlayer`s in the level whose connection reports the mod's channel and keeps every packet sent to
+it — and asserts that writing one player's thirst produces a payload for that player and for nobody
+else. It passes. It also passes with `Loader.syncsTo` changed to `return true`, which is the mutation
+the gate names, so as it stands it proves less than it claims.
+
+The cause is that both loaders build their sync list from who is *tracking* the player, and the
+tracking never completes for a player outside `PlayerList`:
+
+1. `ChunkMap.isChunkTracked` needs the player's pending chunks to have been sent, and
+   `MinecraftServer` only calls `chunkSender.sendNextChunks` for players in its player list. The
+   fixture now does that itself (`SyncPlayer.sendChunks`), and that half works — the "are they
+   watching the test chunk" assertion passes.
+2. `TrackedEntity.seenBy`, which is what `getPlayersWatching` reads, is only filled from
+   `ChunkMap.tick` when a tracked entity's section position changes. Three players standing still
+   never change section, so `seenBy` stays empty, the sync list is `[self]` whatever the predicate
+   says, and the mutation goes unnoticed.
+
+The likely fix is to make the fixture move each player across a section boundary and back during the
+settle window, or otherwise force `trackedEntity.updatePlayers(level.players())`, and then to re-run
+the mutation and confirm it goes red before trusting the test. Until that is done the test is a
+placeholder: it should not be taken as covering the per-player sync item in
+[MANUAL-TESTING.md](MANUAL-TESTING.md), and nothing should be deleted from that file on its account.
+
+**Also still to do, across all phases.** Run P1 and P2's gates. Write the agent's own section of
+[src/dev/java/AGENTS.md](../../src/dev/java/AGENTS.md) — the queue's shape, the command list, and what
+a script looks like — and add the new directories to the layout table in the root
+[AGENTS.md](../../AGENTS.md). Only once a check actually answers from JSON does it leave
+MANUAL-TESTING.md, per the last rule below.
+
 P0 comes first because `src/dev` is Fabric only today, by the decision recorded at
 `build.neoforge.gradle.kts:55`, and every open manual item is on a NeoForge node. Carrying the
 benchmark across at the same time would double that phase for no gain, so the NeoForge `dev` mod

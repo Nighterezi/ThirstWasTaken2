@@ -109,6 +109,38 @@ tasks.register("checkVersionSeam") {
     }
 }
 
+/**
+ * Fails when the agent's loader independent half stops being loader independent.
+ *
+ * `dev/agent/core` is the queue, the envelope and the dispatch loop: plain Java and Gson, and nothing
+ * else. That is what makes the settled decision in docs/dev/AGENT-CLIENT-PLAN.md true rather than
+ * aspirational — one import of Minecraft, of a mod loader or of the mod itself and it no longer lifts
+ * out of this project cleanly. `dev/agent/thirst` is the half that is free to name all three.
+ */
+tasks.register("checkAgentCore") {
+    group = "verification"
+    description = "Fails when the agent's core package imports Minecraft, a mod loader or the mod"
+
+    val root = rootProject.file("src/dev/java/com/thirstwastaken2/dev/agent/core")
+    val forbidden = Regex("""^import\s+(net\.minecraft|net\.fabricmc|net\.neoforged|"""
+        + """com\.mojang|com\.thirstwastaken2(?!\.dev\.agent\.core))""")
+    inputs.files(fileTree(root) { include("**/*.java") })
+
+    doLast {
+        val offenders = root.walk().filter { it.extension == "java" }.flatMap { file ->
+            file.readLines().withIndex()
+                .filter { (_, line) -> forbidden.containsMatchIn(line.trim()) }
+                .map { (index, line) ->
+                    "${file.relativeTo(rootProject.projectDir).invariantSeparatorsPath}:${index + 1}: ${line.trim()}"
+                }
+        }.toList()
+        check(offenders.isEmpty()) {
+            "The agent's core package is meant to know nothing of Minecraft, of a loader or of this " +
+                "mod. Put what needs them in dev/agent/thirst instead:\n" + offenders.joinToString("\n")
+        }
+    }
+}
+
 /** Collects the jars every node produces into one directory, for `chiseledBuild`. */
 tasks.register<Copy>("buildAndCollect") {
     group = "build"

@@ -89,18 +89,21 @@ jobs:
 
       - name: Build
         if: ${{ !endsWith(matrix.version, '-neoforge') }}
-        # devClasses compiles the dev tools (/thirst benchmark). They never ship, so nothing else would
-        # notice them breaking on one version. checkLoaderSeam fails on a mod loader import in loader
-        # independent code, which compiles fine against one loader. checkVersionSeam fails on a
-        # version conditional in core code, which is the exit ramp in docs/dev/PLATFORM-PLAN.md.
-        run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:devClasses" ":${{ matrix.version }}:checkLoaderSeam" ":${{ matrix.version }}:checkVersionSeam" --stacktrace
+        # devClasses compiles the dev tools (/thirst benchmark and the agent). They never ship, so
+        # nothing else would notice them breaking on one version. checkAgentCore fails when the agent's
+        # loader independent half starts naming Minecraft or a loader. checkLoaderSeam fails on a mod
+        # loader import in loader independent code, which compiles fine against one loader.
+        # checkVersionSeam fails on a version conditional in core code, which is the exit ramp in
+        # docs/dev/PLATFORM-PLAN.md.
+        run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:devClasses" ":${{ matrix.version }}:checkAgentCore" ":${{ matrix.version }}:checkLoaderSeam" ":${{ matrix.version }}:checkVersionSeam" --stacktrace
 
-      # The NeoForge node has no dev tools and no generators of its own; it reads what the 26.2 Fabric
-      # node generates. checkNeoForgeResources fails when a Fabric-only key survives the translation of
-      # that JSON. The two seam checks read the same files on every node and are cheap to repeat here.
+      # The NeoForge node has the dev tools too, carrying the agent but not the benchmark, and no
+      # generators of its own; it reads what the 26.2 Fabric node generates. checkNeoForgeResources
+      # fails when a Fabric-only key survives the translation of that JSON. The seam checks read the
+      # same files on every node and are cheap to repeat here.
       - name: Build (NeoForge)
         if: ${{ endsWith(matrix.version, '-neoforge') }}
-        run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:checkNeoForgeResources" ":${{ matrix.version }}:checkLoaderSeam" ":${{ matrix.version }}:checkVersionSeam" --stacktrace
+        run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:devClasses" ":${{ matrix.version }}:checkNeoForgeResources" ":${{ matrix.version }}:checkAgentCore" ":${{ matrix.version }}:checkLoaderSeam" ":${{ matrix.version }}:checkVersionSeam" --stacktrace
 
       # Regenerates every datapack and asset JSON and fails if the result differs from what is
       # committed, which is what catches a generator edited without regenerating and a generated

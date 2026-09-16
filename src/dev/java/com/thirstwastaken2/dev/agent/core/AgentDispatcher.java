@@ -1,0 +1,268 @@
+package com.thirstwastaken2.dev.agent.core;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.slf4j.Logger;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Turns the lines an {@link AgentQueue} hands over into answers, one game tick at a time.
+ *
+ * <p>Everything runs on the game thread, in {@link #tick}: a probe that read the player, the HUD or
+ * the framebuffer from another thread would read a half-updated one. Polling is a file size check
+ * every {@link #POLL_TICKS} ticks, which is cheap enough to leave on for every development run.
+ *
+ * <p>This class knows nothing of Minecraft, of a mod loader or of the mod. It is the half that would
+ * survive being lifted into another project, and {@code checkAgentCore} fails the build when a class
+ * in this package starts importing one of them.
+ */
+public final class AgentDispatcher {
+    /** Ticks between two looks at {@code in.jsonl}: five times a second, against one command a second. */
+    public static final int POLL_TICKS = 4;
+    /** Refused rather than run, so a runaway agent cannot stall the game inside one tick. */
+    public static final int MAX_REQUESTS_PER_TICK = 32;
+
+    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
+
+    private final AgentQueue queue;
+    private final Logger log;
+    private final Map<String, AgentHandler> handlers = new LinkedHashMap<>();
+    private final List<Deferred> deferred = new ArrayList<>();
+    private final JsonObject about;
+
+    private long sequence;
+    private int sinceLastPoll = POLL_TICKS;
+    private boolean started;
+    private Runnable onDrained;
+
+    /**
+     * @param about what {@code ready.json} says about this process before the command list is added to
+     *              it: which node, which Minecraft version, which side
+     */
+    public AgentDispatcher(AgentQueue queue, Logger log, JsonObject about) {
+        this.queue = queue;
+        this.log = log;
+        this.about = about;
+    }
+
+    public AgentQueue queue() {
+        return queue;
+    }
+
+    /** Registers what one command does. A name registered twice is a mistake in the wiring, not a request. */
+    public void register(String command, AgentHandler handler) {
+        if (handlers.put(command, handler) != null) {
+            throw new IllegalStateException("Two handlers registered for the agent command " + command);
+        }
+    }
+
+    /** The commands this process answers, in registration order. */
+    public List<String> commands() {
+        return List.copyOf(handlers.keySet());
+    }
+
+    /**
+     * Empties the queue and writes {@code ready.json}. Nothing is read before this, so an agent that
+     * waits for {@code ready.json} never has a request rotated away underneath it.
+     */
+    public void start() {
+        if (started) return;
+        try {
+            queue.open();
+        } catch (IOException e) {
+            log.error("[ThirstAgent] could not open the queue in {}", queue.directory(), e);
+            return;
+        }
+        started = true;
+        JsonObject ready = about.deepCopy();
+        JsonArray commands = new JsonArray();
+        handlers.keySet().forEach(commands::add);
+        ready.add("commands", commands);
+        ready.addProperty("in", queue.file(AgentQueue.IN).toAbsolutePath().toString());
+        ready.addProperty("out", queue.file(AgentQueue.OUT).toAbsolutePath().toString());
+        queue.writeReady(GSON.toJson(ready) + "\n");
+        log.info("[ThirstAgent] ready, {} commands, queue {}", handlers.size(), queue.directory().toAbsolutePath());
+    }
+
+    /**
+     * Runs a file of requests as if the agent had written them, once, at startup. This is what an
+     * unattended run is: the launch names a script, the game answers it into {@code out.jsonl}, and
+     * {@code whenDone} runs when the last answer has been written.
+     *
+     * <p>A blank line is skipped and a line starting with {@code //} is a comment, so a script can be
+     * read by a person as well as by the parser.
+     */
+    public void runScript(Path script, Runnable whenDone) {
+        if (!started) return;
+        List<String> lines;
+        try {
+            lines = Files.readAllLines(script, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            log.error("[ThirstAgent] could not read the script {}", script, e);
+            if (whenDone != null) whenDone.run();
+            return;
+        }
+        log.info("[ThirstAgent] running the script {} ({} lines)", script.toAbsolutePath(), lines.size());
+        this.onDrained = whenDone;
+        for (String line : lines) {
+            String trimmed = line.strip();
+            if (!trimmed.isEmpty() && !trimmed.startsWith("//")) accept(trimmed);
+        }
+        checkDrained();
+    }
+
+    /** Runs {@code work} {@code ticks} ticks from now; anything under one means the next tick. */
+    public void defer(int ticks, Runnable work) {
+        deferred.add(new Deferred(Math.max(1, ticks), work));
+    }
+
+    /**
+     * The same, for work that finishes a request: whatever it throws becomes that request's
+     * {@code error} rather than only a line in the log, so the agent is never left waiting on an answer
+     * that failed on a tick it cannot see.
+     */
+    public void defer(int ticks, AgentReply reply, Runnable work) {
+        defer(ticks, () -> {
+            try {
+                work.run();
+            } catch (AgentException e) {
+                reply.fail(e.getMessage());
+            } catch (RuntimeException e) {
+                log.error("[ThirstAgent] {} failed on a later tick", reply.request().command(), e);
+                reply.fail(e.getClass().getSimpleName() + ": " + e.getMessage());
+            }
+        });
+    }
+
+    /** How many answers are still waiting on a later tick. */
+    public int pending() {
+        return deferred.size();
+    }
+
+    /** Called once per game tick, on the side that owns this queue. */
+    public void tick() {
+        if (!started) return;
+        runDeferred();
+        if (++sinceLastPoll < POLL_TICKS) return;
+        sinceLastPoll = 0;
+        List<String> lines = queue.poll();
+        int taken = 0;
+        for (String line : lines) {
+            if (taken++ >= MAX_REQUESTS_PER_TICK) {
+                // The queue has already moved past them, so they are refused rather than dropped.
+                refuse(line, "more than " + MAX_REQUESTS_PER_TICK + " requests arrived in one poll");
+                continue;
+            }
+            accept(line);
+        }
+        checkDrained();
+    }
+
+    /** Runs every deferred answer now, so a shutdown leaves nothing in the queue unanswered. */
+    public void stop() {
+        if (!started) return;
+        for (Deferred entry : List.copyOf(deferred)) {
+            try {
+                entry.work.run();
+            } catch (RuntimeException e) {
+                log.error("[ThirstAgent] a deferred answer failed while stopping", e);
+            }
+        }
+        deferred.clear();
+        started = false;
+    }
+
+    private void runDeferred() {
+        if (deferred.isEmpty()) return;
+        List<Deferred> due = new ArrayList<>();
+        for (Deferred entry : deferred) {
+            if (--entry.ticks <= 0) due.add(entry);
+        }
+        deferred.removeAll(due);
+        for (Deferred entry : due) {
+            try {
+                entry.work.run();
+            } catch (RuntimeException e) {
+                log.error("[ThirstAgent] a deferred answer failed", e);
+            }
+        }
+    }
+
+    private void accept(String line) {
+        AgentRequest request;
+        try {
+            JsonElement parsed = JsonParser.parseString(line);
+            if (!parsed.isJsonObject()) throw new AgentException("a request has to be a JSON object");
+            JsonObject object = parsed.getAsJsonObject();
+            if (!object.has("command")) throw new AgentException("a request needs a 'command'");
+            String id = object.has("id") ? object.get("id").getAsString() : String.valueOf(sequence);
+            JsonObject arguments = object.has("args") && object.get("args").isJsonObject()
+                    ? object.getAsJsonObject("args") : new JsonObject();
+            request = new AgentRequest(sequence++, id, object.get("command").getAsString(), arguments);
+        } catch (RuntimeException e) {
+            refuse(line, e.getMessage() == null ? e.toString() : e.getMessage());
+            return;
+        }
+
+        AgentReply reply = new AgentReply(request, envelope -> queue.write(GSON.toJson(envelope)));
+        AgentHandler handler = handlers.get(request.command());
+        if (handler == null) {
+            reply.fail("unknown command; ready.json lists the ones this process answers");
+            return;
+        }
+        int deferrals = deferred.size();
+        try {
+            handler.handle(request, reply);
+        } catch (AgentException e) {
+            reply.fail(e.getMessage());
+            return;
+        } catch (Exception e) {
+            log.error("[ThirstAgent] {} failed", request.command(), e);
+            reply.fail(e.getClass().getSimpleName() + ": " + e.getMessage());
+            return;
+        }
+        // A handler answers now or takes a deferral to answer later. Neither means it dropped the
+        // request, and saying so beats leaving the agent waiting for a line that never comes.
+        if (!reply.answered() && deferred.size() == deferrals) {
+            reply.fail("the handler produced no answer");
+        }
+    }
+
+    private void refuse(String line, String message) {
+        JsonObject envelope = new JsonObject();
+        envelope.addProperty("id", String.valueOf(sequence++));
+        envelope.addProperty("ok", false);
+        envelope.addProperty("error", message);
+        envelope.addProperty("line", line.length() > 200 ? line.substring(0, 200) + "..." : line);
+        queue.write(GSON.toJson(envelope));
+    }
+
+    private void checkDrained() {
+        if (onDrained == null || !deferred.isEmpty()) return;
+        Runnable done = onDrained;
+        onDrained = null;
+        done.run();
+    }
+
+    private static final class Deferred {
+        private int ticks;
+        private final Runnable work;
+
+        private Deferred(int ticks, Runnable work) {
+            this.ticks = ticks;
+            this.work = work;
+        }
+    }
+}

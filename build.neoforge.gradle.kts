@@ -15,6 +15,10 @@ plugins {
 // `group` stays unset for the same reason build.gradle.kts leaves it unset; the publication sets
 // its own groupId below.
 val modId = property("mod.id") as String
+/** The dev tools' mod id. NeoForge ids cannot contain a hyphen, so it is not the Fabric `-dev` spelling. */
+val devModId = "thirstwastaken2_dev"
+/** `-Pagent=<file>`: a file of agent requests to answer once, unattended. See docs/dev/AGENT-CLIENT-PLAN.md. */
+val agentScript: String? = providers.gradleProperty("agent").orNull?.let { rootProject.file(it).absolutePath }
 /** Published artifact name; deliberately not the lowercase mod id. */
 val modName = property("mod.name") as String
 val modGroup = property("mod.group") as String
@@ -52,9 +56,9 @@ val loader = "neoforge"
  * sources compile into `main` here. The four Fabric nodes keep `loom.splitEnvironmentSourceSets()`,
  * so the compiler still catches client code reached from common code on four nodes out of five.
  *
- * `src/dev` and `src/datagen` are absent on purpose: the dev tools and the generators stay Fabric
- * only. This node reads the datapack and asset JSON that the 26.2 Fabric node writes. `src/gametest`
- * is here, as a mod of its own, below.
+ * `src/datagen` is absent on purpose: the generators stay Fabric only, and this node reads the
+ * datapack and asset JSON that the 26.2 Fabric node writes. `src/gametest` and `src/dev` are both
+ * here, each as a mod of its own, below.
  *
  * `src/client` cannot simply be listed as a directory of `main`. Stonecutter preprocesses
  * `src/<name>` only for a source set called `<name>`, so without a `client` source set nothing
@@ -95,16 +99,38 @@ val gametest: SourceSet = sourceSets.create("gametest") {
 }
 
 /*
+ * The dev tools, as their own small mod, the same arrangement as the gametests. This node carries the
+ * agent alone: `/thirst benchmark` simulates players with Fabric's `FakePlayer`, which has no
+ * counterpart here and nothing to do with driving a client, so the benchmark package is excluded
+ * rather than ported. `src/dev/neoforge` holds the entrypoints and the loader seam the agent needs.
+ * See docs/dev/AGENT-CLIENT-PLAN.md and src/dev/java/AGENTS.md.
+ */
+val dev: SourceSet = sourceSets.create("dev") {
+    java.srcDir("src/dev/$loader/java")
+    resources.srcDir("src/dev/$loader/resources")
+    java.exclude("com/thirstwastaken2/dev/benchmark/**")
+    compileClasspath += sourceSets.main.get().compileClasspath + sourceSets.main.get().output
+    runtimeClasspath += sourceSets.main.get().runtimeClasspath + sourceSets.main.get().output
+}
+
+/*
  * The optional mods runClient loads, the same set the Fabric runClient has minus Mod Menu, which is
  * Fabric only. They go on that run alone: on `runtimeOnly` they would load into runServer and
  * runGametest too, and the gametests expect a server without AppleSkin. ModDevGradle's per-run
  * `additionalRuntimeClasspath` would be the place, but it refuses dependencies from Minecraft 26.2 on,
  * and a run's classpath is its source set's runtime classpath. So runClient gets a source set with no
  * sources of its own, whose runtime classpath is `main`'s plus these.
+ *
+ * The dev tools ride along on both of these, so an agent can drive runServer and every client through
+ * run/<node>/agent/<name>/.
  */
 val clientRunMods: Configuration = configurations.create("clientRunMods")
 val clientRun: SourceSet = sourceSets.create("clientRun") {
-    runtimeClasspath = sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath + clientRunMods
+    runtimeClasspath = dev.output + sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath +
+        clientRunMods
+}
+val serverRun: SourceSet = sourceSets.create("serverRun") {
+    runtimeClasspath = dev.output + sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
 }
 
 neoForge {
@@ -118,12 +144,23 @@ neoForge {
         create("thirstwastaken2_gametest") {
             sourceSet(gametest)
         }
+        create(devModId) {
+            sourceSet(dev)
+        }
     }
 
     runs {
         // Read out here: inside a run, `project` is the run model's own deprecated accessor.
         val node = project.name
         configureEach {
+            // `-Pagent=<file>` answers that file of agent requests once the game is up and then stops
+            // it, which is what an unattended run is. Without it the agent is still there, waiting on
+            // run/<node>/agent/<name>/in.jsonl. See docs/dev/AGENT-CLIENT-PLAN.md.
+            agentScript?.let {
+                systemProperty("thirstwastaken2.agent.script", it)
+                systemProperty("thirstwastaken2.agent.exit", "true")
+            }
+
             // One run directory per node, for the reason build.gradle.kts gives: a world saved by
             // one Minecraft version is not readable by another, and a failed test run must not
             // leave a broken world behind for runServer. The extra clients get one each as well:
@@ -139,7 +176,10 @@ neoForge {
             client()
             sourceSet = clientRun
         }
-        create("server") { server() }
+        create("server") {
+            server()
+            sourceSet = serverRun
+        }
         // Two more clients, for the checklist items that need a second player: MANUAL-TESTING.md's
         // "Sync to the client" section, where each player has to see their own bar and no one else's.
         // Two dev clients cannot both be `Dev` on one server, so each is named here, and
@@ -153,6 +193,9 @@ neoForge {
                     "--width", "1100", "--height", "700",
                     "--quickPlayMultiplayer", "localhost:25565",
                 )
+                // Each client answers its own queue, run/manual-<node>-<A|B>/agent/<A|B>/, which is
+                // what "each player sees only their own bar" is read out of.
+                systemProperty("thirstwastaken2.agent", tester)
             }
         }
         // The GameTest runner: a dedicated server that runs every registered test headlessly, skips
@@ -169,11 +212,17 @@ neoForge {
             else systemProperty("thirstwastaken2.gametest.report", report)
         }
 
-        // Only the gametest run loads the gametest mod. ModDevGradle loads every mod by default.
+        // ModDevGradle loads every declared mod by default, and each run only has the classes of the
+        // source sets on its own classpath. So each one is told exactly which mods to load: the
+        // gametests are their own mod and belong to the gametest run alone, and the dev tools belong
+        // to every run an agent may drive.
         val mainMod = mods.named(modId)
+        val devMod = mods.named(devModId)
+        val gametestMod = mods.named("thirstwastaken2_gametest")
         listOf("client", "server", "manualA", "manualB").forEach { run ->
-            named(run) { loadedMods.set(mainMod.map { setOf(it) }) }
+            named(run) { loadedMods.set(mainMod.zip(devMod) { main, agent -> setOf(main, agent) }) }
         }
+        named("gametest") { loadedMods.set(mainMod.zip(gametestMod) { main, tests -> setOf(main, tests) }) }
     }
 }
 
@@ -298,6 +347,14 @@ tasks.processResources {
             target.writeText(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(translated)))
         }
     }
+}
+
+// The dev tools have a mixin config of their own, for the one mixin that records where the HUD drew
+// the bar. It needs the same compatibility level as the rest, for the same reason: a node on Java 25
+// writes class files Mixin refuses to read at level 21.
+tasks.named<ProcessResources>("processDevResources") {
+    inputs.property("java", requiredJava.majorVersion)
+    filesMatching("*.mixins.json") { expand("java" to "JAVA_${requiredJava.majorVersion}") }
 }
 
 /**

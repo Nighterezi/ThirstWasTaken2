@@ -13,6 +13,7 @@
       "com.thirstwastaken2.gametest.WaterskinGameTest",
       "com.thirstwastaken2.gametest.TooltipGameTest",
       "com.thirstwastaken2.gametest.PlayerStateGameTest",
+      "com.thirstwastaken2.gametest.PlayerSyncGameTest",
       "com.thirstwastaken2.gametest.CauldronGameTest",
       "com.thirstwastaken2.gametest.PurificationGameTest",
       "com.thirstwastaken2.gametest.EnvironmentGameTest",

@@ -87,6 +87,14 @@ loom {
     }
 
     runConfigs.all {
+        // `-Pagent=<file>` answers that file of agent requests once the game is up and then stops it,
+        // which is what an unattended run is. Without it the agent is still there, waiting on
+        // run/<node>/agent/<side>/in.jsonl. See docs/dev/AGENT-CLIENT-PLAN.md.
+        providers.gradleProperty("agent").orNull?.let { script ->
+            systemProperties.put("thirstwastaken2.agent.script", rootProject.file(script).absolutePath)
+            systemProperties.put("thirstwastaken2.agent.exit", "true")
+        }
+
         // One run directory per version. Sharing a single one would hand a 26.2 world to a 1.21.11
         // server, which fails on world format rather than on anything the mod did. The gametest
         // runner and datagen get their own again, so a failed run cannot leave a broken world behind
@@ -121,6 +129,12 @@ sourceSets.named("client") {
     java.srcDir("src/client/$loader/java")
     resources.srcDir("src/client/$loader/resources")
 }
+// The dev tools have loader code of their own, under the same rule: the entrypoints, and the small
+// seam the agent needs beyond the mod's own `platform/Loader`. See src/dev/java/AGENTS.md.
+dev.java.srcDir("src/dev/$loader/java")
+dev.resources.srcDir("src/dev/$loader/resources")
+// So do the gametests, for the one test that needs a connection reporting the mod's channel.
+gametest.java.srcDir("src/gametest/$loader/java")
 
 /**
  * The Create Fly version this node compiles the Sand Filter against, or null where it does not. Create
@@ -219,6 +233,32 @@ dev.runtimeClasspath += sourceSets.main.get().runtimeClasspath + sourceSets.main
 // entrypoint, crashes a dev server that lacks them. Only the classes are added, not the client's
 // runtime mods, so the client-only dependencies stay out of the server.
 dev.runtimeClasspath += sourceSets["client"].output
+// The agent's client probes read the HUD, the framebuffer and the key state, so the dev source set
+// compiles against `client` as well as against `main`. Loom's split keeps the two apart for the mod,
+// where common code reaching a client class is a real mistake; a tool whose whole job is to read what
+// a client holds is on both sides by definition. See src/dev/java/AGENTS.md.
+dev.compileClasspath += sourceSets["client"].compileClasspath + sourceSets["client"].output
+
+/**
+ * What runClient runs: the dev tools on top of the client. It cannot simply be handed `dev` the way
+ * runServer is, because `dev`'s runtime classpath deliberately carries the client's *classes* without
+ * the client's runtime mods, and runClient is meant to load AppleSkin, Jade and the rest. This source
+ * set has no sources of its own and exists only to put both on one classpath — the same arrangement
+ * build.neoforge.gradle.kts uses for its own extra clients.
+ */
+val devClient: SourceSet = sourceSets.create("devClient") {
+    runtimeClasspath = dev.output + dev.runtimeClasspath + sourceSets["client"].runtimeClasspath
+}
+
+loom {
+    runs {
+        // runClient loads the dev tools too, so an agent can drive a real client through
+        // run/<node>/agent/client/. See docs/dev/AGENT-CLIENT-PLAN.md.
+        named("client") {
+            sourceSet = devClient.name
+        }
+    }
+}
 
 /**
  * Adds a client-only mod dependency. Loom prefixes these configurations with `mod` where it remaps
@@ -302,6 +342,14 @@ tasks.processResources {
 // The client mixins have their own configs, in the client source set: the loader independent one in
 // src/client/resources and Fabric's own in src/client/fabric/resources.
 tasks.named<ProcessResources>("processClientResources") {
+    inputs.property("java", requiredJava.majorVersion)
+    filesMatching("*.mixins.json") { expand("java" to "JAVA_${requiredJava.majorVersion}") }
+}
+
+// The dev tools have a mixin config of their own, for the one mixin that records where the HUD drew
+// the bar. It needs the same compatibility level as the rest, for the same reason: a node on Java 25
+// writes class files Mixin refuses to read at level 21.
+tasks.named<ProcessResources>("processDevResources") {
     inputs.property("java", requiredJava.majorVersion)
     filesMatching("*.mixins.json") { expand("java" to "JAVA_${requiredJava.majorVersion}") }
 }
