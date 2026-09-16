@@ -32,6 +32,11 @@ public final class DevLoader {
                 .orElse("unknown");
     }
 
+    /** Whether another mod is loaded, which the benchmark asks about Create Fly. */
+    public static boolean isModLoaded(String modId) {
+        return ModList.get().isLoaded(modId);
+    }
+
     /** Runs once the server is accepting commands: a dedicated one, or a client's integrated one. */
     public static void onServerStarted(Consumer<MinecraftServer> handler) {
         NeoForge.EVENT_BUS.addListener((ServerStartedEvent event) -> handler.accept(event.getServer()));

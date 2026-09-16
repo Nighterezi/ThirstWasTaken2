@@ -34,6 +34,11 @@ public final class DevLoader {
                 .orElse("unknown");
     }
 
+    /** Whether another mod is loaded, which the benchmark asks about Create Fly. */
+    public static boolean isModLoaded(String modId) {
+        return FabricLoader.getInstance().isModLoaded(modId);
+    }
+
     /** Runs once the server is accepting commands: a dedicated one, or a client's integrated one. */
     public static void onServerStarted(Consumer<MinecraftServer> handler) {
         ServerLifecycleEvents.SERVER_STARTED.register(handler::accept);

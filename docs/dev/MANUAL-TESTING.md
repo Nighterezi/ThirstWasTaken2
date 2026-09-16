@@ -45,7 +45,7 @@ The client then opens maximised and never takes the mouse pointer, so it can sit
 while you work in another window; clicking it to look at the bar no longer traps the cursor inside
 the frame. Leave it off for the qualitative items below, which are played by hand or by computer use:
 without the grab there is no mouse look and no click reaches the world.
-[src/dev/java/AGENTS.md](../../src/dev/java/AGENTS.md) has the rest.
+[.../dev/agent/AGENTS.md](../../src/dev/java/com/thirstwastaken2/dev/agent/AGENTS.md) has the rest.
 
 Useful commands while testing:
 
@@ -90,7 +90,7 @@ Useful commands while testing:
 number out of the agent client rather than with a pair of eyes on a screenshot: the client reports the
 value it holds, and `LocalPlayer.isSprinting()` reports the sprint gate. Run it with
 [tools/agent/client-sync.jsonl](../../tools/agent/client-sync.jsonl), and the two-client item the way
-[src/dev/java/AGENTS.md](../../src/dev/java/AGENTS.md) describes; that file also says what each answer
+[.../dev/agent/AGENTS.md](../../src/dev/java/com/thirstwastaken2/dev/agent/AGENTS.md) describes; that file also says what each answer
 has to be. Last run on `1.21.1-neoforge` and `26.1.x-neoforge` on 2026-09-16, all five green on both.
 
 The five checks it replaced were: `/thirst set` reaching the bar and sprinting refused at 6 but not at

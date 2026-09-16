@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.fabricmc.loader.api.FabricLoader;
+import com.thirstwastaken2.dev.platform.DevLoader;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -33,7 +33,7 @@ final class BenchmarkReport {
      */
     static Path write(JsonObject report) {
         try {
-            Path directory = FabricLoader.getInstance().getGameDir().resolve("benchmark");
+            Path directory = DevLoader.gameDir().resolve("benchmark");
             Files.createDirectories(directory);
             String json = GSON.toJson(report);
             Path file = directory.resolve("thirst-benchmark-" + LocalDateTime.now().format(STAMP) + ".json");

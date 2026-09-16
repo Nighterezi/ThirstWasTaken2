@@ -113,8 +113,8 @@ tasks.register("checkVersionSeam") {
  * Fails when the agent's loader independent half stops being loader independent.
  *
  * `dev/agent/core` is the queue, the envelope and the dispatch loop: plain Java and Gson, and nothing
- * else. That is what makes the settled decision in docs/dev/AGENT-CLIENT-PLAN.md true rather than
- * aspirational — one import of Minecraft, of a mod loader or of the mod itself and it no longer lifts
+ * else. That is what makes the settled decision in
+ * src/dev/java/com/thirstwastaken2/dev/agent/AGENTS.md true rather than aspirational — one import of Minecraft, of a mod loader or of the mod itself and it no longer lifts
  * out of this project cleanly. `dev/agent/thirst` is the half that is free to name all three.
  */
 tasks.register("checkAgentCore") {

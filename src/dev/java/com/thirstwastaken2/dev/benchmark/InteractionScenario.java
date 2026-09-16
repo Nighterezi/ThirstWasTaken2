@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.thirstwastaken2.api.ThirstApi;
 import com.thirstwastaken2.data.ThirstData;
 import com.thirstwastaken2.data.ThirstManager;
+import com.thirstwastaken2.dev.platform.DevLoader;
 import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.item.WaterskinItem;
 import com.thirstwastaken2.purity.ThirstComponents;
@@ -12,7 +13,6 @@ import com.thirstwastaken2.purity.WaterInteractions;
 import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.purity.WaterQuality;
 import com.thirstwastaken2.tooltip.ThirstTooltip;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -307,7 +307,7 @@ final class InteractionScenario implements Stage {
      * reached by name.
      */
     private void addCreateFly() {
-        if (!FabricLoader.getInstance().isModLoaded("create")) return;
+        if (!DevLoader.isModLoaded("create")) return;
         try {
             Class.forName(CREATE_FLY_OPERATIONS)
                     .getDeclaredMethod("add", InteractionScenario.class, BenchmarkWorld.class, BenchmarkPlayer.class)

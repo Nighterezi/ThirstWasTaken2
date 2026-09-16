@@ -79,7 +79,7 @@ It starts the dedicated server with the dev tools, runs `/thirst benchmark` from
 server is up, simulates 1 to 200 players plus every interaction, writes
 `run/<version>/benchmark/latest.json` and stops the server again. `-Pbenchmark=quick`, `stress` or
 `"players 500 1200"` changes the scale. The same command works typed into a `runServer` console. Read
-[src/dev/java/AGENTS.md](src/dev/java/AGENTS.md) before comparing two reports.
+[src/dev/java/com/thirstwastaken2/dev/benchmark/AGENTS.md](src/dev/java/com/thirstwastaken2/dev/benchmark/AGENTS.md) before comparing two reports.
 
 Drive a running game from a script, so a client-side check answers with a number instead of a
 screenshot:
@@ -92,7 +92,7 @@ That answers a file of requests once the game is up and stops it again. Without 
 agent is there waiting on `run/<node>/agent/<name>/in.jsonl`, which is how a client that has to stay
 open is driven: `tools/agent/drive.py` writes the requests and reads the answers back. The commands,
 the queue's shape and what a check looks like are in
-[src/dev/java/AGENTS.md](src/dev/java/AGENTS.md).
+[src/dev/java/com/thirstwastaken2/dev/agent/AGENTS.md](src/dev/java/com/thirstwastaken2/dev/agent/AGENTS.md).
 
 `runServer` is the fastest smoke test: it applies every mixin, loads the datapack registries, then
 idles. A clean run prints `ThirstWasTaken2 initialized for Minecraft <version>` and no exceptions.
@@ -331,8 +331,9 @@ Each area of the tree carries its own `AGENTS.md` with rules and conventions loc
 | Every difference between the supported versions, visible and underneath | [docs/dev/VERSION-DIFFERENCES.md](docs/dev/VERSION-DIFFERENCES.md) |
 | What to check by hand before a release, per version | [docs/dev/MANUAL-TESTING.md](docs/dev/MANUAL-TESTING.md) |
 | Automated in-game tests | [src/gametest/java/AGENTS.md](src/gametest/java/AGENTS.md) |
-| Performance and memory benchmark, and the agent client that drives a real client | [src/dev/java/AGENTS.md](src/dev/java/AGENTS.md) |
-| What is left to do on the agent client, and why it is built this way | [docs/dev/AGENT-CLIENT-PLAN.md](docs/dev/AGENT-CLIENT-PLAN.md) |
+| Development-only tooling: the source set, its gate and the harness the two tools share | [src/dev/java/AGENTS.md](src/dev/java/AGENTS.md) |
+| Performance and memory benchmark | [.../dev/benchmark/AGENTS.md](src/dev/java/com/thirstwastaken2/dev/benchmark/AGENTS.md) |
+| The agent client that drives a real client and reads numbers out of it | [.../dev/agent/AGENTS.md](src/dev/java/com/thirstwastaken2/dev/agent/AGENTS.md) |
 | Client HUD element rendering & config screen contract | [src/client/java/com/thirstwastaken2/client/AGENTS.md](src/client/java/com/thirstwastaken2/client/AGENTS.md) |
 | Manifests, textures, fonts, lang keys, and what the generated JSON means | [src/main/resources/AGENTS.md](src/main/resources/AGENTS.md) |
 | The generators for every recipe, advancement, tag and model | [src/datagen/java/AGENTS.md](src/datagen/java/AGENTS.md) |

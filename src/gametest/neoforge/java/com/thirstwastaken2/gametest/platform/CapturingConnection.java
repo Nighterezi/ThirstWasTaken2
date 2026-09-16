@@ -23,7 +23,7 @@ import java.util.function.Consumer;
  * version.
  *
  * <p>Nothing is written to a socket. {@code send} collects the packet instead, which is what the test
- * reads. See {@code docs/dev/AGENT-CLIENT-PLAN.md} and {@code src/gametest/java/AGENTS.md}.
+ * reads. See {@code src/gametest/java/AGENTS.md} and {@code src/dev/java/com/thirstwastaken2/dev/agent/AGENTS.md}.
  */
 public final class CapturingConnection {
     private CapturingConnection() { }

@@ -1,6 +1,6 @@
 # The dev tools mod on NeoForge, the counterpart of src/dev/resources/fabric.mod.json. Development
 # only, never published. It carries the agent alone: the benchmark simulates players with Fabric's
-# FakePlayer and stays on that loader. See docs/dev/AGENT-CLIENT-PLAN.md.
+# FakePlayer and stays on that loader. See src/dev/java/AGENTS.md.
 modLoader = "javafml"
 loaderVersion = "[1,)"
 license = "MIT"

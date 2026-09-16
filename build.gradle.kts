@@ -89,15 +89,15 @@ loom {
     runConfigs.all {
         // `-Pagent=<file>` answers that file of agent requests once the game is up and then stops it,
         // which is what an unattended run is. Without it the agent is still there, waiting on
-        // run/<node>/agent/<side>/in.jsonl. See docs/dev/AGENT-CLIENT-PLAN.md.
+        // run/<node>/agent/<side>/in.jsonl. See src/dev/java/com/thirstwastaken2/dev/agent/AGENTS.md.
         providers.gradleProperty("agent").orNull?.let { script ->
             systemProperties.put("thirstwastaken2.agent.script", rootProject.file(script).absolutePath)
-            systemProperties.put("thirstwastaken2.agent.exit", "true")
+            systemProperties.put("thirstwastaken2.agent.script.exit", "true")
         }
 
         // `-Pdriven` says this client is driven by an agent rather than played: it opens maximised
         // and never takes the mouse pointer, so the desktop stays usable while a script drives it.
-        // An unattended `-Pagent=<file>` run implies it. See src/dev/java/AGENTS.md.
+        // An unattended `-Pagent=<file>` run implies it. See src/dev/java/com/thirstwastaken2/dev/agent/AGENTS.md.
         if (providers.gradleProperty("driven").isPresent) {
             systemProperties.put("thirstwastaken2.agent.driven", "true")
         }
@@ -243,7 +243,7 @@ dev.runtimeClasspath += sourceSets["client"].output
 // The agent's client probes read the HUD, the framebuffer and the key state, so the dev source set
 // compiles against `client` as well as against `main`. Loom's split keeps the two apart for the mod,
 // where common code reaching a client class is a real mistake; a tool whose whole job is to read what
-// a client holds is on both sides by definition. See src/dev/java/AGENTS.md.
+// a client holds is on both sides by definition. See src/dev/java/com/thirstwastaken2/dev/agent/AGENTS.md.
 dev.compileClasspath += sourceSets["client"].compileClasspath + sourceSets["client"].output
 
 /**
@@ -260,7 +260,7 @@ val devClient: SourceSet = sourceSets.create("devClient") {
 loom {
     runs {
         // runClient loads the dev tools too, so an agent can drive a real client through
-        // run/<node>/agent/client/. See docs/dev/AGENT-CLIENT-PLAN.md.
+        // run/<node>/agent/client/. See src/dev/java/com/thirstwastaken2/dev/agent/AGENTS.md.
         named("client") {
             sourceSet = devClient.name
         }

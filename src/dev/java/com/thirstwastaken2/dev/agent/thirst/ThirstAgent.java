@@ -4,6 +4,9 @@ import com.google.gson.JsonObject;
 import com.thirstwastaken2.ThirstWasTaken2;
 import com.thirstwastaken2.dev.agent.core.AgentDispatcher;
 import com.thirstwastaken2.dev.agent.core.AgentQueue;
+import com.thirstwastaken2.dev.harness.Autorun;
+import com.thirstwastaken2.dev.harness.DevEnvironment;
+import com.thirstwastaken2.dev.harness.ServerAwake;
 import com.thirstwastaken2.dev.platform.DevLoader;
 import net.minecraft.server.MinecraftServer;
 
@@ -26,10 +29,12 @@ import java.nio.file.Path;
 public final class ThirstAgent {
     /** {@code -Dthirstwastaken2.agent=<name>} names this process's queue directory. */
     public static final String NAME_PROPERTY = "thirstwastaken2.agent";
-    /** {@code -Dthirstwastaken2.agent.script=<file>} runs a file of requests once, at startup. */
+    /**
+     * {@code -Dthirstwastaken2.agent.script=<file>} runs a file of requests once, at startup, and
+     * {@code -Dthirstwastaken2.agent.script.exit=true} stops the game once it has been answered. The
+     * pair is read by {@link Autorun}, which the benchmark's own autorun property goes through too.
+     */
     public static final String SCRIPT_PROPERTY = "thirstwastaken2.agent.script";
-    /** {@code -Dthirstwastaken2.agent.exit=true} stops the game once that script has been answered. */
-    public static final String EXIT_PROPERTY = "thirstwastaken2.agent.exit";
 
     /** The queue this process owns, or null before {@link #install} or outside a development run. */
     private static AgentDispatcher dispatcher;
@@ -53,13 +58,9 @@ public final class ThirstAgent {
         ThirstAgent.exit = exit;
         Path directory = DevLoader.gameDir().resolve("agent").resolve(queueName());
 
-        JsonObject about = new JsonObject();
+        JsonObject about = DevEnvironment.describe();
         about.addProperty("side", side);
         about.addProperty("name", queueName());
-        about.addProperty("loader", DevLoader.LOADER);
-        about.addProperty("minecraft", ThirstWasTaken2.MINECRAFT);
-        about.addProperty("modVersion", DevLoader.modVersion(ThirstWasTaken2.MOD_ID));
-        about.addProperty("runDirectory", DevLoader.gameDir().toAbsolutePath().toString());
 
         dispatcher = new AgentDispatcher(new AgentQueue(directory, ThirstWasTaken2.LOGGER),
                 ThirstWasTaken2.LOGGER, about);
@@ -93,13 +94,12 @@ public final class ThirstAgent {
     public static void start() {
         if (dispatcher == null) return;
         dispatcher.start();
-        String script = System.getProperty(SCRIPT_PROPERTY);
-        if (script == null || script.isBlank()) return;
-        boolean stopWhenDone = Boolean.getBoolean(EXIT_PROPERTY);
-        dispatcher.runScript(Path.of(script.trim()), () -> {
+        Autorun script = Autorun.of(SCRIPT_PROPERTY);
+        if (script == null || script.argument().isEmpty()) return;
+        dispatcher.runScript(Path.of(script.argument()), () -> {
             ThirstWasTaken2.LOGGER.info("[ThirstAgent] DONE script answered, out={}",
                     dispatcher.queue().file(AgentQueue.OUT).toAbsolutePath());
-            if (stopWhenDone) stop();
+            if (script.stopWhenDone()) stop();
         });
     }
 

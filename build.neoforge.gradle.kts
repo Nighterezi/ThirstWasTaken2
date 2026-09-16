@@ -17,10 +17,10 @@ plugins {
 val modId = property("mod.id") as String
 /** The dev tools' mod id. NeoForge ids cannot contain a hyphen, so it is not the Fabric `-dev` spelling. */
 val devModId = "thirstwastaken2_dev"
-/** `-Pagent=<file>`: a file of agent requests to answer once, unattended. See docs/dev/AGENT-CLIENT-PLAN.md. */
+/** `-Pagent=<file>`: a file of agent requests to answer once, unattended. See src/dev/java/com/thirstwastaken2/dev/agent/AGENTS.md. */
 val agentScript: String? = providers.gradleProperty("agent").orNull?.let { rootProject.file(it).absolutePath }
 
-/** `-Pdriven`: this client is driven by an agent, not played. See src/dev/java/AGENTS.md. */
+/** `-Pdriven`: this client is driven by an agent, not played. See src/dev/java/com/thirstwastaken2/dev/agent/AGENTS.md. */
 val drivenClient: Boolean = providers.gradleProperty("driven").isPresent
 /** Published artifact name; deliberately not the lowercase mod id. */
 val modName = property("mod.name") as String
@@ -106,7 +106,7 @@ val gametest: SourceSet = sourceSets.create("gametest") {
  * agent alone: `/thirst benchmark` simulates players with Fabric's `FakePlayer`, which has no
  * counterpart here and nothing to do with driving a client, so the benchmark package is excluded
  * rather than ported. `src/dev/neoforge` holds the entrypoints and the loader seam the agent needs.
- * See docs/dev/AGENT-CLIENT-PLAN.md and src/dev/java/AGENTS.md.
+ * See src/dev/java/AGENTS.md.
  */
 val dev: SourceSet = sourceSets.create("dev") {
     java.srcDir("src/dev/$loader/java")
@@ -163,10 +163,10 @@ neoForge {
         configureEach {
             // `-Pagent=<file>` answers that file of agent requests once the game is up and then stops
             // it, which is what an unattended run is. Without it the agent is still there, waiting on
-            // run/<node>/agent/<name>/in.jsonl. See docs/dev/AGENT-CLIENT-PLAN.md.
+            // run/<node>/agent/<name>/in.jsonl. See src/dev/java/com/thirstwastaken2/dev/agent/AGENTS.md.
             agentScript?.let {
                 systemProperty("thirstwastaken2.agent.script", it)
-                systemProperty("thirstwastaken2.agent.exit", "true")
+                systemProperty("thirstwastaken2.agent.script.exit", "true")
             }
 
             // `-Pdriven` says this client is driven by an agent rather than played: it opens

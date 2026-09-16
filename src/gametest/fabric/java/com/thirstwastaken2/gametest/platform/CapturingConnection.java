@@ -21,8 +21,8 @@ import java.util.function.Consumer;
  * <p>So the phase this belongs to is NeoForge only, and deliberately: the thing it exists to catch is
  * {@code Loader.syncsTo}, which is NeoForge's function. Fabric's own answer is
  * {@code AttachmentSyncPredicate.targetOnly()}, a value handed to Fabric API rather than a decision
- * the mod makes, and the check for it is still a client with eyes on it — or two agent clients, which
- * is what phase 3 is for. See {@code docs/dev/AGENT-CLIENT-PLAN.md}.
+ * the mod makes, and the check for it is still a client with eyes on it — or two agent clients,
+ * which is what {@code runManualA} and {@code runManualB} are for. See {@code src/dev/java/com/thirstwastaken2/dev/agent/AGENTS.md}.
  */
 public final class CapturingConnection {
     private CapturingConnection() { }

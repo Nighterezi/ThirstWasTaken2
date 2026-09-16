@@ -19,7 +19,7 @@ import java.util.List;
  * <p>NeoForge only, and deliberately so: what this exists to catch is {@code Loader.syncsTo}, which is
  * NeoForge's own decision, and its Fabric counterpart is a value handed to Fabric API rather than a
  * function the mod writes. {@code CapturingConnection} on Fabric says why it cannot run there; the
- * check is made with two agent clients instead. See {@code docs/dev/AGENT-CLIENT-PLAN.md}.
+ * check is made with two agent clients instead. See {@code src/dev/java/com/thirstwastaken2/dev/agent/AGENTS.md}.
  *
  * <p>The mechanism matters to how this is written. Both loaders work out who to sync to from who is
  * watching the player, so a simulated player nobody watches would be told only about itself whatever
@@ -30,8 +30,8 @@ import java.util.List;
  * three. A run where that is not so fails as a broken fixture rather than passing on nothing.
  *
  * <p>Those two are what make the rest worth reading. Change {@code Loader.syncsTo} to {@code return
- * true} and this test goes red; before the control was there it did not, and the note in
- * {@code docs/dev/AGENT-CLIENT-PLAN.md} said so.
+ * true} and this test goes red; before the control was there it did not, and this test proved less
+ * than it claimed.
  */
 public final class PlayerSyncGameTest {
     /** Three is enough: one owner, and two others who must be told nothing. */

@@ -83,7 +83,7 @@ stack and cached, and the output is compared against it once per stack that land
 merging more of the same water keeps its stack object and only changes the amount. The amounts are then
 moved directly on the two `TankSegment`s. A full or mismatched output returns before any of that, so a
 blocked filter costs next to nothing. `./gradlew ":26.2.x:runBenchmark" -Pcreate` measures all three
-states; see [src/dev/java/AGENTS.md](../dev/java/AGENTS.md).
+states; see [.../dev/benchmark/AGENTS.md](../../dev/java/com/thirstwastaken2/dev/benchmark/AGENTS.md).
 
 The input tank only accepts water (`WaterOnlyHandler`): nothing drains it, so anything else would sit
 there forever. Sea water passes through unchanged, because sand does not take salt out.

@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.thirstwastaken2.ThirstWasTaken2;
 import com.thirstwastaken2.dev.agent.core.AgentDispatcher;
-import com.thirstwastaken2.dev.platform.DevLoader;
+import com.thirstwastaken2.dev.harness.DevEnvironment;
 
 /** The three commands every process answers, whichever side it is. */
 final class CommonProbes {
@@ -16,13 +16,8 @@ final class CommonProbes {
          * command whose answer never depends on a world, a player or a server being there.
          */
         dispatcher.register("probe", (request, reply) -> {
-            JsonObject result = new JsonObject();
+            JsonObject result = DevEnvironment.describe();
             result.addProperty("side", side);
-            result.addProperty("loader", DevLoader.LOADER);
-            result.addProperty("minecraft", ThirstWasTaken2.MINECRAFT);
-            result.addProperty("modVersion", DevLoader.modVersion(ThirstWasTaken2.MOD_ID));
-            result.addProperty("dev", ThirstWasTaken2.DEV);
-            result.addProperty("runDirectory", DevLoader.gameDir().toAbsolutePath().toString());
             result.addProperty("queue", dispatcher.queue().directory().toAbsolutePath().toString());
             result.addProperty("serverRunning", ThirstAgent.server() != null);
             result.addProperty("pending", dispatcher.pending());
@@ -47,9 +42,9 @@ final class CommonProbes {
         });
 
         /*
-         * Stops this process. A script ends with it; `-Dthirstwastaken2.agent.exit=true` does the same
-         * thing without the line. The answer is written before the game goes down, so `out.jsonl` is
-         * complete afterwards.
+         * Stops this process. A script ends with it; `-Dthirstwastaken2.agent.script.exit=true` does
+         * the same thing without the line. The answer is written before the game goes down, so
+         * `out.jsonl` is complete afterwards.
          */
         dispatcher.register("stop", (request, reply) -> {
             reply.ok();

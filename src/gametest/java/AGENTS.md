@@ -59,7 +59,7 @@ because they also include vanilla smoke tests; those are not the mod's.
 
 ## The NeoForge harness
 
-The `-neoforge` nodes run the same 124 test methods, with no test body changed and no NeoForge-only
+The `-neoforge` nodes run the same 127 test methods, with no test body changed and no NeoForge-only
 branch in any of them. What stands in for Fabric API lives in `src/gametest/neoforge`:
 
 | | Fabric API | NeoForge node |
@@ -78,8 +78,8 @@ adds a vanilla `TestFunction` per method to `GameTestRegistry.getAllTestFunction
 NeoForge's own registration, which only accepts vanilla's annotation and takes the structure's
 namespace from a NeoForge annotation on the test class. That server has no `--report` option either,
 so the build passes the report path as `-Dthirstwastaken2.gametest.report` and the harness installs
-vanilla's `JUnitLikeTestReporter` itself. The report lists 124 tests there, without
-`minecraft:always_pass`.
+vanilla's `JUnitLikeTestReporter` itself. The report lists 127 tests there, without
+`minecraft:always_pass`, which the 26.2 nodes' reports do carry.
 
 On 1.21.11 `TestData` has no padding and `TestEnvironmentDefinition` takes no type parameter; the
 harness leaves padding out before 26.1 and holds both values in `var`s.
@@ -136,9 +136,22 @@ cauldron bottle draw.
 | `WaterInteractionsGameTest` | scooping with the bowl and the waterskin, the clay bowl holding nothing, drawing the waterskin from a cauldron, pouring it out, and a bottle drawn from a cauldron keeping its grade |
 | `LootGameTest` | graded water in each seeded chest and in piglin bartering, no water anywhere else, and a table a data pack replaced still getting it |
 | `ItemAppearanceGameTest` | the custom model data bowls and waterskins dispatch on, the sea-water item model (1.21.2 and later), and the waterskin bar's width and colour |
+| `PlayerSyncGameTest` | that a player is told their own thirst and no one else's, with three players in range of each other. NeoForge only: what it exists to catch is `Loader.syncsTo`, and Fabric's counterpart is a value handed to Fabric API rather than a function the mod writes. There the same check is two agent clients, as [.../dev/agent/AGENTS.md](../../dev/java/com/thirstwastaken2/dev/agent/AGENTS.md) describes |
 
 `WaterskinGameTest` also covers pouring a bottle or bucket into a slotted waterskin from the cursor,
 and `PurificationGameTest` the grade every boiling recipe produces and the crafted water bowl.
+
+`PlayerSyncGameTest` is the one test whose fixture has to be proved before its assertions mean
+anything, and it is worth knowing why. Both loaders build the sync list out of who is *tracking* the
+player, and three simulated players standing still are tracked by nobody: the chunk map asks once
+when a player is added, which is before a single chunk has been sent, and afterwards it only asks
+again about an entity whose section has changed. So the sync list was `[self]` whatever the predicate
+said, and the test passed with `syncsTo` opened wide. `SyncPlayer.settle` now does both halves once a
+tick — it sends the chunks the tracking view is waiting on, and moves each player a section up and
+back down, vertically so the chunk never changes while the section does — and two assertions run
+before the real ones: that each player is watching the chunk, and that a broadcast about one of them
+reaches all three. A run where nobody is watching anybody fails as a broken fixture rather than
+passing on nothing.
 
 What none of them can reach - the client, damage to a player, other dimensions and biomes, real
 time - is in [docs/dev/MANUAL-TESTING.md](../../../docs/dev/MANUAL-TESTING.md), with a section per

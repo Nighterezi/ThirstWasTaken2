@@ -2,9 +2,9 @@ package com.thirstwastaken2.dev.benchmark;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.thirstwastaken2.ThirstWasTaken2;
 import com.thirstwastaken2.config.ThirstConfig;
-import net.fabricmc.loader.api.FabricLoader;
+import com.thirstwastaken2.dev.harness.DevEnvironment;
+import com.thirstwastaken2.dev.platform.DevLoader;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -188,12 +188,12 @@ final class BenchmarkRun {
 
     private JsonObject environment() {
         JsonObject json = new JsonObject();
-        json.addProperty("minecraft", ThirstWasTaken2.MINECRAFT);
-        json.addProperty("modVersion", FabricLoader.getInstance().getModContainer(ThirstWasTaken2.MOD_ID)
-                .map(mod -> mod.getMetadata().getVersion().getFriendlyString())
-                .orElse("unknown"));
-        json.addProperty("dev", ThirstWasTaken2.DEV);
-        json.addProperty("createFly", FabricLoader.getInstance().isModLoaded("create"));
+        // The field order is the report's, so a reader diffing two runs sees only what changed;
+        // what each field says is DevEnvironment's, which the agent answers probe out of as well.
+        json.addProperty("minecraft", DevEnvironment.minecraft());
+        json.addProperty("modVersion", DevEnvironment.modVersion());
+        json.addProperty("dev", DevEnvironment.dev());
+        json.addProperty("createFly", DevLoader.isModLoaded("create"));
         json.addProperty("dedicatedServer", server.isDedicatedServer());
         json.addProperty("java", System.getProperty("java.version"));
         json.addProperty("vm", System.getProperty("java.vm.name") + " " + System.getProperty("java.vm.version"));

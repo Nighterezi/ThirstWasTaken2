@@ -10,7 +10,7 @@ import net.neoforged.fml.common.Mod;
  * <p>The mod is declared in {@code META-INF/neoforge.mods.toml} and has one class per side rather than
  * one class that asks which side it is on, which is the same shape the mod itself uses. The benchmark
  * is not here: it simulates players with Fabric's {@code FakePlayer} and stays on that loader, as
- * {@code docs/dev/AGENT-CLIENT-PLAN.md} records.
+ * {@code src/dev/java/AGENTS.md} records.
  */
 @Mod(value = ThirstDevNeoForge.MOD_ID, dist = Dist.DEDICATED_SERVER)
 public final class ThirstDevNeoForge {
