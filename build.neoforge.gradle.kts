@@ -29,7 +29,7 @@ val modGroup = property("mod.group") as String
 val mcRange = property("mod.mc_compat") as String
 val neoForgeVersion = property("deps.neoforge") as String
 
-// The loader goes in the version so the jar is `ThirstWasTaken2-1.0.5+26.2-neoforge.jar` and never
+// The loader goes in the version so the jar is `ThirstWasTaken2-1.0.6+26.2-neoforge.jar` and never
 // collides with the Fabric jar of the same Minecraft version in build/libs/.
 version = "${property("mod.version")}+${sc.current.version}-neoforge"
 base.archivesName = modName

@@ -48,7 +48,7 @@ Fabric port of the original [Thirst Was Taken](https://modrinth.com/mod/thirst-w
 ## Requirements
 
 There is one download per Minecraft version, named after it, for example
-`ThirstWasTaken2-1.0.4+1.21.11.jar`. The `+1.21.1` download also runs on Minecraft 1.21.
+`ThirstWasTaken2-1.0.6+1.21.11.jar`. The `+1.21.1` download also runs on Minecraft 1.21.
 
 | Component | Minecraft 26.2 | Minecraft 26.1.x | Minecraft 1.21.11 | Minecraft 1.21.1 |
 |---|---|---|---|---|
