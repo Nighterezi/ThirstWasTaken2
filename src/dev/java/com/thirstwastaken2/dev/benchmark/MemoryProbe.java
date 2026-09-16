@@ -26,6 +26,19 @@ final class MemoryProbe implements Stage {
     /** Keeps these UUIDs apart from the ones the tick scenarios use. */
     private static final int FRESH_INDEX = 9_000;
     private static final int INSTANCES = 10_000;
+    /**
+     * Exhaustion charged per simulated tick in the steady measurement: an ordinary walking charge.
+     * It matters that this accumulates. One charge of it moves exhaustion by 0.028, and the tick only
+     * builds a {@link ThirstData} when the value crosses a {@code SYNC_STEP} of 0.25, so a single
+     * charge from a standing start always takes the carry branch. Measuring one charge therefore
+     * measured the cheapest path and reported it as what a tick costs; over enough ticks the step is
+     * crossed every ninth one, which is the rate a real session pays.
+     */
+    private static final float STEADY_EXHAUSTION = 0.028F;
+    /** Measured ticks per player. Enough to cross the sync step about twenty times. */
+    private static final int STEADY_TICKS = 180;
+    /** Ticks run and thrown away first, so the figure is not one cold, un-compiled pass. */
+    private static final int STEADY_WARMUP = 20;
 
     private final BenchmarkWorld world;
     private final List<BenchmarkPlayer> fresh = new ArrayList<>();
@@ -81,16 +94,23 @@ final class MemoryProbe implements Stage {
         }
         json.addProperty("firstTouchBytesPerPlayer", Metrics.round((Metrics.allocatedBytes() - bytes) / (double) FRESH_PLAYERS));
 
+        for (int tick = 0; tick < STEADY_WARMUP; tick++) steadyTick();
         bytes = Metrics.allocatedBytes();
-        for (BenchmarkPlayer player : fresh) {
-            player.causeFoodExhaustion(0.028F);
-            ThirstManager.tickPlayer(player);
-        }
-        json.addProperty("steadyTickBytesPerPlayer", Metrics.round((Metrics.allocatedBytes() - bytes) / (double) FRESH_PLAYERS));
+        for (int tick = 0; tick < STEADY_TICKS; tick++) steadyTick();
+        json.addProperty("steadyTickBytesPerPlayer", Metrics.round(
+                (Metrics.allocatedBytes() - bytes) / (double) (FRESH_PLAYERS * STEADY_TICKS)));
 
         json.addProperty("thirstCacheEntries", mapSize(ThirstApi.class, "CACHE"));
         json.addProperty("purityInfoEntries", mapSize(WaterPurity.class, "INFO"));
         return json;
+    }
+
+    /** One tick of ordinary walking for every fresh player: the charge, then the thirst tick it feeds. */
+    private void steadyTick() {
+        for (BenchmarkPlayer player : fresh) {
+            player.causeFoodExhaustion(STEADY_EXHAUSTION);
+            ThirstManager.tickPlayer(player);
+        }
     }
 
     private static double bytesPerInstance(Supplier<Object> factory) {

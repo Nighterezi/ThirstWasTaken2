@@ -132,6 +132,22 @@ final class InteractionScenario implements Stage {
         return true;
     }
 
+    /**
+     * Whether a {@code use} call was refused. Before 1.21.2 it answers a holder carrying the result
+     * and the stack together rather than the result itself, so comparing the answer to
+     * {@code InteractionResult.FAIL} was false on every 1.21.1 run: the guard's own check, which
+     * exists so an operation that stopped exercising the mod cannot report a fast number, failed the
+     * whole run instead. {@code ItemStackMixin} forks the same call for the same reason.
+     */
+    private static boolean refused(Object result) {
+        //? if >=1.21.2 {
+        return result == InteractionResult.FAIL;
+        //?} else {
+        /*return result instanceof net.minecraft.world.InteractionResultHolder<?> holder
+                && holder.getResult() == InteractionResult.FAIL;
+        *///?}
+    }
+
     private void setUp() {
         player = world.player(0);
         player.removeAllEffects();
@@ -241,7 +257,7 @@ final class InteractionScenario implements Stage {
                     player.setItemInHand(HAND, waterBottle.copy());
                 },
                 () -> sink = player.getMainHandItem().use(level, player, HAND),
-                () -> sink == InteractionResult.FAIL);
+                () -> refused(sink));
         // The droplet rows are asked for outright: the benchmark server has no AppleSkin, and a player who
         // has it pays for them on every hovered frame.
         batched("tooltip_water_bottle", "ThirstTooltip.appendTo for a water bottle: purity line and droplet rows",

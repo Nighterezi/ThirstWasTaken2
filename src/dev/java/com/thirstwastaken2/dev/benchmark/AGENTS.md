@@ -131,7 +131,13 @@ changes for the mod's own work.
 - `thirstDataBytes`, `exhaustionTrackerBytes`: the shallow size of each object, from allocating ten
   thousand of them.
 - `firstTouchBytesPerPlayer`: allocated the first time a player drains, attachment creation included.
-- `steadyTickBytesPerPlayer`: allocated by one ordinary exhaustion charge plus thirst tick afterwards.
+- `steadyTickBytesPerPlayer`: allocated per player per tick by ordinary walking — an exhaustion charge
+  and the thirst tick it feeds — averaged over 180 ticks, after a warm-up that is thrown away. It has
+  to be many ticks rather than one. The tick only builds a `ThirstData` when exhaustion crosses a sync
+  step of 0.25, and one walking charge moves it by 0.028, so a single charge from a standing start
+  always takes the cheap carry branch. Measuring one charge read 0.5 B/player on every version, while
+  the same work under `tickScenarios[].sections.thirst_tick` came to 105 B/player on 1.21.1; the two
+  agree now.
 - `thirstCacheEntries`, `purityInfoEntries`: the sizes of `ThirstApi.CACHE` and `WaterPurity.INFO`.
 - `heapUsedAfterGcBeforeMiB`, `heapUsedAfterGcAfterMiB`, `heapRetainedKiB`: whole-heap use after a full
   collection, taken once the benchmark area has loaded and again after the run has let go of its players,
@@ -147,8 +153,15 @@ JVM cannot count them, `environment.allocationTracking` is false and every byte 
 ## Comparing two versions of the code
 
 Use the same Minecraft version, the same profile and the same machine, with nothing else heavy running.
-Run each side at least twice. Timings on a desktop move by around 10% between runs; allocation figures do
-not move at all, so a changed `bytes` value is always real. The fields that matter:
+Run each side at least twice, three times if the difference you are chasing is small, and know what
+each kind of figure is worth. Two identical runs back to back on one desktop differ by about 10% in the
+aggregate tick figures — `msPerTick.mean` at a given player count moved 8 to 11% — and by far more per
+operation: `interactions[].microsPerOp.mean` moved by a median of 25 to 30%, and by as much as 70% on
+the operations that take single-digit microseconds, where one scheduling hiccup moves a batch mean.
+Allocation is much steadier but not fixed: most operations repeat their `bytesPerOp` to within half a
+percent, a few drift 5 to 10%, and `allocatedBytesPerPlayerPerTick` moved 9 to 20%. So a changed byte
+figure is good evidence rather than proof; treat anything under about 10% as noise on either kind, and
+believe a difference once it reproduces. The fields that matter:
 
 - `tickScenarios[].msPerTick.mean` and `.p99`, `microsPerPlayerPerTick`
 - `tickScenarios[].sections.*.sharePercent` and `microsPerTick`, to see which part moved
