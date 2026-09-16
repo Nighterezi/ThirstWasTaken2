@@ -39,6 +39,10 @@ Build or run one version:
 ./gradlew ":26.1.x:runClient"
 ```
 
+The `-neoforge` nodes have two more clients, `runManualA` and `runManualB`, named `TesterA` and
+`TesterB` with a game directory each. They exist for the checklist items that need two players on one
+`runServer`; see [docs/dev/MANUAL-TESTING.md](docs/dev/MANUAL-TESTING.md).
+
 Run the automated in-game tests for one version:
 
 ```bash

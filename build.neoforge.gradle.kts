@@ -126,8 +126,13 @@ neoForge {
         configureEach {
             // One run directory per node, for the reason build.gradle.kts gives: a world saved by
             // one Minecraft version is not readable by another, and a failed test run must not
-            // leave a broken world behind for runServer.
-            gameDirectory.set(rootProject.file(if (name == "gametest") "run/$node/gametest" else "run/$node"))
+            // leave a broken world behind for runServer. The extra clients get one each as well:
+            // two running clients cannot share a directory, and theirs must not touch runClient's.
+            gameDirectory.set(rootProject.file(when (name) {
+                "gametest" -> "run/$node/gametest"
+                "manualA", "manualB" -> "run/manual-$node-${name.last()}"
+                else -> "run/$node"
+            }))
         }
 
         create("client") {
@@ -135,6 +140,21 @@ neoForge {
             sourceSet = clientRun
         }
         create("server") { server() }
+        // Two more clients, for the checklist items that need a second player: MANUAL-TESTING.md's
+        // "Sync to the client" section, where each player has to see their own bar and no one else's.
+        // Two dev clients cannot both be `Dev` on one server, so each is named here, and
+        // --quickPlayMultiplayer joins runServer on this machine from the title screen.
+        listOf("A", "B").forEach { tester ->
+            create("manual$tester") {
+                client()
+                sourceSet = clientRun
+                programArguments.addAll(
+                    "--username", "Tester$tester",
+                    "--width", "1100", "--height", "700",
+                    "--quickPlayMultiplayer", "localhost:25565",
+                )
+            }
+        }
         // The GameTest runner: a dedicated server that runs every registered test headlessly, skips
         // the EULA prompt and exits with the number of failed required tests, the same contract as the
         // Fabric runner. `runGametest` is the task name on every node.
@@ -151,8 +171,9 @@ neoForge {
 
         // Only the gametest run loads the gametest mod. ModDevGradle loads every mod by default.
         val mainMod = mods.named(modId)
-        named("client") { loadedMods.set(mainMod.map { setOf(it) }) }
-        named("server") { loadedMods.set(mainMod.map { setOf(it) }) }
+        listOf("client", "server", "manualA", "manualB").forEach { run ->
+            named(run) { loadedMods.set(mainMod.map { setOf(it) }) }
+        }
     }
 }
 

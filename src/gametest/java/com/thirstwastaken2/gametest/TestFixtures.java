@@ -5,6 +5,7 @@ import com.thirstwastaken2.purity.WaterPurity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
@@ -214,5 +215,32 @@ final class TestFixtures {
             if (WaterPurity.isStamped(stack)) return stack;
         }
         return ItemStack.EMPTY;
+    }
+
+    /**
+     * The player's own save tag, the one a disconnect writes into {@code playerdata}. Both loaders
+     * hang their attachments off {@code Entity.saveWithoutId}, so this is the same path a quit takes.
+     * The call takes a {@code ValueOutput} from 1.21.6 and a {@link CompoundTag} before it.
+     */
+    static CompoundTag savePlayer(ServerPlayer player) {
+        //? if >=1.21.6 {
+        net.minecraft.world.level.storage.TagValueOutput output =
+                net.minecraft.world.level.storage.TagValueOutput.createWithContext(
+                        net.minecraft.util.ProblemReporter.DISCARDING, player.registryAccess());
+        player.saveWithoutId(output);
+        return output.buildResult();
+        //?} else {
+        /*return player.saveWithoutId(new CompoundTag());
+        *///?}
+    }
+
+    /** Reads a save tag back into {@code player}, the way a rejoin does. */
+    static void loadPlayer(ServerPlayer player, CompoundTag tag) {
+        //? if >=1.21.6 {
+        player.load(net.minecraft.world.level.storage.TagValueInput.create(
+                net.minecraft.util.ProblemReporter.DISCARDING, player.registryAccess(), tag));
+        //?} else {
+        /*player.load(tag);
+        *///?}
     }
 }

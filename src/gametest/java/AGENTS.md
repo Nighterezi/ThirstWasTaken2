@@ -54,12 +54,12 @@ Fabric's empty structure as its template, and `stonecutter.gradle.kts` rewrites 
 the annotation, so no test file changes for it. Write `@GameTest` with no arguments, or that
 replacement stops matching.
 
-The same 123 tests run on every node. Later nodes report 124 because their runner adds vanilla's own
+The same 124 tests run on every node. Later nodes report 125 because their runner adds vanilla's own
 `minecraft:always_pass`; that one is not the mod's.
 
 ## The NeoForge harness
 
-The `-neoforge` nodes run the same 123 test methods, with no test body changed and no NeoForge-only
+The `-neoforge` nodes run the same 124 test methods, with no test body changed and no NeoForge-only
 branch in any of them. What stands in for Fabric API lives in `src/gametest/neoforge`:
 
 | | Fabric API | NeoForge node |
@@ -78,7 +78,7 @@ adds a vanilla `TestFunction` per method to `GameTestRegistry.getAllTestFunction
 NeoForge's own registration, which only accepts vanilla's annotation and takes the structure's
 namespace from a NeoForge annotation on the test class. That server has no `--report` option either,
 so the build passes the report path as `-Dthirstwastaken2.gametest.report` and the harness installs
-vanilla's `JUnitLikeTestReporter` itself. The report lists 123 tests there, without
+vanilla's `JUnitLikeTestReporter` itself. The report lists 124 tests there, without
 `minecraft:always_pass`.
 
 On 1.21.11 `TestData` has no padding and `TestEnvironmentDefinition` takes no type parameter; the
@@ -128,7 +128,7 @@ cauldron bottle draw.
 | `EnvironmentGameTest` | the datapack damage type and tag, and the version-forked environment call |
 | `CreativeTabGameTest` | the creative tab is registered, has the right icon, and holds every item the mod adds |
 | `AdvancementGameTest` | the mod's advancement tab loads, hangs off one root, its recipe advancements unlock recipes that exist, and the Cooking Pot files are skipped without Farmer's Delight |
-| `ThirstDataGameTest` | the state record: drinking, the quenched cap, overflow into quenched, spending exhaustion, clamping, and both codecs round-tripping, including a save from before `enabled` existed |
+| `ThirstDataGameTest` | the state record: drinking, the quenched cap, overflow into quenched, spending exhaustion, clamping, both codecs round-tripping, including a save from before `enabled` existed, and a whole player saved to NBT and loaded back, which is the attachment under the codec |
 | `ThirstTickGameTest` | the tick spending quenched before thirst, peaceful with and without depletion, disabled and invulnerable players, Fire Resistance and Fire Protection slowing the drain, salt water charging at once, the full-bar rule |
 | `DrinkingGameTest` | drinking a bowl and a waterskin through the real right-click path, what is left in the hand, the drink animation and duration, water refused on a full bar while honey is not, the advancements a drink earns, and drinking by hand with every way it is refused |
 | `ThirstApiGameTest` | what items restore from the config, the blacklist, the `c:drinks` tag fallback (the gametest mod tags a nautilus shell for it) and the magic drinks it leaves out, keyword matching and its blacklist, the per-item cache dropping on commit, and `sanitize` clamping a hand-edited config |

@@ -9,7 +9,9 @@ import com.thirstwastaken2.data.ThirstManager;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 
 /**
  * The player's thirst record: the arithmetic every drink and every tick is built from, and the two
@@ -121,6 +123,32 @@ public final class ThirstDataGameTest {
         ThirstData upgraded = ThirstData.CODEC.parse(JsonOps.INSTANCE, old).result().orElse(null);
         TestFixtures.check(helper, upgraded != null && upgraded.enabled() && upgraded.thirst() == 5,
                 "a save without `enabled` should load as enabled, got " + upgraded);
+        helper.succeed();
+    }
+
+    /**
+     * The whole save path, not just the codec: thirst set on a player, written into that player's own
+     * tag and read back out of it. What the codec test above cannot see is the attachment underneath
+     * it — the key the value is stored under, and the {@code value} field NeoForge wraps it in after
+     * 1.21.1 — which is what quitting to the title and rejoining actually exercises.
+     */
+    @GameTest
+    public void thirstSurvivesSavingAndLoadingThePlayer(GameTestHelper helper) {
+        ServerPlayer player = TestFixtures.mockPlayer(helper);
+        // Switched off as well, so no field of the record can come back right by accident.
+        ThirstData saved = new ThirstData(11, 4, 1.25F, false);
+        ThirstManager.set(player, saved);
+
+        CompoundTag tag = TestFixtures.savePlayer(player);
+        TestFixtures.check(helper, !tag.isEmpty(), "saving a player should write a tag");
+
+        // Full again, so a value that came from anywhere but the tag cannot pass for a load.
+        ThirstManager.set(player, ThirstData.full());
+        TestFixtures.loadPlayer(player, tag);
+
+        ThirstData loaded = ThirstManager.get(player);
+        TestFixtures.check(helper, saved.equals(loaded),
+                "a player saved at " + saved + " should load back at it, got " + loaded);
         helper.succeed();
     }
 

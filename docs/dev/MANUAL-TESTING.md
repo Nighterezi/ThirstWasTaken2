@@ -71,11 +71,15 @@ The server owns thirst. These are the checks that the client is told.
 - [x] `/thirst set @s 6 0` updates the bar immediately, and sprinting is refused at 6. Hold sprint and
       walk: at 7 the player runs, at 6 they walk. A gametest cannot see this, because the client decides
       sprinting.
-- [x] Quit to the title screen and rejoin: the bar shows the value it had.
+- [x] Quit to the title screen and rejoin: the bar shows the value it had. The value's own trip
+      through the player's save tag is a gametest; what is left here is the client being told after
+      the rejoin.
 - [x] Die and respawn: the bar is full again.
 - [x] Go through a Nether portal and back: the bar is still correct on both sides.
 - [x] Open the world to LAN or use `runServer` with a second client: each player sees only their own bar,
-      and it is right for each.
+      and it is right for each. On the NeoForge nodes `runManualA` and `runManualB` are that second
+      client: named `TesterA` and `TesterB`, with their own game directories, joining `localhost`
+      from the title screen. Two clients both named `Dev` cannot join one server.
 
 ### Tooltips
 
@@ -142,7 +146,7 @@ The server owns thirst. These are the checks that the client is told.
 - [x] A dedicated server with Jade in its mods folder starts without a crash. Jade loads the plugin
       on the server too. `runServer` with Jade copied into `run/<node>/mods` is enough on both loaders:
       the Fabric dev server has the client classes on its classpath, as the released jar does.
-      Checked on 26.2 on 2026-09-15.
+      Checked on 26.2 on 2026-09-15 and on 1.21.11 NeoForge on 2026-09-16.
 
 ## Per version
 
@@ -206,7 +210,7 @@ different on purpose. Check all of these on every release that ships a 1.21.1 ja
 
 A subset of the general checklist, for what the loader changes: the HUD layer, the config screen
 entry, the client mixins, the event hooks and the attachment. Everything else is the same code as
-26.2 Fabric and the same 123 gametests pass on this node. Run it on `26.2.x-neoforge`, which has no
+26.2 Fabric and the same 124 gametests pass on this node. Run it on `26.2.x-neoforge`, which has no
 Mod Menu and no Farmer's Delight or Create Fly.
 
 - [x] The thirst bar sits above the hunger bar, and underwater the air bubbles sit above the thirst
@@ -286,9 +290,13 @@ section for the same version. `1.21.11-neoforge` partly checked on 2026-09-15 wi
       lines, Salty, waterskin servings, apple), Mods → Config → Done, Jade on still water, sea water
       (a waterlogged kelp) and a water cauldron, drinking by hand from targeted water and from water
       whose floor is out of reach (F3 showing no Targeted Block), bottles from a cauldron and bowls
-      from water filling on a second use, and thirst full after death. **Open on 1.21.11:**
-      `runServer` with Jade in `mods` (the jar is already copied there), and leaving and rejoining
-      with thirst not full. **Open on 26.1.x:** everything; Jade is already in its `mods`.
+      from water filling on a second use, and thirst full after death. `runServer` with Jade in
+      `mods` checked from the console on 2026-09-16: the server reached "Done", loaded Jade
+      21.1.7+neoforge out of `mods`, and loaded `JadeIntegration` as a Jade plugin there, with no
+      error in the log. **Open on 1.21.11:** leaving and rejoining with thirst not full, which is
+      now only the client half: the attachment under it round-trips through a player's save tag in
+      `ThirstDataGameTest`, on every node and both loaders.
+      **Open on 26.1.x:** everything; Jade is already in its `mods`.
 - [ ] **Sync first on 1.21.11.** Like 21.1, NeoForge 21.11 only syncs thirst to a connection that
       negotiated the attachment channel. Run the whole "Sync to the client" section there. Not tried.
 - [ ] The thirst bar and the air bubbles stack by `Gui.rightHeight` on both: same place as on 26.2,
