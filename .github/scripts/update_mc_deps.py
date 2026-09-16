@@ -9,6 +9,7 @@ place, comments and layout untouched.
     python .github/scripts/update_mc_deps.py            # rewrite the file
     python .github/scripts/update_mc_deps.py --dry-run  # only report
     python .github/scripts/update_mc_deps.py --summary build/deps-summary.md
+    python .github/scripts/update_mc_deps.py --check    # only report where the docs disagree
 
 Rules:
 - A node compiles against the Minecraft version settings.gradle.kts gives it (`26.1.x` -> `26.1.2`),
@@ -25,6 +26,14 @@ Rules:
 - Fabric Loader is one global value and comes from Fabric's meta API, stable builds only. Raising it
   raises the minimum loader players need, since fabric.mod.json writes it as `>=`.
 - Loom is left alone: a Loom bump tends to need a Gradle bump alongside it.
+- README.md and docs/docs/installation.md print the same versions for people to read, so a bump rewrites
+  them too, and only there: CHANGELOG.md says what a past release was built against and has to keep
+  saying it. Only Fabric nodes reach the pages, since neither names a NeoForge build.
+- `--check` goes the other way: it reports a version the properties file pins that those two pages do
+  not name, which is what a bump made by hand leaves behind. It reads those three files and nothing
+  else, so it needs no network and gates a pull request in well under a second. What lets it work
+  offline is that an id-pinned version carries its number in a comment above it, so `--check` also
+  fails when one of those comments is missing, on every node rather than only the Fabric ones.
 
 Standard library only, so CI needs nothing but a Python interpreter.
 """
@@ -44,6 +53,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 PROPERTIES = ROOT / "stonecutter.properties.toml"
 SETTINGS = ROOT / "settings.gradle.kts"
+README = ROOT / "README.md"
+INSTALLATION = ROOT / "docs" / "docs" / "installation.md"
+# The only files besides the properties file this script ever writes. An allowlist rather than a search,
+# because most other mentions must not move: CHANGELOG.md records what a past release was built against
+# and has to keep saying so, and docs/dev names versions inside prose no rewrite can follow.
+DOC_MIRRORS = (README, INSTALLATION)
+# Modrinth puts the loader on some version numbers. The docs leave it off.
+LOADER_SUFFIXES = ("+fabric", "+neoforge")
 
 MODRINTH = "https://api.modrinth.com/v2"
 FABRIC_META = "https://meta.fabricmc.net/v2/versions/loader"
@@ -60,6 +77,8 @@ class ModrinthDep:
     """Modrinth project slug."""
     by_id: bool = False
     """Pinned by Modrinth version id instead of version number."""
+    mirrors: tuple[Path, ...] = DOC_MIRRORS
+    """The doc mirrors that print this dependency's version."""
 
 
 # Every per-node dependency the build resolves from Modrinth or from a Maven that publishes the same
@@ -69,7 +88,8 @@ MODRINTH_DEPS = [
     ModrinthDep("modmenu", "modmenu"),
     # AppleSkin shares one version number between its Fabric and NeoForge uploads.
     ModrinthDep("appleskin", "appleskin", by_id=True),
-    ModrinthDep("cloth_config", "cloth-config"),
+    # The README names Cloth Config without a version; only the installation page prints one.
+    ModrinthDep("cloth_config", "cloth-config", mirrors=(INSTALLATION,)),
     ModrinthDep("jade", "jade"),
     ModrinthDep("farmersdelight", "farmers-delight-refabricated"),
     ModrinthDep("create_fly", "create-fly"),
@@ -87,6 +107,8 @@ class Change:
     """What a person reads as the old version; differs from `old` for id-pinned dependencies."""
     new_label: str
     url: str
+    mirrors: tuple[Path, ...] = ()
+    """The doc mirrors to rewrite; empty when no page names this version, as for every NeoForge one."""
 
 
 def get_json(url: str):
@@ -161,6 +183,21 @@ class Properties:
         assert match, self.lines[index]
         self.lines[index] = match.group(1) + value + match.group(3)
 
+    def version_comment_above(self, index: int) -> str | None:
+        """The version a comment above an id-pinned value names, `3.0.10+mc26.2` for
+        `# 3.0.10+mc26.2, the Fabric upload.`, or None when there is no such comment.
+
+        A Modrinth version id says nothing to a person, so every id-pinned value carries its number in a
+        comment above it, and `replace_in_comment_above` keeps that comment in step with the id. Only a
+        comment whose first word starts with a digit counts, so prose above a value is not mistaken for
+        one.
+        """
+        above = index - 1
+        if above < 0:
+            return None
+        match = re.match(r"^\s*#\s*(\d[^\s,]*)", self.lines[above])
+        return match.group(1) if match else None
+
     def replace_in_comment_above(self, index: int, old: str, new: str) -> None:
         """Keeps a comment such as `# 3.0.6+mc1.21, the Fabric upload.` in step with the id below it."""
         above = index - 1
@@ -227,6 +264,7 @@ def check_modrinth(props: Properties, node: str, minecraft: str, dep: ModrinthDe
         old_label=current["version_number"],
         new_label=newest["version_number"],
         url=f"https://modrinth.com/mod/{dep.project}/version/{newest['id']}",
+        mirrors=dep.mirrors if node_loader(node) == "fabric" else (),
     ))
 
 
@@ -247,7 +285,7 @@ def check_loader(props: Properties, changes: list[Change]) -> None:
         return
     props.set(index, "deps.fabric_loader", newest)
     changes.append(Change(None, "fabric_loader", pinned, newest, pinned, newest,
-                          "https://github.com/FabricMC/fabric-loader/releases"))
+                          "https://github.com/FabricMC/fabric-loader/releases", DOC_MIRRORS))
 
 
 def neoforge_versions() -> list[str]:
@@ -277,6 +315,113 @@ def check_neoforge(props: Properties, node: str, changes: list[Change]) -> None:
                           "https://projects.neoforged.net/neoforged/neoforge"))
 
 
+def forms(version: str) -> list[str]:
+    """A version as the docs may print it: the way Modrinth numbers it, and, for the numbers that carry
+    a loader suffix, without it, since that is the form the pages use."""
+    for suffix in LOADER_SUFFIXES:
+        if version.endswith(suffix):
+            return [version, version[: -len(suffix)]]
+    return [version]
+
+
+def version_pattern(*versions: str) -> re.Pattern[str]:
+    """Matches any of `versions`, but only where a whole version stands: the characters a version is made
+    of are what bound it, so `26.2.11` is not found inside `26.2.110`, `1.26.2.11` or `26.2.11+fabric`.
+    Longest first, so the alternation prefers the fuller number where two of them start alike."""
+    longest = sorted(versions, key=len, reverse=True)
+    return re.compile(r"(?<![\w.+-])(" + "|".join(re.escape(v) for v in longest) + r")(?![\w.+-])")
+
+
+def read(path: Path) -> str:
+    # newline="" keeps CRLF on a Windows checkout, the way Properties reads the file it rewrites.
+    with path.open(encoding="utf-8", newline="") as file:
+        return file.read()
+
+
+def update_docs(changes: list[Change], dry_run: bool) -> dict[Path, list[str]]:
+    """Rewrites the versions the doc mirrors print so they keep saying what the build uses.
+
+    Returns the swaps made, per file, for the pull request body.
+    """
+    updated: dict[Path, list[str]] = {}
+    for path in DOC_MIRRORS:
+        swaps: dict[str, str] = {}
+        for change in changes:
+            if path not in change.mirrors:
+                continue
+            for old, new in zip(forms(change.old_label), forms(change.new_label)):
+                if old != new:
+                    swaps[old] = new
+        if not swaps:
+            continue
+
+        made: list[str] = []
+
+        def replace(match: re.Match[str]) -> str:
+            old = match.group(1)
+            if f"{old} -> {swaps[old]}" not in made:
+                made.append(f"{old} -> {swaps[old]}")
+            return swaps[old]
+
+        # One pass over the whole file, so a version this writes cannot be picked up again by another
+        # swap that happens to be looking for exactly the number just written.
+        text = original = read(path)
+        text = version_pattern(*swaps).sub(replace, text)
+        if text != original:
+            if not dry_run:
+                path.write_text(text, encoding="utf-8", newline="")
+            updated[path.relative_to(ROOT)] = made
+    return updated
+
+
+def check_docs(props: Properties) -> list[str]:
+    """Every version the doc mirrors are meant to print, checked against what the properties file pins.
+
+    This is the half a bump made by hand forgets: the build moves and the pages people read do not. It
+    reads the properties file and those two pages and nothing else, so it needs no network and is cheap
+    enough to gate a pull request.
+    """
+    pages = {path: read(path) for path in DOC_MIRRORS}
+
+    def names(path: Path, version: str) -> bool:
+        return any(version_pattern(form).search(pages[path]) for form in forms(version))
+
+    def missing(dep_name: str, label: str, mirrors: tuple[Path, ...], node: str | None) -> list[str]:
+        where = f"`{node}` pins" if node else "the build pins"
+        return [f"{path.relative_to(ROOT).as_posix()} does not name {dep_name} {label}, which {where}."
+                for path in mirrors if not names(path, label)]
+
+    problems: list[str] = []
+    loader = props.find(None, "deps.fabric_loader")
+    if loader:
+        problems += missing("Fabric Loader", loader[1], DOC_MIRRORS, None)
+
+    for node in node_minecraft_versions():
+        # A node without a loader table is not a node; main warns about that separately.
+        if not props.has_node(node):
+            continue
+        for dep in MODRINTH_DEPS:
+            found = props.find(node, f"deps.{dep.key}")
+            if found is None:
+                continue
+            index, pinned = found
+            label = pinned
+            if dep.by_id:
+                # An id says nothing to a person, so the comment above it is where the number lives.
+                # Checked on every node, NeoForge included, or the comment is only as reliable as
+                # whoever last remembered to write one.
+                label = props.version_comment_above(index)
+                if label is None:
+                    problems.append(f"`{node}` `deps.{dep.key}` = `{pinned}` is a Modrinth version id "
+                                    f"with no version above it. Put the number in a comment, as "
+                                    f"`# 3.0.10+mc26.2, the Fabric upload.` does.")
+                    continue
+            # Only the Fabric nodes reach the pages: neither of them names a NeoForge build.
+            if node_loader(node) == "fabric":
+                problems += missing(dep.key, label, dep.mirrors, node)
+    return problems
+
+
 def files_mentioning(value: str) -> list[str]:
     """Tracked files other than the properties file that still name an old version, for the PR body."""
     result = subprocess.run(["git", "grep", "-l", "-w", "-F", value, "--", ".", f":!{PROPERTIES.name}",
@@ -285,7 +430,7 @@ def files_mentioning(value: str) -> list[str]:
     return [line for line in result.stdout.splitlines() if line]
 
 
-def summary(changes: list[Change], warnings: list[str]) -> str:
+def summary(changes: list[Change], warnings: list[str], updated_docs: dict[Path, list[str]]) -> str:
     out = ["Updates the Minecraft-bound dependencies in `stonecutter.properties.toml`. Each candidate is an upload "
            "on Modrinth for its node's loader that lists the Minecraft version the node compiles against.", ""]
     if changes:
@@ -302,12 +447,17 @@ def summary(changes: list[Change], warnings: list[str]) -> str:
     if any(change.key == "neoforge" for change in changes):
         notes.append("NeoForge is written into `neoforge.mods.toml` as the lower bound, so this raises the minimum "
                      "NeoForge players need.")
+    if updated_docs:
+        notes.append("The versions these pages print were rewritten to match:")
+        notes += [f"  - `{path.as_posix()}`: {', '.join(f'`{swap}`' for swap in swaps)}"
+                  for path, swaps in sorted(updated_docs.items())]
     stale = {}
     for change in changes:
         for path in files_mentioning(change.old_label):
             stale.setdefault(path, set()).add(change.old_label)
     if stale:
-        notes.append("These files still mention an old version. Update them if it is a documented minimum:")
+        notes.append("These files still mention an old version and are not rewritten for you. Update them if "
+                     "it is a documented minimum:")
         notes += [f"  - `{path}`: {', '.join(f'`{v}`' for v in sorted(values))}" for path, values in sorted(stale.items())]
     notes += warnings
     if notes:
@@ -318,10 +468,21 @@ def summary(changes: list[Change], warnings: list[str]) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--dry-run", action="store_true", help="report what would change without writing")
+    parser.add_argument("--check", action="store_true",
+                        help="only report versions the docs do not name, and exit non-zero if there are any")
     parser.add_argument("--summary", type=Path, help="write a Markdown summary here, for a pull request body")
     args = parser.parse_args()
 
     props = Properties(PROPERTIES)
+
+    if args.check:
+        problems = check_docs(props)
+        for problem in problems:
+            print(problem, file=sys.stderr)
+        if not problems:
+            print("The docs name every pinned version.")
+        return 1 if problems else 0
+
     changes: list[Change] = []
     warnings: list[str] = []
 
@@ -342,11 +503,18 @@ def main() -> int:
     if not changes:
         print("Everything is up to date.")
 
-    if not args.dry_run and changes:
-        props.save()
+    updated_docs: dict[Path, list[str]] = {}
+    if changes:
+        if not args.dry_run:
+            props.save()
+        # After the properties file, so a summary written below greps the tree as it now stands.
+        updated_docs = update_docs(changes, args.dry_run)
+        for path, swaps in updated_docs.items():
+            print(f"{path.as_posix()}: {', '.join(swaps)}")
+
     if args.summary:
         args.summary.parent.mkdir(parents=True, exist_ok=True)
-        args.summary.write_text(summary(changes, warnings), encoding="utf-8")
+        args.summary.write_text(summary(changes, warnings, updated_docs), encoding="utf-8")
     return 0
 
 

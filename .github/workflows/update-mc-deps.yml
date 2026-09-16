@@ -3,8 +3,9 @@ name: Update Minecraft dependencies
 # Dependabot keeps the Gradle plugins, the wrapper, the actions and the docs site current, but not
 # the dependencies in stonecutter.properties.toml: it does not read that file, and it would not know
 # that each version node needs the build made for its own Minecraft version.
-# .github/scripts/update_mc_deps.py asks Modrinth per node instead, and this opens one pull request
-# with whatever it found.
+# .github/scripts/update_mc_deps.py asks Modrinth per node instead, rewrites the README and the
+# installation page so they keep printing the same versions, and this opens one pull request with
+# whatever it found.
 
 on:
   schedule:
@@ -50,7 +51,12 @@ jobs:
           # One standing branch. A later run rewrites it, and it is deleted once nothing is left to bump.
           branch: automation/minecraft-deps
           delete-branch: true
-          add-paths: stonecutter.properties.toml
+          # The properties file the build reads, and the two pages that print the same versions for
+          # people to read; the script rewrites all three.
+          add-paths: |
+            stonecutter.properties.toml
+            README.md
+            docs/docs/installation.md
           commit-message: "chore: update Minecraft dependencies"
           title: "chore: update Minecraft dependencies"
           body-path: ${{ runner.temp }}/deps-summary.md

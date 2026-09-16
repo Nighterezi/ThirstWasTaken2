@@ -1,0 +1,55 @@
+name: Check documented versions
+
+# README.md and docs/docs/installation.md print the dependency versions from
+# stonecutter.properties.toml so people know what to install. A bump made by hand moves the build and
+# leaves those two pages behind, and nothing else notices: the pages are prose, and a wrong version
+# there reaches a player as a crash rather than a failed build.
+# .github/scripts/update_mc_deps.py --check reads the properties file and the two pages and nothing
+# else, so this needs no network and finishes in well under a second.
+#
+# Its own workflow rather than a job in build.yml, which ignores "**/*.md" and "docs/**" and so would
+# never run on a pull request that only edits the pages. The two path lists below are written out
+# twice because GitHub Actions does not read YAML anchors; keep them the same.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - stonecutter.properties.toml
+      - README.md
+      - docs/docs/installation.md
+      - .github/scripts/update_mc_deps.py
+      - .github/workflows/check-doc-versions.yml
+  pull_request:
+    paths:
+      - stonecutter.properties.toml
+      - README.md
+      - docs/docs/installation.md
+      - .github/scripts/update_mc_deps.py
+      - .github/workflows/check-doc-versions.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: check-doc-versions-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check documented versions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      # Fails when a version the properties file pins is not named on both pages, and when a
+      # dependency pinned by Modrinth version id has no comment spelling that version out.
+      - name: Check the documented versions
+        run: python .github/scripts/update_mc_deps.py --check
