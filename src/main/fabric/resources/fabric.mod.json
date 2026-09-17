@@ -17,7 +17,7 @@
     "issues": "https://github.com/Nighterezi/ThirstWasTaken2/issues",
     "modrinth": "https://modrinth.com/mod/thirst-was-taken-2"
   },
-  "license": "MIT",
+  "license": "GPL-3.0-only",
   "icon": "assets/thirstwastaken2/icon.png",
   "environment": "*",
   "entrypoints": {

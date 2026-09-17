@@ -478,8 +478,10 @@ extra["thirst.requiredJava"] = requiredJava.majorVersion
 apply(from = rootProject.file("gradle/shared.gradle.kts"))
 
 tasks.jar {
-    from(rootProject.file("LICENSE")) {
-        rename { "${it}_$modId" }
+    // The MIT notice of the code this mod is based on has to ship with it, alongside the GPL.
+    from(files(rootProject.file("LICENSE"), rootProject.file("CREDITS.md"),
+            rootProject.file("licenses/ThirstWasTaken-MIT.txt"))) {
+        rename { name -> name.substringBeforeLast('.') + "_$modId" + name.removePrefix(name.substringBeforeLast('.')) }
     }
 }
 

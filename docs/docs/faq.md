@@ -41,9 +41,3 @@ here needs another mod.
 
 Thirst refills by itself there unless you turn
 [thirstDepletionInPeaceful](/docs/configuration#thirstdepletioninpeaceful) on.
-
-## What about the original mod's other features?
-
-The fork is not finished. [FORK-STATUS.md](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/FORK-STATUS.md)
-tracks what carried over, what this fork adds, what is waiting on other mods to update, and what is
-missing.

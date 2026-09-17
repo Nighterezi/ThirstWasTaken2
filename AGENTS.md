@@ -1,6 +1,6 @@
 # ThirstWasTaken2
 
-A fork of [Thirst Was Taken](https://github.com/ghen-git/Thirst-Mod) (originally Forge,
+Based on [Thirst Was Taken](https://github.com/ghen-git/Thirst-Mod) (originally Forge,
 Minecraft 1.19.2) for **Minecraft 26.2, 26.1.x, 1.21.11 and 1.21.1** on both **Fabric Loader 0.19.5**
 and **NeoForge** (26.2.0.88, 26.1.2.109, 21.11.45 and 21.1.250). It adds a
 survival thirst bar, drinking, and water purity to Minecraft and further extends the original mod. It

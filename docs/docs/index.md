@@ -8,11 +8,6 @@ Refilling it is the interesting part. Water bottles, water bowls, potions and ju
 but water picked up from the world carries a quality with it. Bad water can make you sick, and
 cooking it makes it safe.
 
-ThirstWasTaken2 is a fork of the original
-[Thirst Was Taken](https://modrinth.com/mod/thirst-was-taken) by
-[**ghen**](https://github.com/ghen-git). It adds a survival thirst bar, drinking, and water purity to
-Minecraft and further extends the original mod.
-
 ## What you get
 
 - A thirst bar with a saturation-style reserve behind it

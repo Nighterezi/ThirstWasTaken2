@@ -4,7 +4,7 @@
 # manifests saying the same thing.
 modLoader = "javafml"
 loaderVersion = "[1,)"
-license = "MIT"
+license = "GPL-3.0-only"
 issueTrackerURL = "https://github.com/Nighterezi/ThirstWasTaken2/issues"
 
 [[mods]]

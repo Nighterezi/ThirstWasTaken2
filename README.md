@@ -8,7 +8,7 @@
 
 <br>
 
-Fabric port of the original [Thirst Was Taken](https://modrinth.com/mod/thirst-was-taken) by [**ghen**](https://github.com/ghen-git). It adds a survival thirst bar, drinking, and water purity to Minecraft. Available in 9 languages, with built-in support for AppleSkin, Jade, Farmer's Delight, Mod Menu and drinks from other mods.
+A thirst mod for Fabric and NeoForge. It adds a survival thirst bar, drinking, and water purity to Minecraft. Available in 9 languages, with built-in support for AppleSkin, Jade, Farmer's Delight, Mod Menu and drinks from other mods.
 
 </div>
 
@@ -110,4 +110,5 @@ One JAR per supported Minecraft version is created in `build/libs/`. To build a 
 
 ## License
 
-ThirstWasTaken2 is available under the [MIT License](LICENSE).
+ThirstWasTaken2 is available under the [GNU General Public License v3.0](LICENSE). See
+[CREDITS.md](CREDITS.md) for credits.

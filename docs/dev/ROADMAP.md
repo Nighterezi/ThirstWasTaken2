@@ -1,8 +1,7 @@
 # Planned content
 
 Ideas for content to add to ThirstWasTaken2, with what the mod does today and what the change would
-be. Nothing here is committed to a release yet. See [FORK-STATUS.md](../../FORK-STATUS.md) for what the
-fork already does.
+be. Nothing here is committed to a release yet.
 
 ## 1. Not enough places to find water
 

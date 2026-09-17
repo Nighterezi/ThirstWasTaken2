@@ -119,4 +119,4 @@ Want to improve or add a translation? [Open a pull request](https://github.com/N
 ## Credits
 
 * **Original Mod:** Based on [Thirst Was Taken](https://modrinth.com/mod/thirst-was-taken) by [**ghen**](https://github.com/ghen-git).
-* **License:** Licensed under the [MIT License](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/LICENSE).
+* **License:** Licensed under the [GNU General Public License v3.0](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/LICENSE). The copper hanging pot is adapted from [Dehydration](https://github.com/Globox1997/Dehydration) by Globox1997.
