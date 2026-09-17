@@ -59,7 +59,7 @@ There is one download per Minecraft version, named after it, for example
 | AppleSkin | Optional, 3.0.10+mc26.2 | Optional, 3.0.10+mc26.1.2 | Optional, 3.0.8+mc1.21.11 | Optional, 3.0.6+mc1.21 |
 | Cloth Config | Optional, needed for AppleSkin's Mod Menu screen | Same | Same | Same |
 | Jade | Optional, 26.2.11 | Optional, 26.1.11 | Optional, 21.1.6 | Optional, 15.10.6 |
-| Farmer's Delight Refabricated | Optional, 26.2-3.6.22 | Optional, 26.1-3.6.22 | Optional, 1.21.11-3.6.16 | Optional, 1.21.1-3.3.6 |
+| Farmer's Delight Refabricated | Optional, 26.2-3.6.25 | Optional, 26.1-3.6.25 | Optional, 1.21.11-3.6.16 | Optional, 1.21.1-3.3.6 |
 | Create Fly | Optional, 26.2-rc-2-6.0.9-1 | Optional, 26.1.2-6.0.9-4 | Not supported | Not supported |
 
 Download ThirstWasTaken2 from [Modrinth](https://modrinth.com/mod/thirst-was-taken-2) and install it along with Fabric API on both the client and server. Put the downloaded JAR in the
