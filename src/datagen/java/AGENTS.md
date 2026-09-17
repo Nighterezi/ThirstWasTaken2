@@ -107,7 +107,8 @@ The generators are the same; the formats they write to are older.
 | `ThirstDamageTypeProvider` | `data/…/damage_type/dehydrate.json` |
 | `ThirstDamageTypeTagProvider` | `data/minecraft/tags/damage_type/bypasses_armor.json` |
 | `ThirstBiomeTagProvider` | `data/…/tags/worldgen/biome/stagnant_water.json` |
-| `ThirstModelProvider` | `assets/…/models/item/`, and the definitions for the mod's own items |
+| `ThirstBlockLootProvider` | `data/…/loot_table/blocks/`, as JSON through vanilla's codec |
+| `ThirstModelProvider` | `assets/…/models/item/`, the definitions for the mod's own items, and through `HangingPotModels` the pot's blockstate and generated block models |
 | `ThirstItemModelDefinitionProvider` | the two definitions in `assets/…/items/` that have no item; 1.21.4 and later |
 
 `FarmersDelightRecipeProvider` is a plain `DataProvider` because nothing of Farmer's Delight is on
@@ -120,10 +121,18 @@ nothing fails to tell you so.
 
 ## What is not generated
 
-Textures, `icon.png`, `font/droplets.json`, the nine `lang/` files and
+Textures, the hanging pot's three Blockbench models, `icon.png`, `font/droplets.json`, the nine `lang/` files and
 `thirstwastaken2.mixins.json` all stay hand-written in `src/main/resources`, and `fabric.mod.json` in
 `src/main/fabric/resources`. The lang files
 deliberately so: eight of the nine are translations, and `en_us` is edited alongside them.
+
+## The hanging pot's blockstate
+
+`HangingPotModels` builds the blockstate as JSON, because its builder classes changed in 1.21.5 and
+again in 26.1. From 1.21.5 the JSON is parsed with the version's own codec and handed over as a
+definition; before it the JSON is handed over as it is. There is no block tag: the Create Fly Sand
+Filter already ships `mineable/pickaxe.json` by hand, and a generated copy of the same path fails
+`processResources` on the nodes that build it, so the pot is soft enough to break by hand instead.
 
 ## Two rules that outlive this file
 

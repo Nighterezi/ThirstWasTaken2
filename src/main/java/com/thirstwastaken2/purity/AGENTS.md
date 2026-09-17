@@ -21,6 +21,7 @@ compile, which is what stops salt water from quietly inheriting a grade's toolti
 |---|---|---|
 | Item stack | `water_purity` for a grade, `water_salty` for sea water | `WaterPurity.quality(stack)` |
 | Cauldron | one `purity` blockstate value | `WaterPurity.storedQuality(state)` |
+| Copper hanging pot | the same property, unset while empty | `HangingPotBlock.quality(state)` |
 | Water in the world | biome baseline plus small local modifiers | `WaterPurity.sampleAt(level, pos)` |
 | Anything unstamped | `ThirstConfig.defaultPurity`, fresh | falls out of `quality` |
 
@@ -49,7 +50,8 @@ that know the encoding.
 - **Waterskin mixing is serving-weighted and rounds down**, so one clean mouthful cannot talk a batch
   up a grade. Salt is not averaged at all: a single salty serving turns the whole skin into sea
   water. Cauldrons cannot average, because their blockstate has room for one value, so they keep the
-  worse of what they hold and what is poured in.
+  worse of what they hold and what is poured in, through `WaterQuality.worse`, which the hanging pot
+  shares.
 - **Water that arrives on its own is graded where it lands.** Rain and pointed dripstones fill
   cauldrons with nobody pouring anything in, so `filledByRain` and `filledByDripstone` stamp
   `ThirstConfig.rainwaterPurity` and `dripstonePurity` rather than letting the cauldron fall through

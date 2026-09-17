@@ -2,6 +2,30 @@
 
 All notable changes to ThirstWasTaken2 are documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- Copper Hanging Pot. It holds nine servings of water and boils all of it Pure in 30 seconds when
+  placed on a lit campfire. Crafted from two sticks, a chain and five copper ingots.
+- With Jade installed, looking at a Copper Hanging Pot shows the grade of the water inside.
+
+### Changed
+
+- The license changed from MIT to the GNU General Public License v3.0.
+
+### Notes
+
+- The Copper Hanging Pot is adapted from the campfire cauldron in Dehydration by Globox1997.
+- Existing worlds and config files need no changes.
+
+<details>
+<summary>Configuration file details</summary>
+
+- New key `hangingPotBoilSeconds`, default `30`: how long the Copper Hanging Pot takes to boil.
+
+</details>
+
 ## [1.0.6] - 2026-09-16
 
 ### Added

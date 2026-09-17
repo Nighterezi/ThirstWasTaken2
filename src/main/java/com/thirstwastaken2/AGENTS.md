@@ -13,6 +13,7 @@ thirst, and the client only receives it through the `PlayerData` sync.
 | The state record itself (thirst, quenched, exhaustion) | `data/ThirstData` |
 | A new config key | `config/ThirstConfig` (field + `sanitize()`), then the client config screen |
 | Bowls, waterskin, creative tab | `item/` |
+| The copper hanging pot: capacity, boiling, filling and drawing | `block/` |
 | Anything about water cleanliness | `purity/` (has its own AGENTS.md) |
 | A vanilla behaviour hook | `mixin/` (has its own AGENTS.md) |
 | Loot, optional mod integrations | `compat/` (has its own AGENTS.md) |
@@ -26,12 +27,12 @@ thirst, and the client only receives it through the `PlayerData` sync.
 `ThirstWasTaken2.initialize` is the only entry point, called by the loader's entrypoint class
 (`ThirstWasTaken2Fabric` in `src/main/fabric`, `ThirstWasTaken2NeoForge` in `src/main/neoforge`), and the
 order matters:
-`ThirstConfig.load()` → `ThirstData.register()` → `ThirstComponents.register()` →
-`ThirstItems.register()` → `ThirstItems.registerCreativeTab()` → `LootIntegration.register()` → events.
+`ThirstConfig.load()` → `ThirstData.register()` → `ThirstBlocks.register()` →
+`ThirstComponents.register()` → `ThirstItems.register()` → `ThirstItems.registerCreativeTab()` → `LootIntegration.register()` → events.
 Nothing in this source set may import a mod loader's API; it goes through `platform/Loader` (see
 `platform/AGENTS.md`).
 
-The three registration calls go through `Loader.onRegister`, one per registry. Fabric runs them on the
+The four registration calls go through `Loader.onRegister`, one per registry. Fabric runs them on the
 spot; a loader that freezes its registries before mods start runs them later, from its own registration
 phase, so they must not depend on anything `initialize` does after them.
 
@@ -46,7 +47,8 @@ Events registered there, in registration order per event:
 
 - `Loader.onServerTickEnd` → `ThirstManager.tick`, then `WaterInteractions.tick` (drains the deferred
   queue).
-- `Loader.onUseBlock` → `ThirstManager.drinkByHand`, `WaterInteractions.emptyWaterskinOnBlock`,
+- `Loader.onUseBlock` → `ThirstManager.drinkByHand`, `HangingPotInteractions.use`,
+  `WaterInteractions.emptyWaterskinOnBlock`,
   `WaterInteractions.fillWaterskinFromCauldron`, `WaterInteractions.transferCauldronPurity`. A
   handler that returns anything but `PASS` stops the rest, which is why `transferCauldronPurity`
   deliberately returns `PASS` and defers its work.
@@ -88,6 +90,20 @@ Events registered there, in registration order per event:
 - **Sounds from a server-only path need `level.playSound(null, ...)`.** `Player#playSound` excludes the
   player themselves, so the drinker would hear nothing — see the comment in
   `ThirstManager.drinkByHand`.
+
+## The copper hanging pot
+
+`block/HangingPotBlock` is adapted from Dehydration's campfire cauldron (GPL-3.0; see `CREDITS.md`).
+It holds `CAPACITY` servings and stores their quality in `WaterPurity.BLOCK_PURITY`, like a cauldron,
+and `HangingPotInteractions` does all the filling and drawing itself, inline, because vanilla has no
+interaction for the block to defer to. Keep that handler ahead of `emptyWaterskinOnBlock`: a sneaking
+player's waterskin pours into the pot rather than onto the ground.
+
+Boiling has no block entity. The `boil` property counts `BOIL_STAGES` scheduled ticks; `onPlace`
+schedules the next one on every state change that still needs boiling over a lit campfire, and
+`supportChanged` schedules one when the campfire below is lit again. A step that finds the fire out
+schedules nothing. So a pot with nothing to do costs nothing, and anything that adds water resets
+`boil` through `HangingPotBlock.withWater`.
 
 ## Tooltip lines
 

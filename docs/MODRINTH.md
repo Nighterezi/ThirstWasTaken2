@@ -21,6 +21,7 @@ Water is graded based on where you collect it:
 | **Salty** | Oceans and beaches | Cannot quench thirst; worsens dehydration |
 
 * **Boiling:** Smelt water bottles, bowls, or buckets in a furnace or over a campfire to raise their purity grade.
+* **Copper Hanging Pot:** Hang it over a lit campfire to boil nine servings of water pure at once.
 * **Rain and Dripstone:** Cauldrons placed under open rain or pointed dripstone automatically fill with clean water.
 
 <div align="center">

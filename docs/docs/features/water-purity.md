@@ -97,3 +97,28 @@ A furnace takes ten seconds and a campfire takes thirty. Dirty water needs two p
 With Farmer's Delight, the [Cooking Pot](/docs/features/farmers-delight#boiling-water-in-the-cooking-pot)
 makes bottles and bowls pure in one pass. With Create Fly on Minecraft 26.1.2 and 26.2, the
 [Sand Filter](/docs/features/create#sand-filter) cleans water pumped through it.
+
+## Copper Hanging Pot
+
+The Copper Hanging Pot boils a large batch of water at once. Craft it from two sticks, an iron chain
+(a chain on Minecraft 1.21 and 1.21.1) and five copper ingots:
+
+| | | |
+|---|---|---|
+| Stick | Chain | Stick |
+| Copper Ingot | | Copper Ingot |
+| Copper Ingot | Copper Ingot | Copper Ingot |
+
+Place it on a campfire and it hangs from a wooden frame. It can also stand on any solid block, but it
+only boils over a lit campfire or soul campfire.
+
+- It holds nine servings. A bucket adds or takes three, a bottle or a bowl one.
+- A waterskin takes one serving. Sneak and use a waterskin to pour all of it in.
+- Over a lit campfire, everything in the pot becomes Pure after 30 seconds, whatever its grade and
+  however full it is. The time is set by [hangingPotBoilSeconds](/docs/configuration#hangingpotboilseconds).
+- Adding water starts the boil over. Putting the fire out pauses it.
+- The water changes colour with its grade, so a finished pot is easy to spot.
+- It mixes like a cauldron: it keeps the worse grade, and one salty drink makes the whole pot salty.
+  Salt water does not boil clean.
+- Rain fills it slowly with rainwater, like a cauldron.
+- Breaking it drops the pot. The water inside is lost.

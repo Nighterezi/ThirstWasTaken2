@@ -281,8 +281,8 @@ rewrites the values in place. `.github/workflows/update-mc-deps.yml` runs it dai
 [ThirstWasTaken2.java](src/main/java/com/thirstwastaken2/ThirstWasTaken2.java) is the loader
 independent initializer, called by the Fabric entrypoint `ThirstWasTaken2Fabric` and the NeoForge mod
 class `ThirstWasTaken2NeoForge`: it loads
-configuration (`ThirstConfig.load()`), registers the player data (`ThirstData.register()`), the data
-components, the items and creative tab (each through `Loader.onRegister`), and the loot pools, then hooks the server tick, block and item
+configuration (`ThirstConfig.load()`), registers the player data (`ThirstData.register()`), the
+blocks, the data components, the items and creative tab (each through `Loader.onRegister`), and the loot pools, then hooks the server tick, block and item
 use, command and tag reload callbacks through `Loader`.
 
 ```mermaid
@@ -387,6 +387,9 @@ src/main/java/com/thirstwastaken2/      common (client + server), loader indepen
   data/HealthRegen.java                whether a dehydrated player may still regenerate
   item/ThirstItems.java                bowl and waterskin registration + creative tab
   item/WaterskinItem.java              three-drink storage, consumption and inventory transfers
+  block/ThirstBlocks.java              block registration: the copper hanging pot
+  block/HangingPotBlock.java           nine servings, boiled pure over a lit campfire on scheduled ticks
+  block/HangingPotInteractions.java    filling and drawing the pot with buckets, bottles, bowls, waterskins
   purity/ThirstComponents.java         purity, salinity and serving data components
   purity/WaterQuality.java             sealed Fresh(grade) | Salt
   purity/WaterPurity.java              environmental sampling, effects and container detection
@@ -394,6 +397,7 @@ src/main/java/com/thirstwastaken2/      common (client + server), loader indepen
   purity/FillCapture.java              sample-then-stamp shared by the bottle and bucket mixins
   platform/Vanilla.java                vanilla calls that differ between Minecraft versions
   platform/DrinkItem.java              an item that is drunk: a component from 1.21.2, overrides before
+  platform/SupportedBlock.java         a block that reacts to the block below it; updateShape per version
   platform/PlayerData.java, Use*Handler.java  types the per-loader Loader signatures share
   tooltip/ThirstTooltip.java           separate thirst/quenched tooltip rows (thirstwastaken2:droplets font)
   compat/AppleSkin.java                AppleSkin presence, the quenched overlay and tooltip droplet gates
@@ -454,6 +458,7 @@ src/gametest/java/com/thirstwastaken2/gametest/
   WaterInteractionsGameTest.java       bowl and waterskin scooping, cauldron draw and pour
   WaterskinGameTest.java               mixing, capacity, emptying
   CauldronGameTest.java                cauldrons keeping the quality poured into them
+  HangingPotGameTest.java              the copper hanging pot: filling, drawing, the frame, boiling, rain
   PurificationGameTest.java            which water the furnace recipes accept
   DrinkingGameTest.java                drinking end to end through the real right-click path
   HealthRegenGameTest.java             dehydration halting regen, and the food refund
@@ -501,12 +506,15 @@ src/datagen/java/com/thirstwastaken2/datagen/  datagen-only mod, never packaged
 
 src/main/resources/                     the hand-written assets only, shared by every loader
   thirstwastaken2.mixins.json           mixin registry
-  assets/thirstwastaken2/               textures, lang (9 locales), icon.png
+  assets/thirstwastaken2/               textures, lang (9 locales), icon.png, the hanging pot's two
+                                        Blockbench models
   assets/thirstwastaken2/font/          droplets.json: tooltip droplet glyphs (U+E000..U+E00F)
 
 src/main/generated/<minecraft version>/  written by src/datagen, a resource root of main
-  assets/thirstwastaken2/               item models and model definitions
-  data/thirstwastaken2/                 recipes, advancements, damage type, stagnant_water biome tag
+  assets/thirstwastaken2/               item models, model definitions, the hanging pot's blockstate
+                                        and generated block models
+  data/thirstwastaken2/                 recipes, advancements, loot table, damage type, stagnant_water
+                                        biome tag
   data/minecraft/tags/damage_type/      bypasses_armor, no_impact, no_knockback
 ```
 
@@ -520,7 +528,7 @@ sickness, mixing, sprite - has to answer for salt water or fail to compile.
 | Carrier | Storage |
 |---|---|
 | Items | `water_purity` for a grade, `water_salty` for sea water; salt water carries no grade at all |
-| Cauldrons | one `purity` blockstate value: 0 unset, 1-4 the grades, 5 salt |
+| Cauldrons, the copper hanging pot | one `purity` blockstate value: 0 unset, 1-4 the grades, 5 salt |
 | Anything else | `ThirstConfig.defaultPurity` |
 
 The cauldron deliberately uses one property rather than a grade plus a boolean: vanilla gives a

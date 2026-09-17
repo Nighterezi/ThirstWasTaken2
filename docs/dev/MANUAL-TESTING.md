@@ -117,6 +117,18 @@ config screen *read* well, which is the sections below.
 - [x] Placing mud next to the water being looked at lowers the grade within half a second.
 - [x] Turning Water Purity off in Jade's plugin settings removes the line.
 
+### Copper Hanging Pot
+
+- [ ] The recipe shows in the recipe book once a copper ingot is held, and crafts one pot.
+- [ ] Placed on a campfire, the pot hangs from its frame, with the chain drawn cut out rather than as
+      black squares. Placed on stone, it stands on its own without the frame. The crossbar runs across
+      the placing player's view.
+- [ ] Buckets, bottles and bowls fill and empty it, and the water surface rises and falls with it.
+      The water's colour matches the grade of what was poured in.
+- [ ] Over a lit campfire the water bubbles and steams, and after about 30 seconds it turns pure blue
+      with a short brewing sound. Over an unlit campfire nothing happens until it is lit.
+- [ ] Breaking the campfire drops the pot. Jade shows the pot's grade, and nothing when it is empty.
+
 ### Sprites and sounds
 
 - [x] A filled bowl's water colour changes with its grade: four fresh colours and a sea colour.

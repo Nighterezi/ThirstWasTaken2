@@ -96,6 +96,8 @@ never see it.
 | Difference | Code |
 |---|---|
 | The HUD draw target was renamed `GuiGraphicsExtractor` | replacement |
+| A block's render layer follows its textures, so a cut-out model needs no registration | `ClientLoader.renderCutout`; before it Fabric registers the layer and NeoForge reads `render_type` from the model |
+| Blockstate definitions became `BlockStateModelDispatcher` | `HangingPotModels` |
 | A widget draws in `extractWidgetRenderState` rather than `renderWidget`, and `drawString` became `text` | `ClientVanilla.canvas`, `ClientVanilla.text` |
 | Fabric's creative tab builder was renamed `FabricCreativeModeTab` | `Loader.creativeTabBuilder` |
 | Fabric's data generation output and tag provider were renamed | replacement |
@@ -123,6 +125,7 @@ already has by default. The stack the furnace hands out is the same; see
 | Difference | Code |
 |---|---|
 | Fonts are named through `FontDescription` | `Vanilla.dropletFont` |
+| The chain became the iron chain, item and texture | `ThirstRecipeProvider`, `HangingPotModels` |
 | "Water evaporates here" moved from the dimension type to environment attributes | `Vanilla.waterEvaporates` |
 | FML turned its environment fields into methods, and hands a mod's manifest out as a stream rather than a path | NeoForge `Loader.isDevelopmentEnvironment`, `ThirstWasTaken2GameTests.openManifest` |
 
@@ -131,6 +134,7 @@ already has by default. The stack the furnace hands out is the same; see
 | Difference | Code |
 |---|---|
 | Fabric API gained the HUD element and status bar height registries | `ClientLoader.addRightStatusBar`; on 1.21.1 `GuiMixin` draws the bar after the food bar and moves the air bubbles up |
+| Fabric's block render layer map moved into its rendering module and takes a chunk section layer | Fabric `ClientLoader.renderCutout` |
 | Saving and loading an entity take a `ValueOutput` / `ValueInput` rather than a `CompoundTag` | `TestFixtures.savePlayer`, `loadPlayer` |
 
 ### 1.21.5 (affects 1.21.1)
@@ -141,6 +145,7 @@ already has by default. The stack the furnace hands out is the same; see
 | The Confusion effect was renamed Nausea, `Entity#moveTo` became `snapTo` | replacement |
 | Fabric API gained its own `@GameTest` annotation | replacement; on 1.21.1 tests use vanilla's with Fabric's empty structure |
 | `GameTestHelper#assertTrue` takes a `Component` | `TestFixtures.check` |
+| Blockstate generators hand over a parsed definition rather than JSON | `HangingPotModels` |
 | Tests register through the test function registry, and the server writes its own JUnit report with `--report` | NeoForge `ThirstWasTaken2GameTests` and `build.neoforge.gradle.kts`; before it the harness registers and reports itself |
 
 ### 1.21.4 (affects 1.21.1)
@@ -156,7 +161,8 @@ already has by default. The stack the furnace hands out is the same; see
 
 | Difference | Code |
 |---|---|
-| Items are given their id before construction | `Vanilla.registerItem` |
+| Items and blocks are given their id before construction, and a block item names itself after the block only when asked | `Vanilla.registerItem`, `registerBlock`, `registerBlockItem` |
+| `Block#updateShape` reordered its parameters and schedules ticks through its own argument | `SupportedBlock` |
 | Drinking became the consumable component | `DrinkItem`; on 1.21.1 it overrides use, animation, duration and finishing |
 | The `item_model` component | `Vanilla.swapItemModel` (visible, see above); `ItemAppearanceGameTest` only asserts the swap where the component exists |
 | `Item#use` returns a result without the resulting stack; `CONSUME` became `SUCCESS_SERVER` | `ItemStackMixin`, `Loader.onUseItem`; the constant is a replacement |

@@ -39,7 +39,8 @@ seam gets a row there too.
 
 | Missing on 1.21.1 | Seam | What 1.21.1 does instead |
 |---|---|---|
-| items knowing their id before construction | `registerItem` | registers the properties as they are |
+| items and blocks knowing their id before construction | `registerItem`, `registerBlock`, `registerBlockItem` | registers the properties as they are |
+| `updateShape` in its later parameter order | `SupportedBlock` | the older override, with ticks scheduled on the level |
 | the consumable component | `DrinkItem` | overrides use, animation, duration and finishing itself |
 | custom model data as float lists | `modelSelector(index, value)` | one integer; no item reads more than one index |
 | the `item_model` component | `swapItemModel` | nothing: a sea-water bottle or bucket keeps vanilla's sprite, and only its tooltip says salty |
@@ -52,6 +53,10 @@ Pure renames (`ResourceLocation`, `CONSUME`, `moveTo`, `CONFUSION` and the rest)
 `stonecutter.gradle.kts`, not branches. A threshold written `>1.21.1` rather than a release number
 means the exact release a call changed in was not pinned down; with no node between 1.21.1 and
 1.21.11 it makes no difference to any jar.
+
+`DrinkItem` and `SupportedBlock` are classes rather than methods because what differs is an override.
+`SupportedBlock` hands a block one `supportChanged` call when the block below it changes, and breaks the
+block first when `canSurvive` no longer holds.
 
 `DrinkItem` is a class rather than a method because an item's use and animation are overrides. Keep it
 the one place that knows how drinking starts and finishes: `WaterskinItem` extends it and only says
@@ -79,6 +84,7 @@ What does live here are the types those signatures need, because both copies hav
 | `onLootTable` | loot table modification, on every table whoever wrote it |
 | `ClientLoader.addRightStatusBar` | HUD layer registration and the right-hand status bar height |
 | `ClientLoader.appleSkinShowsExhaustionUnderlay` | AppleSkin's own setting, which it keeps in a different class shape on each loader |
+| `ClientLoader.renderCutout` | drawing a block with its transparent pixels cut out |
 
 ### How each loader answers
 
@@ -94,6 +100,7 @@ What does live here are the types those signatures need, because both copies hav
 | `onRegisterCommands` | `CommandRegistrationCallback` | `RegisterCommandsEvent` |
 | `onLootTable` | `LootTableEvents.MODIFY` | `LootTableLoadEvent`, `getTable().addPool` |
 | `ClientLoader.addRightStatusBar` | `HudElementRegistry.attachElementAfter(FOOD_BAR)` plus `HudStatusBarHeightRegistry.addRight`; `GuiMixin` on 1.21.1 | a layer `registerAbove(VanillaGuiLayers.FOOD_LEVEL)` that draws at `guiHeight() - hud.rightHeight` and advances `Hud.rightHeight` only when it drew, and only when the player can be hurt, which is when vanilla draws the food bar |
+| `ClientLoader.renderCutout` | `BlockRenderLayerMap` before 26.1, nothing from 26.1, where the game reads the layer off the textures | nothing: the model's `render_type` before 26.1, the textures from 26.1. It runs during mod construction, so it never asks for the block |
 | `ClientLoader.appleSkinShowsExhaustionUnderlay` | `ModConfig.INSTANCE.showFoodExhaustionHudUnderlay` | `ModConfig.SPEC.isLoaded() && ModConfig.SHOW_FOOD_EXHAUSTION_UNDERLAY.get()`; reading a NeoForge config value before FML loads it throws |
 
 ### What older NeoForge versions change

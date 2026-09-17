@@ -92,6 +92,12 @@ Default `2`, clean. The grade a cauldron gets when rain fills it.
 Default `3`, pure. The grade a cauldron gets when a pointed dripstone drips into it. See
 [cauldrons](/docs/features/water-purity#mixing-and-cauldrons).
 
+### hangingPotBoilSeconds
+
+Default `30`, from 1 to 300. How many seconds a
+[Copper Hanging Pot](/docs/features/water-purity#copper-hanging-pot) over a lit campfire takes to make
+its water pure.
+
 ### quenchWhenDebuffed
 
 Default `true`. Water that poisons you still fills the bar. Turn it off to make bad water a pure
