@@ -6,9 +6,11 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 
 ### Added
 
-- Copper Hanging Pot. It holds nine servings of water and boils all of it Pure in 30 seconds when
-  placed on a lit campfire. Crafted from two sticks, a chain and five copper ingots.
-- With Jade installed, looking at a Copper Hanging Pot shows the grade of the water inside.
+- Copper Hanging Pot. It holds a bucket of water, three servings, and boils all of it Pure in 30
+  seconds when placed on a lit campfire. Water cannot be poured into it in the Nether. Crafted from two sticks, a chain and five copper ingots.
+- Iron Hanging Pot. It works exactly like the Copper Hanging Pot, in dark cast iron. Crafted from
+  two sticks, a chain and five iron ingots.
+- With Jade installed, looking at a hanging pot shows the grade of the water inside.
 
 ### Changed
 
@@ -16,13 +18,13 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 
 ### Notes
 
-- The Copper Hanging Pot is adapted from the campfire cauldron in Dehydration by Globox1997.
+- The Copper and Iron Hanging Pots are adapted from the campfire cauldron in Dehydration by Globox1997.
 - Existing worlds and config files need no changes.
 
 <details>
 <summary>Configuration file details</summary>
 
-- New key `hangingPotBoilSeconds`, default `30`: how long the Copper Hanging Pot takes to boil.
+- New key `hangingPotBoilSeconds`, default `30`: how long a hanging pot takes to boil.
 
 </details>
 

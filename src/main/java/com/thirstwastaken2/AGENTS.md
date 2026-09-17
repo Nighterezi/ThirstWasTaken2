@@ -13,7 +13,7 @@ thirst, and the client only receives it through the `PlayerData` sync.
 | The state record itself (thirst, quenched, exhaustion) | `data/ThirstData` |
 | A new config key | `config/ThirstConfig` (field + `sanitize()`), then the client config screen |
 | Bowls, waterskin, creative tab | `item/` |
-| The copper hanging pot: capacity, boiling, filling and drawing | `block/` |
+| The copper and iron hanging pots: capacity, boiling, filling and drawing | `block/` |
 | Anything about water cleanliness | `purity/` (has its own AGENTS.md) |
 | A vanilla behaviour hook | `mixin/` (has its own AGENTS.md) |
 | Loot, optional mod integrations | `compat/` (has its own AGENTS.md) |
@@ -91,12 +91,15 @@ Events registered there, in registration order per event:
   player themselves, so the drinker would hear nothing — see the comment in
   `ThirstManager.drinkByHand`.
 
-## The copper hanging pot
+## The hanging pots
 
 `block/HangingPotBlock` is adapted from Dehydration's campfire cauldron (GPL-3.0; see `CREDITS.md`).
+The copper and iron pots are two registrations of it that differ only in look, sound and recipe, so
+code that asks whether a block is a pot checks `instanceof HangingPotBlock`, never one of the two.
 It holds `CAPACITY` servings and stores their quality in `WaterPurity.BLOCK_PURITY`, like a cauldron,
 and `HangingPotInteractions` does all the filling and drawing itself, inline, because vanilla has no
-interaction for the block to defer to. Keep that handler ahead of `emptyWaterskinOnBlock`: a sneaking
+interaction for the block to defer to. It refuses every pour where `Vanilla.waterEvaporates`, so a
+pot never holds water in the Nether. Keep that handler ahead of `emptyWaterskinOnBlock`: a sneaking
 player's waterskin pours into the pot rather than onto the ground.
 
 Boiling has no block entity. The `boil` property counts `BOIL_STAGES` scheduled ticks; `onPlace`

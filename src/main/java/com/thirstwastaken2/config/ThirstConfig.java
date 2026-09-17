@@ -61,7 +61,7 @@ public final class ThirstConfig {
     /** Grade a cauldron is given when a pointed dripstone drips into it, having filtered it. */
     public int dripstonePurity = 3;
     /**
-     * Seconds a copper hanging pot over a lit campfire takes to boil everything in it pure, however
+     * Seconds a hanging pot over a lit campfire takes to boil everything in it pure, however
      * full it is. A campfire takes 30 seconds for one bottle and only raises it two grades.
      */
     public int hangingPotBoilSeconds = 30;

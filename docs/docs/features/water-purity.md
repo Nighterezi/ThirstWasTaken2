@@ -112,7 +112,8 @@ The Copper Hanging Pot boils a large batch of water at once. Craft it from two s
 Place it on a campfire and it hangs from a wooden frame. It can also stand on any solid block, but it
 only boils over a lit campfire or soul campfire.
 
-- It holds nine servings. A bucket adds or takes three, a bottle or a bowl one.
+- It holds a bucket of water, like a cauldron: three servings. A bucket fills or empties it, a
+  bottle or a bowl adds or takes one.
 - A waterskin takes one serving. Sneak and use a waterskin to pour all of it in.
 - Over a lit campfire, everything in the pot becomes Pure after 30 seconds, whatever its grade and
   however full it is. The time is set by [hangingPotBoilSeconds](/docs/configuration#hangingpotboilseconds).
@@ -121,4 +122,16 @@ only boils over a lit campfire or soul campfire.
 - It mixes like a cauldron: it keeps the worse grade, and one salty drink makes the whole pot salty.
   Salt water does not boil clean.
 - Rain fills it slowly with rainwater, like a cauldron.
+- Water cannot be poured into it in the Nether. It hisses away, and you keep your water.
 - Breaking it drops the pot. The water inside is lost.
+
+### Iron Hanging Pot
+
+The Iron Hanging Pot is the same pot in dark iron. It holds, boils and mixes water exactly like the
+Copper Hanging Pot. Craft it the same way, with iron ingots instead of copper:
+
+| | | |
+|---|---|---|
+| Stick | Chain | Stick |
+| Iron Ingot | | Iron Ingot |
+| Iron Ingot | Iron Ingot | Iron Ingot |

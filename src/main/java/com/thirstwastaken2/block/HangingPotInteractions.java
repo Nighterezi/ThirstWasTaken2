@@ -2,9 +2,12 @@ package com.thirstwastaken2.block;
 
 import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.item.WaterskinItem;
+import com.thirstwastaken2.platform.Vanilla;
 import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.purity.WaterQuality;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -22,12 +25,13 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 
 /**
- * Pouring water into a copper hanging pot and drawing it back out.
+ * Pouring water into a hanging pot, copper or iron, and drawing it back out.
  *
  * <p>The pot is the mod's own block, so unlike a cauldron nothing in vanilla handles these; everything
  * happens here, inline. A bucket is {@link HangingPotBlock#BUCKET} servings and everything else one.
  * Poured water mixes the way it does in a cauldron, keeping the worse grade, and starts the boil over.
- * Drawn water carries the pot's quality. A sneaking player gets vanilla's usual behaviour instead,
+ * Drawn water carries the pot's quality. Where water evaporates, as in the Nether, nothing can be
+ * poured in at all. A sneaking player gets vanilla's usual behaviour instead,
  * except with a waterskin, whose sneak-use pours it out: over a pot it pours into the pot.
  */
 public final class HangingPotInteractions {
@@ -38,7 +42,7 @@ public final class HangingPotInteractions {
     public static InteractionResult use(Player player, Level level, InteractionHand hand, BlockHitResult hit) {
         BlockPos pos = hit.getBlockPos();
         BlockState state = level.getBlockState(pos);
-        if (!state.is(ThirstBlocks.COPPER_HANGING_POT)) return InteractionResult.PASS;
+        if (!(state.getBlock() instanceof HangingPotBlock)) return InteractionResult.PASS;
 
         ItemStack held = player.getItemInHand(hand);
         boolean sneaking = player.isSecondaryUseActive();
@@ -49,6 +53,7 @@ public final class HangingPotInteractions {
             int skin = WaterskinItem.servings(held);
             if (sneaking) {
                 if (skin == 0 || room == 0) return InteractionResult.PASS;
+                if (evaporates(level, pos)) return hissed(level);
                 if (level.isClientSide()) return InteractionResult.SUCCESS;
                 int poured = Math.min(skin, room);
                 WaterQuality quality = WaterPurity.quality(held);
@@ -66,6 +71,7 @@ public final class HangingPotInteractions {
 
         Transfer transfer = transfer(held, servings, room);
         if (transfer == null) return InteractionResult.PASS;
+        if (transfer.pouring() && evaporates(level, pos)) return hissed(level);
         if (level.isClientSide()) return InteractionResult.SUCCESS;
 
         ItemStack result;
@@ -116,6 +122,28 @@ public final class HangingPotInteractions {
                     : null;
         }
         return null;
+    }
+
+    /**
+     * Whether water poured into a pot at {@code pos} boils away, as it does in the Nether. On the server it
+     * hisses and smokes the way a bucket emptied there does, but the player keeps the water: the pot
+     * refuses it rather than eating it. Drawing needs no such check, because a pot there never has
+     * anything in it to draw.
+     */
+    private static boolean evaporates(Level level, BlockPos pos) {
+        if (!Vanilla.waterEvaporates(level, pos)) return false;
+        if (level instanceof ServerLevel server) {
+            server.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5F,
+                    2.6F + (server.getRandom().nextFloat() - server.getRandom().nextFloat()) * 0.8F);
+            server.sendParticles(ParticleTypes.LARGE_SMOKE, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                    8, 0.2, 0.1, 0.2, 0.0);
+        }
+        return true;
+    }
+
+    /** Ends a refused pour on each side, so the click is spent and the player swings. */
+    private static InteractionResult hissed(Level level) {
+        return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
     }
 
     private static void pour(Player player, Level level, BlockPos pos, BlockState state, int servings,

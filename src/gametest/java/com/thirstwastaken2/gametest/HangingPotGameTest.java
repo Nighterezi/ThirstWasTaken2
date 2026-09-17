@@ -17,6 +17,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CampfireBlock;
@@ -26,7 +27,8 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * The copper hanging pot: filling and drawing through the real use path, the frame following the
- * campfire, and boiling.
+ * campfire, and boiling. The iron pot is the same block class, so it is only checked for taking part in
+ * the use path and the boil at all.
  *
  * <p>Boiling is driven by calling the block's tick directly rather than waiting for it, because a
  * default boil outlasts a test's time limit. What the scheduler is asked to do is checked separately.
@@ -152,7 +154,7 @@ public final class HangingPotGameTest {
 
     @GameTest
     public void aPotOverALitCampfireBoilsPure(GameTestHelper helper) {
-        BlockPos pos = pot(helper, Blocks.CAMPFIRE.defaultBlockState(), 5, WaterQuality.fresh(0));
+        BlockPos pos = pot(helper, Blocks.CAMPFIRE.defaultBlockState(), 3, WaterQuality.fresh(0));
         ServerLevel level = helper.getLevel();
         TestFixtures.check(helper, level.getBlockTicks().hasScheduledTick(pos, ThirstBlocks.COPPER_HANGING_POT),
                 "dirty water over a lit campfire should schedule a boil");
@@ -164,7 +166,7 @@ public final class HangingPotGameTest {
         BlockState after = level.getBlockState(pos);
         TestFixtures.check(helper, WaterQuality.fresh(WaterPurity.MAX).equals(HangingPotBlock.quality(after)),
                 "the water should have boiled pure, got " + HangingPotBlock.quality(after));
-        TestFixtures.check(helper, after.getValue(HangingPotBlock.LEVEL) == 5,
+        TestFixtures.check(helper, after.getValue(HangingPotBlock.LEVEL) == 3,
                 "boiling should not cost any water, the pot holds " + after.getValue(HangingPotBlock.LEVEL));
         helper.succeed();
     }
@@ -173,7 +175,7 @@ public final class HangingPotGameTest {
     public void anUnlitCampfireOrSaltWaterDoesNotBoil(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         BlockState unlit = Blocks.CAMPFIRE.defaultBlockState().setValue(CampfireBlock.LIT, false);
-        BlockPos pos = pot(helper, unlit, 5, WaterQuality.fresh(0));
+        BlockPos pos = pot(helper, unlit, 3, WaterQuality.fresh(0));
         TestFixtures.check(helper, !level.getBlockTicks().hasScheduledTick(pos, ThirstBlocks.COPPER_HANGING_POT),
                 "nothing should be scheduled over an unlit campfire");
         for (int stage = 0; stage < HangingPotBlock.BOIL_STAGES; stage++) {
@@ -186,7 +188,7 @@ public final class HangingPotGameTest {
         TestFixtures.check(helper, level.getBlockTicks().hasScheduledTick(pos, ThirstBlocks.COPPER_HANGING_POT),
                 "lighting the campfire should pick the boil up");
 
-        helper.setBlock(POT, HangingPotBlock.withWater(level.getBlockState(pos), 5, WaterQuality.SALT));
+        helper.setBlock(POT, HangingPotBlock.withWater(level.getBlockState(pos), 3, WaterQuality.SALT));
         level.getBlockState(pos).tick(level, pos, level.getRandom());
         TestFixtures.check(helper, level.getBlockState(pos).getValue(HangingPotBlock.BOIL) == 0
                         && WaterQuality.SALT.equals(HangingPotBlock.quality(level.getBlockState(pos))),
@@ -213,10 +215,78 @@ public final class HangingPotGameTest {
         helper.succeed();
     }
 
+    @GameTest
+    public void aPotInTheNetherTakesNoWater(GameTestHelper helper) {
+        ServerLevel nether = helper.getLevel().getServer().getLevel(Level.NETHER);
+        TestFixtures.check(helper, nether != null, "the test server should have a Nether");
+        // Well inside the Nether's height and away from anything a test places, and cleared again after.
+        BlockPos pos = new BlockPos(0, 100, 0);
+        nether.getChunk(pos);
+        nether.setBlockAndUpdate(pos.below(), Blocks.STONE.defaultBlockState());
+        nether.setBlockAndUpdate(pos, ThirstBlocks.COPPER_HANGING_POT.defaultBlockState());
+        try {
+            ServerPlayer player = TestFixtures.survivalPlayer(helper);
+            hold(player, new ItemStack(Items.WATER_BUCKET));
+
+            player.gameMode.useItemOn(player, nether, player.getItemInHand(InteractionHand.MAIN_HAND),
+                    InteractionHand.MAIN_HAND, aimAt(pos));
+
+            TestFixtures.check(helper, nether.getBlockState(pos).getValue(HangingPotBlock.LEVEL) == 0,
+                    "water poured into a pot in the Nether should boil away, the pot holds "
+                            + nether.getBlockState(pos).getValue(HangingPotBlock.LEVEL));
+            TestFixtures.check(helper, player.getItemInHand(InteractionHand.MAIN_HAND).is(Items.WATER_BUCKET),
+                    "the player should keep the water bucket, got " + player.getItemInHand(InteractionHand.MAIN_HAND));
+        } finally {
+            nether.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+            nether.setBlockAndUpdate(pos.below(), Blocks.AIR.defaultBlockState());
+        }
+        helper.succeed();
+    }
+
+    @GameTest
+    public void theIronPotFillsLikeTheCopperOne(GameTestHelper helper) {
+        BlockPos pos = pot(helper, ThirstBlocks.IRON_HANGING_POT, Blocks.STONE.defaultBlockState(), 0, null);
+        ServerPlayer player = TestFixtures.survivalPlayer(helper);
+        hold(player, WaterPurity.set(new ItemStack(Items.WATER_BUCKET), 1));
+
+        use(helper, player, pos);
+
+        BlockState after = helper.getLevel().getBlockState(pos);
+        TestFixtures.check(helper, after.is(ThirstBlocks.IRON_HANGING_POT)
+                        && after.getValue(HangingPotBlock.LEVEL) == HangingPotBlock.BUCKET,
+                "a bucket should add three servings to the iron pot, got " + after);
+        TestFixtures.check(helper, WaterQuality.fresh(1).equals(HangingPotBlock.quality(after)),
+                "the iron pot should hold the bucket's murky water, got " + HangingPotBlock.quality(after));
+        helper.succeed();
+    }
+
+    @GameTest
+    public void theIronPotBoilsOverACampfire(GameTestHelper helper) {
+        BlockPos pos = pot(helper, ThirstBlocks.IRON_HANGING_POT, Blocks.CAMPFIRE.defaultBlockState(), 3,
+                WaterQuality.fresh(0));
+        ServerLevel level = helper.getLevel();
+        TestFixtures.check(helper, level.getBlockTicks().hasScheduledTick(pos, ThirstBlocks.IRON_HANGING_POT),
+                "an iron pot of dirty water over a lit campfire should schedule its boil");
+
+        for (int stage = 0; stage < HangingPotBlock.BOIL_STAGES; stage++) {
+            level.getBlockState(pos).tick(level, pos, level.getRandom());
+        }
+
+        BlockState after = level.getBlockState(pos);
+        TestFixtures.check(helper, WaterQuality.fresh(WaterPurity.MAX).equals(HangingPotBlock.quality(after)),
+                "the iron pot should boil its water pure, got " + HangingPotBlock.quality(after));
+        helper.succeed();
+    }
+
     /** Places {@code floor}, and a pot on it holding {@code level} servings of {@code quality}. */
     private static BlockPos pot(GameTestHelper helper, BlockState floor, int level, WaterQuality quality) {
+        return pot(helper, ThirstBlocks.COPPER_HANGING_POT, floor, level, quality);
+    }
+
+    private static BlockPos pot(GameTestHelper helper, HangingPotBlock block, BlockState floor, int level,
+                                WaterQuality quality) {
         helper.setBlock(FLOOR, floor);
-        BlockState pot = ThirstBlocks.COPPER_HANGING_POT.defaultBlockState()
+        BlockState pot = block.defaultBlockState()
                 .setValue(HangingPotBlock.HANGING, floor.is(Blocks.CAMPFIRE));
         helper.setBlock(POT, HangingPotBlock.withWater(pot, level, quality));
         return helper.absolutePos(POT);

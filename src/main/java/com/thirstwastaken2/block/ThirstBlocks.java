@@ -19,6 +19,15 @@ public final class ThirstBlocks {
                     .sound(SoundType.COPPER)
                     .noOcclusion()
                     .pushReaction(PushReaction.DESTROY));
+    /** The same pot in dark cast iron. It behaves exactly like the copper one. */
+    public static final HangingPotBlock IRON_HANGING_POT = Vanilla.registerBlock("iron_hanging_pot",
+            HangingPotBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL)
+                    .strength(1.0F)
+                    .sound(SoundType.METAL)
+                    .noOcclusion()
+                    .pushReaction(PushReaction.DESTROY));
 
     private ThirstBlocks() { }
 

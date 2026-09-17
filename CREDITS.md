@@ -10,8 +10,8 @@ Copyright and license notices from the original project are retained in
 
 ## Dehydration
 
-The Copper Hanging Pot model and texture in ThirstWasTaken2 are derived from the campfire cauldron in
-Dehydration by Globox1997, and have been modified for use in this project.
+The Copper and Iron Hanging Pot models and textures in ThirstWasTaken2 are derived from the campfire
+cauldron in Dehydration by Globox1997, and have been modified for use in this project.
 
 Dehydration is licensed under the GNU General Public License v3.0.
 
@@ -20,6 +20,7 @@ https://github.com/Globox1997/Dehydration
 
 Changes made:
 - Split the original model into separate pot, frame and item models.
+- Recoloured the copper texture to dark iron for the Iron Hanging Pot.
 
 ## ThirstWasTaken2
 

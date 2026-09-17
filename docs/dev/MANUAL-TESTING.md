@@ -128,6 +128,10 @@ config screen *read* well, which is the sections below.
 - [ ] Over a lit campfire the water bubbles and steams, and after about 30 seconds it turns pure blue
       with a short brewing sound. Over an unlit campfire nothing happens until it is lit.
 - [ ] Breaking the campfire drops the pot. Jade shows the pot's grade, and nothing when it is empty.
+- [ ] One bucket fills the pot to the brim, and three bottles draw it empty. In the Nether, pouring a
+      bucket, a bottle or a waterskin into it hisses and smokes, and the player keeps the water.
+- [ ] The Iron Hanging Pot crafts from iron ingots once one is held, and does all of the above. Its
+      pot is dark iron, its frame and chain the same as the copper one's, and it drops itself.
 
 ### Sprites and sounds
 

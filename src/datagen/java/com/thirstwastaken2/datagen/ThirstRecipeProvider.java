@@ -69,6 +69,8 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
     /** Any mod's copper, through the convention tag both loaders fill. */
     private static final TagKey<Item> COPPER_INGOTS =
             TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "ingots/copper"));
+    private static final TagKey<Item> IRON_INGOTS =
+            TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "ingots/iron"));
     // 1.21.9 renamed the chain to the iron chain when it added copper ones.
     //? if >=1.21.9 {
     private static final Item CHAIN = Items.IRON_CHAIN;
@@ -176,6 +178,18 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
                     .define('C', COPPER_INGOTS)
                     .unlockedBy("has_copper_ingot", has(COPPER_INGOTS))
                     .save(output, recipe("copper_hanging_pot"));
+
+            // The same pot in iron, for a world short on copper. Its top row keeps it clear of the
+            // cauldron's recipe.
+            shaped(ThirstItems.IRON_HANGING_POT, 1)
+                    .pattern("SKS")
+                    .pattern("I I")
+                    .pattern("III")
+                    .define('S', Items.STICK)
+                    .define('K', CHAIN)
+                    .define('I', IRON_INGOTS)
+                    .unlockedBy("has_iron_ingot", has(IRON_INGOTS))
+                    .save(output, recipe("iron_hanging_pot"));
 
             // A bucket of fresh water poured into a fired bowl. The result is graded 2 rather than
             // sampled, because the bucket's own grade is gone by the time a recipe sees it.

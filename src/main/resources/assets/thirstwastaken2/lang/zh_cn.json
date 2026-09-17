@@ -6,6 +6,7 @@
   "item.thirstwastaken2.clay_bowl": "粘土碗",
   "item.thirstwastaken2.waterskin": "水袋",
   "block.thirstwastaken2.copper_hanging_pot": "铜吊锅",
+  "block.thirstwastaken2.iron_hanging_pot": "铁吊锅",
   "block.thirstwastaken2.sand_filter": "砂滤器",
   "tooltip.thirstwastaken2.waterskin.empty": "空",
   "tooltip.thirstwastaken2.waterskin.servings": "装有 %1$s/%2$s 份水",

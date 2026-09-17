@@ -7,7 +7,7 @@
   ],
   "textures": {
     "pot": "thirstwastaken2:block/copper_hanging_pot",
-    "particle": "thirstwastaken2:block/copper_hanging_pot"
+    "particle": "minecraft:block/copper_block"
   },
   "elements": [
     {

@@ -387,8 +387,8 @@ src/main/java/com/thirstwastaken2/      common (client + server), loader indepen
   data/HealthRegen.java                whether a dehydrated player may still regenerate
   item/ThirstItems.java                bowl and waterskin registration + creative tab
   item/WaterskinItem.java              three-drink storage, consumption and inventory transfers
-  block/ThirstBlocks.java              block registration: the copper hanging pot
-  block/HangingPotBlock.java           nine servings, boiled pure over a lit campfire on scheduled ticks
+  block/ThirstBlocks.java              block registration: the copper and iron hanging pots
+  block/HangingPotBlock.java           a bucket's three servings, boiled pure over a lit campfire on scheduled ticks
   block/HangingPotInteractions.java    filling and drawing the pot with buckets, bottles, bowls, waterskins
   purity/ThirstComponents.java         purity, salinity and serving data components
   purity/WaterQuality.java             sealed Fresh(grade) | Salt
@@ -458,7 +458,7 @@ src/gametest/java/com/thirstwastaken2/gametest/
   WaterInteractionsGameTest.java       bowl and waterskin scooping, cauldron draw and pour
   WaterskinGameTest.java               mixing, capacity, emptying
   CauldronGameTest.java                cauldrons keeping the quality poured into them
-  HangingPotGameTest.java              the copper hanging pot: filling, drawing, the frame, boiling, rain
+  HangingPotGameTest.java              the hanging pots: filling, drawing, the frame, boiling, rain
   PurificationGameTest.java            which water the furnace recipes accept
   DrinkingGameTest.java                drinking end to end through the real right-click path
   HealthRegenGameTest.java             dehydration halting regen, and the food refund
@@ -528,7 +528,7 @@ sickness, mixing, sprite - has to answer for salt water or fail to compile.
 | Carrier | Storage |
 |---|---|
 | Items | `water_purity` for a grade, `water_salty` for sea water; salt water carries no grade at all |
-| Cauldrons, the copper hanging pot | one `purity` blockstate value: 0 unset, 1-4 the grades, 5 salt |
+| Cauldrons, the hanging pots | one `purity` blockstate value: 0 unset, 1-4 the grades, 5 salt |
 | Anything else | `ThirstConfig.defaultPurity` |
 
 The cauldron deliberately uses one property rather than a grade plus a boolean: vanilla gives a

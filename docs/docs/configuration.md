@@ -95,8 +95,8 @@ Default `3`, pure. The grade a cauldron gets when a pointed dripstone drips into
 ### hangingPotBoilSeconds
 
 Default `30`, from 1 to 300. How many seconds a
-[Copper Hanging Pot](/docs/features/water-purity#copper-hanging-pot) over a lit campfire takes to make
-its water pure.
+[Copper or Iron Hanging Pot](/docs/features/water-purity#copper-hanging-pot) over a lit campfire takes
+to make its water pure.
 
 ### quenchWhenDebuffed
 

@@ -10,19 +10,24 @@ import com.thirstwastaken2.purity.WaterPurity;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.Block;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * The copper hanging pot's blockstate and the models it assembles.
+ * The hanging pots' blockstates and the models they assemble.
  *
- * <p>The pot is a multipart of three pieces. The pot itself, {@code models/block/copper_hanging_pot},
+ * <p>A pot is a multipart of three pieces. The copper pot itself, {@code models/block/copper_hanging_pot},
  * and the frame template it hangs from are Blockbench models and stay hand-written in
  * {@code src/main/resources}, as does the item's template, which is both of them in one model with its
  * own display transforms. What is written here is what differs by version or is repetitive: the frame
  * and the item, which name vanilla's chain texture, renamed in 1.21.9, and one flat water surface per
  * fill level and water quality, each with its own texture from {@code tools/generate_pot_water.py}.
+ *
+ * <p>The iron pot is the copper one retextured: its texture keeps the copper one's layout, so each of
+ * its models is a child of the copper model that only swaps the texture. Both pots share the water
+ * surfaces, which do not depend on the pot around them.
  *
  * <p>Everything is assembled as JSON, the one shape that has not changed. The blockstate's builder
  * classes changed twice across the supported versions, so it is parsed into whatever each version's
@@ -30,10 +35,15 @@ import java.util.Map;
  */
 final class HangingPotModels {
     private static final String NAME = "copper_hanging_pot";
+    private static final String IRON = "iron_hanging_pot";
+    /**
+     * What breaking the iron pot scatters. The pot's own texture is a sheet with wood, empty space and
+     * the texture artist's mark on it, and a particle is a random piece of it; vanilla's cauldron is the
+     * same cast iron in one clean tile. The copper models name vanilla's copper block the same way.
+     */
+    private static final String IRON_PARTICLE = "minecraft:block/cauldron_side";
     private static final Identifier POT = model(NAME);
-    private static final Identifier FRAME = model(NAME + "_frame");
     private static final Identifier FRAME_TEMPLATE = model("template_" + NAME + "_frame");
-    private static final Identifier ITEM = ThirstWasTaken2.id("item/" + NAME);
     private static final Identifier ITEM_TEMPLATE = model("template_" + NAME + "_item");
     //? if >=1.21.9 {
     private static final String CHAIN_TEXTURE = "minecraft:block/iron_chain";
@@ -43,8 +53,25 @@ final class HangingPotModels {
     private HangingPotModels() { }
 
     static void generate(BlockModelGenerators generators) {
-        JsonObject frame = withChain(FRAME_TEMPLATE);
-        generators.modelOutput.accept(FRAME, () -> frame);
+        for (int level = 1; level <= HangingPotBlock.CAPACITY; level++) {
+            for (String water : waters().values()) {
+                JsonElement json = surfaceJson(level, water);
+                generators.modelOutput.accept(surface(level, water), () -> json);
+            }
+        }
+
+        pot(generators, ThirstBlocks.COPPER_HANGING_POT, NAME, POT);
+
+        JsonObject ironPot = retextured(POT, IRON, "pot");
+        generators.modelOutput.accept(model(IRON), () -> ironPot);
+        pot(generators, ThirstBlocks.IRON_HANGING_POT, IRON, model(IRON));
+    }
+
+    /** One pot's frame and blockstate, hanging {@code pot} from the frame and filling it with water. */
+    private static void pot(BlockModelGenerators generators, Block block, String name, Identifier pot) {
+        Identifier frame = model(name + "_frame");
+        JsonObject frameJson = withChain(FRAME_TEMPLATE, name);
+        generators.modelOutput.accept(frame, () -> frameJson);
 
         JsonArray parts = new JsonArray();
         for (Direction.Axis axis : new Direction.Axis[] { Direction.Axis.Z, Direction.Axis.X }) {
@@ -52,25 +79,21 @@ final class HangingPotModels {
             int rotation = axis == Direction.Axis.X ? 90 : 0;
             JsonObject hanging = when(HangingPotBlock.AXIS.getName(), axis.getSerializedName());
             hanging.addProperty(HangingPotBlock.HANGING.getName(), "true");
-            parts.add(part(hanging, FRAME, rotation));
-            parts.add(part(when(HangingPotBlock.AXIS.getName(), axis.getSerializedName()), POT, rotation));
+            parts.add(part(hanging, frame, rotation));
+            parts.add(part(when(HangingPotBlock.AXIS.getName(), axis.getSerializedName()), pot, rotation));
         }
 
         for (int level = 1; level <= HangingPotBlock.CAPACITY; level++) {
             for (Map.Entry<String, String> water : waters().entrySet()) {
-                Identifier surface = model(NAME + "_water_" + level + "_" + water.getValue());
-                JsonElement json = surface(level, water.getValue());
-                generators.modelOutput.accept(surface, () -> json);
-
                 JsonObject condition = when(HangingPotBlock.LEVEL.getName(), Integer.toString(level));
                 condition.addProperty(WaterPurity.BLOCK_PURITY.getName(), water.getKey());
-                parts.add(part(condition, surface, 0));
+                parts.add(part(condition, surface(level, water.getValue()), 0));
             }
         }
 
         JsonObject blockState = new JsonObject();
         blockState.add("multipart", parts);
-        generators.blockStateOutput.accept(blockState(blockState));
+        generators.blockStateOutput.accept(blockState(block, blockState));
     }
 
     /**
@@ -79,20 +102,29 @@ final class HangingPotModels {
      * points at it.
      */
     static void item(net.minecraft.client.data.models.ItemModelGenerators generators) {
-        JsonObject item = withChain(ITEM_TEMPLATE);
-        //? if >=1.21.4 {
-        generators.modelOutput.accept(ITEM, () -> item);
-        generators.itemModelOutput.accept(com.thirstwastaken2.item.ThirstItems.COPPER_HANGING_POT,
-                net.minecraft.client.data.models.model.ItemModelUtils.plainModel(ITEM));
-        //?} else
-        /*generators.output.accept(ITEM, () -> item);*/
+        item(generators, com.thirstwastaken2.item.ThirstItems.COPPER_HANGING_POT, NAME);
+        item(generators, com.thirstwastaken2.item.ThirstItems.IRON_HANGING_POT, IRON);
     }
 
-    /** A model that fills {@code template}'s chain slot with this version's chain texture. */
-    private static JsonObject withChain(Identifier template) {
-        JsonObject json = new JsonObject();
+    private static void item(net.minecraft.client.data.models.ItemModelGenerators generators,
+                             net.minecraft.world.item.Item pot, String name) {
+        Identifier id = ThirstWasTaken2.id("item/" + name);
+        JsonObject item = withChain(ITEM_TEMPLATE, name);
+        //? if >=1.21.4 {
+        generators.modelOutput.accept(id, () -> item);
+        generators.itemModelOutput.accept(pot, net.minecraft.client.data.models.model.ItemModelUtils.plainModel(id));
+        //?} else
+        /*generators.output.accept(id, () -> item);*/
+    }
+
+    /**
+     * A model that fills {@code template}'s chain slot with this version's chain texture, and, for any
+     * pot but the copper one the templates are drawn with, its frame slot with that pot's texture.
+     */
+    private static JsonObject withChain(Identifier template, String name) {
+        JsonObject json = name.equals(NAME) ? new JsonObject() : retextured(template, name, "frame");
         json.addProperty("parent", template.toString());
-        JsonObject textures = new JsonObject();
+        JsonObject textures = json.has("textures") ? json.getAsJsonObject("textures") : new JsonObject();
         textures.addProperty("chain", CHAIN_TEXTURE);
         json.add("textures", textures);
         // NeoForge before 26.1 reads the render type off the model; everything else ignores the key.
@@ -100,16 +132,28 @@ final class HangingPotModels {
         return json;
     }
 
+    /** A child of {@code parent} that draws its {@code slot} with {@code name}'s texture, and iron particles. */
+    private static JsonObject retextured(Identifier parent, String name, String slot) {
+        String texture = model(name).toString();
+        JsonObject json = new JsonObject();
+        json.addProperty("parent", parent.toString());
+        JsonObject textures = new JsonObject();
+        textures.addProperty(slot, texture);
+        textures.addProperty("particle", IRON_PARTICLE);
+        json.add("textures", textures);
+        return json;
+    }
+
     // The blockstate generator became a pair of block and parsed definition in 1.21.5, and the
     // definition class was replaced in 26.1. Before 1.21.5 it hands over the JSON itself.
     //? if >=26.1 {
-    private static net.minecraft.client.data.models.blockstates.BlockModelDefinitionGenerator blockState(JsonObject json) {
+    private static net.minecraft.client.data.models.blockstates.BlockModelDefinitionGenerator blockState(Block block, JsonObject json) {
         var definition = net.minecraft.client.renderer.block.dispatch.BlockStateModelDispatcher.CODEC
                 .parse(com.mojang.serialization.JsonOps.INSTANCE, json).getOrThrow();
         return new net.minecraft.client.data.models.blockstates.BlockModelDefinitionGenerator() {
             @Override
-            public net.minecraft.world.level.block.Block block() {
-                return ThirstBlocks.COPPER_HANGING_POT;
+            public Block block() {
+                return block;
             }
 
             @Override
@@ -120,13 +164,13 @@ final class HangingPotModels {
     }
     //?}
     //? if >=1.21.5 <26.1 {
-    /*private static net.minecraft.client.data.models.blockstates.BlockModelDefinitionGenerator blockState(JsonObject json) {
+    /*private static net.minecraft.client.data.models.blockstates.BlockModelDefinitionGenerator blockState(Block block, JsonObject json) {
         var definition = net.minecraft.client.renderer.block.model.BlockModelDefinition.CODEC
                 .parse(com.mojang.serialization.JsonOps.INSTANCE, json).getOrThrow();
         return new net.minecraft.client.data.models.blockstates.BlockModelDefinitionGenerator() {
             @Override
-            public net.minecraft.world.level.block.Block block() {
-                return ThirstBlocks.COPPER_HANGING_POT;
+            public Block block() {
+                return block;
             }
 
             @Override
@@ -137,11 +181,11 @@ final class HangingPotModels {
     }
     *///?}
     //? if <1.21.5 {
-    /*private static net.minecraft.client.data.models.blockstates.BlockStateGenerator blockState(JsonObject json) {
+    /*private static net.minecraft.client.data.models.blockstates.BlockStateGenerator blockState(Block block, JsonObject json) {
         return new net.minecraft.client.data.models.blockstates.BlockStateGenerator() {
             @Override
-            public net.minecraft.world.level.block.Block getBlock() {
-                return ThirstBlocks.COPPER_HANGING_POT;
+            public Block getBlock() {
+                return block;
             }
 
             @Override
@@ -168,9 +212,14 @@ final class HangingPotModels {
         return waters;
     }
 
-    /** One water surface filling the inside of the pot, rising half a pixel a serving from its floor. */
-    private static JsonElement surface(int level, String water) {
-        double height = 1.5 + (level - 1) * 0.5;
+    /** The water surface model for {@code level} servings of {@code water}, shared by every pot. */
+    private static Identifier surface(int level, String water) {
+        return model(NAME + "_water_" + level + "_" + water);
+    }
+
+    /** One water surface filling the inside of the pot, at the height the block gives its servings. */
+    private static JsonElement surfaceJson(int level, String water) {
+        double height = HangingPotBlock.surfaceHeight(level);
         JsonObject json = new JsonObject();
         json.addProperty("parent", "minecraft:block/block");
         JsonObject textures = new JsonObject();

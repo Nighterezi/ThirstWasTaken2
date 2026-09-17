@@ -39,6 +39,8 @@ public final class ThirstItems {
                     .component(ThirstComponents.WATER_SERVINGS, 0));
     public static final Item COPPER_HANGING_POT = Vanilla.registerBlockItem(ThirstBlocks.COPPER_HANGING_POT,
             new Item.Properties());
+    public static final Item IRON_HANGING_POT = Vanilla.registerBlockItem(ThirstBlocks.IRON_HANGING_POT,
+            new Item.Properties());
     public static final ResourceKey<CreativeModeTab> CREATIVE_TAB_KEY = ResourceKey.create(
             Registries.CREATIVE_MODE_TAB, ThirstWasTaken2.id("thirstwastaken2"));
 
@@ -63,6 +65,7 @@ public final class ThirstItems {
                             entries.accept(TERRACOTTA_WATER_BOWL);
                             entries.accept(WATERSKIN);
                             entries.accept(COPPER_HANGING_POT);
+                            entries.accept(IRON_HANGING_POT);
                         })
                         .build());
     }

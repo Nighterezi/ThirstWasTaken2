@@ -38,8 +38,8 @@ import java.util.function.IntConsumer;
 /**
  * The copper hanging pot, adapted from Dehydration's campfire cauldron (Globox1997, GPL-3.0).
  *
- * <p>It holds {@link #CAPACITY} servings of water, three buckets' worth, and keeps their quality the way
- * a cauldron does, in {@link WaterPurity#BLOCK_PURITY}. It stands on any solid floor, but only boils
+ * <p>It holds {@link #CAPACITY} servings of water, a bucket's worth like a cauldron, since the pot is no
+ * bigger than one, and keeps their quality the way a cauldron does, in {@link WaterPurity#BLOCK_PURITY}. It stands on any solid floor, but only boils
  * over a lit campfire, where it hangs from a frame. Boiling takes {@code hangingPotBoilSeconds} however
  * much water is in the pot, and leaves fresh water pure in one go. Salt water is not boiled: taking the
  * salt out is distillation, which is a separate idea on the roadmap.
@@ -55,7 +55,7 @@ public final class HangingPotBlock extends SupportedBlock {
     public static final MapCodec<HangingPotBlock> CODEC = simpleCodec(HangingPotBlock::new);
 
     /** Servings the pot holds: a bottle or a bowl is one, a bucket three. */
-    public static final int CAPACITY = 9;
+    public static final int CAPACITY = 3;
     public static final int BUCKET = 3;
     public static final IntegerProperty LEVEL = IntegerProperty.create("level", 0, CAPACITY);
     /** Whether a campfire is below, which is what puts the pot on its frame. */
@@ -116,6 +116,11 @@ public final class HangingPotBlock extends SupportedBlock {
         int level = state.getValue(LEVEL) - servings;
         if (level > 0) return state.setValue(LEVEL, level);
         return withWater(state, 0, null);
+    }
+
+    /** How high, in pixels from the bottom of the block, the water in a pot holding {@code servings} stands. */
+    public static double surfaceHeight(int servings) {
+        return 2.5 + (servings - 1) * 1.5;
     }
 
     /** Whether there is fresh water in the pot that is not pure yet. */
@@ -201,7 +206,7 @@ public final class HangingPotBlock extends SupportedBlock {
         int servings = state.getValue(LEVEL);
         if (servings == 0 || !isHeat(level.getBlockState(pos.below()))) return;
 
-        double surface = pos.getY() + (1.5 + (servings - 1) * 0.5) / 16.0;
+        double surface = pos.getY() + surfaceHeight(servings) / 16.0;
         double x = pos.getX() + 0.3 + random.nextDouble() * 0.4;
         double z = pos.getZ() + 0.3 + random.nextDouble() * 0.4;
         level.addParticle(ParticleTypes.BUBBLE_POP, x, surface, z, 0.0, 0.02, 0.0);
