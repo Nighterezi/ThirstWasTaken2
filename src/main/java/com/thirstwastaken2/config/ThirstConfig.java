@@ -60,6 +60,11 @@ public final class ThirstConfig {
     public int rainwaterPurity = 2;
     /** Grade a cauldron is given when a pointed dripstone drips into it, having filtered it. */
     public int dripstonePurity = 3;
+    /**
+     * Seconds a copper hanging pot over a lit campfire takes to boil everything in it pure, however
+     * full it is. A campfire takes 30 seconds for one bottle and only raises it two grades.
+     */
+    public int hangingPotBoilSeconds = 30;
     public boolean quenchWhenDebuffed = true;
     public int[] nauseaChance = {100, 50, 5, 0};
     public int[] poisonChance = {30, 10, 0, 0};
@@ -194,6 +199,7 @@ public final class ThirstConfig {
         defaultPurity = clamp(defaultPurity, 0, 3);
         rainwaterPurity = clamp(rainwaterPurity, 0, 3);
         dripstonePurity = clamp(dripstonePurity, 0, 3);
+        hangingPotBoilSeconds = clamp(hangingPotBoilSeconds, 1, 300);
         fireResistanceDehydrationPercent = clamp(fireResistanceDehydrationPercent, 0, 100);
         handDrinkingThirst = clamp(handDrinkingThirst, 0, 20);
         handDrinkingQuenched = clamp(handDrinkingQuenched, 0, 20);

@@ -4,11 +4,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Block;
 import squeek.appleskin.ModConfig;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Every client call into the mod loader, for Fabric. The client half of
@@ -41,6 +43,22 @@ public final class ClientLoader {
         /*// Fabric API has no HUD element or status bar registry before 1.21.6. GuiMixin draws these
         // rows at the point vanilla is about to draw the air bubbles, and moves the bubbles up.
         RIGHT_STATUS_BARS.add(new RightStatusBar(height, visible, renderer));
+        *///?}
+    }
+
+    /**
+     * Draws {@code block} with its transparent pixels cut out, which a model with a chain in it needs.
+     * From 26.1 the game picks the layer from the model's textures, so there is nothing to register.
+     * Fabric runs client initialization after the blocks are registered, so the block is asked for here.
+     */
+    public static void renderCutout(Supplier<Block> block) {
+        //? if >=1.21.6 <26.1 {
+        /*net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap.putBlock(
+                block.get(), net.minecraft.client.renderer.chunk.ChunkSectionLayer.CUTOUT);
+        *///?}
+        //? if <1.21.6 {
+        /*net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlock(
+                block.get(), net.minecraft.client.renderer.RenderType.cutout());
         *///?}
     }
 

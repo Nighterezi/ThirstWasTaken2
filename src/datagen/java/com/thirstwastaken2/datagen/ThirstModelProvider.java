@@ -49,8 +49,9 @@ public final class ThirstModelProvider extends FabricModelProvider {
 
     @Override
     public void generateBlockStateModels(BlockModelGenerators generators) {
-        // The mod adds no blocks. The cauldron's stored quality is a property on vanilla's block and
-        // needs no model of its own, because the water level already has one.
+        // The cauldron's stored quality is a property on vanilla's block and needs no model of its own,
+        // because the water level already has one. The hanging pot is the mod's only block.
+        HangingPotModels.generate(generators);
     }
 
     // Comments inside the version blocks below stay line comments: a disabled branch is itself one
@@ -60,6 +61,7 @@ public final class ThirstModelProvider extends FabricModelProvider {
     public void generateItemModels(ItemModelGenerators generators) {
         generators.generateFlatItem(ThirstItems.CLAY_BOWL, ModelTemplates.FLAT_ITEM);
         generators.generateFlatItem(ThirstItems.TERRACOTTA_BOWL, ModelTemplates.FLAT_ITEM);
+        HangingPotModels.item(generators);
 
         // The plain filled-bowl sprite. Nothing selects it, because every grade has one of its own,
         // but it is what a resource pack that does not know about grades falls back to.
@@ -111,6 +113,7 @@ public final class ThirstModelProvider extends FabricModelProvider {
     public void generateItemModels(ItemModelGenerators generators) {
         flat(generators, ThirstItems.CLAY_BOWL);
         flat(generators, ThirstItems.TERRACOTTA_BOWL);
+        HangingPotModels.item(generators);
         overrides(generators, ThirstItems.TERRACOTTA_WATER_BOWL, bowlVariants());
         overrides(generators, ThirstItems.WATERSKIN, waterskinVariants());
     }

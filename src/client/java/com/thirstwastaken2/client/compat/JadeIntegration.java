@@ -1,6 +1,8 @@
 package com.thirstwastaken2.client.compat;
 
 import com.thirstwastaken2.ThirstWasTaken2;
+import com.thirstwastaken2.block.HangingPotBlock;
+import com.thirstwastaken2.block.ThirstBlocks;
 import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.purity.WaterQuality;
 import net.minecraft.core.BlockPos;
@@ -60,8 +62,10 @@ public final class JadeIntegration implements IWailaPlugin {
         @Override
         public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
             BlockState state = accessor.getBlockState();
-            // Only the water cauldron carries the stored-quality property.
+            // Only the water cauldron and the hanging pot carry the stored-quality property, and an
+            // empty pot has nothing to grade.
             if (!state.getFluidState().is(FluidTags.WATER) && !state.hasProperty(WaterPurity.BLOCK_PURITY)) return;
+            if (state.is(ThirstBlocks.COPPER_HANGING_POT) && HangingPotBlock.quality(state) == null) return;
 
             WaterQuality quality = sample(accessor.getLevel(), accessor.getPosition(), state);
             tooltip.add(switch (quality) {

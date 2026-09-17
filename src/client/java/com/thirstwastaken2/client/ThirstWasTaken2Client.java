@@ -1,6 +1,7 @@
 package com.thirstwastaken2.client;
 
 import com.thirstwastaken2.ThirstWasTaken2;
+import com.thirstwastaken2.block.ThirstBlocks;
 import com.thirstwastaken2.client.platform.ClientLoader;
 
 public final class ThirstWasTaken2Client {
@@ -13,5 +14,6 @@ public final class ThirstWasTaken2Client {
     public static void initialize() {
         ClientLoader.addRightStatusBar(ThirstWasTaken2.id("thirst_bar"), THIRST_BAR_HEIGHT,
                 ThirstHud::shouldRender, ThirstHud::render);
+        ClientLoader.renderCutout(() -> ThirstBlocks.COPPER_HANGING_POT);
     }
 }

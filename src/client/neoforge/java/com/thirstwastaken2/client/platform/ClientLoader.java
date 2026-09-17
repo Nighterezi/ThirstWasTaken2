@@ -4,12 +4,14 @@ import com.thirstwastaken2.ThirstWasTaken2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import squeek.appleskin.ModConfig;
 
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Every client call into the mod loader, for NeoForge. The client half of
@@ -49,6 +51,15 @@ public final class ClientLoader {
                             renderer.render(graphics, graphics.guiHeight() - hud.rightHeight);
                             hud.rightHeight += height;
                         }));
+    }
+
+    /**
+     * Draws {@code block} with its transparent pixels cut out. NeoForge reads that from the model's own
+     * {@code render_type} before 26.1, and from 26.1 the game picks it from the textures, so there is
+     * nothing to register here. The block is never asked for: this runs while NeoForge constructs the
+     * mod, before any block may be built.
+     */
+    public static void renderCutout(Supplier<Block> block) {
     }
 
     /**

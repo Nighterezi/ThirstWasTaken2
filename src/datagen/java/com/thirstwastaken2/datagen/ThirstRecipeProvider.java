@@ -26,6 +26,7 @@ import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 //? if >=26.1 {
 import net.minecraft.world.item.ItemStackTemplate;
@@ -48,7 +49,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Every recipe the mod ships, and the recipe book unlocks that go with them.
  *
- * <p>Eighteen of the twenty-two are purification recipes, and they are one shape rather than
+ * <p>Eighteen of the twenty-three are purification recipes, and they are one shape rather than
  * eighteen decisions: for each container, each input grade below the cap and each heat source,
  * boiling bumps the water two grades and stops at {@link #PURIFIED}. Reading them out of
  * {@link #PURIFY_TABLE} is the point of generating them — the eighteen JSON files they replace had
@@ -64,6 +65,15 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
 
     /** Input grade to output grade: a two grade bump, capped. Index is the input grade. */
     private static final int[] PURIFY_TABLE = { 2, 3, 3 };
+
+    /** Any mod's copper, through the convention tag both loaders fill. */
+    private static final TagKey<Item> COPPER_INGOTS =
+            TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "ingots/copper"));
+    // 1.21.9 renamed the chain to the iron chain when it added copper ones.
+    //? if >=1.21.9 {
+    private static final Item CHAIN = Items.IRON_CHAIN;
+    //?} else
+    /*private static final Item CHAIN = Items.CHAIN;*/
 
     static final float PURIFY_EXPERIENCE = 0.35F;
     private static final int SMELTING_TIME = 200;
@@ -154,6 +164,18 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
                     .define('L', Items.LEATHER)
                     .unlockedBy("has_leather", has(Items.LEATHER))
                     .save(output, recipe("waterskin"));
+
+            // The pot costs a campfire's worth of commitment on top of its own copper, which is what its
+            // capacity and one-pass boil pay back. An iron chain for now: 1.21.1 has no copper one.
+            shaped(ThirstItems.COPPER_HANGING_POT, 1)
+                    .pattern("SKS")
+                    .pattern("C C")
+                    .pattern("CCC")
+                    .define('S', Items.STICK)
+                    .define('K', CHAIN)
+                    .define('C', COPPER_INGOTS)
+                    .unlockedBy("has_copper_ingot", has(COPPER_INGOTS))
+                    .save(output, recipe("copper_hanging_pot"));
 
             // A bucket of fresh water poured into a fired bowl. The result is graded 2 rather than
             // sampled, because the bucket's own grade is gone by the time a recipe sees it.

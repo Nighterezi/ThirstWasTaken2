@@ -16,11 +16,13 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 
 import java.util.function.Function;
 
@@ -91,6 +93,32 @@ public final class Vanilla {
         //?} else
         /*Item item = factory.apply(properties);*/
         return Registry.register(BuiltInRegistries.ITEM, key, item);
+    }
+
+    /**
+     * Registers one of the mod's blocks. From 1.21.2 a block has to know its own id before it is
+     * built, the same as an item.
+     */
+    public static <T extends Block> T registerBlock(String name, Function<BlockBehaviour.Properties, T> factory,
+                                                    BlockBehaviour.Properties properties) {
+        ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, ThirstWasTaken2.id(name));
+        //? if >=1.21.2 {
+        T block = factory.apply(properties.setId(key));
+        //?} else
+        /*T block = factory.apply(properties);*/
+        return Registry.register(BuiltInRegistries.BLOCK, key, block);
+    }
+
+    /**
+     * Registers the item that places {@code block}, under the block's own id. From 1.21.2 an item names
+     * itself after its own id unless told to use the block's name, which a block item always wants.
+     */
+    public static Item registerBlockItem(Block block, Item.Properties properties) {
+        String name = BuiltInRegistries.BLOCK.getKey(block).getPath();
+        //? if >=1.21.2 {
+        return registerItem(name, props -> new BlockItem(block, props), properties.useBlockDescriptionPrefix());
+        //?} else
+        /*return registerItem(name, props -> new BlockItem(block, props), properties);*/
     }
 
     /**

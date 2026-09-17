@@ -1,6 +1,7 @@
 package com.thirstwastaken2.item;
 
 import com.thirstwastaken2.ThirstWasTaken2;
+import com.thirstwastaken2.block.ThirstBlocks;
 import com.thirstwastaken2.platform.DrinkItem;
 import com.thirstwastaken2.platform.Loader;
 import com.thirstwastaken2.platform.Vanilla;
@@ -36,6 +37,8 @@ public final class ThirstItems {
     public static final Item WATERSKIN = Vanilla.registerItem("waterskin", WaterskinItem::new,
             new Item.Properties().stacksTo(1)
                     .component(ThirstComponents.WATER_SERVINGS, 0));
+    public static final Item COPPER_HANGING_POT = Vanilla.registerBlockItem(ThirstBlocks.COPPER_HANGING_POT,
+            new Item.Properties());
     public static final ResourceKey<CreativeModeTab> CREATIVE_TAB_KEY = ResourceKey.create(
             Registries.CREATIVE_MODE_TAB, ThirstWasTaken2.id("thirstwastaken2"));
 
@@ -59,6 +62,7 @@ public final class ThirstItems {
                             entries.accept(TERRACOTTA_BOWL);
                             entries.accept(TERRACOTTA_WATER_BOWL);
                             entries.accept(WATERSKIN);
+                            entries.accept(COPPER_HANGING_POT);
                         })
                         .build());
     }

@@ -1,6 +1,8 @@
 package com.thirstwastaken2;
 
 import com.thirstwastaken2.api.ThirstApi;
+import com.thirstwastaken2.block.HangingPotInteractions;
+import com.thirstwastaken2.block.ThirstBlocks;
 import com.thirstwastaken2.command.ThirstCommands;
 import com.thirstwastaken2.compat.LootIntegration;
 import com.thirstwastaken2.config.ThirstConfig;
@@ -39,8 +41,9 @@ public final class ThirstWasTaken2 {
     public static void initialize() {
         ThirstConfig.load();
         ThirstData.register();
-        // Items take a registry holder when they are built, so a loader that freezes the registries
-        // before mods start needs all three of these deferred to its registration phase.
+        // Blocks and items take a registry holder when they are built, so a loader that freezes the
+        // registries before mods start needs all four of these deferred to its registration phase.
+        Loader.onRegister(Registries.BLOCK, ThirstBlocks::register);
         Loader.onRegister(Registries.DATA_COMPONENT_TYPE, ThirstComponents::register);
         Loader.onRegister(Registries.ITEM, ThirstItems::register);
         Loader.onRegister(Registries.CREATIVE_MODE_TAB, ThirstItems::registerCreativeTab);
@@ -49,6 +52,7 @@ public final class ThirstWasTaken2 {
         Loader.onServerTickEnd(ThirstManager::tick);
         Loader.onServerTickEnd(WaterInteractions::tick);
         Loader.onUseBlock(ThirstManager::drinkByHand);
+        Loader.onUseBlock(HangingPotInteractions::use);
         Loader.onUseBlock(WaterInteractions::emptyWaterskinOnBlock);
         Loader.onUseBlock(WaterInteractions::fillWaterskinFromCauldron);
         Loader.onUseBlock(WaterInteractions::transferCauldronPurity);

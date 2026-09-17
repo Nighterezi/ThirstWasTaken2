@@ -1,0 +1,151 @@
+package com.thirstwastaken2.block;
+
+import com.thirstwastaken2.item.ThirstItems;
+import com.thirstwastaken2.item.WaterskinItem;
+import com.thirstwastaken2.purity.WaterPurity;
+import com.thirstwastaken2.purity.WaterQuality;
+import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUtils;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.BlockHitResult;
+
+/**
+ * Pouring water into a copper hanging pot and drawing it back out.
+ *
+ * <p>The pot is the mod's own block, so unlike a cauldron nothing in vanilla handles these; everything
+ * happens here, inline. A bucket is {@link HangingPotBlock#BUCKET} servings and everything else one.
+ * Poured water mixes the way it does in a cauldron, keeping the worse grade, and starts the boil over.
+ * Drawn water carries the pot's quality. A sneaking player gets vanilla's usual behaviour instead,
+ * except with a waterskin, whose sneak-use pours it out: over a pot it pours into the pot.
+ */
+public final class HangingPotInteractions {
+    private static final int BLOCK_UPDATE_FLAGS = 3;
+
+    private HangingPotInteractions() { }
+
+    public static InteractionResult use(Player player, Level level, InteractionHand hand, BlockHitResult hit) {
+        BlockPos pos = hit.getBlockPos();
+        BlockState state = level.getBlockState(pos);
+        if (!state.is(ThirstBlocks.COPPER_HANGING_POT)) return InteractionResult.PASS;
+
+        ItemStack held = player.getItemInHand(hand);
+        boolean sneaking = player.isSecondaryUseActive();
+        int servings = state.getValue(HangingPotBlock.LEVEL);
+        int room = HangingPotBlock.CAPACITY - servings;
+
+        if (held.is(ThirstItems.WATERSKIN)) {
+            int skin = WaterskinItem.servings(held);
+            if (sneaking) {
+                if (skin == 0 || room == 0) return InteractionResult.PASS;
+                if (level.isClientSide()) return InteractionResult.SUCCESS;
+                int poured = Math.min(skin, room);
+                WaterQuality quality = WaterPurity.quality(held);
+                WaterskinItem.removeWater(held, poured);
+                pour(player, level, pos, state, poured, quality, SoundEvents.BOTTLE_EMPTY);
+                return InteractionResult.SUCCESS_SERVER;
+            }
+            if (servings == 0 || skin >= WaterskinItem.CAPACITY) return InteractionResult.PASS;
+            if (level.isClientSide()) return InteractionResult.SUCCESS;
+            WaterskinItem.addWater(held, HangingPotBlock.quality(state), 1);
+            draw(player, level, pos, state, 1, SoundEvents.BOTTLE_FILL);
+            return InteractionResult.SUCCESS_SERVER;
+        }
+        if (sneaking) return InteractionResult.PASS;
+
+        Transfer transfer = transfer(held, servings, room);
+        if (transfer == null) return InteractionResult.PASS;
+        if (level.isClientSide()) return InteractionResult.SUCCESS;
+
+        ItemStack result;
+        if (transfer.pouring()) {
+            WaterQuality quality = WaterPurity.quality(held);
+            result = transfer.empty();
+            pour(player, level, pos, state, transfer.servings(), quality, transfer.sound());
+        } else {
+            result = WaterPurity.setQuality(transfer.filled(), HangingPotBlock.quality(state));
+            draw(player, level, pos, state, transfer.servings(), transfer.sound());
+        }
+        player.setItemInHand(hand, ItemUtils.createFilledResult(held, player, result));
+        return InteractionResult.SUCCESS_SERVER;
+    }
+
+    /**
+     * What {@code held} does to a pot holding {@code servings} with {@code room} to spare, or
+     * {@code null} when it does nothing. Filled stacks are built fresh on every call, since the one handed
+     * out is stamped.
+     */
+    private static Transfer transfer(ItemStack held, int servings, int room) {
+        if (held.is(Items.WATER_BUCKET)) {
+            return room >= HangingPotBlock.BUCKET
+                    ? Transfer.pour(HangingPotBlock.BUCKET, new ItemStack(Items.BUCKET), SoundEvents.BUCKET_EMPTY)
+                    : null;
+        }
+        if (held.is(Items.POTION) && WaterPurity.isWaterContainer(held)) {
+            return room >= 1 ? Transfer.pour(1, new ItemStack(Items.GLASS_BOTTLE), SoundEvents.BOTTLE_EMPTY) : null;
+        }
+        if (held.is(ThirstItems.TERRACOTTA_WATER_BOWL)) {
+            return room >= 1
+                    ? Transfer.pour(1, new ItemStack(ThirstItems.TERRACOTTA_BOWL), SoundEvents.BUCKET_EMPTY)
+                    : null;
+        }
+        if (held.is(Items.BUCKET)) {
+            return servings >= HangingPotBlock.BUCKET
+                    ? Transfer.draw(HangingPotBlock.BUCKET, new ItemStack(Items.WATER_BUCKET), SoundEvents.BUCKET_FILL)
+                    : null;
+        }
+        if (held.is(Items.GLASS_BOTTLE)) {
+            return servings >= 1
+                    ? Transfer.draw(1, PotionContents.createItemStack(Items.POTION, Potions.WATER), SoundEvents.BOTTLE_FILL)
+                    : null;
+        }
+        if (held.is(ThirstItems.TERRACOTTA_BOWL)) {
+            return servings >= 1
+                    ? Transfer.draw(1, new ItemStack(ThirstItems.TERRACOTTA_WATER_BOWL), SoundEvents.BUCKET_FILL)
+                    : null;
+        }
+        return null;
+    }
+
+    private static void pour(Player player, Level level, BlockPos pos, BlockState state, int servings,
+                             WaterQuality poured, SoundEvent sound) {
+        WaterQuality held = HangingPotBlock.quality(state);
+        WaterQuality mixed = held == null ? poured : WaterQuality.worse(held, poured);
+        int total = state.getValue(HangingPotBlock.LEVEL) + servings;
+        level.setBlock(pos, HangingPotBlock.withWater(state, total, mixed), BLOCK_UPDATE_FLAGS);
+        level.playSound(null, pos, sound, SoundSource.BLOCKS, 1.0F, 1.0F);
+        level.gameEvent(player, GameEvent.FLUID_PLACE, pos);
+    }
+
+    private static void draw(Player player, Level level, BlockPos pos, BlockState state, int servings,
+                             SoundEvent sound) {
+        level.setBlock(pos, HangingPotBlock.withLess(state, servings), BLOCK_UPDATE_FLAGS);
+        level.playSound(null, pos, sound, SoundSource.BLOCKS, 1.0F, 1.0F);
+        level.gameEvent(player, GameEvent.FLUID_PICKUP, pos);
+    }
+
+    /**
+     * One pour or draw: how many servings move, the container the player is left holding when pouring
+     * ({@code empty}) or the one that is stamped and handed out when drawing ({@code filled}).
+     */
+    private record Transfer(boolean pouring, int servings, ItemStack empty, ItemStack filled, SoundEvent sound) {
+        static Transfer pour(int servings, ItemStack empty, SoundEvent sound) {
+            return new Transfer(true, servings, empty, ItemStack.EMPTY, sound);
+        }
+
+        static Transfer draw(int servings, ItemStack filled, SoundEvent sound) {
+            return new Transfer(false, servings, ItemStack.EMPTY, filled, sound);
+        }
+    }
+}
