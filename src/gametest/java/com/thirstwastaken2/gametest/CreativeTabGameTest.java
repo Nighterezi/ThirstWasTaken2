@@ -25,7 +25,8 @@ public final class CreativeTabGameTest {
             ThirstItems.CLAY_BOWL,
             ThirstItems.TERRACOTTA_BOWL,
             ThirstItems.TERRACOTTA_WATER_BOWL,
-            ThirstItems.WATERSKIN);
+            ThirstItems.WATERSKIN,
+            ThirstItems.COPPER_HANGING_POT);
 
     @GameTest
     public void tabIsRegistered(GameTestHelper helper) {

@@ -94,6 +94,11 @@ Unattended, without an agent at all:
 `-Pagent=<file>` answers that file once the game is up and then stops the game. The path is relative
 to the repository root. It applies to every run task of the node, clients included.
 
+A client script that needs a world gets one with `-Pquickplay=<world>`, which opens that singleplayer
+world of `run/<node>/saves` straight from launch; server commands then reach its integrated server.
+[tools/agent/hanging-pot.jsonl](../../../../../../../tools/agent/hanging-pot.jsonl) runs that way, in a
+throwaway world made from another world's `level.dat`.
+
 ## Driving a client while the machine is in use
 
 A client that is being driven is not being played, and two things a played client does get in the way

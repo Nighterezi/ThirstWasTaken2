@@ -54,12 +54,12 @@ Fabric's empty structure as its template, and `stonecutter.gradle.kts` rewrites 
 the annotation, so no test file changes for it. Write `@GameTest` with no arguments, or that
 replacement stops matching.
 
-The same 126 mod tests run on every node. The 1.21.1 runner reports 127 and later runners report 128
+The same 135 mod tests run on every node. The 1.21.1 runner reports 136 and later runners report 137
 because they also include vanilla smoke tests; those are not the mod's.
 
 ## The NeoForge harness
 
-The `-neoforge` nodes run the same 127 test methods, with no test body changed and no NeoForge-only
+The `-neoforge` nodes run the same 135 test methods, with no test body changed and no NeoForge-only
 branch in any of them. What stands in for Fabric API lives in `src/gametest/neoforge`:
 
 | | Fabric API | NeoForge node |
@@ -78,7 +78,7 @@ adds a vanilla `TestFunction` per method to `GameTestRegistry.getAllTestFunction
 NeoForge's own registration, which only accepts vanilla's annotation and takes the structure's
 namespace from a NeoForge annotation on the test class. That server has no `--report` option either,
 so the build passes the report path as `-Dthirstwastaken2.gametest.report` and the harness installs
-vanilla's `JUnitLikeTestReporter` itself. The report lists 127 tests there, without
+vanilla's `JUnitLikeTestReporter` itself. The report lists 136 tests there, without
 `minecraft:always_pass`, which the 26.2 nodes' reports do carry.
 
 On 1.21.11 `TestData` has no padding and `TestEnvironmentDefinition` takes no type parameter; the

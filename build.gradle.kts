@@ -134,6 +134,14 @@ loom {
             systemProperties.put("thirstwastaken2.agent.driven", "true")
         }
 
+        // `-Pquickplay=<world>` opens that singleplayer world straight from launch, so an unattended
+        // `-Pagent` script starts inside it. The world has to exist in run/<node>/saves.
+        if (name == "client") {
+            providers.gradleProperty("quickplay").orNull?.let { world ->
+                programArguments.addAll("--quickPlaySingleplayer", world)
+            }
+        }
+
         // One run directory per version. Sharing a single one would hand a 26.2 world to a 1.21.11
         // server, which fails on world format rather than on anything the mod did. The gametest
         // runner and datagen get their own again, so a failed run cannot leave a broken world behind

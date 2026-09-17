@@ -1,0 +1,44 @@
+// The copper hanging pot in a real client: the recipe loads, the block and its item render, and a pot
+// over a lit campfire boils its water pure. Run it unattended in a singleplayer world:
+//     ./gradlew ":<node>:runClient" -Pagent=tools/agent/hanging-pot.jsonl -Pquickplay=PotAgentTest
+// PotAgentTest is a throwaway world: copy level.dat (and, from 26.1, data/minecraft/world_gen_settings.dat)
+// out of any world of the same Minecraft version into run/<node>/saves/PotAgentTest, fresh for each run.
+// then read run/<node>/agent/client/out.jsonl. Every "execute if block" line has to say "Test passed",
+// and the two captures in run/<node>/agent/client/screenshots/ show the scene before and after.
+// World edits go through server.command, which runs with the console's permissions, so the world does
+// not need cheats on.
+
+{"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "joined", "command": "client.state"}
+// Go to the scene first: a world may spawn the player far from it, where nothing is loaded. Slow
+// falling keeps the player alive until the floor is there; a dead player keeps nothing loaded.
+{"id": "float", "command": "server.command", "args": {"command": "effect give @p minecraft:slow_falling 120 0 true"}}
+{"id": "view", "command": "server.command", "args": {"command": "tp @p 0.5 200 -3.5 0 15"}}
+{"id": "chunks", "command": "wait", "args": {"ticks": 100}}
+{"id": "day", "command": "server.command", "args": {"command": "time set noon"}}
+{"id": "clear", "command": "server.command", "args": {"command": "weather clear 100000"}}
+{"id": "air", "command": "server.command", "args": {"command": "fill -4 200 -4 4 204 4 minecraft:air"}}
+{"id": "floor", "command": "server.command", "args": {"command": "fill -4 199 -4 4 199 4 minecraft:stone"}}
+{"id": "stand", "command": "server.command", "args": {"command": "tp @p 0.5 200 -3.5 0 15"}}
+{"id": "recipe", "command": "server.command", "args": {"command": "execute as @p run recipe give @s thirstwastaken2:copper_hanging_pot"}}
+{"id": "hold", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with thirstwastaken2:copper_hanging_pot"}}
+
+// A murky pot over a lit campfire, a salty one on the floor, and a pure one over a soul campfire.
+{"id": "fire", "command": "server.command", "args": {"command": "setblock 0 200 0 minecraft:campfire"}}
+{"id": "boiling", "command": "server.command", "args": {"command": "setblock 0 201 0 thirstwastaken2:copper_hanging_pot[hanging=true,axis=x,level=6,purity=2]"}}
+{"id": "salty", "command": "server.command", "args": {"command": "setblock 2 200 0 thirstwastaken2:copper_hanging_pot[level=9,purity=5]"}}
+{"id": "soulFire", "command": "server.command", "args": {"command": "setblock -2 200 0 minecraft:soul_campfire"}}
+{"id": "pure", "command": "server.command", "args": {"command": "setblock -2 201 0 thirstwastaken2:copper_hanging_pot[hanging=true,axis=z,level=3,purity=4]"}}
+{"id": "settle", "command": "wait", "args": {"ticks": 40}}
+{"id": "before", "command": "client.capture", "args": {"name": "hanging-pot-before"}}
+{"id": "stillMurky", "command": "server.command", "args": {"command": "execute if block 0 201 0 thirstwastaken2:copper_hanging_pot[purity=2]"}}
+
+// The default boil is 30 seconds.
+{"id": "boil", "command": "wait", "args": {"ticks": 700}}
+{"id": "boiled", "command": "server.command", "args": {"command": "execute if block 0 201 0 thirstwastaken2:copper_hanging_pot[purity=4,level=6]"}}
+{"id": "saltStays", "command": "server.command", "args": {"command": "execute if block 2 200 0 thirstwastaken2:copper_hanging_pot[purity=5,level=9]"}}
+{"id": "after", "command": "client.capture", "args": {"name": "hanging-pot-after"}}
+
+// Taking the campfire away drops the pot above it.
+{"id": "noFire", "command": "server.command", "args": {"command": "setblock 0 200 0 minecraft:air"}}
+{"id": "dropped", "command": "server.command", "args": {"command": "execute if block 0 201 0 minecraft:air"}}

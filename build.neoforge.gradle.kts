@@ -206,6 +206,11 @@ neoForge {
         create("client") {
             client()
             sourceSet = clientRun
+            // `-Pquickplay=<world>` opens that singleplayer world straight from launch, so an
+            // unattended `-Pagent` script starts inside it. The world has to exist in run/<node>/saves.
+            providers.gradleProperty("quickplay").orNull?.let { world ->
+                programArguments.addAll("--quickPlaySingleplayer", world)
+            }
         }
         create("server") {
             server()
