@@ -132,7 +132,7 @@ public final class WaterInteractions {
         WaterQuality quality = filling ? WaterPurity.quality(held) : WaterPurity.sampleAt(level, pos);
         if (filling) {
             WaterQuality stored = WaterPurity.storedQuality(before);
-            if (stored != null) quality = worse(quality, stored);
+            if (stored != null) quality = WaterQuality.worse(quality, stored);
         }
 
         WaterQuality transferred = quality;
@@ -179,7 +179,7 @@ public final class WaterInteractions {
 
         WaterQuality stored = WaterPurity.storedQuality(after);
         WaterQuality quality = WaterQuality.fresh(grade);
-        if (stored != null) quality = worse(stored, quality);
+        if (stored != null) quality = WaterQuality.worse(stored, quality);
         if (quality.equals(stored)) return;
         storeInCauldron(level, pos, quality);
     }
@@ -187,17 +187,6 @@ public final class WaterInteractions {
     public static void tick(MinecraftServer server) {
         Runnable action;
         while ((action = END_OF_TICK.poll()) != null) action.run();
-    }
-
-    /**
-     * A cauldron keeps the worse of what it holds and what is poured in. Unlike the waterskin it
-     * cannot average two grades, because its blockstate only has room for one of the four.
-     */
-    private static WaterQuality worse(WaterQuality left, WaterQuality right) {
-        if (left instanceof WaterQuality.Fresh held && right instanceof WaterQuality.Fresh poured) {
-            return WaterQuality.fresh(Math.min(held.purity(), poured.purity()));
-        }
-        return WaterQuality.SALT;
     }
 
     private static void storeInCauldron(Level level, BlockPos pos, WaterQuality quality) {

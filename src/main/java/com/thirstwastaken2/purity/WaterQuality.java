@@ -16,6 +16,18 @@ public sealed interface WaterQuality {
         return new Fresh(purity);
     }
 
+    /**
+     * What a block holds after {@code right} is poured into {@code left}. Unlike the waterskin, a block
+     * cannot average two grades, because its blockstate only has room for one, so it keeps the worse.
+     * Any salt makes the whole batch salty.
+     */
+    static WaterQuality worse(WaterQuality left, WaterQuality right) {
+        if (left instanceof Fresh held && right instanceof Fresh poured) {
+            return fresh(Math.min(held.purity(), poured.purity()));
+        }
+        return SALT;
+    }
+
     default boolean salty() {
         return this instanceof Salt;
     }
