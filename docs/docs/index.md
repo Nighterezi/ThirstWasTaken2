@@ -1,26 +1,23 @@
 # Overview
 
-ThirstWasTaken2 gives every player a second survival bar. It sits under the hunger bar and empties
-for the same reasons hunger does, so sprinting across a savanna costs you more than walking around a
-farm.
+ThirstWasTaken2 adds a thirst bar above the hunger bar. It drains as players move, mine and fight,
+and refills when they drink.
 
-Refilling it is the interesting part. Water bottles, water bowls, potions and juicy foods all count,
-but water picked up from the world carries a quality with it. Bad water can make you sick, and
-cooking it makes it safe.
+Water from the world has a grade. Bad water can make players sick, and boiling it makes it safe.
 
-## What you get
+## Features
 
-- A thirst bar with a saturation-style reserve behind it
-- Biome, dimension and potion effects that change how fast you dry out
-- Four levels of water purity, with sickness for the worst of it
-- Clay and terracotta bowls, plus purification recipes for bottles, bowls and buckets
-- Water bottles in structure chests and Piglin barters
-- Thirst values for a long list of food mod items, with none of them required
-- An advancement tab that teaches the water system as you play
-- More than thirty settings, all editable in game
+- A thirst bar with a quenched reserve, like hunger and saturation.
+- Faster drain in hot biomes and the Nether.
+- Four water grades, plus salty sea water that never quenches thirst.
+- Clay bowls, a three-drink waterskin, and Copper and Iron Hanging Pots.
+- Water bottles in structure chests and Piglin barters.
+- An advancement tab that teaches the water system.
+- Optional support for AppleSkin, Jade, Farmer's Delight and Create.
+- Every value is a setting.
 
-## Where to go next
+## Next steps
 
-- [Installation](/docs/installation) to get it running
-- [Thirst and Quenched](/docs/features/thirst-and-quenched) for how the bar behaves
-- [Configuration](/docs/configuration) for every setting
+- [Installation](/docs/installation)
+- [Thirst and Quenched](/docs/features/thirst-and-quenched)
+- [Configuration](/docs/configuration)

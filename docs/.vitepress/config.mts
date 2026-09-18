@@ -42,14 +42,14 @@ export default defineConfig({
   cleanUrls: true,
   lastUpdated: true,
   head: [
-    ['link', { rel: 'icon', type: 'image/png', href: `${BASE}logo-small.png` }]
+    ['link', { rel: 'icon', type: 'image/png', href: `${BASE}logo.png` }]
   ],
   // Notes, paste sources and developer planning for maintainers, not pages on the site.
   // 'dev/**' keeps docs/dev out of the build: those pages link into src/ and the repo root,
   // which the dead-link check cannot follow.
   srcExclude: ['AGENTS.md', 'MODRINTH.md', 'dev/**'],
   themeConfig: {
-    logo: '/logo-small.png',
+    logo: '/logo.png',
     externalLinkIcon: true,
     socialLinks: [
       { icon: 'github', link: REPO },

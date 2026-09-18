@@ -2,43 +2,38 @@
 
 ## Do players need the mod to join?
 
-Yes. The bar is drawn by the client, so a vanilla client sees nothing while the server keeps
-draining thirst in the background. Put the jar in the pack.
+Yes. A client without it does not see the bar, while the server still drains thirst.
 
 ## Why can I not sprint?
 
-Thirst is at 6 or below. Drink something, or turn
-[preventSprintingWhenThirsty](/docs/configuration#preventsprintingwhenthirsty) off.
+Thirst is at 6 or below. Drink something, or turn off
+[preventSprintingWhenThirsty](/docs/configuration#preventsprintingwhenthirsty).
 
 ## Why is my health not coming back?
 
-The same reason. Natural healing waits until thirst is nearly full, and the food it would have cost
-you is refunded so you do not starve while you look for water.
+Natural healing waits until thirst is nearly full. The food it would have used is not spent.
 
 ## I changed the config and nothing happened
 
-If you edited the file by hand, restart the game or the server. If you used the Mod Menu screen
-while connected to someone else's server, only the HUD & AppleSkin page applied, because the rest
-comes from the server. Changes made on the screen are only kept when you leave it with **Done**.
+- A file edited by hand is read on the next start.
+- On someone else's server, only the HUD and AppleSkin settings apply. The rest comes from the
+  server.
+- The settings screen only saves on **Done**.
 
-## Can I turn thirst off for one player?
+## Can thirst be turned off for one player?
 
-Yes, with [/thirst enable](/docs/commands#thirst-enable). It is saved with that player, so it
-survives a relog.
+Yes, with [/thirst enable](/docs/commands#thirst-enable). It is saved with the player.
 
 ## A drink from another mod does nothing
 
-Its id is not in the lists. Add it to `drinks` in the config file, or switch on
-[keyword matching](/docs/configuration#enablekeywordmatching) and let the mod guess.
+Add it to `drinks` in the config file, or turn on
+[keyword matching](/docs/configuration#enablekeywordmatching).
 
 ## Is Create required?
 
-No. Installing [Create Fly](/docs/features/create) on Minecraft 26.1.2 and 26.2, or Create on NeoForge for
-Minecraft 1.21.1, adds the Sand Filter.
-Builder's Tea does not restore thirst yet. Mod Menu only adds the settings button, and nothing else
-here needs another mod.
+No. With [Create](/docs/features/create) installed, the Sand Filter is added.
 
 ## Does it work on Peaceful?
 
-Thirst refills by itself there unless you turn
-[thirstDepletionInPeaceful](/docs/configuration#thirstdepletioninpeaceful) on.
+Thirst refills on its own there, unless
+[thirstDepletionInPeaceful](/docs/configuration#thirstdepletioninpeaceful) is on.

@@ -4,67 +4,49 @@
 
 ## The two numbers
 
-Thirst runs from 0 to 20 and is drawn as ten droplets, so one droplet is two points. New players
-start full.
+- **Thirst** runs from 0 to 20, drawn as ten droplets. New players start full.
+- **Quenched** is a reserve on top of thirst, like saturation on top of hunger. It starts at 5 and is
+  spent before thirst.
 
-Quenched is a reserve that sits on top of it, exactly like saturation sits on top of hunger, and
-starts at 5. Anything that would cost you thirst
-eats the reserve first, which is why a good drink lasts longer than a bad one even when both fill
-the bar.
+The droplets shake when the reserve is empty, like the hunger bar.
 
-When the reserve runs out the droplets shake, the same warning the hunger bar gives.
-
-Vanilla never draws saturation, so the thirst bar only draws quenched when AppleSkin is installed. It
-then appears as a cyan outline over the droplets, like AppleSkin's gold outline on the hunger bar. The
-colour can be changed or the outline turned off; see
-[Configuration](/docs/configuration#appleskinquenchedoverlay).
+With AppleSkin installed, quenched shows as an outline over the droplets. The colour can be changed
+or turned off in [Configuration](/docs/configuration#appleskinquenchedoverlay).
 
 ![The thirst bar with AppleSkin, cycling through the Diamond, Ice, Gold and AppleSkin quenched outlines](/screenshots/hud-appleskin.gif)
 
 ## What drains it
 
-Thirst uses the same exhaustion vanilla already tracks for hunger. Sprinting, jumping, swimming,
-mining, attacking and taking damage all count. Every 4 points of exhaustion spends one point of
-quenched, or one point of thirst once the reserve is empty.
+Thirst drains from the same actions as hunger: sprinting, jumping, swimming, mining, attacking and
+taking damage. Every 4 points of exhaustion costs one point of quenched, or one point of thirst when
+the reserve is empty.
 
-With AppleSkin installed, the thirst bar also gets a dithered exhaustion strip behind its droplets.
-It fills from right to left as exhaustion approaches 4 and follows AppleSkin's **Food Exhaustion HUD
-Underlay** setting. Turning the quenched outline off hides the strip too. AppleSkin is optional; without it, thirst and quenched work exactly the same.
+With AppleSkin, an exhaustion strip behind the droplets shows how close the next point is. It
+follows AppleSkin's **Food Exhaustion HUD Underlay** setting.
 
-Sitting on a horse, a boat or a minecart costs nothing. Creative and spectator players are ignored
-entirely.
+Riding a horse, boat or minecart costs nothing. Creative and spectator players are not affected.
 
-On top of that, the world you are in scales the cost:
-
-| Where you are | Effect |
+| Where | Effect |
 |---|---|
-| A hot or dry biome | Drains faster |
-| A cold or rainy biome | Drains slower |
-| The Nether, or any dimension where water evaporates | A flat, much heavier rate |
+| Hot or dry biome | Drains faster |
+| Cold or rainy biome | Drains slower |
+| The Nether, or any dimension where water evaporates | Drains much faster |
 
-Two potion effects push back. Fire Resistance halves the drain, and Fire Protection on your armour
-slows it further, down to a quarter of normal at the deepest. Nausea does the opposite and adds a
-steady extra drain while it lasts. Hunger does not, because the exhaustion it already causes is
-counted once rather than twice.
+- Fire Resistance halves the drain. Fire Protection slows it further, down to a quarter.
+- Nausea adds extra drain while it lasts.
+- On Peaceful the bar refills on its own, unless the server turns that off.
 
-On Peaceful the bar refills on its own instead of draining, unless the server turns that off.
-
-Every one of these rates is a setting. See [Configuration](/docs/configuration#thirst-depletion).
+Every rate is a setting. See [Configuration](/docs/configuration#thirst-depletion).
 
 ## Running low
 
-At 6 points or below you cannot start sprinting, the same cut-off vanilla uses for hunger.
-
-Natural healing stops until thirst is nearly full. At 19 it starts again, though the quick
-saturation healing only fires an eighth as often. Health you did not regain does not cost you any
-food, so a dehydrated player does not quietly starve as well.
+- At 6 or below, players cannot start sprinting.
+- Natural healing stops until thirst reaches 19. It then runs slower than usual. Food is not spent
+  on healing that did not happen.
 
 ## Hitting zero
 
-![An empty thirst bar with health down to two and a half hearts](/screenshots/dehydration.png)
+An empty bar deals half a heart every two seconds, through armour. The death message reads
+`died from dehydration`.
 
-An empty bar costs half a heart every two seconds. The damage ignores armour, and the death message
-reads `died from dehydration`.
-
-Difficulty decides how far it goes. On Easy it stops once you are down to five hearts. On Normal and
-Hard it will kill you.
+On Easy the damage stops at five hearts. On Normal and Hard it can kill.

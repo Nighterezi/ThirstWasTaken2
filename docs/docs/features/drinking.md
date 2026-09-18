@@ -2,13 +2,6 @@
 
 ## What is worth drinking
 
-With AppleSkin installed, every item that restores thirst says so in its tooltip as two rows of
-droplets rather than numbers, the way AppleSkin shows what food restores. Each droplet is worth two points. The upper row uses filled droplets for thirst; the lower row
-uses outline droplets for quenched. A water bottle worth 6 thirst and 8 quenched therefore shows
-three filled droplets above four outline droplets.
-
-These are the values the mod ships with for vanilla and its own items:
-
 | Item | Thirst | Quenched |
 |---|---|---|
 | Any potion, water bottles included | 6 | 8 |
@@ -21,84 +14,62 @@ These are the values the mod ships with for vanilla and its own items:
 | Apple, golden apple, enchanted golden apple, mushroom stew, rabbit stew | 2 | 3 |
 | Carrot, golden carrot, beetroot, sweet berries, glow berries | 1 | 2 |
 
-Thirst fills the bar, quenched fills the reserve behind it. Thirst past a full bar is not
-wasted, it turns into extra reserve. Plain water follows vanilla food rules: a water bottle, water
-bowl or waterskin cannot be used while the thirst bar is already full. Once even one point is
-missing, drinking is allowed and any overflow can still become quenched. Potions and foods with
-other uses are not blocked by this rule.
+- Thirst past a full bar becomes quenched.
+- Plain water cannot be drunk while the bar is full. Potions and food are not blocked.
+- Drinks from other mods restore thirst when their mod marks them as drinks.
+- [Farmer's Delight](/docs/features/farmers-delight) has its own values.
+- Any item can be given a value in the [config](/docs/configuration#drinks-and-foods).
 
-Drinks from other mods restore thirst as long as their mod marks them as drinks. Farmer's Delight
-has its own values, listed on [its page](/docs/features/farmers-delight). Any item can be given its
-own value in the [config](/docs/configuration#drinks-and-foods).
+With AppleSkin installed, tooltips show the values as droplets. Each droplet is two points: filled
+droplets for thirst, outlined ones for quenched.
+
+Every item the mod adds is in its own creative tab, and every recipe shows in the recipe book.
 
 ## Bowls
 
-Everything the mod adds lives in its own creative tab. Water containers change their look with the
-water inside them.
-
-The mod adds a bowl that survives being filled with water.
-
-1. Three clay balls in a bowl shape, the same pattern as a wooden bowl, give four **clay bowls**.
+1. Three clay balls in a bowl shape make four **clay bowls**.
 2. Smelt a clay bowl into a **terracotta bowl**.
-3. Hold the terracotta bowl and use it on water to scoop a **terracotta water bowl**. Flowing water
-   works, you do not need a source block.
+3. Use the terracotta bowl on water to fill it. Flowing water works too.
 
 ![Three clay balls in a bowl shape make four clay bowls](/screenshots/clay-bowl-recipe.png)
 
 ![A clay bowl firing into a terracotta bowl in a furnace](/screenshots/furnace-terracotta-bowl.png)
 
-Drinking one leaves you holding the empty terracotta bowl again.
-
-Every recipe the mod adds appears in the recipe book once you pick up an ingredient for it, so there
-is nothing to look up outside the game.
-
-There is also a crafting recipe, a terracotta bowl plus a water bucket, which returns the empty
-bucket. Water made that way counts as dirty, because nothing tells the recipe where the bucket had
-been. Scooping from the world is both cheaper and cleaner.
+Drinking gives the empty bowl back. A terracotta bowl and a water bucket also craft a water bowl,
+but that water is always Dirty.
 
 ## Waterskin
 
-Craft a reusable **waterskin** from three leather and one string:
-
 ![The waterskin recipe uses three leather and one string](/screenshots/waterskin-recipe.png)
 
-It holds three drinks. Use it on water or a water cauldron to add one drink at a time. In the
-inventory, right-click a waterskin with a water bottle to add one drink, or with a water bucket to
-fill every remaining drink; the empty bottle or bucket is returned. Sneak and use a filled waterskin
-on a block to pour away all of its water.
+- Holds three drinks. Each restores 4 thirst and 5 quenched.
+- Use it on water or a water cauldron to add one drink.
+- In the inventory, right-click it with a water bottle to add one drink, or with a water bucket to
+  fill it. The empty container is returned.
+- Sneak and use it on a block to pour it out.
+- Mixed water takes the average grade, rounded down. One salty drink makes all of it salty.
 
-Mixing averages the grades of the drinks inside, rounded down, so adding one dirty drink drags the
-whole waterskin down. Salt water is the exception: one salty drink makes all of it salt water. Each
-drink restores 4 thirst and 5 quenched, and the empty waterskin is kept for refilling.
+## Drinking by hand
 
-## Straight from the source
-
-**Sneak and use an empty hand on water.** This is on by default and can be changed with
-[canDrinkByHand](/docs/configuration#candrinkbyhand). It is worth a little less than a full bowl,
-and it drinks the water exactly as it is, so a swamp puddle carries a swamp puddle's risks. Like
-other plain water, it cannot be used while the thirst bar is full.
+Sneak and use an empty hand on water. The water keeps its grade, so swamp water is still risky. It
+restores less than a bowl. It can be turned off with
+[canDrinkByHand](/docs/configuration#candrinkbyhand).
 
 ## Finding water
 
-Water bottles turn up on their own, at acceptable or purified quality, one to three at a time:
+Water bottles, Clean or Pure, turn up one to three at a time in:
 
-- Abandoned mineshaft, simple dungeon, shipwreck supply, nether bridge and bastion chests
-- Piglin bartering, though far more rarely than in a chest
-
-That is enough to keep a player alive in the Nether, where filling anything from the ground is not
-an option.
+- Abandoned mineshaft, dungeon, shipwreck supply, nether bridge and bastion chests.
+- Piglin bartering, more rarely.
 
 ## Advancements
 
-The mod has its own advancement tab. It is a guided tour of the water system rather than a
-checklist, so most of it is earned by drinking.
-
 | Advancement | How to earn it |
 |---|---|
-| Thirst Was Taken | Given when you start playing |
-| Wet Your Whistle | Take your first drink of water |
+| Thirst Was Taken | Start playing |
+| Wet Your Whistle | Drink water for the first time |
 | A Bitter Sip | Drink dirty water |
-| Rolling Boil | Purify a container of water in a furnace |
-| Crystal Clear | Drink water of the purest grade |
+| Rolling Boil | Purify water in a furnace |
+| Crystal Clear | Drink Pure water |
 | Salt of the Earth | Drink sea water |
 | Dry Heat | Drink in the Nether, or any dimension that boils water away |

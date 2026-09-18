@@ -1,9 +1,8 @@
 # Farmer's Delight
 
-With [Farmer's Delight Refabricated](https://modrinth.com/mod/farmers-delight-refabricated)
-installed, its drinks and meals restore thirst, its Cooking Pot boils water clean, and Nourishment
-keeps the thirst bar full. Nothing needs to be set up. Without Farmer's Delight, none of this is
-loaded.
+With [Farmer's Delight](https://modrinth.com/mod/farmers-delight-refabricated) installed, its drinks
+and meals restore thirst, the Cooking Pot boils water Pure, and Nourishment stops thirst draining.
+Nothing needs to be set up.
 
 ## Drinks and meals
 
@@ -26,18 +25,14 @@ Every value can be changed in the [config](/docs/configuration#drinks-and-foods)
 
 ![A murky water bowl cooking in the Cooking Pot, with a pure water bowl ready to serve](/screenshots/farmers-delight-cooking-pot.png)
 
-A heated Cooking Pot turns a fresh water bottle or terracotta water bowl that is Dirty, Murky or Clean
-into Pure water in one go. It takes ten seconds, the same as a furnace, but a furnace only raises water two grades.
+A heated Cooking Pot turns a water bottle or terracotta water bowl into Pure water in ten seconds,
+whatever its grade.
 
 - A bowl comes out ready to take.
-- A bottle works like the pot's own drinks. The pot gives the empty bottle back when it starts, and
-  serves the water once a glass bottle is placed in the container slot, the one with the faded bowl.
-  On Minecraft 1.21 and 1.21.1 the bottle comes out ready to take instead.
-
-Salt water is refused, the same as in a furnace. Both recipes appear in the pot's recipe book once a
-water bottle or water bowl has been picked up.
+- A bottle is served like the pot's own drinks: place a glass bottle in the container slot. On
+  Minecraft 1.21 and 1.21.1 it comes out ready to take.
+- Salt water is refused.
 
 ## Nourishment
 
-While Nourishment is active, the thirst bar does not drain, the same way it stops hunger. Drinking
-still works as normal, and salt water still costs thirst.
+While Nourishment is active, thirst does not drain. Salt water still costs thirst.

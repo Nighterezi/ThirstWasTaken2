@@ -3,11 +3,7 @@ layout: home
 
 hero:
   name: ThirstWasTaken2
-  text: Water worth drinking
-  tagline: Hunger was never the whole story. A second bar drains as you play, and not every puddle is safe.
-  image:
-    src: /logo.png
-    alt: ThirstWasTaken2 logo
+  tagline: Adds a survival thirst bar, drinking, and water purity to Minecraft.
   actions:
     - theme: brand
       text: Get Started
@@ -20,19 +16,19 @@ hero:
 
 features:
   - title: Thirst and Quenched
-    details: Ten droplets above the hunger bar. They drain faster when you sprint, and faster still in the Nether.
+    details: A second bar above hunger. It drains as players move and fight, faster in hot biomes and the Nether.
     link: /docs/features/thirst-and-quenched
     linkText: How it drains
   - title: Water Quality
-    details: Fresh water is graded by where it came from, and boiling makes it safer. Sea water is a kind of its own that no fire will fix.
+    details: Water is graded by where it comes from. Boiling makes it safe. Sea water never is.
     link: /docs/features/water-purity
     linkText: Grades and salt
   - title: Ways to Drink
-    details: Bottles, terracotta bowls, a craftable waterskin that holds three drinks, or cupped hands at the water's edge.
+    details: Bottles, terracotta bowls, a three-drink waterskin, or drinking by hand.
     link: /docs/features/drinking
     linkText: Every container
-  - title: Yours to Tune
-    details: Every value is adjustable in Mod Menu or one config file, and the server decides the rules for everyone on it.
+  - title: Configurable
+    details: Every value is a setting, in game or in one config file. The server sets the rules.
     link: /docs/configuration
     linkText: All settings
 ---

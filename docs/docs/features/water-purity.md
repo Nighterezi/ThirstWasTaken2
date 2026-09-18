@@ -1,15 +1,14 @@
 # Water quality
 
-Water comes in two kinds. **Fresh water** has a grade, from dirty to pure. **Salt water** has no
-grade at all: it cannot be cleaned, and it never quenches thirst. Every container remembers which of
-the two it holds, and says so in its tooltip.
+Fresh water has a grade, from Dirty to Pure. Sea water is Salty, has no grade, and never quenches
+thirst. Every container shows which one it holds in its tooltip.
 
 ![A water bottle tooltip stepping through Dirty, Murky, Clean, Pure and Salty](/screenshots/water-tooltips.gif)
 
 ## The four grades
 
-From worst to best: **Dirty**, **Murky**, **Clean**, **Pure**. The grade is set once, when the water
-is collected or drunk from the world, and it travels with the container after that.
+From worst to best: **Dirty**, **Murky**, **Clean**, **Pure**. Water gets its grade where it is
+collected and keeps it.
 
 | Where the water comes from | Usual grade |
 |---|---|
@@ -20,56 +19,46 @@ is collected or drunk from the world, and it travels with the container after th
 | Mountain | Clean |
 | Cold peaks | Pure |
 
-Very hot biomes make water worse and very cold biomes make it better. Water above y 100 or below
-y 32 is a little cleaner, and so is flowing water, so a waterfall is not automatically safe. Mud,
-mangrove roots, farmland or a composter within two blocks make water worse.
+- Hot biomes make water worse, cold biomes make it better.
+- Water above y 100 or below y 32 is a little cleaner. So is flowing water.
+- Mud, mangrove roots, farmland or a composter within two blocks make water worse.
 
-Modpacks can add biomes to `thirstwastaken2:stagnant_water` without changing code. Water that carries
-no grade of its own, such as an unknown modded drink, uses
-[defaultPurity](/docs/configuration#defaultpurity).
+Modpacks can add biomes to the `thirstwastaken2:stagnant_water` tag. Water with no grade of its own
+uses [defaultPurity](/docs/configuration#defaultpurity).
 
 ## Checking water with Jade
 
 ![Jade showing Murky for the river water under the crosshair](/screenshots/jade-water.png)
 
-With [Jade](https://modrinth.com/mod/jade) installed, looking at water shows its grade under the block
-name, or Salty for sea water. This works on water in the world, waterlogged blocks and water
-cauldrons, and the grade shown is the one a bottle filled there gets. It can be turned off in Jade's
-plugin settings.
+With [Jade](https://modrinth.com/mod/jade) installed, looking at water, a waterlogged block, a water
+cauldron or a hanging pot shows its grade, or Salty. It can be turned off in Jade's plugin settings.
 
 ## Salt water
 
-Oceans and beaches give salt water. It has its own icon and its own tooltip line, so it can be told
-apart from fresh water at a glance, and it shows no thirst droplets because it restores nothing. On
-Minecraft 1.21 and 1.21.1 only a bowl of it gets its own icon; see [Installation](/docs/installation).
+Oceans and beaches give salt water. It has its own icon and tooltip line. On Minecraft 1.21 and
+1.21.1 only the bowl has its own icon.
 
-Drinking it costs thirst instead of restoring it and causes five seconds of Nausea. A furnace or a
-campfire will not take it, so there is no way to make it drinkable. One salty drink poured into a
-waterskin or a cauldron turns everything in there into salt water.
+- Drinking it costs thirst and causes five seconds of Nausea.
+- It cannot be boiled clean.
+- One salty drink makes a whole waterskin, cauldron or hanging pot salty.
 
 ## Mixing and cauldrons
 
-A waterskin averages the grades of the drinks inside it, by how many there are, and rounds down. Two
-pure drinks and one dirty drink come out clean, so one good mouthful cannot rescue a bad batch.
+- A waterskin takes the average grade of its drinks, rounded down.
+- A cauldron keeps the worse grade of what it holds and what is poured in.
 
-A cauldron keeps the worse of what it holds and what is poured in. Water drawn back out into a
-bottle, bucket or waterskin keeps that grade.
+A cauldron also fills on its own:
 
-A cauldron also fills on its own, and each way of filling has a grade of its own.
-
-| How the cauldron filled | Grade |
+| How it filled | Grade |
 |---|---|
 | Rain | Clean, set by [rainwaterPurity](/docs/configuration#rainwaterpurity) |
 | A pointed dripstone dripping into it | Pure, set by [dripstonePurity](/docs/configuration#dripstonepurity) |
 
-Rain is free and needs nothing built, so it is good but not the best water in the game. A dripstone
-has to be placed under a water source with the cauldron below it, and it fills slowly, but the water
-has been through the stone and comes out as clean as boiling would make it. Neither improves what is
-already in the cauldron: rain falling into dirty water leaves it dirty.
+Neither improves water already in the cauldron.
 
 ## Drinking bad water
 
-Fresh water always quenches thirst, whatever its grade. The risk is what changes.
+Fresh water always quenches thirst. The grade sets the risk.
 
 | Grade | Nausea and Hunger | Poison |
 |---|---|---|
@@ -78,12 +67,11 @@ Fresh water always quenches thirst, whatever its grade. The risk is what changes
 | Clean | 5% | none |
 | Pure | none | none |
 
-Nausea lasts five seconds, Hunger lasts thirty seconds and Poison lasts ten seconds. A longer-term
-infection system is not part of this release.
+Nausea lasts 5 seconds, Hunger 30 seconds and Poison 10 seconds.
 
 ## Cleaning fresh water
 
-Put a fresh water bottle, terracotta water bowl or water bucket in a furnace or on a campfire.
+Put a water bottle, terracotta water bowl or water bucket in a furnace or on a campfire.
 
 ![A dirty water bottle comes out of the furnace clean](/screenshots/furnace-clean-water.png)
 
@@ -93,47 +81,41 @@ Put a fresh water bottle, terracotta water bowl or water bucket in a furnace or 
 | Murky | Pure |
 | Clean | Pure |
 
-A furnace takes ten seconds and a campfire takes thirty. Dirty water needs two passes to become pure.
-With Farmer's Delight, the [Cooking Pot](/docs/features/farmers-delight#boiling-water-in-the-cooking-pot)
-makes bottles and bowls pure in one pass. With Create Fly on Minecraft 26.1.2 and 26.2, or Create on
-NeoForge for 1.21.1, the [Sand Filter](/docs/features/create#sand-filter) cleans water pumped through it.
+A furnace takes ten seconds, a campfire thirty. Other ways to clean water:
+
+- A [Hanging Pot](#copper-hanging-pot) boils a whole bucket Pure.
+- The Farmer's Delight [Cooking Pot](/docs/features/farmers-delight#boiling-water-in-the-cooking-pot)
+  makes bottles and bowls Pure in one pass.
+- The Create [Sand Filter](/docs/features/create#sand-filter) cleans water pumped through it.
 
 ## Copper Hanging Pot
 
-The Copper Hanging Pot boils a large batch of water at once.
-
 ![A Copper Hanging Pot of water boiling over a campfire](/screenshots/copper-hanging-pot.png)
 
-Craft it from two sticks, an iron chain (a chain on Minecraft 1.21 and 1.21.1) and five copper ingots:
+Placed on a lit campfire or soul campfire, it boils water into Pure water. It can also stand on any
+solid block, but only boils over a fire.
 
 ![Two sticks and a chain across the top, five copper ingots in a U below, make a Copper Hanging Pot](/screenshots/copper-hanging-pot-recipe.png)
 
-Place it on a campfire and it hangs from a wooden frame. It can also stand on any solid block, but it
-only boils over a lit campfire or soul campfire.
+On Minecraft 1.21 and 1.21.1 the recipe uses a chain instead of an iron chain.
 
-- It holds a bucket of water, like a cauldron: three servings. A bucket fills or empties it, a
-  bottle or a bowl adds or takes one.
-- A waterskin takes one serving. Sneak and use a waterskin to pour all of it in.
-- Over a lit campfire, everything in the pot becomes Pure, whatever its grade. Each serving takes 4
-  seconds, like an item in a furnace, so a bottle takes 4 seconds and a full pot 12. The time is set
-  by [copperPotSecondsPerServing](/docs/configuration#copperpotsecondsperserving).
-- Adding water only adds that water's time; what has boiled so far is kept. Pouring in water that is
-  already Pure adds no time at all. Putting the fire out pauses the boil.
-- The water changes colour with its grade, so a finished pot is easy to spot.
-- It mixes like a cauldron: it keeps the worse grade, and one salty drink makes the whole pot salty.
-  Salt water does not boil clean.
-- Rain fills it slowly with rainwater, like a cauldron.
-- Water cannot be poured into it in the Nether. It hisses away, and you keep your water.
-- Breaking it drops the pot. The water inside is lost.
+- Holds three servings, like a cauldron. A bucket fills or empties it. A bottle or bowl adds or takes
+  one.
+- A waterskin adds one serving. Sneak to pour all of it in.
+- Each serving takes 4 seconds, set by
+  [copperPotSecondsPerServing](/docs/configuration#copperpotsecondsperserving).
+- Adding water only adds that water's time. Putting the fire out pauses the boil.
+- The water changes colour with its grade.
+- It mixes like a cauldron, and salt water never boils clean.
+- Rain fills it slowly.
+- Water cannot be poured into it in the Nether.
+- Breaking it drops the pot. The water is lost.
 
 ### Iron Hanging Pot
 
-The Iron Hanging Pot is the same pot in dark iron. It holds and mixes water exactly like the Copper
-Hanging Pot, but iron carries heat worse than copper, so it boils slower: 6 seconds a serving, 18 for
-a full pot. The time is set by
-[ironPotSecondsPerServing](/docs/configuration#ironpotsecondsperserving). Craft it the same way, with
-iron ingots instead of copper:
+![An Iron Hanging Pot of water boiling over a campfire](/screenshots/iron-hanging-pot.png)
+
+Works like the Copper Hanging Pot but boils slower: 6 seconds a serving, set by
+[ironPotSecondsPerServing](/docs/configuration#ironpotsecondsperserving).
 
 ![Two sticks and a chain across the top, five iron ingots in a U below, make an Iron Hanging Pot](/screenshots/iron-hanging-pot-recipe.png)
-
-![An Iron Hanging Pot of water boiling over a campfire](/screenshots/iron-hanging-pot.png)
