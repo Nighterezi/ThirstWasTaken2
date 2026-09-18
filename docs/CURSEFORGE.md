@@ -22,9 +22,11 @@ Water is graded based on where you collect it:
 * **Hanging Pots:** Hang a Copper or Iron Hanging Pot over a lit campfire to boil a bucket of water into Pure water.
 * **Rain and Dripstone:** Cauldrons placed under open rain or pointed dripstone automatically fill with clean water.
 
-| Furnace | Iron Hanging Pot |
+![Purifying Water](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/furnace-clean-water.png)
+
+| Copper Hanging Pot | Iron Hanging Pot |
 | :---: | :---: |
-| ![Purifying Water](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/furnace-clean-water.png) | ![Iron Hanging Pot boiling water over a campfire](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/iron-hanging-pot.png) |
+| ![Copper Hanging Pot boiling water over a campfire](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/copper-hanging-pot.png) | ![Iron Hanging Pot boiling water over a campfire](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/iron-hanging-pot.png) |
 
 ## Early Game Gear and Drinking
 You do not need glass bottles to stay hydrated:
@@ -34,7 +36,7 @@ You do not need glass bottles to stay hydrated:
 
 | Clay Bowl | Waterskin |
 | :---: | :---: |
-| ![Clay Bowl recipe](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/clay-bowl-recipe.png) | ![Waterskin recipe](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/waterskin-recipe.png) |
+| ![Clay Bowl recipe](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/clay-bowl-recipe.png)<br>![Firing a Clay Bowl into a Terracotta Bowl](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/furnace-terracotta-bowl.png) | ![Waterskin recipe](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/waterskin-recipe.png) |
 
 ## Mod Compatibility
 

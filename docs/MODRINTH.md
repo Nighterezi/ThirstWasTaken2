@@ -25,13 +25,17 @@ Water is graded based on where you collect it:
 * **Rain and Dripstone:** Cauldrons placed under open rain or pointed dripstone automatically fill with clean water.
 
 <div align="center">
+  <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/furnace-clean-water.png" alt="Purifying Water" width="550">
+</div>
+
+<div align="center">
 <table>
   <tr>
-    <th align="center">Furnace</th>
+    <th align="center">Copper Hanging Pot</th>
     <th align="center">Iron Hanging Pot</th>
   </tr>
   <tr>
-    <td align="center"><img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/furnace-clean-water.png" alt="Purifying Water" width="380"></td>
+    <td align="center"><img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/copper-hanging-pot.png" alt="Copper Hanging Pot boiling water over a campfire" width="280"></td>
     <td align="center"><img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/iron-hanging-pot.png" alt="Iron Hanging Pot boiling water over a campfire" width="280"></td>
   </tr>
 </table>
@@ -50,7 +54,7 @@ You do not need glass bottles to stay hydrated:
     <th align="center">Waterskin</th>
   </tr>
   <tr>
-    <td align="center"><img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/clay-bowl-recipe.png" width="280"></td>
+    <td align="center"><img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/clay-bowl-recipe.png" width="280"><br><img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/furnace-terracotta-bowl.png" alt="Firing a Clay Bowl into a Terracotta Bowl" width="280"></td>
     <td align="center"><img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/waterskin-recipe.png" width="280"></td>
   </tr>
 </table>
