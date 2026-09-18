@@ -21,11 +21,20 @@ Water is graded based on where you collect it:
 | **Salty** | Oceans and beaches | Cannot quench thirst; worsens dehydration |
 
 * **Boiling:** Smelt water bottles, bowls, or buckets in a furnace or over a campfire to raise their purity grade.
-* **Copper Hanging Pot:** Hang it over a lit campfire to boil nine servings of water pure at once.
+* **Hanging Pots:** Hang a Copper or Iron Hanging Pot over a lit campfire to boil a bucket of water into Pure water.
 * **Rain and Dripstone:** Cauldrons placed under open rain or pointed dripstone automatically fill with clean water.
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/furnace-clean-water.png" alt="Purifying Water" width="550">
+<table>
+  <tr>
+    <th align="center">Furnace</th>
+    <th align="center">Iron Hanging Pot</th>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/furnace-clean-water.png" alt="Purifying Water" width="380"></td>
+    <td align="center"><img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/iron-hanging-pot.png" alt="Iron Hanging Pot boiling water over a campfire" width="280"></td>
+  </tr>
+</table>
 </div>
 
 ## Early Game Gear and Drinking
@@ -50,6 +59,8 @@ You do not need glass bottles to stay hydrated:
 ## Mod Compatibility
 
 Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box:
+
+### Fabric
 
 <table>
   <tr>
@@ -81,8 +92,8 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
   </tr>
   <tr>
     <td width="55%">
-      <b><a href="https://modrinth.com/mod/create-fly">Create Fly</a></b><br>
-      On Minecraft 26.1.2 and 26.2, water keeps its grade through Create Fly pipes, pumps, tanks, drains, and spouts. The Sand Filter raises fresh water by one grade, and Engineer's Goggles show both sides.
+      <b><a href="https://modrinth.com/mod/create-fly">Create Fly (26.2, 26.1.2)</a></b><br>
+      Add Sand Filter to purify dirty water by one grade. Water also keeps its purity grade through pipes, pumps, tanks, drains, and spouts.
     </td>
     <td width="45%">
       <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/create-sand-filter-goggles.png" width="100%">
@@ -98,6 +109,50 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
     </td>
   </tr>
 </table>
+
+<details>
+<summary><b>NeoForge</b></summary>
+
+<table>
+  <tr>
+    <td width="55%">
+      <b><a href="https://modrinth.com/mod/appleskin">AppleSkin</a></b><br>
+      Displays your Quenched reserve directly on the HUD (Gold, Diamond, Ice, or Classic outline). Tooltips show exact thirst values for every drink and food item.
+    </td>
+    <td width="45%">
+      <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/hud-appleskin.gif" width="100%">
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
+      <b><a href="https://modrinth.com/mod/jade">Jade (WAILA)</a></b><br>
+      Shows the purity grade of water sources, waterlogged blocks, cauldrons, and hanging pots directly under your crosshair.
+    </td>
+    <td width="45%">
+      <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/jade-water.png" width="100%">
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
+      <b><a href="https://modrinth.com/mod/create">Create (1.21.1)</a></b><br>
+      Add Sand Filter to purify dirty water by one grade. Water also keeps its purity grade through pipes, pumps, tanks, drains, and spouts.
+    </td>
+    <td width="45%">
+      <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/create-sand-filter-goggles.png" width="100%">
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
+      <b>Settings screen</b><br>
+      Open it from the Config button in NeoForge's Mods list, with a real-time HUD preview to customize drain rates, sickness chances, and HUD positioning.
+    </td>
+    <td width="45%">
+      <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/config-screen.png" width="100%">
+    </td>
+  </tr>
+</table>
+
+</details>
 
 ## Quick FAQ
 
@@ -120,4 +175,4 @@ Want to improve or add a translation? [Open a pull request](https://github.com/N
 ## Credits
 
 * **Original Mod:** Based on [Thirst Was Taken](https://modrinth.com/mod/thirst-was-taken) by [**ghen**](https://github.com/ghen-git).
-* **License:** Licensed under the [GNU General Public License v3.0](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/LICENSE). The copper hanging pot is adapted from [Dehydration](https://github.com/Globox1997/Dehydration) by Globox1997.
+* **License:** Licensed under the [MIT License](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/LICENSE).

@@ -356,6 +356,7 @@ Each area of the tree carries its own `AGENTS.md` with rules and conventions loc
 | Water purity carriers, environmental sampling, cauldrons | [.../purity/AGENTS.md](src/main/java/com/thirstwastaken2/purity/AGENTS.md) |
 | Loot injection & optional-integration rules | [.../compat/AGENTS.md](src/main/java/com/thirstwastaken2/compat/AGENTS.md) |
 | The Create Fly Sand Filter, compiled only where Create Fly exists | [src/main/createfly/AGENTS.md](src/main/createfly/AGENTS.md) |
+| The Sand Filter on Create for NeoForge, compiled only on `1.21.1-neoforge` | [src/main/create/AGENTS.md](src/main/create/AGENTS.md) |
 | Minecraft version and mod loader differences | [.../platform/AGENTS.md](src/main/java/com/thirstwastaken2/platform/AGENTS.md) |
 | Every difference between the supported versions, visible and underneath | [docs/dev/VERSION-DIFFERENCES.md](docs/dev/VERSION-DIFFERENCES.md) |
 | What to check by hand before a release, per version | [docs/dev/MANUAL-TESTING.md](docs/dev/MANUAL-TESTING.md) |
@@ -429,6 +430,7 @@ src/client/java/com/thirstwastaken2/client/
 
 src/main/createfly/                     Create Fly Sand Filter, compiled only where deps.create_fly is set
 src/client/createfly/                   its goggle tooltip, same condition
+src/main/create/                        the Sand Filter on Create for NeoForge, compiled only where deps.create is set
 
 src/client/java/com/thirstwastaken2/client/mixin/MinecraftMixin.java  hand drinking outside the crosshair
 src/client/java/com/thirstwastaken2/client/mixin/LocalPlayerMixin.java  the 1.21.1 sprint gate, on both loaders
@@ -612,6 +614,7 @@ takes effect in singleplayer or when edited on the server.
 | Loot | always | `Loader.onLootTable` on 5 vanilla chests + Piglin bartering, including tables a data pack replaced |
 | Food mods | always | resolved by registry id in `ThirstConfig.drinks` / `foods`, no classes referenced |
 | Create Fly | `deps.create_fly` at build time, then `CreateFlyPresence` | the Sand Filter, 26.1.x and 26.2.x Fabric for now; Create Fly is a Fabric port. See [src/main/createfly/AGENTS.md](src/main/createfly/AGENTS.md) |
+| Create (NeoForge) | `deps.create` at build time, then `CreatePresence` | the Sand Filter on 1.21.1 NeoForge. See [src/main/create/AGENTS.md](src/main/create/AGENTS.md) |
 
 ## Porting rules of thumb
 

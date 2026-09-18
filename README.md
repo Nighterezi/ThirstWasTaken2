@@ -27,8 +27,8 @@ A thirst mod for Fabric and NeoForge. It adds a survival thirst bar, drinking, a
 - Optional Jade support: the grade of the water under the crosshair
 - Optional Farmer's Delight support: thirst values for its drinks and meals, water purification in the
   Cooking Pot, and no thirst drain under Nourishment
-- Optional Create Fly support on Minecraft 26.1.2 and 26.2: the Sand Filter, and water that keeps its grade
-  through pipes, pumps and spouts
+- Optional Create support, through Create Fly on Fabric for Minecraft 26.1.2 and 26.2 and through Create on
+  NeoForge for Minecraft 1.21.1: the Sand Filter, and water that keeps its grade through pipes, pumps and spouts
 - Configurable HUD position and gameplay settings
 - Mod Menu configuration screen
 - `/thirst` commands for server administrators
@@ -61,6 +61,7 @@ There is one download per Minecraft version, named after it, for example
 | Jade | Optional, 26.2.11 | Optional, 26.1.11 | Optional, 21.1.6 | Optional, 15.10.6 |
 | Farmer's Delight Refabricated | Optional, 26.2-3.6.25 | Optional, 26.1-3.6.25 | Optional, 1.21.11-3.6.16 | Optional, 1.21.1-3.3.6 |
 | Create Fly | Optional, 26.2-rc-2-6.0.9-1 | Optional, 26.1.2-6.0.9-4 | Not supported | Not supported |
+| Create (NeoForge only) | Not supported | Not supported | Not supported | Optional, 6.0.10 |
 
 Download ThirstWasTaken2 from [Modrinth](https://modrinth.com/mod/thirst-was-taken-2) and install it along with Fabric API on both the client and server. Put the downloaded JAR in the
 `mods` folder.
@@ -86,7 +87,8 @@ These commands require game master permission.
 
 ## Known limitations
 
-- The Create Fly Sand Filter is only available on Minecraft 26.1.2 and 26.2, and Builder's Tea does not restore
+- The Sand Filter is only available with Create Fly on Minecraft 26.1.2 and 26.2, and with Create on NeoForge
+  for Minecraft 1.21.1, and Builder's Tea does not restore
   thirst yet.
 - On Minecraft 1.21 and 1.21.1, sea water in bottles and buckets looks like ordinary water (its tooltip
   still reads Salty), and the droplets in item tooltips have a shadow.

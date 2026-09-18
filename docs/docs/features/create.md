@@ -1,12 +1,13 @@
 # Create
 
-With [Create Fly](https://modrinth.com/mod/create-fly), the Fabric port of Create, the mod adds the
-Sand Filter and keeps water grades intact as water moves through pipes, pumps, spouts and drains.
-Without Create Fly, none of this is loaded.
+With Create installed, the mod adds the Sand Filter and keeps water grades intact as water moves
+through pipes, pumps, spouts and drains. Without Create, none of this is loaded.
 
-::: warning Minecraft 26.1.2 and 26.2 only
-The Sand Filter is only in the Minecraft 26.1.2 and 26.2 versions of the mod for now. The 1.21.11 and
-1.21.1 versions ignore Create Fly.
+::: warning Supported versions
+- Fabric, Minecraft 26.1.2 and 26.2: [Create Fly](https://modrinth.com/mod/create-fly), the Fabric port of Create.
+- NeoForge, Minecraft 1.21.1: [Create](https://modrinth.com/mod/create) 6.0.10.
+
+Every other version ignores Create.
 :::
 
 ![A Create Fly pipe network pumping water through a Sand Filter between two fluid tanks](/screenshots/create-sand-filter.png)
@@ -37,6 +38,8 @@ A comparator reads how full the bottom is. Engineer's Goggles show both sides an
 
 Crafted in a column, top to bottom: any sand, a Nozzle, a Fluid Tank. The recipe unlocks once a
 Nozzle has been picked up.
+
+![Sand, a Nozzle and a Fluid Tank in a column make a Sand Filter](/screenshots/sand-filter-recipe.png)
 
 ## Water grades in Create
 

@@ -6,11 +6,11 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 
 ### Added
 
-- Copper Hanging Pot. It holds a bucket of water, three servings, and boils it Pure when placed on a
-  lit campfire, 4 seconds for each serving. Water cannot be poured into it in the Nether. Crafted from two sticks, a chain and five copper ingots.
-- Iron Hanging Pot. It works like the Copper Hanging Pot, in dark cast iron, but boils slower: 6
-  seconds for each serving. Crafted from two sticks, a chain and five iron ingots.
-- With Jade installed, looking at a hanging pot shows the grade of the water inside.
+- Copper and Iron Hanging Pots. Placed on a lit campfire, they boil water into Pure water. The iron
+  pot boils slower.
+- With Jade installed, looking at a hanging pot shows the water grade inside.
+- The Sand Filter on NeoForge for Minecraft 1.21.1, with Create installed. Water also keeps its grade
+  through Create's pipes, pumps, Spouts and drains.
 
 ### Changed
 
@@ -19,6 +19,7 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 ### Notes
 
 - The Copper and Iron Hanging Pots are adapted from the campfire cauldron in Dehydration by Globox1997.
+- Create is optional and must be installed on both the client and the server.
 - Existing worlds and config files need no changes.
 
 <details>

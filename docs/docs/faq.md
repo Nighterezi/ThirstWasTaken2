@@ -33,7 +33,8 @@ Its id is not in the lists. Add it to `drinks` in the config file, or switch on
 
 ## Is Create required?
 
-No. On Minecraft 26.1.2 and 26.2, installing [Create Fly](/docs/features/create) adds the Sand Filter.
+No. Installing [Create Fly](/docs/features/create) on Minecraft 26.1.2 and 26.2, or Create on NeoForge for
+Minecraft 1.21.1, adds the Sand Filter.
 Builder's Tea does not restore thirst yet. Mod Menu only adds the settings button, and nothing else
 here needs another mod.
 

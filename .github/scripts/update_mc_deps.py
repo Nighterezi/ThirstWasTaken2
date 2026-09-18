@@ -93,6 +93,8 @@ MODRINTH_DEPS = [
     ModrinthDep("jade", "jade"),
     ModrinthDep("farmersdelight", "farmers-delight-refabricated"),
     ModrinthDep("create_fly", "create-fly"),
+    # Create's version numbers are not spelled alike from one upload to the next, so it is pinned by id.
+    ModrinthDep("create", "create", by_id=True),
 ]
 
 

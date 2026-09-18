@@ -95,19 +95,18 @@ Put a fresh water bottle, terracotta water bowl or water bucket in a furnace or 
 
 A furnace takes ten seconds and a campfire takes thirty. Dirty water needs two passes to become pure.
 With Farmer's Delight, the [Cooking Pot](/docs/features/farmers-delight#boiling-water-in-the-cooking-pot)
-makes bottles and bowls pure in one pass. With Create Fly on Minecraft 26.1.2 and 26.2, the
-[Sand Filter](/docs/features/create#sand-filter) cleans water pumped through it.
+makes bottles and bowls pure in one pass. With Create Fly on Minecraft 26.1.2 and 26.2, or Create on
+NeoForge for 1.21.1, the [Sand Filter](/docs/features/create#sand-filter) cleans water pumped through it.
 
 ## Copper Hanging Pot
 
-The Copper Hanging Pot boils a large batch of water at once. Craft it from two sticks, an iron chain
-(a chain on Minecraft 1.21 and 1.21.1) and five copper ingots:
+The Copper Hanging Pot boils a large batch of water at once.
 
-| | | |
-|---|---|---|
-| Stick | Chain | Stick |
-| Copper Ingot | | Copper Ingot |
-| Copper Ingot | Copper Ingot | Copper Ingot |
+![A Copper Hanging Pot of water boiling over a campfire](/screenshots/copper-hanging-pot.png)
+
+Craft it from two sticks, an iron chain (a chain on Minecraft 1.21 and 1.21.1) and five copper ingots:
+
+![Two sticks and a chain across the top, five copper ingots in a U below, make a Copper Hanging Pot](/screenshots/copper-hanging-pot-recipe.png)
 
 Place it on a campfire and it hangs from a wooden frame. It can also stand on any solid block, but it
 only boils over a lit campfire or soul campfire.
@@ -135,8 +134,6 @@ a full pot. The time is set by
 [ironPotSecondsPerServing](/docs/configuration#ironpotsecondsperserving). Craft it the same way, with
 iron ingots instead of copper:
 
-| | | |
-|---|---|---|
-| Stick | Chain | Stick |
-| Iron Ingot | | Iron Ingot |
-| Iron Ingot | Iron Ingot | Iron Ingot |
+![Two sticks and a chain across the top, five iron ingots in a U below, make an Iron Hanging Pot](/screenshots/iron-hanging-pot-recipe.png)
+
+![An Iron Hanging Pot of water boiling over a campfire](/screenshots/iron-hanging-pot.png)

@@ -88,6 +88,39 @@ sourceSets.main {
     resources.srcDir(rootProject.file("src/main/generated/${sc.current.version}"))
 }
 
+/**
+ * Create's Modrinth version id, set only on the nodes that build the Sand Filter, today `1.21.1-neoforge`.
+ * The integration is its own source directory that only such a node compiles, and only there does the
+ * manifest name its mixin config. See src/main/create/AGENTS.md.
+ */
+val createVersion = findProperty("deps.create") as String?
+
+/**
+ * The libraries Create bundles inside its jar: Ponder (with Catnip), Flywheel and Registrate. The Sand
+ * Filter extends classes whose supertypes live there, so the compiler needs them; at runtime FML reads
+ * them out of Create's jar itself.
+ */
+val createLibraries = createVersion?.let { version ->
+    val resolved = configurations.detachedConfiguration(dependencies.create("maven.modrinth:create:$version"))
+        .apply { isTransitive = false }
+    tasks.register<Sync>("createLibraries") {
+        description = "Copies the libraries Create bundles out of its jar, for the compiler"
+        from(resolved.elements.map { jars -> jars.map { zipTree(it) } }) {
+            include("META-INF/jarjar/*.jar")
+            eachFile { path = name }
+        }
+        includeEmptyDirs = false
+        into(layout.buildDirectory.dir("create"))
+    }
+}
+
+if (createVersion != null) {
+    sourceSets.main {
+        java.srcDir("src/main/create/java")
+        resources.srcDir("src/main/create/resources")
+    }
+}
+
 /*
  * The same gametests the Fabric nodes run, as their own small mod, so none of it reaches the jar.
  * `src/gametest/neoforge` holds the harness that finds and registers them, in place of Fabric API's;
@@ -299,6 +332,14 @@ dependencies {
     clientRunMods("maven.modrinth:jade:${property("deps.jade")}")
     // AppleSkin's own config screen.
     clientRunMods("maven.modrinth:cloth-config:${property("deps.cloth_config")}")
+
+    if (createVersion != null && createLibraries != null) {
+        compileOnly("maven.modrinth:create:$createVersion") { isTransitive = false }
+        compileOnly(files(createLibraries.map { it.destinationDir.listFiles().orEmpty().toList() })
+            .builtBy(createLibraries))
+        // Test the Sand Filter with pipes, pumps and spouts in runClient.
+        clientRunMods("maven.modrinth:create:$createVersion") { isTransitive = false }
+    }
 }
 
 /*
@@ -391,6 +432,27 @@ tasks.processResources {
     // Datagen's hash cache, which Loom keeps out of the Fabric mod jar and nothing keeps out of
     // this one.
     exclude("**/.cache/**")
+
+    // Only a node that compiles the Sand Filter may name its mixin config, or FML would fail to find it
+    // on every other one. It is appended to the built manifest, with Create as an optional dependency,
+    // rather than templated into the source manifest every NeoForge node shares.
+    inputs.property("create", createVersion ?: "")
+    if (createVersion != null) {
+        val manifest = destinationDir.resolve("META-INF/neoforge.mods.toml")
+        doLast {
+            manifest.appendText("""
+                |
+                |[[mixins]]
+                |config = "thirstwastaken2.create.mixins.json"
+                |
+                |[[dependencies.thirstwastaken2]]
+                |modId = "create"
+                |type = "optional"
+                |ordering = "NONE"
+                |side = "BOTH"
+                |""".trimMargin())
+        }
+    }
 
     // Translates the generated JSON in place, once it is copied. Only files that came from the
     // generated root are read, and only those naming Fabric are rewritten, so the rest keep their
