@@ -68,6 +68,7 @@ DEPENDENCIES = {
     "jade": ("jade", "nvQzSEkH", "optional"),
     "farmersdelight": ("farmers-delight-refabricated", "7vxePowz", "optional"),
     "create_fly": ("create-fly", "dKvj0eNn", "optional"),
+    "create": ("create", "LNytGWDc", "optional"),
 }
 
 

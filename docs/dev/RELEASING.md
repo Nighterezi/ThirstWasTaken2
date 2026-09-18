@@ -63,6 +63,6 @@ Read off the node's tables in `stonecutter.properties.toml`:
   one does not.
 - **Loader** -- the node's loader table.
 - **Mods** -- one per `deps.*` key the node resolves: Fabric API required, Mod Menu, AppleSkin, Jade,
-  Farmer's Delight and Create Fly optional. `deps.cloth_config` is deliberately not among them: it is
+  Farmer's Delight, Create Fly and Create optional. `deps.cloth_config` is deliberately not among them: it is
   only on the dev client's runtime classpath, and no code in the mod names it. `deps.fabric_loader`,
   `deps.neoforge` and the Loom version are the platform, not mods to install.

@@ -48,7 +48,7 @@ A thirst mod for Fabric and NeoForge. It adds a survival thirst bar, drinking, a
 ## Requirements
 
 There is one download per Minecraft version, named after it, for example
-`ThirstWasTaken2-1.0.6+1.21.11.jar`. The `+1.21.1` download also runs on Minecraft 1.21.
+`ThirstWasTaken2-1.0.7+1.21.11.jar`. The `+1.21.1` download also runs on Minecraft 1.21.
 
 | Component | Minecraft 26.2 | Minecraft 26.1.x | Minecraft 1.21.11 | Minecraft 1.21.1 |
 |---|---|---|---|---|

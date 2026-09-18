@@ -55,8 +55,8 @@ You do not need glass bottles to stay hydrated:
     <th align="center">Waterskin</th>
   </tr>
   <tr>
-    <td align="center"><img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/clay-bowl-recipe.png" width="280"><br><img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/furnace-terracotta-bowl.png" alt="Firing a Clay Bowl into a Terracotta Bowl" width="280"></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/waterskin-recipe.png" width="280"></td>
+    <td align="center"><img alt="Three clay balls in a bowl shape make four Clay Bowls" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/clay-bowl-recipe.png" width="280"><br><img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/furnace-terracotta-bowl.png" alt="Firing a Clay Bowl into a Terracotta Bowl" width="280"></td>
+    <td align="center"><img alt="Three leather and a string make a Waterskin" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/waterskin-recipe.png" width="280"></td>
   </tr>
 </table>
 </div>
@@ -74,7 +74,7 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
       Displays your Quenched reserve directly on the HUD (Gold, Diamond, Ice, or Classic outline). Tooltips show exact thirst values for every drink and food item.
     </td>
     <td width="45%">
-      <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/hud-appleskin.gif" width="100%">
+      <img alt="The thirst bar with AppleSkin, cycling through the Diamond, Ice, Gold and AppleSkin quenched outlines" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/hud-appleskin.gif" width="100%">
     </td>
   </tr>
   <tr>
@@ -83,7 +83,7 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
       Shows the purity grade of water sources, waterlogged blocks, and cauldrons directly under your crosshair.
     </td>
     <td width="45%">
-      <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/jade-water.png" width="100%">
+      <img alt="Jade showing the water grade under the crosshair" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/jade-water.png" width="100%">
     </td>
   </tr>
   <tr>
@@ -92,7 +92,7 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
       Soups, stews, and drinks restore thirst. The Cooking Pot purifies water to Pure grade. The Nourishment effect pauses thirst depletion.
     </td>
     <td width="45%">
-      <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/farmers-delight-cooking-pot.png" width="100%">
+      <img alt="A Farmer's Delight Cooking Pot boiling water bottles to Pure" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/farmers-delight-cooking-pot.png" width="100%">
     </td>
   </tr>
   <tr>
@@ -101,7 +101,7 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
       Add Sand Filter to purify dirty water by one grade. Water also keeps its purity grade through pipes, pumps, tanks, drains, and spouts.
     </td>
     <td width="45%">
-      <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/create-sand-filter-goggles.png" width="100%">
+      <img alt="Engineer's Goggles showing Murky water entering the Sand Filter and Clean water leaving it" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/create-sand-filter-goggles.png" width="100%">
     </td>
   </tr>
   <tr>
@@ -110,7 +110,7 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
       Offers an in-game settings screen with a real-time HUD preview to customize drain rates, sickness chances, and HUD positioning.
     </td>
     <td width="45%">
-      <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/config-screen.png" width="100%">
+      <img alt="The ThirstWasTaken2 settings screen with its live HUD preview" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/config-screen.png" width="100%">
     </td>
   </tr>
 </table>
@@ -125,7 +125,7 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
       Displays your Quenched reserve directly on the HUD (Gold, Diamond, Ice, or Classic outline). Tooltips show exact thirst values for every drink and food item.
     </td>
     <td width="45%">
-      <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/hud-appleskin.gif" width="100%">
+      <img alt="The thirst bar with AppleSkin, cycling through the Diamond, Ice, Gold and AppleSkin quenched outlines" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/hud-appleskin.gif" width="100%">
     </td>
   </tr>
   <tr>
@@ -134,7 +134,7 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
       Shows the purity grade of water sources, waterlogged blocks, cauldrons, and hanging pots directly under your crosshair.
     </td>
     <td width="45%">
-      <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/jade-water.png" width="100%">
+      <img alt="Jade showing the water grade under the crosshair" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/jade-water.png" width="100%">
     </td>
   </tr>
   <tr>
@@ -143,7 +143,7 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
       Add Sand Filter to purify dirty water by one grade. Water also keeps its purity grade through pipes, pumps, tanks, drains, and spouts.
     </td>
     <td width="45%">
-      <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/create-sand-filter-goggles.png" width="100%">
+      <img alt="Engineer's Goggles showing Murky water entering the Sand Filter and Clean water leaving it" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/create-sand-filter-goggles.png" width="100%">
     </td>
   </tr>
   <tr>
@@ -152,7 +152,7 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
       Open it from the Config button in NeoForge's Mods list, with a real-time HUD preview to customize drain rates, sickness chances, and HUD positioning.
     </td>
     <td width="45%">
-      <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/config-screen.png" width="100%">
+      <img alt="The ThirstWasTaken2 settings screen with its live HUD preview" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/config-screen.png" width="100%">
     </td>
   </tr>
 </table>
@@ -179,5 +179,6 @@ Want to improve or add a translation? [Open a pull request](https://github.com/N
 
 ## Credits
 
-* **Original Mod:** Based on [Thirst Was Taken](https://modrinth.com/mod/thirst-was-taken) by [**ghen**](https://github.com/ghen-git).
-* **License:** Licensed under the [MIT License](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/LICENSE).
+* Based on [Thirst Was Taken](https://modrinth.com/mod/thirst-was-taken) by [ghen](https://github.com/ghen-git), under the MIT License.
+* Hanging Pot models adapted from [Dehydration](https://github.com/Globox1997/Dehydration) by [Globox1997](https://github.com/Globox1997), under the GPL-3.0.
+* Licensed under the [GPL-3.0](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/LICENSE) from 1.0.7. See [CREDITS.md](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/CREDITS.md).
