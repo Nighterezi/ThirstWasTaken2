@@ -94,7 +94,9 @@ Events registered there, in registration order per event:
 ## The hanging pots
 
 `block/HangingPotBlock` is adapted from Dehydration's campfire cauldron (GPL-3.0; see `CREDITS.md`).
-The copper and iron pots are two registrations of it that differ only in look, sound and recipe, so
+The copper and iron pots are two registrations of it that differ in look, sound, recipe and the
+config value they read their boil time from (`copperPotSecondsPerServing`, `ironPotSecondsPerServing`;
+the numbers are argued in `docs/dev/WATER-PURIFICATION-BALANCE.md`), so
 code that asks whether a block is a pot checks `instanceof HangingPotBlock`, never one of the two.
 It holds `CAPACITY` servings and stores their quality in `WaterPurity.BLOCK_PURITY`, like a cauldron,
 and `HangingPotInteractions` does all the filling and drawing itself, inline, because vanilla has no
@@ -102,11 +104,13 @@ interaction for the block to defer to. It refuses every pour where `Vanilla.wate
 pot never holds water in the Nether. Keep that handler ahead of `emptyWaterskinOnBlock`: a sneaking
 player's waterskin pours into the pot rather than onto the ground.
 
-Boiling has no block entity. The `boil` property counts `BOIL_STAGES` scheduled ticks; `onPlace`
+Boiling has no block entity. The `boil` property counts scheduled ticks done, `STEPS_PER_SERVING`
+per serving, so the time is per serving like a furnace's per item; `onPlace`
 schedules the next one on every state change that still needs boiling over a lit campfire, and
 `supportChanged` schedules one when the campfire below is lit again. A step that finds the fire out
-schedules nothing. So a pot with nothing to do costs nothing, and anything that adds water resets
-`boil` through `HangingPotBlock.withWater`.
+schedules nothing. So a pot with nothing to do costs nothing. Anything that adds water goes through
+`HangingPotBlock.withPoured`, which keeps what has boiled and counts pure water as boiled, and
+drawing goes through `withLess`; `withWater` sets a pot outright and starts its count at nothing.
 
 ## Tooltip lines
 

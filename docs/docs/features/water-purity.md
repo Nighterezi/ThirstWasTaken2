@@ -115,9 +115,11 @@ only boils over a lit campfire or soul campfire.
 - It holds a bucket of water, like a cauldron: three servings. A bucket fills or empties it, a
   bottle or a bowl adds or takes one.
 - A waterskin takes one serving. Sneak and use a waterskin to pour all of it in.
-- Over a lit campfire, everything in the pot becomes Pure after 30 seconds, whatever its grade and
-  however full it is. The time is set by [hangingPotBoilSeconds](/docs/configuration#hangingpotboilseconds).
-- Adding water starts the boil over. Putting the fire out pauses it.
+- Over a lit campfire, everything in the pot becomes Pure, whatever its grade. Each serving takes 4
+  seconds, like an item in a furnace, so a bottle takes 4 seconds and a full pot 12. The time is set
+  by [copperPotSecondsPerServing](/docs/configuration#copperpotsecondsperserving).
+- Adding water only adds that water's time; what has boiled so far is kept. Pouring in water that is
+  already Pure adds no time at all. Putting the fire out pauses the boil.
 - The water changes colour with its grade, so a finished pot is easy to spot.
 - It mixes like a cauldron: it keeps the worse grade, and one salty drink makes the whole pot salty.
   Salt water does not boil clean.
@@ -127,8 +129,11 @@ only boils over a lit campfire or soul campfire.
 
 ### Iron Hanging Pot
 
-The Iron Hanging Pot is the same pot in dark iron. It holds, boils and mixes water exactly like the
-Copper Hanging Pot. Craft it the same way, with iron ingots instead of copper:
+The Iron Hanging Pot is the same pot in dark iron. It holds and mixes water exactly like the Copper
+Hanging Pot, but iron carries heat worse than copper, so it boils slower: 6 seconds a serving, 18 for
+a full pot. The time is set by
+[ironPotSecondsPerServing](/docs/configuration#ironpotsecondsperserving). Craft it the same way, with
+iron ingots instead of copper:
 
 | | | |
 |---|---|---|

@@ -92,11 +92,16 @@ Default `2`, clean. The grade a cauldron gets when rain fills it.
 Default `3`, pure. The grade a cauldron gets when a pointed dripstone drips into it. See
 [cauldrons](/docs/features/water-purity#mixing-and-cauldrons).
 
-### hangingPotBoilSeconds
+### copperPotSecondsPerServing
 
-Default `30`, from 1 to 300. How many seconds a
-[Copper or Iron Hanging Pot](/docs/features/water-purity#copper-hanging-pot) over a lit campfire takes
-to make its water pure.
+Default `4`, from 1 to 100. How many seconds each serving of water in a
+[Copper Hanging Pot](/docs/features/water-purity#copper-hanging-pot) over a lit campfire takes to
+become pure. A full pot holds three servings, so it takes three times as long.
+
+### ironPotSecondsPerServing
+
+Default `6`, from 1 to 100. The same for the
+[Iron Hanging Pot](/docs/features/water-purity#iron-hanging-pot).
 
 ### quenchWhenDebuffed
 

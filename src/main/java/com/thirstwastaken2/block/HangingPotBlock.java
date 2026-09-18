@@ -34,26 +34,28 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.function.IntConsumer;
+import java.util.function.ToIntFunction;
 
 /**
- * The copper hanging pot, adapted from Dehydration's campfire cauldron (Globox1997, GPL-3.0).
+ * A hanging pot, copper or iron, adapted from Dehydration's campfire cauldron (Globox1997, GPL-3.0).
  *
  * <p>It holds {@link #CAPACITY} servings of water, a bucket's worth like a cauldron, since the pot is no
- * bigger than one, and keeps their quality the way a cauldron does, in {@link WaterPurity#BLOCK_PURITY}. It stands on any solid floor, but only boils
- * over a lit campfire, where it hangs from a frame. Boiling takes {@code hangingPotBoilSeconds} however
- * much water is in the pot, and leaves fresh water pure in one go. Salt water is not boiled: taking the
- * salt out is distillation, which is a separate idea on the roadmap.
+ * bigger than one, and keeps their quality the way a cauldron does, in {@link WaterPurity#BLOCK_PURITY}.
+ * It stands on any solid floor, but only boils over a lit campfire, where it hangs from a frame. Boiling
+ * takes {@link #secondsPerServing} for each serving in the pot, the way a furnace takes its time per
+ * item, and leaves fresh water pure in one go. That time is the one thing the two pots differ in: copper
+ * carries heat better, so it boils faster. Salt water is not boiled: taking the salt out is
+ * distillation, which is a separate idea on the roadmap.
  *
- * <p>Boiling runs on scheduled ticks rather than a block entity. {@link #BOIL} counts
- * {@link #BOIL_STAGES} steps, and every change of state schedules the next step through
- * {@link #onPlace}, so a pot that has nothing to boil costs nothing. A step that finds the fire out does
- * nothing and schedules nothing; lighting the fire again reaches the pot through
- * {@link #supportChanged}, which picks the count up where it stopped. Pouring more water in starts it
- * over.
+ * <p>Boiling runs on scheduled ticks rather than a block entity. {@link #BOIL} counts the steps done,
+ * {@link #STEPS_PER_SERVING} for every serving, and every change of state schedules the next step
+ * through {@link #onPlace}, so a pot that has nothing to boil costs nothing. A step that finds the fire
+ * out does nothing and schedules nothing; lighting the fire again reaches the pot through
+ * {@link #supportChanged}, which picks the count up where it stopped. Pouring more water in keeps what
+ * is done and only adds the new servings' steps, and water that is already pure counts as boiled, so a
+ * bottle topped up into a finished pot takes one serving's time, not the whole pot's.
  */
 public final class HangingPotBlock extends SupportedBlock {
-    public static final MapCodec<HangingPotBlock> CODEC = simpleCodec(HangingPotBlock::new);
-
     /** Servings the pot holds: a bottle or a bowl is one, a bucket three. */
     public static final int CAPACITY = 3;
     public static final int BUCKET = 3;
@@ -62,8 +64,9 @@ public final class HangingPotBlock extends SupportedBlock {
     public static final BooleanProperty HANGING = BlockStateProperties.HANGING;
     /** The axis the frame's crossbar runs along, across the placing player's view. */
     public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.HORIZONTAL_AXIS;
-    public static final int BOIL_STAGES = 5;
-    public static final IntegerProperty BOIL = IntegerProperty.create("boil", 0, BOIL_STAGES - 1);
+    /** Scheduled ticks a serving takes to boil; more of them just means a finer count. */
+    public static final int STEPS_PER_SERVING = 4;
+    public static final IntegerProperty BOIL = IntegerProperty.create("boil", 0, CAPACITY * STEPS_PER_SERVING - 1);
 
     private static final VoxelShape POT = Block.box(3.0, 0.0, 3.0, 13.0, 6.0, 13.0);
     private static final VoxelShape FRAME_ALONG_Z = Shapes.or(POT,
@@ -78,8 +81,14 @@ public final class HangingPotBlock extends SupportedBlock {
     private static final float RAIN_FILL_CHANCE = 0.05F;
     private static final int BLOCK_UPDATE_FLAGS = 3;
 
-    public HangingPotBlock(Properties properties) {
+    private final ToIntFunction<ThirstConfig> secondsPerServing;
+    private final MapCodec<HangingPotBlock> codec;
+
+    /** A pot whose servings each take the config value {@code secondsPerServing} reads to boil. */
+    public HangingPotBlock(Properties properties, ToIntFunction<ThirstConfig> secondsPerServing) {
         super(properties);
+        this.secondsPerServing = secondsPerServing;
+        this.codec = simpleCodec(copy -> new HangingPotBlock(copy, secondsPerServing));
         registerDefaultState(stateDefinition.any()
                 .setValue(LEVEL, 0)
                 .setValue(WaterPurity.BLOCK_PURITY, WaterPurity.BLOCK_UNSET)
@@ -90,7 +99,7 @@ public final class HangingPotBlock extends SupportedBlock {
 
     @Override
     protected MapCodec<HangingPotBlock> codec() {
-        return CODEC;
+        return codec;
     }
 
     @Override
@@ -111,11 +120,41 @@ public final class HangingPotBlock extends SupportedBlock {
         return state.setValue(LEVEL, level).setValue(WaterPurity.BLOCK_PURITY, stored).setValue(BOIL, 0);
     }
 
-    /** {@code state} with {@code servings} fewer, keeping how far the rest has boiled. */
+    /**
+     * {@code state} with {@code servings} more of {@code poured}, mixed the way a cauldron mixes: the worse
+     * grade wins. What has boiled so far stays boiled, and water that is already pure, in the pot or
+     * poured in, counts as boiled, so only the rest adds to the time left.
+     */
+    public static BlockState withPoured(BlockState state, int servings, WaterQuality poured) {
+        WaterQuality held = quality(state);
+        int level = state.getValue(LEVEL);
+        int boiled = isPure(held) ? boilSteps(level) : state.getValue(BOIL);
+        if (isPure(poured)) boiled += boilSteps(servings);
+
+        WaterQuality mixed = held == null ? poured : WaterQuality.worse(held, poured);
+        BlockState result = withWater(state, level + servings, mixed);
+        // Below what the mix needs whenever it still needs boiling: only pure into pure reaches it.
+        return needsBoiling(result) ? result.setValue(BOIL, boiled) : result;
+    }
+
+    /**
+     * {@code state} with {@code servings} fewer, keeping how far the rest has boiled. The water drawn
+     * takes its share of what was left to do, but never all of it, so the step after finishes the rest.
+     */
     public static BlockState withLess(BlockState state, int servings) {
         int level = state.getValue(LEVEL) - servings;
-        if (level > 0) return state.setValue(LEVEL, level);
-        return withWater(state, 0, null);
+        if (level <= 0) return withWater(state, 0, null);
+        return state.setValue(LEVEL, level)
+                .setValue(BOIL, Math.min(state.getValue(BOIL), boilSteps(level) - 1));
+    }
+
+    /** The steps {@code servings} take to boil from nothing. */
+    public static int boilSteps(int servings) {
+        return servings * STEPS_PER_SERVING;
+    }
+
+    private static boolean isPure(WaterQuality quality) {
+        return quality instanceof WaterQuality.Fresh fresh && fresh.purity() == WaterPurity.MAX;
     }
 
     /** How high, in pixels from the bottom of the block, the water in a pot holding {@code servings} stands. */
@@ -133,8 +172,13 @@ public final class HangingPotBlock extends SupportedBlock {
         return CampfireBlock.isLitCampfire(below);
     }
 
-    private static int stageTicks() {
-        return Math.max(1, ThirstConfig.get().hangingPotBoilSeconds * 20 / BOIL_STAGES);
+    /** Seconds each serving in this pot takes to boil, from the config. */
+    public int secondsPerServing() {
+        return secondsPerServing.applyAsInt(ThirstConfig.get());
+    }
+
+    private int stepTicks() {
+        return Math.max(1, secondsPerServing() * 20 / STEPS_PER_SERVING);
     }
 
     @Override
@@ -154,14 +198,14 @@ public final class HangingPotBlock extends SupportedBlock {
     @Override
     protected BlockState supportChanged(BlockState state, LevelReader level, BlockPos pos, BlockState below,
                                         IntConsumer scheduleTick) {
-        if (needsBoiling(state) && isHeat(below)) scheduleTick.accept(stageTicks());
+        if (needsBoiling(state) && isHeat(below)) scheduleTick.accept(stepTicks());
         return state.setValue(HANGING, below.is(BlockTags.CAMPFIRES));
     }
 
     @Override
     protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState old, boolean movedByPiston) {
         if (needsBoiling(state) && isHeat(level.getBlockState(pos.below()))) {
-            level.scheduleTick(pos, this, stageTicks());
+            level.scheduleTick(pos, this, stepTicks());
         }
     }
 
@@ -175,7 +219,7 @@ public final class HangingPotBlock extends SupportedBlock {
         if (!isHeat(level.getBlockState(pos.below()))) return;
 
         int stage = state.getValue(BOIL) + 1;
-        if (stage < BOIL_STAGES) {
+        if (stage < boilSteps(state.getValue(LEVEL))) {
             // onPlace schedules the step after this one.
             level.setBlock(pos, state.setValue(BOIL, stage), BLOCK_UPDATE_FLAGS);
             return;
@@ -194,9 +238,7 @@ public final class HangingPotBlock extends SupportedBlock {
             return;
         }
         WaterQuality rain = WaterQuality.fresh(ThirstConfig.get().rainwaterPurity);
-        WaterQuality held = quality(state);
-        WaterQuality mixed = held == null ? rain : WaterQuality.worse(held, rain);
-        level.setBlockAndUpdate(pos, withWater(state, servings + 1, mixed));
+        level.setBlockAndUpdate(pos, withPoured(state, 1, rain));
         level.gameEvent(null, GameEvent.BLOCK_CHANGE, pos);
     }
 

@@ -359,6 +359,7 @@ Each area of the tree carries its own `AGENTS.md` with rules and conventions loc
 | Minecraft version and mod loader differences | [.../platform/AGENTS.md](src/main/java/com/thirstwastaken2/platform/AGENTS.md) |
 | Every difference between the supported versions, visible and underneath | [docs/dev/VERSION-DIFFERENCES.md](docs/dev/VERSION-DIFFERENCES.md) |
 | What to check by hand before a release, per version | [docs/dev/MANUAL-TESTING.md](docs/dev/MANUAL-TESTING.md) |
+| How each way of purifying water compares, and why the hanging pots' numbers are what they are | [docs/dev/WATER-PURIFICATION-BALANCE.md](docs/dev/WATER-PURIFICATION-BALANCE.md) |
 | Publishing a release: the eight uploads to Modrinth | [docs/dev/RELEASING.md](docs/dev/RELEASING.md) |
 | Automated in-game tests | [src/gametest/java/AGENTS.md](src/gametest/java/AGENTS.md) |
 | Development-only tooling: the source set, its gate and the harness the two tools share | [src/dev/java/AGENTS.md](src/dev/java/AGENTS.md) |

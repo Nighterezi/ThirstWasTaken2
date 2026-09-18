@@ -61,10 +61,13 @@ public final class ThirstConfig {
     /** Grade a cauldron is given when a pointed dripstone drips into it, having filtered it. */
     public int dripstonePurity = 3;
     /**
-     * Seconds a hanging pot over a lit campfire takes to boil everything in it pure, however
-     * full it is. A campfire takes 30 seconds for one bottle and only raises it two grades.
+     * Seconds each serving in a copper hanging pot over a lit campfire takes to boil pure, so a full pot
+     * takes three times as long as a bottle. A furnace takes 10 seconds a bucket and raises it two
+     * grades; see docs/dev/WATER-PURIFICATION-BALANCE.md for how the numbers were chosen.
      */
-    public int hangingPotBoilSeconds = 30;
+    public int copperPotSecondsPerServing = 4;
+    /** The same for the iron hanging pot, which is slower: iron carries heat worse than copper. */
+    public int ironPotSecondsPerServing = 6;
     public boolean quenchWhenDebuffed = true;
     public int[] nauseaChance = {100, 50, 5, 0};
     public int[] poisonChance = {30, 10, 0, 0};
@@ -199,7 +202,8 @@ public final class ThirstConfig {
         defaultPurity = clamp(defaultPurity, 0, 3);
         rainwaterPurity = clamp(rainwaterPurity, 0, 3);
         dripstonePurity = clamp(dripstonePurity, 0, 3);
-        hangingPotBoilSeconds = clamp(hangingPotBoilSeconds, 1, 300);
+        copperPotSecondsPerServing = clamp(copperPotSecondsPerServing, 1, 100);
+        ironPotSecondsPerServing = clamp(ironPotSecondsPerServing, 1, 100);
         fireResistanceDehydrationPercent = clamp(fireResistanceDehydrationPercent, 0, 100);
         handDrinkingThirst = clamp(handDrinkingThirst, 0, 20);
         handDrinkingQuenched = clamp(handDrinkingQuenched, 0, 20);

@@ -29,7 +29,8 @@ import net.minecraft.world.phys.BlockHitResult;
  *
  * <p>The pot is the mod's own block, so unlike a cauldron nothing in vanilla handles these; everything
  * happens here, inline. A bucket is {@link HangingPotBlock#BUCKET} servings and everything else one.
- * Poured water mixes the way it does in a cauldron, keeping the worse grade, and starts the boil over.
+ * Poured water mixes the way it does in a cauldron, keeping the worse grade, and adds its own boiling
+ * time to what is left; see {@link HangingPotBlock#withPoured}.
  * Drawn water carries the pot's quality. Where water evaporates, as in the Nether, nothing can be
  * poured in at all. A sneaking player gets vanilla's usual behaviour instead,
  * except with a waterskin, whose sneak-use pours it out: over a pot it pours into the pot.
@@ -148,10 +149,7 @@ public final class HangingPotInteractions {
 
     private static void pour(Player player, Level level, BlockPos pos, BlockState state, int servings,
                              WaterQuality poured, SoundEvent sound) {
-        WaterQuality held = HangingPotBlock.quality(state);
-        WaterQuality mixed = held == null ? poured : WaterQuality.worse(held, poured);
-        int total = state.getValue(HangingPotBlock.LEVEL) + servings;
-        level.setBlock(pos, HangingPotBlock.withWater(state, total, mixed), BLOCK_UPDATE_FLAGS);
+        level.setBlock(pos, HangingPotBlock.withPoured(state, servings, poured), BLOCK_UPDATE_FLAGS);
         level.playSound(null, pos, sound, SoundSource.BLOCKS, 1.0F, 1.0F);
         level.gameEvent(player, GameEvent.FLUID_PLACE, pos);
     }

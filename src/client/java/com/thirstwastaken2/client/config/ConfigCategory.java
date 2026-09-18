@@ -87,8 +87,10 @@ enum ConfigCategory {
                             value -> config.rainwaterPurity = value),
                     slider("dripstone_purity", config.dripstonePurity, 0, 3,
                             value -> config.dripstonePurity = value),
-                    slider("hanging_pot_boil_seconds", config.hangingPotBoilSeconds, 1, 300,
-                            value -> config.hangingPotBoilSeconds = value),
+                    slider("copper_pot_seconds_per_serving", config.copperPotSecondsPerServing, 1, 100,
+                            value -> config.copperPotSecondsPerServing = value),
+                    slider("iron_pot_seconds_per_serving", config.ironPotSecondsPerServing, 1, 100,
+                            value -> config.ironPotSecondsPerServing = value),
                     toggle("quench_when_debuffed", config.quenchWhenDebuffed,
                             value -> config.quenchWhenDebuffed = value));
 
@@ -108,7 +110,8 @@ enum ConfigCategory {
             config.defaultPurity = defaults.defaultPurity;
             config.rainwaterPurity = defaults.rainwaterPurity;
             config.dripstonePurity = defaults.dripstonePurity;
-            config.hangingPotBoilSeconds = defaults.hangingPotBoilSeconds;
+            config.copperPotSecondsPerServing = defaults.copperPotSecondsPerServing;
+            config.ironPotSecondsPerServing = defaults.ironPotSecondsPerServing;
             config.quenchWhenDebuffed = defaults.quenchWhenDebuffed;
             config.nauseaChance = defaults.nauseaChance.clone();
             config.poisonChance = defaults.poisonChance.clone();

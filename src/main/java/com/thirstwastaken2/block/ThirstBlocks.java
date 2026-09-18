@@ -12,16 +12,16 @@ public final class ThirstBlocks {
      * it loose rather than pushing a pot of water around.
      */
     public static final HangingPotBlock COPPER_HANGING_POT = Vanilla.registerBlock("copper_hanging_pot",
-            HangingPotBlock::new,
+            properties -> new HangingPotBlock(properties, config -> config.copperPotSecondsPerServing),
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_ORANGE)
                     .strength(1.0F)
                     .sound(SoundType.COPPER)
                     .noOcclusion()
                     .pushReaction(PushReaction.DESTROY));
-    /** The same pot in dark cast iron. It behaves exactly like the copper one. */
+    /** The same pot in dark cast iron. Iron carries heat worse than copper, so it boils slower. */
     public static final HangingPotBlock IRON_HANGING_POT = Vanilla.registerBlock("iron_hanging_pot",
-            HangingPotBlock::new,
+            properties -> new HangingPotBlock(properties, config -> config.ironPotSecondsPerServing),
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.METAL)
                     .strength(1.0F)
