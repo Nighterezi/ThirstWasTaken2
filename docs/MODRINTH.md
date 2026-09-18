@@ -20,6 +20,10 @@ Water is graded based on where you collect it:
 | **Pure** | Glaciers, rain cauldrons, refined drinks | Completely safe, maximum hydration |
 | **Salty** | Oceans and beaches | Cannot quench thirst; worsens dehydration |
 
+<div align="center">
+  <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/water-tooltips.gif" alt="A water bottle tooltip showing each grade" width="272">
+</div>
+
 * **Boiling:** Smelt water bottles, bowls, or buckets in a furnace or over a campfire to raise their purity grade.
 * **Hanging Pots:** Hang a Copper or Iron Hanging Pot over a lit campfire to boil a bucket of water into Pure water.
 * **Rain and Dripstone:** Cauldrons placed under open rain or pointed dripstone automatically fill with clean water.

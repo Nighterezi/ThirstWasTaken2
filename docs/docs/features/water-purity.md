@@ -6,6 +6,8 @@ the two it holds, and says so in its tooltip.
 
 ![Water bottle tooltips showing the grades of fresh water](/screenshots/water-purity.png)
 
+![A water bottle tooltip stepping through Dirty, Murky, Clean, Pure and Salty](/screenshots/water-tooltips.gif)
+
 ## The four grades
 
 From worst to best: **Dirty**, **Murky**, **Clean**, **Pure**. The grade is set once, when the water
