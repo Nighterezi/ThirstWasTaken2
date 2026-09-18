@@ -6,7 +6,12 @@ Your body requires water just like food. The system mirrors vanilla hunger:
 * **Dehydration:** Low thirst prevents sprinting and natural health regeneration. Empty thirst causes steady damage.
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/thirst-bar.png" alt="Thirst Bar" width="600">
+<table>
+  <tr>
+    <td align="center"><img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/thirst-food-bars.png" alt="The thirst bar above the hunger bar" width="372"></td>
+    <td align="center"><img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/water-tooltips.gif" alt="A water bottle tooltip showing each grade" width="272"></td>
+  </tr>
+</table>
 </div>
 
 ## Water Quality and Purification
@@ -19,10 +24,6 @@ Water is graded based on where you collect it:
 | **Clean** | Mountain rivers, deep aquifers, boiled water | Safe to drink, high hydration |
 | **Pure** | Glaciers, rain cauldrons, refined drinks | Completely safe, maximum hydration |
 | **Salty** | Oceans and beaches | Cannot quench thirst; worsens dehydration |
-
-<div align="center">
-  <img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/water-tooltips.gif" alt="A water bottle tooltip showing each grade" width="272">
-</div>
 
 * **Boiling:** Smelt water bottles, bowls, or buckets in a furnace or over a campfire to raise their purity grade.
 * **Hanging Pots:** Hang a Copper or Iron Hanging Pot over a lit campfire to boil a bucket of water into Pure water.

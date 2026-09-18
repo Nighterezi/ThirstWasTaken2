@@ -5,7 +5,9 @@ Your body requires water just like food. The system mirrors vanilla hunger:
 * **Environment:** Hot biomes like deserts and the Nether deplete thirst faster. Fire Resistance and Fire Protection reduce heat drain.
 * **Dehydration:** Low thirst prevents sprinting and natural health regeneration. Empty thirst causes steady damage.
 
-![Thirst Bar](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/thirst-bar.png)
+| Thirst and Hunger | Water Tooltip |
+| :---: | :---: |
+| ![The thirst bar above the hunger bar](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/thirst-food-bars.png) | ![A water bottle tooltip showing each grade](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/water-tooltips.gif) |
 
 ## Water Quality and Purification
 Water is graded based on where you collect it:
@@ -17,8 +19,6 @@ Water is graded based on where you collect it:
 | **Clean** | Mountain rivers, deep aquifers, boiled water | Safe to drink, high hydration |
 | **Pure** | Glaciers, rain cauldrons, refined drinks | Completely safe, maximum hydration |
 | **Salty** | Oceans and beaches | Cannot quench thirst; worsens dehydration |
-
-![A water bottle tooltip showing each grade](https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/water-tooltips.gif)
 
 * **Boiling:** Smelt water bottles, bowls, or buckets in a furnace or over a campfire to raise their purity grade.
 * **Hanging Pots:** Hang a Copper or Iron Hanging Pot over a lit campfire to boil a bucket of water into Pure water.

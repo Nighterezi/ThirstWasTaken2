@@ -38,8 +38,8 @@ deps.neoforge = "21.1.250"
 deps.appleskin = "uAKA6Laj"
 deps.cloth_config = "15.0.140+neoforge"
 deps.jade = "15.10.6+neoforge"
-# 6.0.10+mc1.21.1, the NeoForge upload. Only this node builds the Sand Filter on NeoForge; see
-# src/main/create/AGENTS.md.
+# Only this node builds the Sand Filter on NeoForge; see src/main/create/AGENTS.md.
+# 6.0.10+mc1.21.1, the NeoForge upload.
 deps.create = "UjX6dr61"
 
 ["1.21.11"]
