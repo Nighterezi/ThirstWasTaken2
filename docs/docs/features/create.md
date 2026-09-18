@@ -10,8 +10,6 @@ through pipes, pumps, spouts and drains. Without Create, none of this is loaded.
 Every other version ignores Create.
 :::
 
-![A Create Fly pipe network pumping water through a Sand Filter between two fluid tanks](/screenshots/create-sand-filter.png)
-
 ## Sand Filter
 
 The Sand Filter raises water one grade as it passes through. Pump water into the top and pump it out

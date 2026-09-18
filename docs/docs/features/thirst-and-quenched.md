@@ -1,6 +1,6 @@
 # Thirst and Quenched
 
-![The thirst bar above the food bar, part drained](/screenshots/thirst-bar.png)
+![The thirst bar above the food bar, part drained](/screenshots/thirst-food-bars.png)
 
 ## The two numbers
 
@@ -19,7 +19,7 @@ then appears as a cyan outline over the droplets, like AppleSkin's gold outline 
 colour can be changed or the outline turned off; see
 [Configuration](/docs/configuration#appleskinquenchedoverlay).
 
-![The thirst and food bars without AppleSkin, then with each quenched outline colour](/screenshots/hud-appleskin.png)
+![The thirst bar with AppleSkin, cycling through the Diamond, Ice, Gold and AppleSkin quenched outlines](/screenshots/hud-appleskin.gif)
 
 ## What drains it
 

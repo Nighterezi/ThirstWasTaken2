@@ -14,36 +14,21 @@ A thirst mod for Fabric and NeoForge. It adds a survival thirst bar, drinking, a
 
 ## Features
 
-- Thirst, quenched and exhaustion
-- Faster thirst loss from activity, hot biomes and the Nether
-- Damage, disabled sprinting and disabled natural healing when dehydrated
-- Drinking from water sources, potions, foods, water bowls and a reusable waterskin
-- A reusable three-drink waterskin that preserves and mixes water purity
-- Four water-purity levels with negative effects from unsafe water
-- Water purification using furnaces and campfires
-- Purity information in item tooltips
-- Optional AppleSkin support: a quenched outline in four colours, thirst and quenched droplet rows in
-  item tooltips, and the exhaustion underlay on the thirst bar
-- Optional Jade support: the grade of the water under the crosshair
-- Optional Farmer's Delight support: thirst values for its drinks and meals, water purification in the
-  Cooking Pot, and no thirst drain under Nourishment
-- Optional Create support, through Create Fly on Fabric for Minecraft 26.1.2 and 26.2 and through Create on
-  NeoForge for Minecraft 1.21.1: the Sand Filter, and water that keeps its grade through pipes, pumps and spouts
-- Configurable HUD position and gameplay settings
-- Mod Menu configuration screen
-- `/thirst` commands for server administrators
+- A thirst bar with a quenched reserve, drained faster by activity, heat and the Nether.
+- Four water grades plus salty sea water. Unsafe water can make players sick.
+- Clean water by boiling it in a furnace, on a campfire, or in a Copper or Iron Hanging Pot.
+- Terracotta bowls and a three-drink waterskin for early game drinking.
+- Optional support for AppleSkin, Jade, Farmer's Delight, Create Fly and Create.
 
-| Thirst bar | With AppleSkin |
+| Thirst bar | Water grades |
 |---|---|
-| ![Thirst bar above the hunger bar](docs/public/screenshots/thirst-bar.png) | ![The thirst and food bars without AppleSkin, then with each quenched outline colour](docs/public/screenshots/hud-appleskin.png) |
+| ![The thirst bar above the hunger bar](docs/public/screenshots/thirst-food-bars.png) | ![A water bottle tooltip stepping through every grade](docs/public/screenshots/water-tooltips.gif) |
 
-| Water purity | Items |
+| Iron Hanging Pot | Config screen |
 |---|---|
-| ![Four water-purity levels shown in item tooltips](docs/public/screenshots/water-purity.png) | ![Every item the mod adds and each look it has](docs/public/screenshots/items.png) |
+| ![An Iron Hanging Pot boiling water over a campfire](docs/public/screenshots/iron-hanging-pot.png) | ![The config screen with its live preview](docs/public/screenshots/config-screen.png) |
 
-| Config screen | Simplified Chinese |
-|---|---|
-| ![The config screen with its live preview](docs/public/screenshots/config-screen.png) | ![Item tooltips in Simplified Chinese](docs/public/screenshots/chinese-tooltips.png) |
+Every feature is explained on the [documentation site](https://nighterezi.github.io/ThirstWasTaken2/).
 
 ## Requirements
 
@@ -63,15 +48,17 @@ There is one download per Minecraft version, named after it, for example
 | Create Fly | Optional, 26.2-rc-2-6.0.9-1 | Optional, 26.1.2-6.0.9-4 | Not supported | Not supported |
 | Create (NeoForge only) | Not supported | Not supported | Not supported | Optional, 6.0.10 |
 
-Download ThirstWasTaken2 from [Modrinth](https://modrinth.com/mod/thirst-was-taken-2) and install it along with Fabric API on both the client and server. Put the downloaded JAR in the
-`mods` folder.
+Download ThirstWasTaken2 from [Modrinth](https://modrinth.com/mod/thirst-was-taken-2) and put it in the
+`mods` folder on both the client and the server. Fabric also needs Fabric API. NeoForge files end in
+`-neoforge`.
 
 See the [installation guide](https://nighterezi.github.io/ThirstWasTaken2/docs/installation) for
 more details.
 
 ## Configuration
 
-Settings can be changed through Mod Menu or in `config/thirstwastaken2.json`.
+Settings can be changed in game, through Mod Menu on Fabric or the Mods list on NeoForge, or in
+`config/thirstwastaken2.json`.
 
 Gameplay settings are controlled by the server. HUD settings are controlled by each client.
 
@@ -87,14 +74,9 @@ These commands require game master permission.
 
 ## Known limitations
 
-- The Sand Filter is only available with Create Fly on Minecraft 26.1.2 and 26.2, and with Create on NeoForge
-  for Minecraft 1.21.1, and Builder's Tea does not restore
-  thirst yet.
-- On Minecraft 1.21 and 1.21.1, sea water in bottles and buckets looks like ordinary water (its tooltip
-  still reads Salty), and the droplets in item tooltips have a shadow.
-- Cold Sweat, Farmer's Respite, Brewin' and Chewin', Tough As Nails, Supplementaries and Botania do
-  not yet have compatible Fabric releases on Minecraft 26.x. Their items are already configured and
-  start working as soon as those mods are available.
+- On Minecraft 1.21 and 1.21.1, sea water in bottles and buckets looks like ordinary water. Its
+  tooltip still reads Salty.
+- Builder's Tea does not restore thirst yet.
 
 ## Languages
 

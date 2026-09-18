@@ -4,8 +4,6 @@ Water comes in two kinds. **Fresh water** has a grade, from dirty to pure. **Sal
 grade at all: it cannot be cleaned, and it never quenches thirst. Every container remembers which of
 the two it holds, and says so in its tooltip.
 
-![Water bottle tooltips showing the grades of fresh water](/screenshots/water-purity.png)
-
 ![A water bottle tooltip stepping through Dirty, Murky, Clean, Pure and Salty](/screenshots/water-tooltips.gif)
 
 ## The four grades

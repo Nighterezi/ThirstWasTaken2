@@ -7,8 +7,6 @@ droplets rather than numbers, the way AppleSkin shows what food restores. Each d
 uses outline droplets for quenched. A water bottle worth 6 thirst and 8 quenched therefore shows
 three filled droplets above four outline droplets.
 
-![A murky terracotta water bowl tooltip showing two thirst droplets and three quenched droplets](/screenshots/item-tooltip.png)
-
 These are the values the mod ships with for vanilla and its own items:
 
 | Item | Thirst | Quenched |
@@ -29,8 +27,6 @@ bowl or waterskin cannot be used while the thirst bar is already full. Once even
 missing, drinking is allowed and any overflow can still become quenched. Potions and foods with
 other uses are not blocked by this rule.
 
-![Tooltips for a waterskin, a bottle of sea water, a clay bowl and an apple, which also shows AppleSkin's hunger rows](/screenshots/tooltips.png)
-
 Drinks from other mods restore thirst as long as their mod marks them as drinks. Farmer's Delight
 has its own values, listed on [its page](/docs/features/farmers-delight). Any item can be given its
 own value in the [config](/docs/configuration#drinks-and-foods).
@@ -38,9 +34,7 @@ own value in the [config](/docs/configuration#drinks-and-foods).
 ## Bowls
 
 Everything the mod adds lives in its own creative tab. Water containers change their look with the
-water inside them:
-
-![Every item the mod adds: the clay and terracotta bowls, the water bowl at each grade and salty, the waterskin at each fill, and sea water in a bottle and a bucket](/screenshots/items.png)
+water inside them.
 
 The mod adds a bowl that survives being filled with water.
 
