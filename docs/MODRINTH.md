@@ -157,6 +157,15 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
   </tr>
   <tr>
     <td width="55%">
+      <b><a href="https://modrinth.com/mod/sophisticated-backpacks">Sophisticated Backpacks</a></b><br>
+      Adds the Drinking Upgrade, which drinks from your backpack when you get thirsty, the cleanest water first. Water keeps its purity grade in the Tank and Pump Upgrades. Also works with Sophisticated Storage.
+    </td>
+    <td width="45%">
+      <img alt="A backpack of water with the Advanced Drinking Upgrade's settings open" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/sophisticated-drinking-upgrade.png" width="100%">
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
       <b>Settings screen</b><br>
       Open it from the Config button in NeoForge's Mods list, with a real-time HUD preview to customize drain rates, sickness chances, and HUD positioning.
     </td>

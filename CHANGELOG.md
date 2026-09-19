@@ -8,10 +8,19 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 
 - Farmer's Delight support on NeoForge for Minecraft 1.21.1: its drinks and meals restore thirst, the
   Cooking Pot boils water Pure, and Nourishment stops the thirst bar from draining.
+- Sophisticated Backpacks support on NeoForge: the Drinking Upgrade and Advanced Drinking Upgrade
+  drink from the backpack when the thirst bar is low, the cleanest water first. They also fit
+  Sophisticated Storage.
+- In a Sophisticated backpack, water keeps its grade in the Tank and Pump Upgrades, and the Feeding
+  and Alchemy Upgrades restore thirst.
+- Smokers, and the Smoking Upgrade, purify water in half the time of a furnace.
+- On NeoForge, other mods' tanks, pumps and Spouts can fill and empty waterskins and terracotta water
+  bowls. The water keeps its grade.
 
 ### Notes
 
 - Farmer's Delight on the other NeoForge versions is not supported yet.
+- Sophisticated Backpacks is supported on every NeoForge version and on no Fabric version.
 
 ## [1.0.7] - 2026-09-18
 

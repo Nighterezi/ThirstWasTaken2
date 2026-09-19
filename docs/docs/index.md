@@ -13,7 +13,7 @@ Water from the world has a grade. Bad water can make players sick, and boiling i
 - Clay bowls, a three-drink waterskin, and Copper and Iron Hanging Pots.
 - Water bottles in structure chests and Piglin barters.
 - An advancement tab that teaches the water system.
-- Optional support for AppleSkin, Jade, Farmer's Delight and Create.
+- Optional support for AppleSkin, Jade, Farmer's Delight, Create and Sophisticated Backpacks.
 - Every value is a setting.
 
 ## Next steps

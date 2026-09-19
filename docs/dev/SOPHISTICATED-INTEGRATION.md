@@ -23,11 +23,11 @@ Core `1.21.11-1.5.0.2340`, `26.1.2-1.5.0.2334` and `26.2-1.5.0.2337`.
 | 6 | Waterskin and bowl as fluid containers | feature | **Done**, every NeoForge version |
 | 5 | Drinking upgrade | feature | **Done** on `1.21.1-neoforge` |
 | 8 | Newer NeoForge nodes (1.21.11, 26.1, 26.2) | port | **Done**: items 1 to 5 on every NeoForge node |
-| 9 | Changelog and player docs | docs | To do |
+| 9 | Changelog and player docs | docs | **Done** |
 
 The order is the one agreed on: the bugs first, the Tank before the others because it let any water
-turn Clean, then the cheapest feature, then the rest. All four bugs are fixed, and the Drinking
-upgrade is in, on every NeoForge node.
+turn Clean, then the cheapest feature, then the rest. All four bugs are fixed, the Drinking upgrade is
+in, on every NeoForge node, and the player docs describe it.
 
 ## Done
 
@@ -195,14 +195,25 @@ Two are Sophisticated's own quirks: from 1.21.11 a data-pack template given twic
 first backpack from it ended up holding, and on 26.2 templates only load their items after a
 `/reload`.
 
-## To do
-
 ### 9. Changelog and player docs
 
-When the parts above are ready for a release: a CHANGELOG entry under `[Unreleased]`, a line in the
-installation page's list of supported mods, and a Modrinth and CurseForge mention. Use the
-`write-docs` skill, which keeps the plain, non-technical style those pages need. Say which Minecraft
-versions have it: every NeoForge version, and no Fabric one.
+- `CHANGELOG.md`, under `[Unreleased]`: the Drinking upgrade, the four upgrades that keep water's grade
+  or restore thirst, smokers purifying water, and waterskins and bowls as fluid containers, with a note
+  that it is every NeoForge version and no Fabric one.
+- A new page, `docs/docs/features/sophisticated-backpacks.md`, in the Features sidebar, with the
+  Drinking upgrade's tab (`sophisticated-drinking-upgrade.png`) and its recipe
+  (`drinking-upgrade-recipe.png`). Only the basic recipe is shot; the page names the Advanced one's
+  ingredients.
+- A row in the installation page's NeoForge table, listing Core's versions, since that is what the mod
+  is built against; the overview's list of supported mods; and a row in the NeoForge table of
+  `docs/MODRINTH.md` and `docs/CURSEFORGE.md`.
+
+The item tooltips were shortened for it, in all nine languages: "Auto-drinks when thirsty", and "Choose
+when and what to drink" on the Advanced tier. The recipe was shot on 26.2 with the grid filled through
+the agent queue and the pointer moved by computer use. A tooltip always covers the hovered sprite, so
+the image is two captures, one unhovered and one hovered, with the tooltip moved beside the slot.
+
+Nothing is left to do.
 
 ## Testing, for every item
 

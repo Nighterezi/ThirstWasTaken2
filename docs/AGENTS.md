@@ -55,4 +55,5 @@ ones most likely to go stale:
 | Thirst values, bowls, loot | `docs/features/drinking.md` |
 | Anything in `WaterPurity` or a purify recipe | `docs/features/water-purity.md` |
 | Farmer's Delight values, Cooking Pot recipes or Nourishment | `docs/features/farmers-delight.md` |
+| The Drinking Upgrade or another Sophisticated upgrade | `docs/features/sophisticated-backpacks.md` |
 | Supported Minecraft, Loader or Fabric API version | `docs/installation.md` |

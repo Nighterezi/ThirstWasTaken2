@@ -25,7 +25,8 @@ const manualSidebar = [
       { text: 'Drinking', link: '/docs/features/drinking' },
       { text: 'Water Purity', link: '/docs/features/water-purity' },
       { text: "Farmer's Delight", link: '/docs/features/farmers-delight' },
-      { text: 'Create', link: '/docs/features/create' }
+      { text: 'Create', link: '/docs/features/create' },
+      { text: 'Sophisticated Backpacks', link: '/docs/features/sophisticated-backpacks' }
     ]
   },
   {
