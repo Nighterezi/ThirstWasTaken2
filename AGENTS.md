@@ -121,14 +121,15 @@ Switch it with `./gradlew "Set active project to 1.21.11"` — that rewrites the
 `src/` in place, which is what makes the IDE resolve against that version. Run
 `./gradlew "Reset active project"` before committing.
 
-Publish a release — every jar to Modrinth and CurseForge:
+Publish a release — every jar to Modrinth, then the same jars to CurseForge:
 
 ```bash
 python tools/release/publish.py --dry-run
+python tools/release/publish_curseforge.py --dry-run --no-build
 ```
 
-`--dry-run` prints each upload to both sites and sends nothing; without it the script builds every node
-and uploads. What every upload says is read from `stonecutter.properties.toml` and `CHANGELOG.md`, so a
+`--dry-run` prints each upload and sends nothing; without it `publish.py` builds every node and uploads,
+and `publish_curseforge.py --no-build` uploads the jars it just built. What every upload says is read from `stonecutter.properties.toml` and `CHANGELOG.md`, so a
 node added to the build is released without editing the script. The checklist before a release, the
 tokens it reads from `.env` and every flag are in the script's docstring.
 
@@ -360,7 +361,7 @@ Each area of the tree carries its own `AGENTS.md` with rules and conventions loc
 | Every difference between the supported versions, visible and underneath | [docs/dev/VERSION-DIFFERENCES.md](docs/dev/VERSION-DIFFERENCES.md) |
 | What to check by hand before a release, per version | [docs/dev/MANUAL-TESTING.md](docs/dev/MANUAL-TESTING.md) |
 | How each way of purifying water compares, and why the hanging pots' numbers are what they are | [docs/dev/WATER-PURIFICATION-BALANCE.md](docs/dev/WATER-PURIFICATION-BALANCE.md) |
-| Publishing a release to Modrinth and CurseForge: the checklist, the tokens, every flag | [tools/release/publish.py](tools/release/publish.py) (its docstring) |
+| Publishing a release to Modrinth and CurseForge: the checklist, the tokens, every flag | [tools/release/publish.py](tools/release/publish.py) and [publish_curseforge.py](tools/release/publish_curseforge.py) (their docstrings) |
 | Automated in-game tests | [src/gametest/java/AGENTS.md](src/gametest/java/AGENTS.md) |
 | Development-only tooling: the source set, its gate and the harness the two tools share | [src/dev/java/AGENTS.md](src/dev/java/AGENTS.md) |
 | Performance and memory benchmark | [.../dev/benchmark/AGENTS.md](src/dev/java/com/thirstwastaken2/dev/benchmark/AGENTS.md) |
@@ -501,7 +502,8 @@ tools/benchmark/                        running the benchmark often enough to be
   aggregate.py                         a set to a median and a spread; --compare calls a change noise
 
 tools/release/                          publishing a release
-  publish.py                           every jar to Modrinth and CurseForge, deps read per node
+  publish.py                           every jar to Modrinth; the nodes, deps and run both scripts share
+  publish_curseforge.py                the same jars to CurseForge
 
 src/datagen/java/com/thirstwastaken2/datagen/  datagen-only mod, never packaged
   ThirstDatagen.java                   entrypoint: every provider has to be listed here

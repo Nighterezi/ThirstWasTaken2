@@ -1,10 +1,9 @@
-"""Publishes one release of ThirstWasTaken2: every jar to Modrinth and to CurseForge.
+"""Publishes one release of ThirstWasTaken2 to Modrinth, and holds what `publish_curseforge.py` shares.
 
 A release is eight files -- four Minecraft versions on two loaders -- each with its own jar, its own list
-of Minecraft releases and its own list of optional mods, uploaded to two sites. Done by hand in two web
-forms that is sixteen chances to attach the wrong jar or forget a game version, and nothing afterwards
-would say so. Everything a release needs is already written down in the repository, so it is read rather
-than retyped:
+of Minecraft releases and its own list of optional mods. Done by hand in a web form that is eight chances
+to attach the wrong jar or forget a game version, and nothing afterwards would say so. Everything a
+release needs is already written down in the repository, so it is read rather than retyped:
 
 - the version number and every node from `stonecutter.properties.toml`, the file the build and CI read
   too, so a node added there is released without touching this script;
@@ -14,28 +13,25 @@ than retyped:
 - the release notes, from the matching section of `CHANGELOG.md`.
 
     python tools/release/publish.py --dry-run               # print every upload, send nothing
-    python tools/release/publish.py                         # build, then upload to both sites
+    python tools/release/publish.py                         # build, then upload to Modrinth
     python tools/release/publish.py --no-build              # publish the jars already in build/libs
-    python tools/release/publish.py --site curseforge       # one site only
     python tools/release/publish.py --only 26.2.x-neoforge  # one node only
+
+`publish_curseforge.py` takes the same flags and uploads the same jars to CurseForge; run it with
+`--no-build` after this one, since this one has just built them.
 
 Before running it: bump `mod.version` in `stonecutter.properties.toml` (the one place the version is
 written), write the `## [<version>]` section of `CHANGELOG.md` in the style of the `write-docs` skill,
 run `python .github/scripts/update_mc_deps.py --check`, work through `docs/dev/MANUAL-TESTING.md`, and
-commit. The two sites are the only places a release is published: there is no tag and no GitHub release.
+commit. Modrinth and CurseForge are the only places a release is published: there is no tag and no
+GitHub release.
 
-Tokens come from the environment or from `.env`, which is git-ignored:
+The token comes from `MODRINTH_TOKEN` in the environment or in `.env`, which is git-ignored; it needs
+Modrinth's create-version scope.
 
-- `MODRINTH_TOKEN`, with Modrinth's create-version scope;
-- `CURSEFORGE_TOKEN`, an upload token from https://legacy.curseforge.com/account/api-tokens, and
-  `CURSEFORGE_PROJECT_ID`, the project's numeric id. The upload API only adds files to a project that
-  already exists; the project itself was created by hand at https://authors.curseforge.com.
-
-Re-running is safe, and is how a half-finished release is finished: an upload already on a site is
-skipped. Modrinth is asked by version number. CurseForge's upload API cannot list a project's files, so
-the public site's file list is read instead, by file name; a file still waiting for CurseForge's review
-can be missing from it, so right after an upload finish with `--only` rather than a plain re-run.
-Nothing already published is overwritten: a bad upload is deleted on the site by hand, then re-run here.
+Re-running is safe, and is how a half-finished release is finished: a version already on Modrinth is
+skipped by its version number. Nothing already published is overwritten: a bad upload is deleted on
+Modrinth by hand, then re-run here.
 
 Standard library only, like the rest of the Python in this repository.
 """
@@ -64,21 +60,14 @@ ENV_FILE = ROOT / ".env"
 
 MODRINTH = "https://api.modrinth.com/v2"
 MODRINTH_PROJECT = "thirst-was-taken-2"
-CURSEFORGE = "https://minecraft.curseforge.com/api"
-# The site's own API, which the file list on the project page is drawn from. Undocumented, but public
-# and the only way to see which files a project already has.
-CURSEFORGE_SITE = "https://www.curseforge.com/api/v1"
-# CurseForge's upload API does not return the project, so the name on the page is written here.
-CURSEFORGE_TITLE = "Thirst Was Taken 2"
 # Modrinth asks every client for a User-Agent that identifies the project.
 USER_AGENT = "Nighterezi/ThirstWasTaken2 release publisher (github.com/Nighterezi/ThirstWasTaken2)"
-
-SITES = ("modrinth", "curseforge")
 
 
 @dataclass(frozen=True)
 class Dependency:
-    """One mod a player can install, as each site names it."""
+    """One mod a player can install, as each site names it. Kept here rather than per script so the
+    two sites cannot drift apart on which mods a file lists."""
 
     modrinth_slug: str
     modrinth_id: str
@@ -106,8 +95,6 @@ DEPENDENCIES = {
 NEOFORGE_DEPENDENCIES = {
     "farmersdelight": Dependency("farmers-delight", "R2OftAxM", "farmers-delight"),
 }
-
-CURSEFORGE_LOADERS = {"fabric": "Fabric", "neoforge": "NeoForge"}
 
 
 @dataclass
@@ -316,91 +303,6 @@ class Modrinth:
         return f"https://modrinth.com/mod/{MODRINTH_PROJECT}/versions"
 
 
-class CurseForge:
-    name = "CurseForge"
-
-    def __init__(self):
-        self.token = env_value("CURSEFORGE_TOKEN")
-        if not self.token:
-            fail(f"no CURSEFORGE_TOKEN in the environment or in {ENV_FILE.name}")
-        self.project_id = env_value("CURSEFORGE_PROJECT_ID")
-        if not self.project_id:
-            fail(f"no CURSEFORGE_PROJECT_ID in the environment or in {ENV_FILE.name}")
-        self.version_ids = self.game_version_ids()
-        self.published = self.published_files()
-
-    def request(self, path: str, body: bytes | None = None, content_type: str | None = None):
-        headers = {"X-Api-Token": self.token}
-        if content_type:
-            headers["Content-Type"] = content_type
-        return http(f"{CURSEFORGE}{path}", headers, "POST" if body else "GET", body)
-
-    def game_version_ids(self) -> dict[str, int]:
-        """Every name an upload tags a file with, to CurseForge's id for it.
-
-        Minecraft releases are read only from the `minecraft-*` version types: the same name also appears
-        under Bukkit's and the addons' types, and those ids would tag the file as something else.
-        """
-        types = {t["id"]: t["slug"] for t in self.request("/game/version-types")}
-        ids: dict[str, int] = {}
-        for version in self.request("/game/versions"):
-            slug = types.get(version["gameVersionTypeID"], "")
-            if slug.startswith("minecraft-") or slug in ("modloader", "java", "environment"):
-                ids.setdefault(version["name"], version["id"])
-        return ids
-
-    def published_files(self) -> set[str]:
-        """The file names already on the project, from the public site's file list, a page at a time."""
-        names: set[str] = set()
-        index, size = 0, 50
-        while True:
-            url = f"{CURSEFORGE_SITE}/mods/{self.project_id}/files?index={index}&pageSize={size}"
-            try:
-                page = http(url, {})["data"]
-            except (urllib.error.URLError, KeyError, ValueError) as error:
-                fail(f"could not read the files already on CurseForge ({error}); "
-                     "pass --only to choose the nodes to upload by hand")
-            names.update(file["fileName"] for file in page)
-            if len(page) < size:
-                return names
-            index += size
-
-    def is_published(self, node: Node, number: str) -> bool:
-        return node.jar.name in self.published
-
-    def tags(self, node: Node) -> list[str]:
-        # 26.1 and later run on Java 25, 1.21.x on Java 21, as the build's toolchains do.
-        java = "Java 21" if node.minecraft.startswith("1.") else "Java 25"
-        names = [*node.game_versions, CURSEFORGE_LOADERS[node.loader], java, "Client", "Server"]
-        unknown = [name for name in names if name not in self.version_ids]
-        if unknown:
-            fail(f"CurseForge has no game version called {', '.join(unknown)}")
-        return names
-
-    def describe(self, node: Node) -> list[str]:
-        return [f"tags      {', '.join(self.tags(node))}"]
-
-    def upload(self, node: Node, number: str, changelog: str) -> str:
-        metadata = {
-            "changelog": changelog,
-            "changelogType": "markdown",
-            "displayName": f"{CURSEFORGE_TITLE} {number}",
-            "gameVersions": [self.version_ids[name] for name in self.tags(node)],
-            "releaseType": "release",
-        }
-        if node.dependencies:
-            metadata["relations"] = {"projects": [
-                {"slug": dep.curseforge_slug,
-                 "type": "requiredDependency" if dep.required else "optionalDependency"}
-                for dep in node.dependencies]}
-        body, content_type = multipart("metadata", metadata, node.jar)
-        created = self.request(f"/projects/{self.project_id}/upload-file", body, content_type)
-        return f"file id {created['id']}"
-
-    def done_url(self) -> str:
-        return f"https://authors.curseforge.com/#/projects/{self.project_id}/files"
-
-
 def git(*args: str) -> str:
     result = run(["git", *args], capture_output=True)
     if result.returncode != 0:
@@ -427,12 +329,12 @@ def gradle_build() -> None:
         fail("the build failed; nothing was published")
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Publish a ThirstWasTaken2 release.")
+def release(publisher_class, description: str) -> None:
+    """The whole run both scripts share: read the nodes, check the tree, build, then upload each jar
+    the site does not have yet. `publisher_class` is `Modrinth` or `publish_curseforge.CurseForge`."""
+    parser = argparse.ArgumentParser(description=description)
     parser.add_argument("--dry-run", action="store_true", help="print every upload and send nothing")
     parser.add_argument("--no-build", action="store_true", help="publish the jars already in build/libs")
-    parser.add_argument("--site", action="append", choices=SITES,
-                        help="publish to this site only; repeat for both (the default)")
     parser.add_argument("--only", action="append", metavar="NODE", help="publish this node only")
     parser.add_argument("--version", help="fail unless stonecutter.properties.toml says this version")
     parser.add_argument("--allow-dirty", action="store_true", help="release with uncommitted changes")
@@ -449,9 +351,8 @@ def main() -> None:
         if unknown:
             fail(f"no such node: {', '.join(sorted(unknown))}")
         nodes = [node for node in nodes if node.name in args.only]
-    sites = [site for site in SITES if site in (args.site or SITES)]
 
-    print(f"ThirstWasTaken2 {mod_version}, {len(nodes)} files to {' and '.join(sites)}\n")
+    print(f"ThirstWasTaken2 {mod_version}, {len(nodes)} files to {publisher_class.name}\n")
     check_worktree(args.allow_dirty)
 
     if not args.no_build and not args.dry_run:
@@ -460,39 +361,34 @@ def main() -> None:
     if missing:
         fail("not in build/libs: " + ", ".join(missing) + "\n       build first, or drop --no-build")
 
-    # Both sites are asked for what they already have before anything is sent, so a missing token or an
+    # The site is asked for what it already has before anything is sent, so a missing token or an
     # unknown game version stops the release before the first upload rather than halfway through it.
-    publishers = [{"modrinth": Modrinth, "curseforge": CurseForge}[site]() for site in sites]
-
-    for publisher in publishers:
-        print(f"== {publisher.name} ==\n")
-        for node in nodes:
-            number = version_number(node, mod_version)
-            print(f"  {number}  ({node.name})")
-            print(f"    file      {node.jar.name}, {node.jar.stat().st_size // 1024} KiB")
-            for line in publisher.describe(node):
-                print(f"    {line}")
-            print(f"    mods      {node.dependency_names()}")
-            if publisher.is_published(node, number):
-                print(f"    -> already on {publisher.name}, skipped")
-            elif args.dry_run:
-                print("    -> would upload")
-            else:
-                try:
-                    created = publisher.upload(node, number, changelog)
-                except urllib.error.HTTPError as error:
-                    detail = error.read().decode("utf-8", "replace")
-                    fail(f"{publisher.name} refused `{number}` ({error.code}): {detail}")
-                print(f"    -> uploaded, {created}")
-            print()
+    publisher = publisher_class()
+    for node in nodes:
+        number = version_number(node, mod_version)
+        print(f"  {number}  ({node.name})")
+        print(f"    file      {node.jar.name}, {node.jar.stat().st_size // 1024} KiB")
+        for line in publisher.describe(node):
+            print(f"    {line}")
+        print(f"    mods      {node.dependency_names()}")
+        if publisher.is_published(node, number):
+            print(f"    -> already on {publisher.name}, skipped")
+        elif args.dry_run:
+            print("    -> would upload")
+        else:
+            try:
+                created = publisher.upload(node, number, changelog)
+            except urllib.error.HTTPError as error:
+                detail = error.read().decode("utf-8", "replace")
+                fail(f"{publisher.name} refused `{number}` ({error.code}): {detail}")
+            print(f"    -> uploaded, {created}")
+        print()
 
     if args.dry_run:
         print("Dry run: nothing was published.")
     else:
-        print("Done.")
-        for publisher in publishers:
-            print(f"  {publisher.done_url()}")
+        print(f"Done. {publisher.done_url()}")
 
 
 if __name__ == "__main__":
-    main()
+    release(Modrinth, "Publish a ThirstWasTaken2 release to Modrinth.")

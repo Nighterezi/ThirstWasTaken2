@@ -47,7 +47,7 @@ export default defineConfig({
   // Notes, paste sources and developer planning for maintainers, not pages on the site.
   // 'dev/**' keeps docs/dev out of the build: those pages link into src/ and the repo root,
   // which the dead-link check cannot follow.
-  srcExclude: ['AGENTS.md', 'MODRINTH.md', 'dev/**'],
+  srcExclude: ['AGENTS.md', 'MODRINTH.md', 'CURSEFORGE.md', 'dev/**'],
   themeConfig: {
     logo: '/logo.png',
     externalLinkIcon: true,
