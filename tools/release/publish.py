@@ -89,6 +89,9 @@ DEPENDENCIES = {
     "farmersdelight": Dependency("farmers-delight-refabricated", "7vxePowz", "farmers-delight-refabricated"),
     "create_fly": Dependency("create-fly", "dKvj0eNn", "create-fly"),
     "create": Dependency("create", "LNytGWDc", "create"),
+    # Sophisticated Core is left out: both mods below require it, so a player gets it through them.
+    "sophisticated_backpacks": Dependency("sophisticated-backpacks", "TyCTlI4b", "sophisticated-backpacks"),
+    "sophisticated_storage": Dependency("sophisticated-storage", "hMlaZH8f", "sophisticated-storage"),
 }
 # The same keys where a NeoForge node's dependency is a different project: Farmer's Delight Refabricated
 # is the Fabric port, and the NeoForge nodes use vectorwing's original.
