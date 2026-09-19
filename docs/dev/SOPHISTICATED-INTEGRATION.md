@@ -19,7 +19,7 @@ Written on 2026-09-19 from Sophisticated Core `1.21.1-1.5.1.2341` and Sophistica
 | 2 | Alchemy upgrade drinks through the mod | bug | **Done** on `1.21.1-neoforge` |
 | 4 | Pump upgrade keeps water quality | bug | **Done** on `1.21.1-neoforge` |
 | 7 | Smoking recipes for purified water | data | **Done**, every version |
-| 6 | Waterskin and bowl as fluid containers | feature | To do |
+| 6 | Waterskin and bowl as fluid containers | feature | **Done**, every NeoForge version |
 | 5 | Drinking upgrade | feature | To do |
 | 8 | Newer NeoForge nodes (1.21.11, 26.1, 26.2) | port | To do |
 | 9 | Changelog and player docs | docs | To do |
@@ -98,28 +98,24 @@ version and both loaders, not just the nodes with Sophisticated.
 Checked with `tools/agent/sophisticated-cooking.jsonl`: a purity-0 bottle came out of both the
 Smoking and the Smelting upgrade with `water_purity: 2`.
 
-## To do
-
 ### 6. Waterskin and bowl as fluid containers
 
-**Problem.** The waterskin and the terracotta water bowl have no NeoForge fluid capability, so the Tank
-upgrade, the Pump upgrade, Create and any other fluid mod cannot fill or empty them.
+The waterskin (three servings) and the terracotta bowls (one) now carry NeoForge's item fluid
+capability, a serving being 250 mB, so the Tank and Pump upgrades, Create and any other fluid mod can
+fill and empty them. It needs no Sophisticated, and it covers every NeoForge version: 1.21.1 through
+`IFluidHandlerItem`, 1.21.11 and later through the transfer API, each a thin handler in a source
+directory of its own over shared rules (`WaterContainerFluids`). Whole servings only, and a container
+takes more water only of the grade it holds; the details are in `purity/AGENTS.md`. The Sophisticated
+wrapper leaves these items alone, since their handler already carries the grade.
 
-**Approach.** Register `Capabilities.FluidHandler.ITEM` for both in `RegisterCapabilitiesEvent`, in
-`src/main/neoforge`. Neither needs Sophisticated:
+`ContainerFluidGameTest` runs one set of assertions against both APIs on all four NeoForge nodes, and
+caught two bugs in the transfer handler on the way. In a client on 1.21.1: waterskins and bowls went
+through the Tank upgrade with their grades, the Pump filled a waterskin in hand, and Create's Spout
+filled a waterskin on a Depot once (750 mB, not twice) while an Item Drain emptied a bowl.
 
-- **Waterskin.** One serving is 250 mB, the size of a bottle. Filling mixes grades the way the waterskin
-  already does (serving-weighted and rounding down, any salt makes it all salty). Draining hands out
-  water stamped with the skin's grade.
-- **Terracotta water bowl.** 250 mB, empty bowl to full bowl and back.
+Not done: Fabric's Transfer API. No Fabric integration needs it yet.
 
-**Watch out for.** The Create mixins already give these items quality through Create's own item
-filling and emptying. Once they have a capability, check that Create does not fill them twice, once
-through its generic path and once through the capability. The Fabric nodes would want the same through
-Fabric's Transfer API; that is separate work and not needed for Sophisticated.
-
-**Test.** A gametest for the capability itself (fill, drain, grade mixing, salt), which runs without
-any other mod, plus the Tank agent script with a waterskin.
+## To do
 
 ### 5. Drinking upgrade
 
@@ -175,6 +171,9 @@ those nodes would skip the whole integration even if they compiled it.
   that only those nodes compile, the way `src/main/create` and `src/main/createfly` split one feature.
   Check first how the transfer API's bucket and bottle handlers treat data components; the rule
   may be different from `IFluidHandler`'s.
+- The mod's own waterskin and bowls already speak the transfer API there (item 6), and
+  `src/main/neoforge-transfer` is where the other transfer-API code belongs. The per-generation source
+  directory is chosen in `build.neoforge.gradle.kts`.
 - Add `deps.sophisticated_core` and `deps.sophisticated_backpacks` to each node's table in
   `stonecutter.properties.toml`. `update_mc_deps.py` already knows both keys.
 

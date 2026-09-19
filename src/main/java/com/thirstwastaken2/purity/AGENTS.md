@@ -23,6 +23,7 @@ compile, which is what stops salt water from quietly inheriting a grade's toolti
 | Cauldron | one `purity` blockstate value | `WaterPurity.storedQuality(state)` |
 | Copper hanging pot | the same property, unset while empty | `HangingPotBlock.quality(state)` |
 | Water in the world | biome baseline plus small local modifiers | `WaterPurity.sampleAt(level, pos)` |
+| A NeoForge `FluidStack` | one component: `water_purity`, or `water_salty` for sea water | `WaterFluids.quality(stack)`, in `src/main/neoforge` |
 | Anything unstamped | `ThirstConfig.defaultPurity`, fresh | falls out of `quality` |
 
 The cauldron value is `0` for unset, `1..4` for the four grades (offset by one so that zero can mean
@@ -31,6 +32,32 @@ boolean flag on purpose: **vanilla hands a freshly placed block the first value 
 carries, and for a boolean that value is `true`**, so a separate salinity flag makes every new
 cauldron read as sea water. `WaterPurity.storedValue` and `storedQuality` are the only two places
 that know the encoding.
+
+## The waterskin and the bowls as fluid containers (NeoForge)
+
+On NeoForge the waterskin, the terracotta bowl and the terracotta water bowl carry the item fluid
+capability, so other mods' pipes, tanks and pumps can fill and empty them: a Create Spout or Item
+Drain, a Sophisticated Tank or Pump upgrade. `WaterContainerFluids` in `src/main/neoforge` holds the
+rules, and each of NeoForge's two fluid APIs gets a thin handler over them, chosen by the build:
+
+| NeoForge | API | Directory |
+|---|---|---|
+| 21.1 (Minecraft 1.21.1) | `IFluidHandlerItem`, `Capabilities.FluidHandler.ITEM` | `src/main/neoforge-fluidhandler` |
+| 21.11 and later | the transfer API, `ResourceHandler<FluidResource>`, `Capabilities.Fluid.ITEM` | `src/main/neoforge-transfer` |
+
+- **Only whole servings of 250 mB move**, a bottle's worth. A request is rounded down, so 300 mB moves
+  one serving and 100 mB moves nothing. The transfer API's base class would refuse a part serving
+  outright, so its handler rounds before calling it; both behave the same.
+- **A container that holds water only takes more of the same grade.** That is every tank's rule for two
+  fluids with different components. Mixing grades stays what pouring by hand does.
+- **Water with no grade**, from a mod that does not know about quality, fills an empty container as
+  `defaultPurity`, like any unstamped container.
+- The handlers answer with the stack as it is afterwards. The transfer handler swaps it through its
+  `ItemAccess`, so a filled empty bowl becomes a water bowl in whatever slot the access allows.
+
+Fabric has no counterpart yet; the Transfer API would need its own storage for these.
+`ContainerFluidGameTest` checks both NeoForge handlers against one set of assertions and skips on
+Fabric.
 
 ## Rules the code keeps
 

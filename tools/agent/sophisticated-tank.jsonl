@@ -71,4 +71,26 @@
 {"id": "plain_bucket_create", "command": "server.command", "args": {"command": "sbp template create thirstout:plain_bucket", "as": "Dev"}}
 {"id": "plain_bucket_export", "command": "server.command", "args": {"command": "sbp template export thirstout:plain_bucket", "as": "Dev"}}
 
+// A full murky waterskin is poured into the tank and a second, empty waterskin filled from it: the second
+// comes out with three servings of water_purity 1 in slot 3, the first empty in slot 2.
+{"id": "tank_skin_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "tank_skin_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:tank_skin", "as": "Dev"}}
+{"id": "tank_skin_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
+{"id": "tank_skin_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "tank_skin_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "tank_skin_tick", "command": "wait", "args": {"ticks": 200}}
+{"id": "tank_skin_create", "command": "server.command", "args": {"command": "sbp template create thirstout:tank_skin", "as": "Dev"}}
+{"id": "tank_skin_export", "command": "server.command", "args": {"command": "sbp template export thirstout:tank_skin", "as": "Dev"}}
+
+// A dirty terracotta water bowl poured in, and an empty bowl filled: a water bowl with water_purity 0 in
+// slot 3, an empty bowl in slot 2, and an empty tank.
+{"id": "tank_bowl_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "tank_bowl_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:tank_bowl", "as": "Dev"}}
+{"id": "tank_bowl_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
+{"id": "tank_bowl_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "tank_bowl_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "tank_bowl_tick", "command": "wait", "args": {"ticks": 200}}
+{"id": "tank_bowl_create", "command": "server.command", "args": {"command": "sbp template create thirstout:tank_bowl", "as": "Dev"}}
+{"id": "tank_bowl_export", "command": "server.command", "args": {"command": "sbp template export thirstout:tank_bowl", "as": "Dev"}}
+
 {"id": "done", "command": "wait", "args": {"ticks": 20}}

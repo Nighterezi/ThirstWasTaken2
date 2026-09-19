@@ -79,6 +79,9 @@ val clientSources: File =
 sourceSets.main {
     java.srcDir("src/main/$loader/java")
     resources.srcDir("src/main/$loader/resources")
+    // NeoForge's two fluid APIs: IFluidHandler on 21.1, the transfer API (ResourceHandler) from 21.9. Code
+    // that implements one of them lives in the directory of its generation.
+    java.srcDir(if (sc.current.parsed >= "1.21.2") "src/main/$loader-transfer/java" else "src/main/$loader-fluidhandler/java")
     java.srcDir(files(clientSources.resolve("java"), clientSources.resolve("$loader/java"))
         .builtBy("stonecutterGenerateClient"))
     resources.srcDir(files(clientSources.resolve("resources"), clientSources.resolve("$loader/resources"))

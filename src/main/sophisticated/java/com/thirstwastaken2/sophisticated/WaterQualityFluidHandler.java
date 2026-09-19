@@ -1,5 +1,7 @@
 package com.thirstwastaken2.sophisticated;
 
+import com.thirstwastaken2.neoforge.WaterContainerFluidHandler;
+import com.thirstwastaken2.neoforge.WaterContainerFluids;
 import com.thirstwastaken2.neoforge.WaterFluids;
 import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.purity.WaterQuality;
@@ -32,8 +34,13 @@ public final class WaterQualityFluidHandler implements IFluidHandlerItem {
         this.quality = quality;
     }
 
-    /** {@code lookup}'s handler for {@code stack}, wrapped. */
+    /**
+     * {@code lookup}'s handler for {@code stack}, wrapped. The mod's own waterskin and bowls are the
+     * exception: their handler already carries the grade, and would lose it if it were handed the
+     * unstamped copy.
+     */
     public static Optional<IFluidHandlerItem> wrap(ItemStack stack, Function<ItemStack, Optional<IFluidHandlerItem>> lookup) {
+        if (WaterContainerFluids.handles(stack)) return lookup.apply(stack);
         if (!WaterPurity.isWaterContainer(stack)) {
             return lookup.apply(stack).map(handler -> new WaterQualityFluidHandler(handler, null));
         }
@@ -42,22 +49,23 @@ public final class WaterQualityFluidHandler implements IFluidHandlerItem {
     }
 
     /**
-     * A stamped copy, never the delegate's own stack: Sophisticated Core's bottle handler drains only while
-     * its container still equals a plain water bottle, and the Tank upgrade ignores a drain that returns
-     * nothing after it has already filled itself, so stamping in place would pour the same bottle in
-     * forever.
-     */
-    /**
      * A handler the caller already looked up on the real, stamped stack. That only suits a handler that
      * does not compare its container's components, such as NeoForge's bucket wrapper; Core's own bottle
      * handler has to go through {@link #wrap} instead.
      */
     public static IFluidHandlerItem of(IFluidHandlerItem handler) {
+        if (handler instanceof WaterContainerFluidHandler) return handler;
         ItemStack container = handler.getContainer();
         return new WaterQualityFluidHandler(handler,
                 WaterPurity.isWaterContainer(container) ? WaterPurity.quality(container) : null);
     }
 
+    /**
+     * A stamped copy, never the delegate's own stack: Sophisticated Core's bottle handler drains only while
+     * its container still equals a plain water bottle, and the Tank upgrade ignores a drain that returns
+     * nothing after it has already filled itself, so stamping in place would pour the same bottle in
+     * forever.
+     */
     @Override
     public ItemStack getContainer() {
         ItemStack container = delegate.getContainer();

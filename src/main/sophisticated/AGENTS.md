@@ -59,7 +59,9 @@ input and output slots and from the cursor, so one `@WrapMethod` covers every tr
 it returns know nothing of quality: NeoForge's bucket wrapper takes and gives plain water, and Core's
 own bottle handler only matches a water bottle with no components at all. `WaterQualityFluidHandler`:
 
-- looks a stamped container up as its `WaterPurity.unstamped` copy, so Core recognises it;
+- looks a stamped container up as its `WaterPurity.unstamped` copy, so Core recognises it. The mod's
+  own waterskin and bowls are the exception: their capability already carries the grade (see
+  `purity/AGENTS.md`), so they are looked up as they are and never wrapped;
 - stamps water leaving the container with the grade it held, and passes water entering it down plain;
 - hands out a **stamped copy** from `getContainer`, never the delegate's own stack. Core's bottle
   handler drains only while its container still equals a plain bottle, and the tank ignores a drain
@@ -154,6 +156,8 @@ to show. Checked on 2026-09-19, and once with the mixin disabled for comparison:
 | four sea-water bottles, one bucket | a bucket with `water_salty: true`, four glass bottles, empty tank | the bottles are refused |
 | dirty bottle into a Pure tank | refused, the tank keeps 250 mB of Pure | refused |
 | unstamped bucket, bottled | tank and bottle `water_purity: 2` | plain water |
+| a full murky waterskin poured in, an empty one filled | the second holds three servings of `water_purity: 1` | before the capability, neither moved |
+| a dirty water bowl poured in, an empty bowl filled | a water bowl of `water_purity: 0` | before the capability, neither moved |
 
 Not checked yet: the cursor path (clicking a container onto the tank in the GUI), which reaches the
 same method, and Sophisticated Storage.
@@ -190,6 +194,7 @@ with only the filter mixin left out:
 | 1000 mB of purity 3, pumped into an empty bucket in the off hand | a bucket with `water_purity: 3`, empty tank | the bucket stays empty |
 | 1000 mB of purity 3, pumped into a Create Fluid Tank next to the player | the Create tank holds 1000 mB of `water_purity: 3` | not run |
 | a Create Fluid Tank of purity-0 water next to the player, pumped in | tank `water_purity: 0`, the Create tank empty | not run |
+| 1000 mB of purity 3, pumped into an empty waterskin in the off hand | three servings of `water_purity: 3`, 250 mB left in the tank | not run |
 
 The client ignores the facing part of `tp ... facing`; turn the player with an explicit yaw and pitch.
 Holding `use` needs more than four ticks to register as a click.

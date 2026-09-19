@@ -81,7 +81,11 @@ where `Level.getBlockEntity` answers null for every block. Checked on 2026-09-18
 [tools/agent/create-water.jsonl](../../../tools/agent/create-water.jsonl) repeats two of these unattended,
 the Sand Filter by NBT and a Mechanical Pump drawing from a sea-water pool through an open pipe end
 into a Fluid Tank. Run on 2026-09-19 after `WaterFluids` and `SampledWater` moved to
-`src/main/neoforge`: Murky came out Clean, and the tank held `water_salty` water.
+`src/main/neoforge`: Murky came out Clean, and the tank held `water_salty` water. Once the waterskin
+and the bowls had a fluid capability, the same script had a Spout fill a waterskin on a Depot (three
+servings of the tank's grade, and 750 mB gone from the Spout's 1000, so one fill and not two) and an
+Item Drain empty a dirty water bowl (250 mB of `water_purity: 0`). Create reaches them through the
+capability; the item mixins stamp the result again, to the same grade.
 
 Not yet checked in game: the Hose Pulley. A creative motor placed by command would not turn the pulley
 the lowering way.

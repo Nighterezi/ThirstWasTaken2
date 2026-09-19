@@ -136,6 +136,7 @@ cauldron bottle draw.
 | `WaterInteractionsGameTest` | scooping with the bowl and the waterskin, the clay bowl holding nothing, drawing the waterskin from a cauldron, pouring it out, and a bottle drawn from a cauldron keeping its grade |
 | `LootGameTest` | graded water in each seeded chest and in piglin bartering, no water anywhere else, and a table a data pack replaced still getting it |
 | `ItemAppearanceGameTest` | the custom model data bowls and waterskins dispatch on, the sea-water item model (1.21.2 and later), and the waterskin bar's width and colour |
+| `ContainerFluidGameTest` | the waterskin and the bowls through NeoForge's item fluid capability: whole servings only, one grade per container, the grade carried both ways, sea water staying salty, water with no grade filling as `defaultPurity`, no lava. NeoForge only, through `platform/ContainerFluids`: 1.21.1's `IFluidHandlerItem` and the transfer API from 1.21.11 run the same assertions. Fabric skips it |
 | `PlayerSyncGameTest` | that a player is told their own thirst and no one else's, with three players in range of each other. NeoForge only: what it exists to catch is `Loader.syncsTo`, and Fabric's counterpart is a value handed to Fabric API rather than a function the mod writes. There the same check is two agent clients, as [.../dev/agent/AGENTS.md](../../dev/java/com/thirstwastaken2/dev/agent/AGENTS.md) describes |
 
 `WaterskinGameTest` also covers pouring a bottle or bucket into a slotted waterskin from the cursor,
