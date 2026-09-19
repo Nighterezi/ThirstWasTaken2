@@ -20,7 +20,7 @@ Written on 2026-09-19 from Sophisticated Core `1.21.1-1.5.1.2341` and Sophistica
 | 4 | Pump upgrade keeps water quality | bug | **Done** on `1.21.1-neoforge` |
 | 7 | Smoking recipes for purified water | data | **Done**, every version |
 | 6 | Waterskin and bowl as fluid containers | feature | **Done**, every NeoForge version |
-| 5 | Drinking upgrade | feature | To do |
+| 5 | Drinking upgrade | feature | **Done** on `1.21.1-neoforge` |
 | 8 | Newer NeoForge nodes (1.21.11, 26.1, 26.2) | port | To do |
 | 9 | Changelog and player docs | docs | To do |
 
@@ -115,41 +115,30 @@ filled a waterskin on a Depot once (750 mB, not twice) while an Item Drain empti
 
 Not done: Fabric's Transfer API. No Fabric integration needs it yet.
 
-## To do
-
 ### 5. Drinking upgrade
 
-**What it is.** A new upgrade, the thirst version of the Feeding upgrade. It drinks from the backpack
-when the thirst bar is low: bottles, waterskins, bowls and other drinks with a thirst value, and water
-straight from a Tank upgrade in the same backpack (250 mB per drink).
+A new upgrade, the thirst version of the Feeding upgrade, in a basic and an Advanced tier. It drinks
+from the backpack when the thirst bar is low: bottles, waterskins, bowls and other drinks with a thirst
+value, and water from a Tank upgrade in the same backpack, 250 mB at a time. The cleanest water goes
+first, nothing below the lowest grade (Clean by default) and never salt water. Everything goes through
+the same code as drinking by hand. The Advanced tier adds the "drink at" and lowest-grade buttons and a
+larger filter, as Advanced Feeding does.
 
-**Settings,** mirroring Feeding:
+Decided: the recipe mirrors Feeding's (a waterskin, two glass bottles and an ender pearl around an
+upgrade base; the Advanced tier from the basic with a diamond, two gold and three redstone); a Tank of
+water counts, held to the same lowest grade, so a Pump by an untreated lake does not make a free
+canteen; and the Feeding upgrade's cooldowns, 100 ticks and 10 while still thirsty. Potions other than
+water, milk and ominous bottles are never drunk.
 
-- drink at: half a sip missing, the full value missing, or any time;
-- the lowest grade it will drink (default Clean), so it never picks dirty or salt water on its own;
-- a filter, and a larger one on an Advanced Drinking upgrade.
+Checked with three agent scripts: `sophisticated-drinking.jsonl` (clean bottles drunk and the dirty one
+left, a Pure tank before a Clean bottle, sea water refused, the Advanced settings obeyed, honey and cider
+drunk but not milk or potions, water before honey), `sophisticated-drinking-craft.jsonl` (all three
+recipes in a crafting table, the upgrade in a Sophisticated Storage chest) and
+`sophisticated-drinking-tab.jsonl` (the buttons clicked, the tab in all nine languages). The agent client
+gained `client.click`, `client.slot(s)`, `client.language` and `client.textWidth` for them. The details
+are in `src/main/sophisticated/AGENTS.md`.
 
-**Behaviour.** Prefer the cleanest water. Respect `ThirstManager.canDrinkWater`. Go through
-`ThirstManager.drinkItem`, so sickness, advancements and the thirst values are the same as drinking by
-hand. Give the empty container back into the backpack, as Feeding does.
-
-**What it needs.** This is the first part that registers content, so the integration gets an
-entrypoint of its own, a second `@Mod` class like `CreateEntrypoint`, reached only after
-`SophisticatedPresence.isPresent()`.
-
-- an item extending `UpgradeItemBase` with an `UpgradeType`, and a wrapper implementing
-  `ITickableUpgrade` and `IFilteredUpgrade`;
-- an `UpgradeContainerType` registered with `UpgradeContainerRegistry`, and a GUI tab registered with
-  `UpgradeGuiManager` on the client, which means a client source directory as well;
-- the `sophisticatedbackpacks:upgrade` item tag (and Sophisticated Storage's, if it is to fit there),
-  a recipe behind a `neoforge:mod_loaded` condition, a texture, and lang keys in all nine languages.
-
-**Open questions.** The recipe and its cost; whether a Tank of water should count at all, since it
-makes a backpack an unlimited canteen as long as a pump fills it; and whether drinking should wait a
-cooldown like Feeding's 100 ticks.
-
-**Test.** An agent script like the Feeding one, with a dirty and a clean bottle to check it picks the
-clean one and leaves the dirty one.
+## To do
 
 ### 8. Newer NeoForge nodes
 
@@ -174,6 +163,9 @@ those nodes would skip the whole integration even if they compiled it.
 - The mod's own waterskin and bowls already speak the transfer API there (item 6), and
   `src/main/neoforge-transfer` is where the other transfer-API code belongs. The per-generation source
   directory is chosen in `build.neoforge.gradle.kts`.
+- The Drinking upgrade (item 5) drinks from the tanks through `IStorageFluidHandler` and `FluidStack`,
+  and its wrapper names `UseAnim`, which 1.21.2 renamed, so it moves with the Tank code rather than
+  with Feeding.
 - Add `deps.sophisticated_core` and `deps.sophisticated_backpacks` to each node's table in
   `stonecutter.properties.toml`. `update_mc_deps.py` already knows both keys.
 

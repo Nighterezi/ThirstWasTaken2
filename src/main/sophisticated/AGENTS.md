@@ -2,7 +2,7 @@
 
 [Sophisticated Backpacks](https://modrinth.com/mod/sophisticated-backpacks) keeps its upgrades in
 Sophisticated Core, which Sophisticated Storage shares, so everything here targets Core and works for
-both. Today it covers four upgrades:
+both. Today it fixes four of Sophisticated's upgrades and adds one of its own:
 
 - the **Tank upgrade** keeps water's grade: a dirty bucket poured in comes back out as dirty bottles,
   and sea water stays sea water. Without it the tank handed out plain water, which the mod reads as
@@ -12,7 +12,9 @@ both. Today it covers four upgrades:
 - the **Alchemy upgrade** restores thirst for the potions and food it applies, and never drinks plain
   water;
 - the **Pump upgrade** grades the water it collects from the world where it lies, keeps the grade of
-  buckets it empties or fills in a player's hand, and can pump graded water back out at all.
+  buckets it empties or fills in a player's hand, and can pump graded water back out at all;
+- the **Drinking upgrade**, the mod's own, drinks from the backpack when the thirst bar is low, the
+  cleanest water first, bottles and other drinks as well as water from a Tank upgrade.
 
 What is still to do across Sophisticated's upgrades is in
 [docs/dev/SOPHISTICATED-INTEGRATION.md](../../../docs/dev/SOPHISTICATED-INTEGRATION.md).
@@ -34,21 +36,35 @@ java/com/thirstwastaken2/sophisticated/
   mixin/AlchemyUpgradeWrapperMixin  the same for the Alchemy upgrade, and keeps plain water out of it
   mixin/PumpUpgradeWrapperMixin     the Pump upgrade: world pickup, buckets in hand, pumping out
   mixin/FluidFilterLogicMixin       a pump filter set to water takes water of any grade
+  SophisticatedEntrypoint    a second @Mod class that registers the Drinking upgrade after the gate
+  drinking/DrinkingUpgrade           items, the two settings components, the settings containers
+  drinking/DrinkingUpgradeItem       basic and advanced, told apart by filter size and `isAdvanced`
+  drinking/DrinkingUpgradeWrapper    what to drink and when, on the upgrade tick
+  drinking/DrinkingUpgradeContainer  the settings tab's server half
+  drinking/DrinkAt                   how thirsty to be first: any, half a drink, a whole drink
 resources/
   thirstwastaken2.sophisticated.mixins.json
+  assets/…                  the two upgrade textures and models, the tab's button icons
+  data/…                    recipes and their unlocks (NeoForge conditions), both mods' upgrade tags
+../../client/sophisticated/java/com/thirstwastaken2/client/sophisticated/
+  SophisticatedClientEntrypoint  registers the settings tabs, after the gate
+  DrinkingUpgradeTab             the basic and advanced tabs
 ```
 
 ## How it stays optional
 
-The same three layers as [src/main/create](../create/AGENTS.md), minus data: nothing is registered,
-so there is no entrypoint and no recipe.
+The same three layers as [src/main/create](../create/AGENTS.md).
 
-1. **Build.** `build.neoforge.gradle.kts` adds these directories, and appends the mixin config and an
-   optional `sophisticatedcore` dependency to the built `neoforge.mods.toml`, only when
-   `deps.sophisticated_core` is set.
+1. **Build.** `build.neoforge.gradle.kts` adds these directories and `src/client/sophisticated`, and
+   appends the mixin config and an optional `sophisticatedcore` dependency to the built
+   `neoforge.mods.toml`, only when `deps.sophisticated_core` is set.
 2. **Runtime gate.** `SophisticatedPresence` looks for the Tank upgrade's `SwapEmptyFluidContainerHandler`
    inside Core's own jar, a class only the `IFluidHandler` generation has, so a Core the mixin would not
-   fit is skipped with a warning instead of crashing on a missing target.
+   fit is skipped with a warning instead of crashing on a missing target. The mixin plugin and both
+   entrypoints ask it before anything that names a Sophisticated class is loaded.
+3. **Data.** Each basic recipe needs its own mod's `upgrade_base` (`neoforge:mod_loaded`) and every
+   recipe needs the upgrade to exist (`neoforge:item_exists`), so a Core the gate refused leaves no
+   broken recipe behind. The tag entries are `required: false` for the same reason.
 
 **Nothing outside this directory may reference a class in it.**
 
@@ -86,8 +102,8 @@ that hook, so `FeedingUpgradeWrapperMixin` wraps that one call and runs `ThirstM
 before it, on the server, which is the same point in the same order. Nothing else hands out thirst for
 eating, NeoForge's `LivingEntityUseItemEvent.Finish` included, so nothing is counted twice.
 
-The upgrade still decides *when* to feed by the hunger bar alone. Feeding because the player is thirsty
-is a different upgrade; see the plan linked above.
+The upgrade still decides *when* to feed by the hunger bar alone. Drinking because the player is
+thirsty is the Drinking upgrade's job, below.
 
 ## The Alchemy upgrade
 
@@ -136,6 +152,41 @@ covers each place the grade was lost:
 A pump's fluid filter compares components too, and a filter is set from whatever container the player
 clicked, so a filter made from a plain bucket refused every graded stack. `FluidFilterLogicMixin` makes
 a water filter match water of any grade.
+
+## The Drinking upgrade
+
+The mod's own upgrade, the thirst version of the Feeding upgrade, in a basic and an Advanced tier. It is
+the first part of the integration that registers content, so it has `SophisticatedEntrypoint`, a second
+`@Mod` class like Create's, and a client one in `src/client/sophisticated` for the settings tab.
+
+**What it drinks.** `DrinkingUpgradeWrapper.canFilter` and `isDrink`: an item with a thirst value that is
+drunk (`UseAnim.DRINK`, or one of the mod's plain water drinks), minus what a player would not want
+drunk for them: potions other than water, which are the Alchemy upgrade's, milk (`c:drinks/milk`, it
+clears every effect) and ominous bottles. The filter slots take the same items, by item, so an empty
+waterskin can be set as a filter. Water from a Tank upgrade in the same storage counts too, 250 mB at a
+time, drunk as a water bottle of its grade; the item filter does not apply to it.
+
+**Which first.** Fresh water at or above the lowest grade, the cleanest first; salt water never. At an
+equal grade the tank goes before items, since it leaves no empty bottle to find room for. Drinks that
+are not water at all come last.
+
+**When.** The Feeding upgrade's timings: 100 ticks between checks, 10 while the player is still
+thirsty, players within 3 blocks of a placed storage. Only while thirst applies to the player at all
+(`canDrinkWater`, enabled, not invulnerable) and the bar is not full, and only once the drink fits by
+the `DrinkAt` setting: any, half of it, or all of it.
+
+**How.** An item is finished through `ItemStack.finishUsingItem`, where the mod's `ItemStackMixin`
+hands out thirst, sickness and advancements, so it counts exactly as drinking by hand; the container it
+leaves goes back into the storage, or to the player. Tank water goes through `ThirstManager.drinkItem`.
+
+**Settings** live on the upgrade stack as `thirstwastaken2:drink_at` and `thirstwastaken2:drink_min_purity`.
+Only the Advanced tier reads them or shows their buttons, like Advanced Feeding; the basic one drinks at
+half a drink, Clean or better. The grade button goes up on a left click and down on a right click.
+
+**Data.** Recipes mirror Feeding's: a waterskin, two glass bottles and an ender pearl around an upgrade
+base, one recipe per mod's base, and `sophisticatedcore:upgrade_next_tier` with a diamond, two gold and
+three redstone for the Advanced tier, which keeps the filter. Both items are in `sophisticatedbackpacks:upgrade`
+and `sophisticatedstorage:upgrade`. The textures are the mod's own; Sophisticated's are not reused.
 
 ## Testing
 
@@ -202,6 +253,43 @@ Holding `use` needs more than four ticks to register as a click.
 The two Create Fluid Tank cases were added and run afterwards, with every mixin in, on the same day. A
 block entity is not readable from `server.command`, which runs off the server thread, so they read the
 Create tank with `client.command` and the answer is the `[CHAT]` line in the client's log.
+
+### Drinking
+
+Three scripts, each starting from thirst 4 unless it says otherwise. Checked on 2026-09-19.
+
+[tools/agent/sophisticated-drinking.jsonl](../../../tools/agent/sophisticated-drinking.jsonl), what it
+drinks:
+
+| Case | Thirst after | Left in the backpack |
+|---|---|---|
+| one dirty and two Clean bottles, basic upgrade | 16 | the dirty bottle, two glass bottles |
+| 1000 mB of Pure in a Tank and one Clean bottle | 20 | 250 mB of Pure, the Clean bottle untouched |
+| 1000 mB of sea water in a Tank and one Murky bottle | 4 | everything |
+| two Clean and one Pure bottle, Advanced set to Pure and a whole drink | 10 | the two Clean bottles, one glass bottle |
+| honey, Farmer's Delight apple cider, milk, an awkward potion, an ominous bottle | 16 | milk, the awkward potion, the ominous bottle, two glass bottles |
+| honey before a Clean bottle, from thirst 14 | 20 | the honey: water goes first |
+
+[tools/agent/sophisticated-drinking-craft.jsonl](../../../tools/agent/sophisticated-drinking-craft.jsonl)
+crafts at a real crafting table, moving every ingredient with the slot clicks a screen sends: the basic
+upgrade from each mod's upgrade base, and the Advanced one from a basic upgrade set to Dirty, which
+keeps `drink_min_purity: 0`. It then places a Sophisticated Storage chest (`deps.sophisticated_storage`
+puts Storage on the runClient classpath) and shift-clicks the upgrade in from the inventory:
+Sophisticated only puts it in an upgrade slot the tag lets it into, and it went there, not into the
+chest. Standing beside the closed chest, thirst went from 4 to 16 and the chest held two glass bottles.
+
+[tools/agent/sophisticated-drinking-tab.jsonl](../../../tools/agent/sophisticated-drinking-tab.jsonl)
+opens the Advanced tab by setting `sophisticatedcore:open_tab_id` on the backpack and clicks its
+buttons with `client.click`: one click moved "whole drink" to "any", and one left and two right clicks
+took Pure round to Clean, which the export shows as `drink_at: "any"`, `drink_min_purity: 2`. Then it
+captures both tabs in every language the mod ships and measures their titles with `client.textWidth`.
+
+**Tab titles have little room.** The label is the tab's width less 26: 37 GUI pixels on the basic tab
+and 55 on the advanced one. Measured with the game's font, `Drinki...` (33) fits and `Drinking` (39)
+does not, `Adv. Drink...` (55) fits and `Adv. Drinking` (63) does not. Every title fits but one: the
+Russian advanced title, `Продв. питьё` (67), is kept anyway and shows cropped, as Sophisticated's
+own `Продв. корм.` does, because no shorter form reads naturally. Check a changed title with the tab
+script.
 
 ### Cooking upgrades
 

@@ -51,6 +51,8 @@ deps.create = "UjX6dr61"
 deps.sophisticated_core = "PXl6rB3q"
 # 1.21.1-3.26.3.2158, only on the runClient classpath, as the storage the upgrades go in.
 deps.sophisticated_backpacks = "AhPnzNtJ"
+# 1.21.1-1.5.91.2127, only on the runClient classpath, to check the Drinking upgrade in a placed storage.
+deps.sophisticated_storage = "H7wGZ8Sl"
 
 ["1.21.11"]
 mod.mc_releases = ["1.21.11"]

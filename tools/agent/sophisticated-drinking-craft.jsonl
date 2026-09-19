@@ -1,0 +1,123 @@
+// The Drinking upgrade's recipes in a real crafting table, and the upgrade in a Sophisticated Storage
+// chest. Only nodes that set deps.sophisticated_core have them on the runClient classpath, and
+// deps.sophisticated_storage puts Sophisticated Storage there too.
+//
+// The player stands on a stone floor with a crafting table in front, and every ingredient is moved
+// into the grid with the same slot clicks a screen sends, then the result is shift-clicked out.
+// - craftBackpack, a waterskin, two glass bottles, Sophisticated Backpacks' upgrade base and an ender
+//   pearl: the clear finds one Drinking upgrade.
+// - craftStorage, the same around Sophisticated Storage's upgrade base: one Drinking upgrade.
+// - craftAdvanced, a Drinking upgrade set to Dirty water, a diamond, two gold and three redstone: one
+//   Advanced Drinking upgrade that still carries drink_min_purity 0.
+// Then a Sophisticated Storage chest with two clean bottles takes the place of the table. The Drinking
+// upgrade is shift-clicked in from the player's inventory; Sophisticated puts it in an upgrade slot
+// only if the slot accepts it, which it does by the sophisticatedstorage:upgrade tag, and in the chest's
+// own inventory otherwise. Upgrade slots are not among the menu's slots, so "storageMoved" shows the
+// upgrade gone from both inventories. From thirst 4, standing next to the closed chest,
+// "storageDrunk" shows 16 (a placed storage serves players within three blocks), and "storageAfter"
+// two glass bottles in place of the water.
+//
+// SophisticatedAgent is a throwaway world: copy level.dat out of any 1.21.1 world into
+// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/sophisticated-pack into its datapacks
+// folder, fresh for each run. Then:
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/sophisticated-drinking-craft.jsonl -Pquickplay=SophisticatedAgent
+
+{"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "joined", "command": "client.state"}
+{"id": "survival", "command": "server.command", "args": {"command": "gamemode survival @p"}}
+{"id": "difficulty", "command": "server.command", "args": {"command": "difficulty normal"}}
+{"id": "lookUp", "command": "server.command", "args": {"command": "tp @p ~ ~ ~ 0 -90"}}
+
+{"id": "floor", "command": "server.command", "args": {"command": "execute at @p align xyz run fill ~-3 ~9 ~-3 ~3 ~9 ~3 minecraft:stone"}}
+{"id": "stand", "command": "server.command", "args": {"command": "execute at @p align xyz positioned ~0.5 ~10 ~0.5 run tp @p ~ ~ ~ 0 60"}}
+{"id": "standing", "command": "wait", "args": {"ticks": 20}}
+
+{"id": "backpack_base_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "backpack_base_table", "command": "server.command", "args": {"command": "execute at @p run setblock ~ ~ ~1 minecraft:crafting_table"}}
+{"id": "backpack_base_give9", "command": "server.command", "args": {"command": "item replace entity @p container.9 with thirstwastaken2:waterskin"}}
+{"id": "backpack_base_give10", "command": "server.command", "args": {"command": "item replace entity @p container.10 with minecraft:glass_bottle 2"}}
+{"id": "backpack_base_give11", "command": "server.command", "args": {"command": "item replace entity @p container.11 with sophisticatedbackpacks:upgrade_base"}}
+{"id": "backpack_base_give12", "command": "server.command", "args": {"command": "item replace entity @p container.12 with minecraft:ender_pearl"}}
+{"id": "backpack_base_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
+{"id": "backpack_base_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "backpack_base_menu", "command": "client.slots"}
+{"id": "backpack_base_take0", "command": "client.slot", "args": {"inventory": 9}}
+{"id": "backpack_base_put0", "command": "client.slot", "args": {"slot": 2}}
+{"id": "backpack_base_take1", "command": "client.slot", "args": {"inventory": 10}}
+{"id": "backpack_base_put1_0", "command": "client.slot", "args": {"slot": 4, "button": 1}}
+{"id": "backpack_base_put1_1", "command": "client.slot", "args": {"slot": 6, "button": 1}}
+{"id": "backpack_base_take2", "command": "client.slot", "args": {"inventory": 11}}
+{"id": "backpack_base_put2", "command": "client.slot", "args": {"slot": 5}}
+{"id": "backpack_base_take3", "command": "client.slot", "args": {"inventory": 12}}
+{"id": "backpack_base_put3", "command": "client.slot", "args": {"slot": 8}}
+{"id": "backpack_base_grid", "command": "client.slots"}
+{"id": "backpack_base_result", "command": "client.slot", "args": {"slot": 0, "action": "quick_move"}}
+{"id": "backpack_base_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "craftBackpack", "command": "server.command", "args": {"command": "clear @p thirstwastaken2:drinking_upgrade 0"}}
+
+{"id": "storage_base_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "storage_base_table", "command": "server.command", "args": {"command": "execute at @p run setblock ~ ~ ~1 minecraft:crafting_table"}}
+{"id": "storage_base_give9", "command": "server.command", "args": {"command": "item replace entity @p container.9 with thirstwastaken2:waterskin"}}
+{"id": "storage_base_give10", "command": "server.command", "args": {"command": "item replace entity @p container.10 with minecraft:glass_bottle 2"}}
+{"id": "storage_base_give11", "command": "server.command", "args": {"command": "item replace entity @p container.11 with sophisticatedstorage:upgrade_base"}}
+{"id": "storage_base_give12", "command": "server.command", "args": {"command": "item replace entity @p container.12 with minecraft:ender_pearl"}}
+{"id": "storage_base_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
+{"id": "storage_base_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "storage_base_menu", "command": "client.slots"}
+{"id": "storage_base_take0", "command": "client.slot", "args": {"inventory": 9}}
+{"id": "storage_base_put0", "command": "client.slot", "args": {"slot": 2}}
+{"id": "storage_base_take1", "command": "client.slot", "args": {"inventory": 10}}
+{"id": "storage_base_put1_0", "command": "client.slot", "args": {"slot": 4, "button": 1}}
+{"id": "storage_base_put1_1", "command": "client.slot", "args": {"slot": 6, "button": 1}}
+{"id": "storage_base_take2", "command": "client.slot", "args": {"inventory": 11}}
+{"id": "storage_base_put2", "command": "client.slot", "args": {"slot": 5}}
+{"id": "storage_base_take3", "command": "client.slot", "args": {"inventory": 12}}
+{"id": "storage_base_put3", "command": "client.slot", "args": {"slot": 8}}
+{"id": "storage_base_grid", "command": "client.slots"}
+{"id": "storage_base_result", "command": "client.slot", "args": {"slot": 0, "action": "quick_move"}}
+{"id": "storage_base_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "craftStorage", "command": "server.command", "args": {"command": "clear @p thirstwastaken2:drinking_upgrade 0"}}
+
+{"id": "advanced_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "advanced_table", "command": "server.command", "args": {"command": "execute at @p run setblock ~ ~ ~1 minecraft:crafting_table"}}
+{"id": "advanced_give9", "command": "server.command", "args": {"command": "item replace entity @p container.9 with thirstwastaken2:drinking_upgrade[thirstwastaken2:drink_min_purity=0]"}}
+{"id": "advanced_give10", "command": "server.command", "args": {"command": "item replace entity @p container.10 with minecraft:diamond"}}
+{"id": "advanced_give11", "command": "server.command", "args": {"command": "item replace entity @p container.11 with minecraft:gold_ingot 2"}}
+{"id": "advanced_give12", "command": "server.command", "args": {"command": "item replace entity @p container.12 with minecraft:redstone 3"}}
+{"id": "advanced_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
+{"id": "advanced_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "advanced_menu", "command": "client.slots"}
+{"id": "advanced_take0", "command": "client.slot", "args": {"inventory": 9}}
+{"id": "advanced_put0", "command": "client.slot", "args": {"slot": 5}}
+{"id": "advanced_take1", "command": "client.slot", "args": {"inventory": 10}}
+{"id": "advanced_put1", "command": "client.slot", "args": {"slot": 2}}
+{"id": "advanced_take2", "command": "client.slot", "args": {"inventory": 11}}
+{"id": "advanced_put2_0", "command": "client.slot", "args": {"slot": 4, "button": 1}}
+{"id": "advanced_put2_1", "command": "client.slot", "args": {"slot": 6, "button": 1}}
+{"id": "advanced_take3", "command": "client.slot", "args": {"inventory": 12}}
+{"id": "advanced_put3_0", "command": "client.slot", "args": {"slot": 7, "button": 1}}
+{"id": "advanced_put3_1", "command": "client.slot", "args": {"slot": 8, "button": 1}}
+{"id": "advanced_put3_2", "command": "client.slot", "args": {"slot": 9, "button": 1}}
+{"id": "advanced_grid", "command": "client.slots"}
+{"id": "advanced_result", "command": "client.slot", "args": {"slot": 0, "action": "quick_move"}}
+{"id": "advanced_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "craftAdvanced", "command": "server.command", "args": {"command": "clear @p thirstwastaken2:advanced_drinking_upgrade[thirstwastaken2:drink_min_purity=0] 0"}}
+
+{"id": "storage_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "storage_effects", "command": "server.command", "args": {"command": "effect clear @p"}}
+{"id": "storage_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
+{"id": "storage_chest", "command": "server.command", "args": {"command": "execute at @p run setblock ~ ~ ~1 sophisticatedstorage:chest{storageWrapper:{contents:{inventory:{Size:27,Items:[{Slot:0,id:\"minecraft:potion\",count:2,components:{\"minecraft:potion_contents\":{potion:\"minecraft:water\"},\"thirstwastaken2:water_purity\":2,\"thirstwastaken2:water_salty\":0b}}]}}}} replace"}}
+{"id": "storage_give", "command": "server.command", "args": {"command": "item replace entity @p container.9 with thirstwastaken2:drinking_upgrade"}}
+{"id": "storage_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
+{"id": "storage_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "storageBefore", "command": "client.slots"}
+{"id": "storageMoved", "command": "client.slot", "args": {"inventory": 9, "action": "quick_move"}}
+{"id": "storage_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "storage_thirsty", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 4, "quenched": 0, "exhaustion": 0}}
+{"id": "storage_drinking", "command": "wait", "args": {"ticks": 140}}
+{"id": "storageDrunk", "command": "server.thirst.get", "args": {"player": "Dev"}}
+{"id": "storage_reopen", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
+{"id": "storage_reopened", "command": "wait", "args": {"ticks": 10}}
+{"id": "storageAfter", "command": "client.slots"}
+{"id": "storage_capture", "command": "client.capture", "args": {"name": "drinking_storage"}}
+{"id": "storage_close2", "command": "client.screen", "args": {"open": "none"}}

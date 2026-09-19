@@ -1,0 +1,273 @@
+// The Drinking upgrade's settings tab: its buttons clicked, and its title in every language.
+// Only nodes that set deps.sophisticated_core have it on the runClient classpath.
+//
+// The backpack is made to open straight onto the tab by setting sophisticatedcore:open_tab_id on it.
+// The Advanced tab's two buttons sit 100 and 118 GUI pixels right of the screen's centre and 22 above
+// it, which does not change with the window's size. drinking_advanced starts at "whole drink" and Pure:
+// - one left click on the first button: "whole drink" moves on to "any";
+// - one left click on the second: Pure wraps round to Dirty, then two right clicks go back to Pure and
+//   down to Clean.
+// The export thirstout:drinking_buttons then holds drink_at "any" and drink_min_purity 2, and the
+// captures before and after show both buttons change.
+//
+// Then, for every language the mod ships, "<lang>_widths" measures both tab titles with the game's
+// font, and both tabs are captured, so a cropped title ends in "..." on the picture. The basic tab's
+// title has 37 GUI pixels of room and the advanced one's 55. The client is set back to English last.
+//
+// SophisticatedAgent is a throwaway world: copy level.dat out of any 1.21.1 world into
+// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/sophisticated-pack into its datapacks
+// folder, fresh for each run. Then:
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/sophisticated-drinking-tab.jsonl -Pquickplay=SophisticatedAgent
+
+{"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "joined", "command": "client.state"}
+{"id": "survival", "command": "server.command", "args": {"command": "gamemode survival @p"}}
+{"id": "difficulty", "command": "server.command", "args": {"command": "difficulty normal"}}
+{"id": "lookUp", "command": "server.command", "args": {"command": "tp @p ~ ~ ~ 0 -90"}}
+
+{"id": "buttons_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "buttons_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
+{"id": "buttons_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "buttons_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "buttons_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "buttons_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "buttons_tab", "command": "server.command", "args": {"command": "item modify entity @p weapon.mainhand {\"function\":\"minecraft:set_components\",\"components\":{\"sophisticatedcore:open_tab_id\":0}}"}}
+{"id": "buttons_reopen", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "buttons_shown", "command": "wait", "args": {"ticks": 20}}
+{"id": "buttons_before", "command": "client.capture", "args": {"name": "drinking_buttons_before"}}
+{"id": "drinkAtClick", "command": "client.click", "args": {"x": 100, "y": -22}}
+{"id": "purityUp", "command": "client.click", "args": {"x": 118, "y": -22}}
+{"id": "purityDown1", "command": "client.click", "args": {"x": 118, "y": -22, "button": 1}}
+{"id": "purityDown2", "command": "client.click", "args": {"x": 118, "y": -22, "button": 1}}
+{"id": "buttons_settle", "command": "wait", "args": {"ticks": 10}}
+{"id": "buttons_after", "command": "client.capture", "args": {"name": "drinking_buttons_after"}}
+{"id": "buttons_shut", "command": "client.screen", "args": {"open": "none"}}
+{"id": "buttons_create", "command": "server.command", "args": {"command": "sbp template create thirstout:drinking_buttons", "as": "Dev"}}
+{"id": "buttons_export", "command": "server.command", "args": {"command": "sbp template export thirstout:drinking_buttons", "as": "Dev"}}
+
+{"id": "en_us_language", "command": "client.language", "args": {"code": "en_us"}}
+{"id": "en_us_widths", "command": "client.textWidth", "args": {"keys": ["gui.thirstwastaken2.upgrades.drinking", "gui.thirstwastaken2.upgrades.advanced_drinking"]}}
+{"id": "en_us_basic_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "en_us_basic_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
+{"id": "en_us_basic_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "en_us_basic_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "en_us_basic_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "en_us_basic_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "en_us_basic_tab", "command": "server.command", "args": {"command": "item modify entity @p weapon.mainhand {\"function\":\"minecraft:set_components\",\"components\":{\"sophisticatedcore:open_tab_id\":0}}"}}
+{"id": "en_us_basic_reopen", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "en_us_basic_shown", "command": "wait", "args": {"ticks": 20}}
+{"id": "en_us_basic_capture", "command": "client.capture", "args": {"name": "drinking_tab_en_us_basic"}}
+{"id": "en_us_basic_shut", "command": "client.screen", "args": {"open": "none"}}
+{"id": "en_us_advanced_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "en_us_advanced_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
+{"id": "en_us_advanced_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "en_us_advanced_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "en_us_advanced_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "en_us_advanced_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "en_us_advanced_tab", "command": "server.command", "args": {"command": "item modify entity @p weapon.mainhand {\"function\":\"minecraft:set_components\",\"components\":{\"sophisticatedcore:open_tab_id\":0}}"}}
+{"id": "en_us_advanced_reopen", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "en_us_advanced_shown", "command": "wait", "args": {"ticks": 20}}
+{"id": "en_us_advanced_capture", "command": "client.capture", "args": {"name": "drinking_tab_en_us_advanced"}}
+{"id": "en_us_advanced_shut", "command": "client.screen", "args": {"open": "none"}}
+
+{"id": "vi_vn_language", "command": "client.language", "args": {"code": "vi_vn"}}
+{"id": "vi_vn_widths", "command": "client.textWidth", "args": {"keys": ["gui.thirstwastaken2.upgrades.drinking", "gui.thirstwastaken2.upgrades.advanced_drinking"]}}
+{"id": "vi_vn_basic_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "vi_vn_basic_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
+{"id": "vi_vn_basic_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "vi_vn_basic_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "vi_vn_basic_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "vi_vn_basic_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "vi_vn_basic_tab", "command": "server.command", "args": {"command": "item modify entity @p weapon.mainhand {\"function\":\"minecraft:set_components\",\"components\":{\"sophisticatedcore:open_tab_id\":0}}"}}
+{"id": "vi_vn_basic_reopen", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "vi_vn_basic_shown", "command": "wait", "args": {"ticks": 20}}
+{"id": "vi_vn_basic_capture", "command": "client.capture", "args": {"name": "drinking_tab_vi_vn_basic"}}
+{"id": "vi_vn_basic_shut", "command": "client.screen", "args": {"open": "none"}}
+{"id": "vi_vn_advanced_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "vi_vn_advanced_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
+{"id": "vi_vn_advanced_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "vi_vn_advanced_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "vi_vn_advanced_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "vi_vn_advanced_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "vi_vn_advanced_tab", "command": "server.command", "args": {"command": "item modify entity @p weapon.mainhand {\"function\":\"minecraft:set_components\",\"components\":{\"sophisticatedcore:open_tab_id\":0}}"}}
+{"id": "vi_vn_advanced_reopen", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "vi_vn_advanced_shown", "command": "wait", "args": {"ticks": 20}}
+{"id": "vi_vn_advanced_capture", "command": "client.capture", "args": {"name": "drinking_tab_vi_vn_advanced"}}
+{"id": "vi_vn_advanced_shut", "command": "client.screen", "args": {"open": "none"}}
+
+{"id": "fr_fr_language", "command": "client.language", "args": {"code": "fr_fr"}}
+{"id": "fr_fr_widths", "command": "client.textWidth", "args": {"keys": ["gui.thirstwastaken2.upgrades.drinking", "gui.thirstwastaken2.upgrades.advanced_drinking"]}}
+{"id": "fr_fr_basic_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "fr_fr_basic_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
+{"id": "fr_fr_basic_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "fr_fr_basic_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "fr_fr_basic_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "fr_fr_basic_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "fr_fr_basic_tab", "command": "server.command", "args": {"command": "item modify entity @p weapon.mainhand {\"function\":\"minecraft:set_components\",\"components\":{\"sophisticatedcore:open_tab_id\":0}}"}}
+{"id": "fr_fr_basic_reopen", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "fr_fr_basic_shown", "command": "wait", "args": {"ticks": 20}}
+{"id": "fr_fr_basic_capture", "command": "client.capture", "args": {"name": "drinking_tab_fr_fr_basic"}}
+{"id": "fr_fr_basic_shut", "command": "client.screen", "args": {"open": "none"}}
+{"id": "fr_fr_advanced_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "fr_fr_advanced_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
+{"id": "fr_fr_advanced_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "fr_fr_advanced_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "fr_fr_advanced_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "fr_fr_advanced_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "fr_fr_advanced_tab", "command": "server.command", "args": {"command": "item modify entity @p weapon.mainhand {\"function\":\"minecraft:set_components\",\"components\":{\"sophisticatedcore:open_tab_id\":0}}"}}
+{"id": "fr_fr_advanced_reopen", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "fr_fr_advanced_shown", "command": "wait", "args": {"ticks": 20}}
+{"id": "fr_fr_advanced_capture", "command": "client.capture", "args": {"name": "drinking_tab_fr_fr_advanced"}}
+{"id": "fr_fr_advanced_shut", "command": "client.screen", "args": {"open": "none"}}
+
+{"id": "ja_jp_language", "command": "client.language", "args": {"code": "ja_jp"}}
+{"id": "ja_jp_widths", "command": "client.textWidth", "args": {"keys": ["gui.thirstwastaken2.upgrades.drinking", "gui.thirstwastaken2.upgrades.advanced_drinking"]}}
+{"id": "ja_jp_basic_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "ja_jp_basic_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
+{"id": "ja_jp_basic_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "ja_jp_basic_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "ja_jp_basic_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "ja_jp_basic_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "ja_jp_basic_tab", "command": "server.command", "args": {"command": "item modify entity @p weapon.mainhand {\"function\":\"minecraft:set_components\",\"components\":{\"sophisticatedcore:open_tab_id\":0}}"}}
+{"id": "ja_jp_basic_reopen", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "ja_jp_basic_shown", "command": "wait", "args": {"ticks": 20}}
+{"id": "ja_jp_basic_capture", "command": "client.capture", "args": {"name": "drinking_tab_ja_jp_basic"}}
+{"id": "ja_jp_basic_shut", "command": "client.screen", "args": {"open": "none"}}
+{"id": "ja_jp_advanced_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "ja_jp_advanced_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
+{"id": "ja_jp_advanced_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "ja_jp_advanced_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "ja_jp_advanced_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "ja_jp_advanced_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "ja_jp_advanced_tab", "command": "server.command", "args": {"command": "item modify entity @p weapon.mainhand {\"function\":\"minecraft:set_components\",\"components\":{\"sophisticatedcore:open_tab_id\":0}}"}}
+{"id": "ja_jp_advanced_reopen", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "ja_jp_advanced_shown", "command": "wait", "args": {"ticks": 20}}
+{"id": "ja_jp_advanced_capture", "command": "client.capture", "args": {"name": "drinking_tab_ja_jp_advanced"}}
+{"id": "ja_jp_advanced_shut", "command": "client.screen", "args": {"open": "none"}}
+
+{"id": "ko_kr_language", "command": "client.language", "args": {"code": "ko_kr"}}
+{"id": "ko_kr_widths", "command": "client.textWidth", "args": {"keys": ["gui.thirstwastaken2.upgrades.drinking", "gui.thirstwastaken2.upgrades.advanced_drinking"]}}
+{"id": "ko_kr_basic_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "ko_kr_basic_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
+{"id": "ko_kr_basic_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "ko_kr_basic_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "ko_kr_basic_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "ko_kr_basic_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "ko_kr_basic_tab", "command": "server.command", "args": {"command": "item modify entity @p weapon.mainhand {\"function\":\"minecraft:set_components\",\"components\":{\"sophisticatedcore:open_tab_id\":0}}"}}
+{"id": "ko_kr_basic_reopen", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "ko_kr_basic_shown", "command": "wait", "args": {"ticks": 20}}
+{"id": "ko_kr_basic_capture", "command": "client.capture", "args": {"name": "drinking_tab_ko_kr_basic"}}
+{"id": "ko_kr_basic_shut", "command": "client.screen", "args": {"open": "none"}}
+{"id": "ko_kr_advanced_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "ko_kr_advanced_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
+{"id": "ko_kr_advanced_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "ko_kr_advanced_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "ko_kr_advanced_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "ko_kr_advanced_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "ko_kr_advanced_tab", "command": "server.command", "args": {"command": "item modify entity @p weapon.mainhand {\"function\":\"minecraft:set_components\",\"components\":{\"sophisticatedcore:open_tab_id\":0}}"}}
+{"id": "ko_kr_advanced_reopen", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "ko_kr_advanced_shown", "command": "wait", "args": {"ticks": 20}}
+{"id": "ko_kr_advanced_capture", "command": "client.capture", "args": {"name": "drinking_tab_ko_kr_advanced"}}
+{"id": "ko_kr_advanced_shut", "command": "client.screen", "args": {"open": "none"}}
+
+{"id": "pl_pl_language", "command": "client.language", "args": {"code": "pl_pl"}}
+{"id": "pl_pl_widths", "command": "client.textWidth", "args": {"keys": ["gui.thirstwastaken2.upgrades.drinking", "gui.thirstwastaken2.upgrades.advanced_drinking"]}}
+{"id": "pl_pl_basic_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "pl_pl_basic_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
+{"id": "pl_pl_basic_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "pl_pl_basic_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "pl_pl_basic_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "pl_pl_basic_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "pl_pl_basic_tab", "command": "server.command", "args": {"command": "item modify entity @p weapon.mainhand {\"function\":\"minecraft:set_components\",\"components\":{\"sophisticatedcore:open_tab_id\":0}}"}}
+{"id": "pl_pl_basic_reopen", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "pl_pl_basic_shown", "command": "wait", "args": {"ticks": 20}}
+{"id": "pl_pl_basic_capture", "command": "client.capture", "args": {"name": "drinking_tab_pl_pl_basic"}}
+{"id": "pl_pl_basic_shut", "command": "client.screen", "args": {"open": "none"}}
+{"id": "pl_pl_advanced_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "pl_pl_advanced_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
+{"id": "pl_pl_advanced_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "pl_pl_advanced_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "pl_pl_advanced_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "pl_pl_advanced_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "pl_pl_advanced_tab", "command": "server.command", "args": {"command": "item modify entity @p weapon.mainhand {\"function\":\"minecraft:set_components\",\"components\":{\"sophisticatedcore:open_tab_id\":0}}"}}
+{"id": "pl_pl_advanced_reopen", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "pl_pl_advanced_shown", "command": "wait", "args": {"ticks": 20}}
+{"id": "pl_pl_advanced_capture", "command": "client.capture", "args": {"name": "drinking_tab_pl_pl_advanced"}}
+{"id": "pl_pl_advanced_shut", "command": "client.screen", "args": {"open": "none"}}
+
+{"id": "ru_ru_language", "command": "client.language", "args": {"code": "ru_ru"}}
+{"id": "ru_ru_widths", "command": "client.textWidth", "args": {"keys": ["gui.thirstwastaken2.upgrades.drinking", "gui.thirstwastaken2.upgrades.advanced_drinking"]}}
+{"id": "ru_ru_basic_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "ru_ru_basic_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
+{"id": "ru_ru_basic_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "ru_ru_basic_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "ru_ru_basic_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "ru_ru_basic_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "ru_ru_basic_tab", "command": "server.command", "args": {"command": "item modify entity @p weapon.mainhand {\"function\":\"minecraft:set_components\",\"components\":{\"sophisticatedcore:open_tab_id\":0}}"}}
+{"id": "ru_ru_basic_reopen", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "ru_ru_basic_shown", "command": "wait", "args": {"ticks": 20}}
+{"id": "ru_ru_basic_capture", "command": "client.capture", "args": {"name": "drinking_tab_ru_ru_basic"}}
+{"id": "ru_ru_basic_shut", "command": "client.screen", "args": {"open": "none"}}
+{"id": "ru_ru_advanced_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "ru_ru_advanced_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
+{"id": "ru_ru_advanced_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "ru_ru_advanced_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "ru_ru_advanced_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "ru_ru_advanced_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "ru_ru_advanced_tab", "command": "server.command", "args": {"command": "item modify entity @p weapon.mainhand {\"function\":\"minecraft:set_components\",\"components\":{\"sophisticatedcore:open_tab_id\":0}}"}}
+{"id": "ru_ru_advanced_reopen", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "ru_ru_advanced_shown", "command": "wait", "args": {"ticks": 20}}
+{"id": "ru_ru_advanced_capture", "command": "client.capture", "args": {"name": "drinking_tab_ru_ru_advanced"}}
+{"id": "ru_ru_advanced_shut", "command": "client.screen", "args": {"open": "none"}}
+
+{"id": "zh_cn_language", "command": "client.language", "args": {"code": "zh_cn"}}
+{"id": "zh_cn_widths", "command": "client.textWidth", "args": {"keys": ["gui.thirstwastaken2.upgrades.drinking", "gui.thirstwastaken2.upgrades.advanced_drinking"]}}
+{"id": "zh_cn_basic_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "zh_cn_basic_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
+{"id": "zh_cn_basic_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "zh_cn_basic_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "zh_cn_basic_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "zh_cn_basic_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "zh_cn_basic_tab", "command": "server.command", "args": {"command": "item modify entity @p weapon.mainhand {\"function\":\"minecraft:set_components\",\"components\":{\"sophisticatedcore:open_tab_id\":0}}"}}
+{"id": "zh_cn_basic_reopen", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "zh_cn_basic_shown", "command": "wait", "args": {"ticks": 20}}
+{"id": "zh_cn_basic_capture", "command": "client.capture", "args": {"name": "drinking_tab_zh_cn_basic"}}
+{"id": "zh_cn_basic_shut", "command": "client.screen", "args": {"open": "none"}}
+{"id": "zh_cn_advanced_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "zh_cn_advanced_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
+{"id": "zh_cn_advanced_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "zh_cn_advanced_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "zh_cn_advanced_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "zh_cn_advanced_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "zh_cn_advanced_tab", "command": "server.command", "args": {"command": "item modify entity @p weapon.mainhand {\"function\":\"minecraft:set_components\",\"components\":{\"sophisticatedcore:open_tab_id\":0}}"}}
+{"id": "zh_cn_advanced_reopen", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "zh_cn_advanced_shown", "command": "wait", "args": {"ticks": 20}}
+{"id": "zh_cn_advanced_capture", "command": "client.capture", "args": {"name": "drinking_tab_zh_cn_advanced"}}
+{"id": "zh_cn_advanced_shut", "command": "client.screen", "args": {"open": "none"}}
+
+{"id": "zh_tw_language", "command": "client.language", "args": {"code": "zh_tw"}}
+{"id": "zh_tw_widths", "command": "client.textWidth", "args": {"keys": ["gui.thirstwastaken2.upgrades.drinking", "gui.thirstwastaken2.upgrades.advanced_drinking"]}}
+{"id": "zh_tw_basic_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "zh_tw_basic_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
+{"id": "zh_tw_basic_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "zh_tw_basic_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "zh_tw_basic_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "zh_tw_basic_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "zh_tw_basic_tab", "command": "server.command", "args": {"command": "item modify entity @p weapon.mainhand {\"function\":\"minecraft:set_components\",\"components\":{\"sophisticatedcore:open_tab_id\":0}}"}}
+{"id": "zh_tw_basic_reopen", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "zh_tw_basic_shown", "command": "wait", "args": {"ticks": 20}}
+{"id": "zh_tw_basic_capture", "command": "client.capture", "args": {"name": "drinking_tab_zh_tw_basic"}}
+{"id": "zh_tw_basic_shut", "command": "client.screen", "args": {"open": "none"}}
+{"id": "zh_tw_advanced_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "zh_tw_advanced_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
+{"id": "zh_tw_advanced_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "zh_tw_advanced_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "zh_tw_advanced_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "zh_tw_advanced_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "zh_tw_advanced_tab", "command": "server.command", "args": {"command": "item modify entity @p weapon.mainhand {\"function\":\"minecraft:set_components\",\"components\":{\"sophisticatedcore:open_tab_id\":0}}"}}
+{"id": "zh_tw_advanced_reopen", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
+{"id": "zh_tw_advanced_shown", "command": "wait", "args": {"ticks": 20}}
+{"id": "zh_tw_advanced_capture", "command": "client.capture", "args": {"name": "drinking_tab_zh_tw_advanced"}}
+{"id": "zh_tw_advanced_shut", "command": "client.screen", "args": {"open": "none"}}
+
+{"id": "english", "command": "client.language", "args": {"code": "en_us"}}

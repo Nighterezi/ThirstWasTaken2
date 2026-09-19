@@ -52,6 +52,8 @@ final class ClientProbes {
     private static final int CAPTURE_ATTEMPTS = 30;
     /** Ticks a respawn is given to reach the server and come back before the answer is written. */
     private static final int RESPAWN_TICKS = 10;
+    /** Ticks a slot click is given to reach the server and its answer to come back. */
+    private static final int SLOT_TICKS = 5;
 
     private ClientProbes() { }
 
@@ -275,6 +277,93 @@ final class ClientProbes {
         });
 
         /*
+         * A mouse click on the open screen, for a control that has no other way in, such as another
+         * mod's settings button. Coordinates are GUI pixels from the centre of the screen by default:
+         * container screens are centred, so a control on one sits at the same offset from the centre
+         * whatever the window's size, which is not true of an offset from the corner. The answer says
+         * which of the screen's children was under the point, and whether it took the press.
+         */
+        dispatcher.register("client.click", (request, reply) -> {
+            Minecraft minecraft = client();
+            Screen screen = AgentClientVanilla.screen(minecraft);
+            if (screen == null) throw new AgentException("client.click: no screen is open");
+            boolean fromCentre = request.choice("from", "centre", "centre", "corner").equals("centre");
+            double x = request.decimal("x", 0.0F) + (fromCentre ? screen.width / 2.0 : 0.0);
+            double y = request.decimal("y", 0.0F) + (fromCentre ? screen.height / 2.0 : 0.0);
+            int button = request.has("button") ? request.integer("button", 0, 2) : 0;
+            String target = screen.getChildAt(x, y).map(child -> child.getClass().getName()).orElse(null);
+            boolean taken = AgentClientVanilla.click(screen, x, y, button);
+            JsonObject result = new JsonObject();
+            result.addProperty("screen", screen.getClass().getName());
+            result.addProperty("width", screen.width);
+            result.addProperty("height", screen.height);
+            result.addProperty("x", x);
+            result.addProperty("y", y);
+            result.addProperty("target", target);
+            result.addProperty("taken", taken);
+            reply.ok(result);
+        });
+
+        /* The open container's slots that hold something, by the index client.slot takes. */
+        dispatcher.register("client.slots", (request, reply) -> reply.ok(slots(player(client()))));
+
+        /*
+         * A click on one slot of the open container, sent to the server as a screen sends it: a left or
+         * right pick-up, a shift-click (quick_move) and so on. The slot is the menu's index, or with
+         * `inventory` the player's own inventory index (container.N), wherever this menu put it.
+         * Answered a few ticks later with every slot that holds something and what the cursor carries,
+         * once the server has answered.
+         */
+        dispatcher.register("client.slot", (request, reply) -> {
+            Minecraft minecraft = client();
+            LocalPlayer player = player(minecraft);
+            int slot = request.has("inventory") ? menuSlot(player, request.integer("inventory"))
+                    : request.integer("slot", 0, player.containerMenu.slots.size() - 1);
+            int button = request.has("button") ? request.integer("button", 0, 8) : 0;
+            String action = request.choice("action", "pickup",
+                    "pickup", "quick_move", "swap", "clone", "throw", "quick_craft", "pickup_all");
+            AgentClientVanilla.clickSlot(minecraft, player, slot, button, action.toUpperCase(java.util.Locale.ROOT));
+            dispatcher.defer(SLOT_TICKS, reply, () -> reply.ok(slots(player)));
+        });
+
+        /*
+         * Switches the game's language without writing options.txt. Only the translations are loaded
+         * again, not every resource the way the language screen does: the fonts already hold every
+         * script, and a full reload in a world freed a font atlas that Jade's overlay drew from a frame
+         * later, which crashed the client. So the next request already sees the new text.
+         */
+        dispatcher.register("client.language", (request, reply) -> {
+            Minecraft minecraft = client();
+            String code = request.string("code");
+            minecraft.getLanguageManager().setSelected(code);
+            minecraft.options.languageCode = code;
+            minecraft.getLanguageManager().onResourceManagerReload(minecraft.getResourceManager());
+            JsonObject result = new JsonObject();
+            result.addProperty("language", minecraft.getLanguageManager().getSelected());
+            reply.ok(result);
+        });
+
+        /*
+         * How wide the game's font draws each text, in GUI pixels, the number a label compares against
+         * the room it has. Keys are translated in the current language first, so with client.language
+         * this measures every translation with the glyphs the game really uses.
+         */
+        dispatcher.register("client.textWidth", (request, reply) -> {
+            Minecraft minecraft = client();
+            JsonArray widths = new JsonArray();
+            for (String key : request.has("keys") ? request.strings("keys") : List.<String>of()) {
+                widths.add(width(minecraft, key, Component.translatable(key).getString()));
+            }
+            for (String text : request.has("texts") ? request.strings("texts") : List.<String>of()) {
+                widths.add(width(minecraft, null, text));
+            }
+            JsonObject result = new JsonObject();
+            result.addProperty("language", minecraft.getLanguageManager().getSelected());
+            result.add("widths", widths);
+            reply.ok(result);
+        });
+
+        /*
          * Dying and coming back is one of the checks, so it is one of the commands. Vanilla has only
          * one way in: the button on the death screen. A click at the coordinates that button happens to
          * be at is exactly the kind of assertion-about-a-picture the agent exists to avoid, so this
@@ -486,6 +575,48 @@ final class ClientProbes {
         Item item = BuiltInRegistries.ITEM.getOptional(Identifier.parse(name))
                 .orElseThrow(() -> new AgentException("client.tooltip: no item called '" + name + "'"));
         return new ItemStack(item, request.integer("count", 1));
+    }
+
+    private static JsonObject slots(LocalPlayer player) {
+        JsonArray filled = new JsonArray();
+        for (int index = 0; index < player.containerMenu.slots.size(); index++) {
+            net.minecraft.world.inventory.Slot slot = player.containerMenu.slots.get(index);
+            if (!slot.hasItem()) continue;
+            JsonObject entry = item(slot.getItem());
+            entry.addProperty("slot", index);
+            entry.addProperty("kind", slot.getClass().getName());
+            if (slot.container == player.getInventory()) entry.addProperty("inventory", slot.getContainerSlot());
+            filled.add(entry);
+        }
+        JsonObject result = new JsonObject();
+        result.addProperty("menu", player.containerMenu.getClass().getName());
+        result.addProperty("size", player.containerMenu.slots.size());
+        result.add("carried", item(player.containerMenu.getCarried()));
+        result.add("slots", filled);
+        return result;
+    }
+
+    private static int menuSlot(LocalPlayer player, int inventorySlot) {
+        for (int index = 0; index < player.containerMenu.slots.size(); index++) {
+            net.minecraft.world.inventory.Slot slot = player.containerMenu.slots.get(index);
+            if (slot.container == player.getInventory() && slot.getContainerSlot() == inventorySlot) return index;
+        }
+        throw new AgentException("client.slot: the open menu has no slot for inventory slot " + inventorySlot);
+    }
+
+    private static JsonObject item(ItemStack stack) {
+        JsonObject entry = new JsonObject();
+        entry.addProperty("item", BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
+        entry.addProperty("count", stack.getCount());
+        return entry;
+    }
+
+    private static JsonObject width(Minecraft minecraft, String key, String text) {
+        JsonObject entry = new JsonObject();
+        if (key != null) entry.addProperty("key", key);
+        entry.addProperty("text", text);
+        entry.addProperty("width", minecraft.font.width(text));
+        return entry;
     }
 
     private static String screenName(Minecraft minecraft) {

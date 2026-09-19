@@ -135,6 +135,8 @@ if (sophisticatedCoreVersion != null) {
     sourceSets.main {
         java.srcDir("src/main/sophisticated/java")
         resources.srcDir("src/main/sophisticated/resources")
+        // The Drinking upgrade's settings tab, from the preprocessed client sources like the rest of them.
+        java.srcDir(files(clientSources.resolve("sophisticated/java")).builtBy("stonecutterGenerateClient"))
     }
 }
 
@@ -368,6 +370,9 @@ dependencies {
         clientRunMods("maven.modrinth:sophisticated-core:$sophisticatedCoreVersion") { isTransitive = false }
         findProperty("deps.sophisticated_backpacks")?.let {
             clientRunMods("maven.modrinth:sophisticated-backpacks:$it") { isTransitive = false }
+        }
+        findProperty("deps.sophisticated_storage")?.let {
+            clientRunMods("maven.modrinth:sophisticated-storage:$it") { isTransitive = false }
         }
     }
 }

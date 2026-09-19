@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    { "id": "thirstwastaken2:drinking_upgrade", "required": false },
+    { "id": "thirstwastaken2:advanced_drinking_upgrade", "required": false }
+  ]
+}

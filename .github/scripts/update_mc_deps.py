@@ -104,6 +104,7 @@ MODRINTH_DEPS = [
     # Pinned by id like Create, and printed on no page.
     ModrinthDep("sophisticated_core", "sophisticated-core", by_id=True, mirrors=()),
     ModrinthDep("sophisticated_backpacks", "sophisticated-backpacks", by_id=True, mirrors=()),
+    ModrinthDep("sophisticated_storage", "sophisticated-storage", by_id=True, mirrors=()),
 ]
 
 

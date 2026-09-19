@@ -44,7 +44,7 @@ out, in which case the position in the queue stands in for it. A reply is
 
 with `error` instead of `result` when `ok` is false. **Requests are answered in order, one at a
 time.** A command that takes ticks to finish — `wait`, `client.hold`, `client.capture`,
-`client.respawn` — holds the next request up until it has answered, so a file of requests is a
+`client.slot`, `client.respawn` — holds the next request up until it has answered, so a file of requests is a
 sequence rather than a batch of things that all happen in one tick.
 
 `drive.py` also accepts an `expect` object keyed by dotted reply paths, plus relational `checks`.
@@ -155,6 +155,11 @@ a client answers all three.
 | `client.key` | `key`, `down` | after setting one key's state and leaving it there |
 | `client.screen` | `open` (`none`, `config`) | which screen is open now |
 | `client.tooltip` | `item`, `count`, `advanced` | the tooltip lines that item produced, as text, with their colours |
+| `client.click` | `x`, `y`, `button`, `from` (`centre`, `corner`) | after pressing and releasing a mouse button on the open screen: which child was under the point and whether the press was taken |
+| `client.slots` | | the open menu's slots that hold something, with their class and player inventory index, and what the cursor carries |
+| `client.slot` | `slot` or `inventory`, `button`, `action` (`pickup`, `quick_move`, …) | the same, a few ticks after clicking that slot through the game mode |
+| `client.language` | `code` | the language now selected, after loading its translations again |
+| `client.textWidth` | `keys`, `texts` | how wide the game's font draws each, in GUI pixels, keys translated in the current language |
 | `client.respawn` | | after pressing the death screen's button through the connection |
 | `client.disconnect` | | after leaving to the title screen |
 | `client.connect` | `address` | after starting a connection; `wait` for it to finish |
@@ -170,6 +175,14 @@ and leaves them crouching. `client.info` answers both settings; read the state b
 assuming. The dev client also turns `pauseOnLostFocus` off when it opens the agent: an unattended
 window is necessarily unfocused, and otherwise vanilla repeatedly opens `PauseScreen` and suppresses
 the movement keys the agent is deliberately holding.
+
+Clicks are for controls nothing else reaches, another mod's settings buttons for instance; a screen the
+game can open, and a slot, have commands of their own. `client.click` measures from the centre of the
+screen by default because a container screen is centred, so a control on one keeps its offset from
+the centre at any window size. `client.slot` takes a player inventory index as `inventory`, the
+`container.N` of `/item replace`, and finds that slot in whatever menu is open. `client.language`
+loads only the translations again: a full resource reload in a world freed a font atlas that Jade's
+overlay drew from a frame later and crashed the client, and the fonts already hold every script.
 
 ## What a check looks like
 
