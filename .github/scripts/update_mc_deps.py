@@ -28,7 +28,8 @@ Rules:
 - Loom is left alone: a Loom bump tends to need a Gradle bump alongside it.
 - README.md and docs/docs/installation.md print the same versions for people to read, so a bump rewrites
   them too, and only there: CHANGELOG.md says what a past release was built against and has to keep
-  saying it. Only Fabric nodes reach the pages, since neither names a NeoForge build.
+  saying it. Both pages print Fabric Loader, Fabric API and NeoForge; only the installation page prints
+  the optional mods, and only their Fabric builds.
 - `--check` goes the other way: it reports a version the properties file pins that those two pages do
   not name, which is what a bump made by hand leaves behind. It reads those three files and nothing
   else, so it needs no network and gates a pull request in well under a second. What lets it work
@@ -77,7 +78,7 @@ class ModrinthDep:
     """Modrinth project slug."""
     by_id: bool = False
     """Pinned by Modrinth version id instead of version number."""
-    mirrors: tuple[Path, ...] = DOC_MIRRORS
+    mirrors: tuple[Path, ...] = (INSTALLATION,)
     """The doc mirrors that print this dependency's version."""
     neoforge_project: str | None = None
     """Modrinth project slug on the NeoForge nodes, when that loader's build is a different project."""
@@ -89,12 +90,12 @@ class ModrinthDep:
 # Every per-node dependency the build resolves from Modrinth or from a Maven that publishes the same
 # version numbers (Fabric API). Add a line here when build.gradle.kts gains a `deps.*` property.
 MODRINTH_DEPS = [
-    ModrinthDep("fabric_api", "fabric-api"),
+    # The README's requirements table prints Fabric API; every optional mod is on the installation page only.
+    ModrinthDep("fabric_api", "fabric-api", mirrors=DOC_MIRRORS),
     ModrinthDep("modmenu", "modmenu"),
     # AppleSkin shares one version number between its Fabric and NeoForge uploads.
     ModrinthDep("appleskin", "appleskin", by_id=True),
-    # The README names Cloth Config without a version; only the installation page prints one.
-    ModrinthDep("cloth_config", "cloth-config", mirrors=(INSTALLATION,)),
+    ModrinthDep("cloth_config", "cloth-config"),
     ModrinthDep("jade", "jade"),
     # Refabricated is the Fabric port; the NeoForge nodes use vectorwing's original.
     ModrinthDep("farmersdelight", "farmers-delight-refabricated", neoforge_project="farmers-delight"),
@@ -325,7 +326,7 @@ def check_neoforge(props: Properties, node: str, changes: list[Change]) -> None:
         return
     props.set(index, "deps.neoforge", newest)
     changes.append(Change(node, "neoforge", pinned, newest, pinned, newest,
-                          "https://projects.neoforged.net/neoforged/neoforge"))
+                          "https://projects.neoforged.net/neoforged/neoforge", DOC_MIRRORS))
 
 
 def forms(version: str) -> list[str]:
@@ -413,6 +414,9 @@ def check_docs(props: Properties) -> list[str]:
         # A node without a loader table is not a node; main warns about that separately.
         if not props.has_node(node):
             continue
+        neoforge = props.find(node, "deps.neoforge")
+        if neoforge:
+            problems += missing("NeoForge", neoforge[1], DOC_MIRRORS, node)
         for dep in MODRINTH_DEPS:
             found = props.find(node, f"deps.{dep.key}")
             if found is None:
@@ -429,7 +433,7 @@ def check_docs(props: Properties) -> list[str]:
                                     f"with no version above it. Put the number in a comment, as "
                                     f"`# 3.0.10+mc26.2, the Fabric upload.` does.")
                     continue
-            # Only the Fabric nodes reach the pages: neither of them names a NeoForge build.
+            # Only the Fabric nodes reach the pages: neither of them names a NeoForge build of a mod.
             if node_loader(node) == "fabric":
                 problems += missing(dep.key, label, dep.mirrors, node)
     return problems
