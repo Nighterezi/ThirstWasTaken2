@@ -2,7 +2,8 @@
 
 ## Download
 
-Download the mod from [Modrinth](https://modrinth.com/mod/thirst-was-taken-2).
+Download the mod from [Modrinth](https://modrinth.com/mod/thirst-was-taken-2). It is also on
+[CurseForge](https://www.curseforge.com/minecraft/mc-mods/thirst-was-taken-2).
 
 ## Supported versions
 

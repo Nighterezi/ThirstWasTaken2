@@ -16,7 +16,7 @@ npm run docs:build    # must pass before you call a docs change done
 | `index.md` | The hero page. Feature cards link into the documentation. |
 | `docs/` | The manual: overview, features, installation, commands, configuration, FAQ. |
 | `docs/features/` | What the mod does and why, in prose. No config key listings. |
-| `.vitepress/config.mts` | Nav, sidebar and the GitHub and Modrinth icons. |
+| `.vitepress/config.mts` | Nav, sidebar and the GitHub, Modrinth and CurseForge icons. |
 | `.vitepress/theme/` | Default theme plus `custom.css` for the brand colour. |
 | `public/` | `logo.png` for the navbar and favicon, and `screenshots/`. The home hero is a slideshow of four screenshots, in `.vitepress/theme/HeroSlideshow.vue`. |
 
