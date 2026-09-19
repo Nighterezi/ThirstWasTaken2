@@ -15,7 +15,7 @@ version, and NeoForge files end in `-neoforge`, for example `ThirstWasTaken2-1.0
 
 | Minecraft | File suffix | Fabric Loader | Fabric API | Java |
 |---|---|---|---|---|
-| 26.2 | `+26.2` | 0.19.5 or newer | 0.160.0+26.2 or newer | 25 |
+| 26.2 | `+26.2` | 0.19.5 or newer | 0.161.0+26.2 or newer | 25 |
 | 26.1, 26.1.1, 26.1.2 | `+26.1.2` | 0.19.5 or newer | 0.155.3+26.1.2 or newer | 25 |
 | 1.21.11 | `+1.21.11` | 0.19.5 or newer | 0.141.6+1.21.11 or newer | 21 |
 | 1.21, 1.21.1 | `+1.21.1` | 0.19.5 or newer | 0.116.17+1.21.1 or newer | 21 |
@@ -48,7 +48,7 @@ All optional except Fabric API. Versions are listed in the order 26.2, 26.1.x, 1
 
 | Mod | Versions built with | What it adds |
 |---|---|---|
-| [Fabric API](https://modrinth.com/mod/fabric-api) | 0.160.0+26.2, 0.155.3+26.1.2, 0.141.6+1.21.11, 0.116.17+1.21.1 | Required. |
+| [Fabric API](https://modrinth.com/mod/fabric-api) | 0.161.0+26.2, 0.155.3+26.1.2, 0.141.6+1.21.11, 0.116.17+1.21.1 | Required. |
 | [Mod Menu](https://modrinth.com/mod/modmenu) | 20.0.2, 18.0.1, 17.0.0, 11.0.4 | A Config button for the [settings screen](/docs/configuration). |
 | [AppleSkin](https://modrinth.com/mod/appleskin) | 3.0.10+mc26.2, 3.0.10+mc26.1.2, 3.0.8+mc1.21.11, 3.0.6+mc1.21 | The quenched outline on the thirst bar, droplet rows in tooltips, and the exhaustion strip. |
 | [Cloth Config](https://modrinth.com/mod/cloth-config) | 26.2.155, 26.1.154, 21.11.153, 15.0.140 | AppleSkin's own settings screen. |
