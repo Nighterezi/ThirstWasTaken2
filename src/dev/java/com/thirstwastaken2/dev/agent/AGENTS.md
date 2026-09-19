@@ -239,6 +239,32 @@ The agent client deliberately does not scale by simulating players. A fake conne
 packet, so a simulated player can never answer a question about sync or about the HUD, which is the
 only kind of question this tool exists for.
 
+## Known issues
+
+**The Fabric 26.2.x client crashes on its way out, after the script has been answered.** The run
+prints `[ThirstAgent] DONE`, then about 15 seconds later `java.lang.Error: Watchdog (Client shutdown
+from post-main)`, writes a crash report to `run/26.2.x/crash-reports/`, and Gradle reports exit value
+-8 and `BUILD FAILED`. The replies in `out.jsonl` are complete; nothing the script asked failed. Until
+this is gone, a 26.2.x run's result is its `DONE` line, not the Gradle task's exit.
+
+It is Create Fly's, not the agent's. Create Fly (`26.2-rc-2-6.0.9-1`, the newest for 26.2 on
+2026-09-19) starts Flywheel's `Flywheel Task Executor #N` threads as non-daemon threads and never
+stops them: nothing calls `ParallelTaskExecutor.stopWorkers()`. Up to 26.1, `Minecraft.destroy()`
+ended in `System.exit(0)`, which took them down with everything else, so 26.1.x has the same threads
+and still exits cleanly. 26.2 dropped that exit: `Main` returns, leaves the JVM to end when its last
+non-daemon thread does, and starts `ClientShutdownWatchdog`, which dumps the threads after 15 seconds
+and calls `System.exit(-8)`. The thread dump holds nothing else that is not a daemon. `stop`, and the
+end of a `-Pagent` script, call `Minecraft.stop()`, the same as the title screen's Quit button, so a
+person quitting a 26.2 client that has Create Fly gets the same crash report. The other nodes do not
+load Create Fly.
+
+Setting Flywheel's `workerThreads` to `0` in `run/26.2.x/config/flywheel-client.json`
+(`"workerThreads": {"value": 0}`) avoids it: Flywheel then does its work on the render thread and
+starts no workers, and the run ends with `BUILD SUCCESSFUL`. The file is under `run/`, which is not
+committed, so each checkout sets it once. Delete this entry once a Create Fly build for 26.2 stops its
+workers or makes them daemon threads. To check, run any client script on 26.2.x with `workerThreads`
+back at `-1`.
+
 ## Rules
 
 - **Every probe answers a number or a string, never a picture.** `client.capture` exists so a person
