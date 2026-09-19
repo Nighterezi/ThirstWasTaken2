@@ -1,3 +1,13 @@
+<div align="center">
+
+<br>
+
+[![modrinth](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/modrinth_64h.png)](https://modrinth.com/mod/thirst-was-taken-2)
+[![curseforge](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/curseforge_64h.png)](https://www.curseforge.com/minecraft/mc-mods/thirst-was-taken-2)
+[![ghpages](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/documentation/ghpages_64h.png)](https://nighterezi.github.io/ThirstWasTaken2/)
+
+</div>
+
 ## Thirst and Quenched
 Your body requires water just like food. The system mirrors vanilla hunger:
 * **Thirst Bar:** Depletes as you run, jump, mine, and fight.
@@ -200,3 +210,11 @@ Want to improve or add a translation? [Open a pull request](https://github.com/N
 * Based on [Thirst Was Taken](https://modrinth.com/mod/thirst-was-taken) by [ghen](https://github.com/ghen-git), under the MIT License.
 * Hanging Pot models adapted from [Dehydration](https://github.com/Globox1997/Dehydration) by [Globox1997](https://github.com/Globox1997), under the GPL-3.0.
 * Licensed under the [GPL-3.0](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/LICENSE) from 1.0.7. See [CREDITS.md](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/CREDITS.md).
+
+## Community
+
+<div align="center">
+
+[![discord](https://cdn.modrinth.com/data/cached_images/ed9e22abe916888bc68150b8ad3b2afa4adbc241.png)](https://discord.com/invite/YwD9Xv7Beu)
+
+</div>
