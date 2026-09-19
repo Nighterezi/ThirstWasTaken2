@@ -1,0 +1,41 @@
+// Sophisticated Backpacks' Feeding upgrade restores thirst for what it feeds, as eating by hand does.
+// Only nodes that set deps.sophisticated_core have it on the runClient classpath.
+//
+// A hungry player with thirst 4 gets a backpack (template thirsttest:feeding_melon in
+// tools/agent/sophisticated-pack) holding a Feeding upgrade and 16 melon slices, 4 thirst and 5
+// quenched each. Sophisticated only unpacks a template the first time the backpack is opened, so it is
+// opened with the real right click and closed again. Expected: "fed" shows food above "hungry" and
+// thirst above 4. Without the integration food rises and thirst stays at 4. The export under the
+// world's datapacks/thirstout_backpack_templates says how many slices are left.
+//
+// SophisticatedAgent is a throwaway world: copy level.dat out of any 1.21.1 world (its player keeps
+// their effects, so the script clears them: a Farmer's Delight world leaves Nourishment behind) into
+// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/sophisticated-pack into its datapacks
+// folder, fresh for each run. Then:
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/sophisticated-feeding.jsonl -Pquickplay=SophisticatedAgent
+
+{"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "joined", "command": "client.state"}
+{"id": "effects", "command": "server.command", "args": {"command": "effect clear @p"}}
+{"id": "survival", "command": "server.command", "args": {"command": "gamemode survival @p"}}
+{"id": "difficulty", "command": "server.command", "args": {"command": "difficulty normal"}}
+{"id": "safe", "command": "server.command", "args": {"command": "effect give @p minecraft:resistance 600 4 true"}}
+{"id": "lookUp", "command": "server.command", "args": {"command": "tp @p ~ ~ ~ 0 -90"}}
+{"id": "clear", "command": "server.command", "args": {"command": "clear @p"}}
+
+// Hunger 255 for three seconds empties most of the food bar. Its exhaustion drains thirst too, so
+// thirst is set afterwards.
+{"id": "starve", "command": "server.command", "args": {"command": "effect give @p minecraft:hunger 3 255 true"}}
+{"id": "starving", "command": "wait", "args": {"ticks": 80}}
+{"id": "fedUp", "command": "server.command", "args": {"command": "effect clear @p minecraft:hunger"}}
+{"id": "thirsty", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 4, "quenched": 0, "exhaustion": 0}}
+{"id": "hungry", "command": "server.thirst.get", "args": {"player": "Dev"}}
+
+{"id": "give", "command": "server.command", "args": {"command": "sbp template give thirsttest:feeding_melon", "as": "Dev"}}
+{"id": "open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
+{"id": "opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "eating", "command": "wait", "args": {"ticks": 60}}
+{"id": "fed", "command": "server.thirst.get", "args": {"player": "Dev"}}
+{"id": "create", "command": "server.command", "args": {"command": "sbp template create thirstout:feeding_melon", "as": "Dev"}}
+{"id": "export", "command": "server.command", "args": {"command": "sbp template export thirstout:feeding_melon", "as": "Dev"}}
