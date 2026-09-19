@@ -1,0 +1,48 @@
+// Sophisticated Backpacks' Alchemy upgrade restores thirst for what it drinks, and never drinks plain
+// water. Only nodes that set deps.sophisticated_core have it on the runClient classpath.
+//
+// Two backpacks from tools/agent/sophisticated-pack, each with three bottles and an Alchemy upgrade
+// whose one filter is that bottle, set to Always:
+// - alchemy_potion, Fire Resistance: the player drinks one (it only drinks while the effect is missing),
+//   so "potionDrunk" shows thirst 10 and quenched 8, a potion's 6 and 8 over the 4 it starts from, and
+//   the export has two potions and a glass bottle left. Without the integration thirst stays at 4.
+// - alchemy_water, dirty water: nothing is drunk. "waterRefused" still shows thirst 4 and the export
+//   still has three bottles with water_purity 0.
+// Sophisticated only unpacks a template the first time the backpack is opened, so each is opened with
+// the real right click and closed again.
+//
+// SophisticatedAgent is a throwaway world: copy level.dat out of any 1.21.1 world (its player keeps
+// their effects, so the script clears them: a Farmer's Delight world leaves Nourishment behind) into
+// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/sophisticated-pack into its datapacks
+// folder, fresh for each run. Then:
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/sophisticated-alchemy.jsonl -Pquickplay=SophisticatedAgent
+
+{"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "joined", "command": "client.state"}
+{"id": "survival", "command": "server.command", "args": {"command": "gamemode survival @p"}}
+{"id": "difficulty", "command": "server.command", "args": {"command": "difficulty normal"}}
+{"id": "lookUp", "command": "server.command", "args": {"command": "tp @p ~ ~ ~ 0 -90"}}
+
+{"id": "alchemy_potion_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "alchemy_potion_effects", "command": "server.command", "args": {"command": "effect clear @p"}}
+{"id": "alchemy_potion_thirsty", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 4, "quenched": 0, "exhaustion": 0}}
+{"id": "alchemy_potion_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:alchemy_potion", "as": "Dev"}}
+{"id": "alchemy_potion_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
+{"id": "alchemy_potion_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "alchemy_potion_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "alchemy_potion_drinking", "command": "wait", "args": {"ticks": 100}}
+{"id": "potionDrunk", "command": "server.thirst.get", "args": {"player": "Dev"}}
+{"id": "alchemy_potion_create", "command": "server.command", "args": {"command": "sbp template create thirstout:alchemy_potion", "as": "Dev"}}
+{"id": "alchemy_potion_export", "command": "server.command", "args": {"command": "sbp template export thirstout:alchemy_potion", "as": "Dev"}}
+
+{"id": "alchemy_water_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "alchemy_water_effects", "command": "server.command", "args": {"command": "effect clear @p"}}
+{"id": "alchemy_water_thirsty", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 4, "quenched": 0, "exhaustion": 0}}
+{"id": "alchemy_water_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:alchemy_water", "as": "Dev"}}
+{"id": "alchemy_water_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
+{"id": "alchemy_water_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "alchemy_water_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "alchemy_water_drinking", "command": "wait", "args": {"ticks": 100}}
+{"id": "waterRefused", "command": "server.thirst.get", "args": {"player": "Dev"}}
+{"id": "alchemy_water_create", "command": "server.command", "args": {"command": "sbp template create thirstout:alchemy_water", "as": "Dev"}}
+{"id": "alchemy_water_export", "command": "server.command", "args": {"command": "sbp template export thirstout:alchemy_water", "as": "Dev"}}

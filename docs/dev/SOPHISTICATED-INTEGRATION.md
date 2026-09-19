@@ -16,7 +16,7 @@ Written on 2026-09-19 from Sophisticated Core `1.21.1-1.5.1.2341` and Sophistica
 |---|---|---|---|
 | 3 | Tank upgrade keeps water quality | bug | **Done** on `1.21.1-neoforge` |
 | 1 | Feeding upgrade restores thirst | bug | **Done** on `1.21.1-neoforge` |
-| 2 | Alchemy upgrade drinks through the mod | bug | To do |
+| 2 | Alchemy upgrade drinks through the mod | bug | **Done** on `1.21.1-neoforge` |
 | 4 | Pump upgrade samples the water it collects | bug | To do |
 | 7 | Smoking recipes for purified water | data | To do |
 | 6 | Waterskin and bowl as fluid containers | feature | To do |
@@ -48,29 +48,23 @@ The Feeding upgrade finishes eating with `Item.finishUsingItem`, past the mod's 
 `ThirstManager.drinkItem` on that one call. Checked with `tools/agent/sophisticated-feeding.jsonl`:
 seven melon slices took thirst from 4 to 20, and with the mixin off it stayed at 4.
 
-## To do
-
 ### 2. Alchemy upgrade
 
-**Problem.** The Alchemy upgrade drinks potions on a condition (always, on fire, under water, falling,
-low health and so on) and finishes them through `Item.finishUsingItem` at four call sites in
-`AlchemyUpgradeWrapper`, the same way the Feeding upgrade did. A potion drunk from a backpack gives no
-thirst. A water bottle put in its filter is worse: it is drunk with no thirst, no sickness roll, and no
-full-bar check, so dirty water is free.
+The Alchemy upgrade drinks and eats what its filters name, on a condition, and finished through
+`Item.finishUsingItem` the same way, so a potion drunk from a backpack gave no thirst.
+`AlchemyUpgradeWrapperMixin` calls `ThirstManager.drinkItem` where the upgrade finishes an item, for
+drinking and eating only, since a splash potion is thrown.
 
-**Approach.** Reuse the Feeding mixin's shape: a `@WrapOperation` on each `Item.finishUsingItem` call in
-`AlchemyUpgradeWrapper` that calls `ThirstManager.drinkItem` first. Only the drinking definitions
-should count, not the splash and lingering ones that are thrown.
+Decided: **the Alchemy upgrade never drinks plain water.** Water stays the player's choice, and the
+Drinking upgrade (item 5) is where drinking from a backpack belongs. The first version of this plan
+said a water bottle in its filter was drunk for free; that was wrong. Sophisticated's own potion
+definition skips any potion without effects, water included. The mixin refuses plain water at the
+condition check anyway, so a definition another mod adds cannot drink it either.
 
-**Open question.** Whether the Alchemy upgrade may drink plain water at all. Two options:
+Checked with `tools/agent/sophisticated-alchemy.jsonl`: a Fire Resistance potion took thirst from 4 to
+10, and dirty water was left alone. With the mixin off the potion was drunk and thirst stayed at 4.
 
-- let it, and apply thirst and sickness like a normal drink (simple, and the Drinking upgrade in item 5
-  would then partly duplicate it);
-- refuse plain water drinks (`WaterPurity.isPlainWaterDrink`) so water belongs to the Drinking upgrade
-  alone. This also stops a player drinking water at a full bar.
-
-**Test.** An agent script like the Feeding one: a backpack with an Alchemy upgrade set to Always and a
-potion with a thirst value, and a second case with a dirty water bottle.
+## To do
 
 ### 4. Pump upgrade
 
@@ -176,6 +170,9 @@ those nodes would skip the whole integration even if they compiled it.
 - Split the gate per upgrade, so the Feeding mixin can apply where the Tank mixin cannot. The Feeding
   code is the same on every branch (`Item.finishUsingItem` at the same place), so its mixin should port
   unchanged.
+  The Alchemy mixin should too, except for one line: `UseAnim` became `ItemUseAnimation` in 1.21.2, so
+  its drink-or-eat check needs a Stonecutter version comment. Check that `tick` and `applyTo` still
+  make the two calls it wraps.
 - Write the Tank and Pump fixes again against the transfer API in a source directory of their own
   that only those nodes compile, the way `src/main/create` and `src/main/createfly` split one feature.
   Check first how the transfer API's bucket and bottle handlers treat data components; the rule

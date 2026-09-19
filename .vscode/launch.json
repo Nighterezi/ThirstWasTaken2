@@ -1,0 +1,533 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "1.21.1-neoforge - Benchmark",
+      "presentation": {
+        "group": "Mod Development - 1.21.1-neoforge",
+        "order": 0
+      },
+      "projectName": "1.21.1-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\build\\moddev\\benchmarkRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\build\\moddev\\benchmarkRunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\bin\\main;thirstwastaken2_dev%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\bin\\dev"
+      ],
+      "cwd": "${workspaceFolder}\\run\\1.21.1-neoforge",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "1.21.1-neoforge - Client",
+      "presentation": {
+        "group": "Mod Development - 1.21.1-neoforge",
+        "order": 1
+      },
+      "projectName": "1.21.1-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\build\\moddev\\clientRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\build\\moddev\\clientRunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\bin\\main;thirstwastaken2_dev%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\bin\\dev"
+      ],
+      "cwd": "${workspaceFolder}\\run\\1.21.1-neoforge",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "1.21.1-neoforge - Gametest",
+      "presentation": {
+        "group": "Mod Development - 1.21.1-neoforge",
+        "order": 2
+      },
+      "projectName": "1.21.1-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\build\\moddev\\gametestRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\build\\moddev\\gametestRunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2_gametest%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\bin\\gametest;thirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\bin\\main"
+      ],
+      "cwd": "${workspaceFolder}\\run\\1.21.1-neoforge\\gametest",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "1.21.1-neoforge - ManualA",
+      "presentation": {
+        "group": "Mod Development - 1.21.1-neoforge",
+        "order": 3
+      },
+      "projectName": "1.21.1-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\build\\moddev\\manualARunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\build\\moddev\\manualARunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\bin\\main;thirstwastaken2_dev%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\bin\\dev"
+      ],
+      "cwd": "${workspaceFolder}\\run\\manual-1.21.1-neoforge-A",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "1.21.1-neoforge - ManualB",
+      "presentation": {
+        "group": "Mod Development - 1.21.1-neoforge",
+        "order": 4
+      },
+      "projectName": "1.21.1-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\build\\moddev\\manualBRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\build\\moddev\\manualBRunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\bin\\main;thirstwastaken2_dev%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\bin\\dev"
+      ],
+      "cwd": "${workspaceFolder}\\run\\manual-1.21.1-neoforge-B",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "1.21.1-neoforge - Server",
+      "presentation": {
+        "group": "Mod Development - 1.21.1-neoforge",
+        "order": 5
+      },
+      "projectName": "1.21.1-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\build\\moddev\\serverRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\build\\moddev\\serverRunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\bin\\main;thirstwastaken2_dev%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.1-neoforge\\bin\\dev"
+      ],
+      "cwd": "${workspaceFolder}\\run\\1.21.1-neoforge",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "1.21.11-neoforge - Benchmark",
+      "presentation": {
+        "group": "Mod Development - 1.21.11-neoforge",
+        "order": 0
+      },
+      "projectName": "1.21.11-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\build\\moddev\\benchmarkRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\build\\moddev\\benchmarkRunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\bin\\main;thirstwastaken2_dev%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\bin\\dev"
+      ],
+      "cwd": "${workspaceFolder}\\run\\1.21.11-neoforge",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "1.21.11-neoforge - Client",
+      "presentation": {
+        "group": "Mod Development - 1.21.11-neoforge",
+        "order": 1
+      },
+      "projectName": "1.21.11-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\build\\moddev\\clientRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\build\\moddev\\clientRunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\bin\\main;thirstwastaken2_dev%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\bin\\dev"
+      ],
+      "cwd": "${workspaceFolder}\\run\\1.21.11-neoforge",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "1.21.11-neoforge - Gametest",
+      "presentation": {
+        "group": "Mod Development - 1.21.11-neoforge",
+        "order": 2
+      },
+      "projectName": "1.21.11-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\build\\moddev\\gametestRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\build\\moddev\\gametestRunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2_gametest%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\bin\\gametest;thirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\bin\\main"
+      ],
+      "cwd": "${workspaceFolder}\\run\\1.21.11-neoforge\\gametest",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "1.21.11-neoforge - ManualA",
+      "presentation": {
+        "group": "Mod Development - 1.21.11-neoforge",
+        "order": 3
+      },
+      "projectName": "1.21.11-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\build\\moddev\\manualARunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\build\\moddev\\manualARunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\bin\\main;thirstwastaken2_dev%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\bin\\dev"
+      ],
+      "cwd": "${workspaceFolder}\\run\\manual-1.21.11-neoforge-A",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "1.21.11-neoforge - ManualB",
+      "presentation": {
+        "group": "Mod Development - 1.21.11-neoforge",
+        "order": 4
+      },
+      "projectName": "1.21.11-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\build\\moddev\\manualBRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\build\\moddev\\manualBRunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\bin\\main;thirstwastaken2_dev%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\bin\\dev"
+      ],
+      "cwd": "${workspaceFolder}\\run\\manual-1.21.11-neoforge-B",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "1.21.11-neoforge - Server",
+      "presentation": {
+        "group": "Mod Development - 1.21.11-neoforge",
+        "order": 5
+      },
+      "projectName": "1.21.11-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\build\\moddev\\serverRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\build\\moddev\\serverRunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\bin\\main;thirstwastaken2_dev%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\1.21.11-neoforge\\bin\\dev"
+      ],
+      "cwd": "${workspaceFolder}\\run\\1.21.11-neoforge",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "26.1.x-neoforge - Benchmark",
+      "presentation": {
+        "group": "Mod Development - 26.1.x-neoforge",
+        "order": 0
+      },
+      "projectName": "26.1.x-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\build\\moddev\\benchmarkRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\build\\moddev\\benchmarkRunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\bin\\main;thirstwastaken2_dev%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\bin\\dev"
+      ],
+      "cwd": "${workspaceFolder}\\run\\26.1.x-neoforge",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "26.1.x-neoforge - Client",
+      "presentation": {
+        "group": "Mod Development - 26.1.x-neoforge",
+        "order": 1
+      },
+      "projectName": "26.1.x-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\build\\moddev\\clientRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\build\\moddev\\clientRunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\bin\\main;thirstwastaken2_dev%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\bin\\dev"
+      ],
+      "cwd": "${workspaceFolder}\\run\\26.1.x-neoforge",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "26.1.x-neoforge - Gametest",
+      "presentation": {
+        "group": "Mod Development - 26.1.x-neoforge",
+        "order": 2
+      },
+      "projectName": "26.1.x-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\build\\moddev\\gametestRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\build\\moddev\\gametestRunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2_gametest%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\bin\\gametest;thirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\bin\\main"
+      ],
+      "cwd": "${workspaceFolder}\\run\\26.1.x-neoforge\\gametest",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "26.1.x-neoforge - ManualA",
+      "presentation": {
+        "group": "Mod Development - 26.1.x-neoforge",
+        "order": 3
+      },
+      "projectName": "26.1.x-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\build\\moddev\\manualARunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\build\\moddev\\manualARunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\bin\\main;thirstwastaken2_dev%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\bin\\dev"
+      ],
+      "cwd": "${workspaceFolder}\\run\\manual-26.1.x-neoforge-A",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "26.1.x-neoforge - ManualB",
+      "presentation": {
+        "group": "Mod Development - 26.1.x-neoforge",
+        "order": 4
+      },
+      "projectName": "26.1.x-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\build\\moddev\\manualBRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\build\\moddev\\manualBRunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\bin\\main;thirstwastaken2_dev%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\bin\\dev"
+      ],
+      "cwd": "${workspaceFolder}\\run\\manual-26.1.x-neoforge-B",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "26.1.x-neoforge - Server",
+      "presentation": {
+        "group": "Mod Development - 26.1.x-neoforge",
+        "order": 5
+      },
+      "projectName": "26.1.x-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\build\\moddev\\serverRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\build\\moddev\\serverRunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\bin\\main;thirstwastaken2_dev%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.1.x-neoforge\\bin\\dev"
+      ],
+      "cwd": "${workspaceFolder}\\run\\26.1.x-neoforge",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "26.2.x-neoforge - Benchmark",
+      "presentation": {
+        "group": "Mod Development - 26.2.x-neoforge",
+        "order": 0
+      },
+      "projectName": "26.2.x-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\build\\moddev\\benchmarkRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\build\\moddev\\benchmarkRunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\bin\\main;thirstwastaken2_dev%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\bin\\dev"
+      ],
+      "cwd": "${workspaceFolder}\\run\\26.2.x-neoforge",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "26.2.x-neoforge - Client",
+      "presentation": {
+        "group": "Mod Development - 26.2.x-neoforge",
+        "order": 1
+      },
+      "projectName": "26.2.x-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\build\\moddev\\clientRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\build\\moddev\\clientRunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\bin\\main;thirstwastaken2_dev%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\bin\\dev"
+      ],
+      "cwd": "${workspaceFolder}\\run\\26.2.x-neoforge",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "26.2.x-neoforge - Gametest",
+      "presentation": {
+        "group": "Mod Development - 26.2.x-neoforge",
+        "order": 2
+      },
+      "projectName": "26.2.x-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\build\\moddev\\gametestRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\build\\moddev\\gametestRunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2_gametest%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\bin\\gametest;thirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\bin\\main"
+      ],
+      "cwd": "${workspaceFolder}\\run\\26.2.x-neoforge\\gametest",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "26.2.x-neoforge - ManualA",
+      "presentation": {
+        "group": "Mod Development - 26.2.x-neoforge",
+        "order": 3
+      },
+      "projectName": "26.2.x-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\build\\moddev\\manualARunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\build\\moddev\\manualARunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\bin\\main;thirstwastaken2_dev%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\bin\\dev"
+      ],
+      "cwd": "${workspaceFolder}\\run\\manual-26.2.x-neoforge-A",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "26.2.x-neoforge - ManualB",
+      "presentation": {
+        "group": "Mod Development - 26.2.x-neoforge",
+        "order": 4
+      },
+      "projectName": "26.2.x-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\build\\moddev\\manualBRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\build\\moddev\\manualBRunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\bin\\main;thirstwastaken2_dev%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\bin\\dev"
+      ],
+      "cwd": "${workspaceFolder}\\run\\manual-26.2.x-neoforge-B",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "26.2.x-neoforge - Server",
+      "presentation": {
+        "group": "Mod Development - 26.2.x-neoforge",
+        "order": 5
+      },
+      "projectName": "26.2.x-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\build\\moddev\\serverRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\build\\moddev\\serverRunVmArgs.txt",
+        "-Dfml.modFolders\u003dthirstwastaken2%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\bin\\main;thirstwastaken2_dev%%C:\\Users\\Admin\\Desktop\\Github\\ThirstWasTaken2\\versions\\26.2.x-neoforge\\bin\\dev"
+      ],
+      "cwd": "${workspaceFolder}\\run\\26.2.x-neoforge",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    }
+  ]
+}

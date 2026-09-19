@@ -2,13 +2,15 @@
 
 [Sophisticated Backpacks](https://modrinth.com/mod/sophisticated-backpacks) keeps its upgrades in
 Sophisticated Core, which Sophisticated Storage shares, so everything here targets Core and works for
-both. Today it covers two upgrades:
+both. Today it covers three upgrades:
 
 - the **Tank upgrade** keeps water's grade: a dirty bucket poured in comes back out as dirty bottles,
   and sea water stays sea water. Without it the tank handed out plain water, which the mod reads as
   `defaultPurity`, so any water went in and Clean water came out;
 - the **Feeding upgrade** restores thirst for what it feeds. Without it a melon fed from a backpack
-  filled the hunger bar and left the thirst bar where it was.
+  filled the hunger bar and left the thirst bar where it was;
+- the **Alchemy upgrade** restores thirst for the potions and food it applies, and never drinks plain
+  water.
 
 What is still to do across Sophisticated's upgrades is in
 [docs/dev/SOPHISTICATED-INTEGRATION.md](../../../docs/dev/SOPHISTICATED-INTEGRATION.md).
@@ -26,6 +28,7 @@ java/com/thirstwastaken2/sophisticated/
   WaterQualityFluidHandler   a container's IFluidHandlerItem with the grade carried across it
   mixin/TankUpgradeWrapperMixin     wraps the one method the Tank upgrade finds container handlers through
   mixin/FeedingUpgradeWrapperMixin  hands out thirst where the Feeding upgrade finishes eating
+  mixin/AlchemyUpgradeWrapperMixin  the same for the Alchemy upgrade, and keeps plain water out of it
 resources/
   thirstwastaken2.sophisticated.mixins.json
 ```
@@ -79,6 +82,26 @@ eating, NeoForge's `LivingEntityUseItemEvent.Finish` included, so nothing is cou
 The upgrade still decides *when* to feed by the hunger bar alone. Feeding because the player is thirsty
 is a different upgrade; see the plan linked above.
 
+## The Alchemy upgrade
+
+The Alchemy upgrade drinks or eats what its filters name, on a condition (always, on fire, hurt and so
+on), and finishes through `Item.finishUsingItem` like the Feeding upgrade. Its item definitions do that
+inside static lambdas, whose generated names are not something to target, so
+`AlchemyUpgradeWrapperMixin` hooks the two named methods around them:
+
+- **`tick`** makes the one call that finishes whatever is being applied, `FinishUsing.apply`. The mixin
+  runs `ThirstManager.drinkItem` first, for a player and only for an item used by drinking or eating: a
+  splash potion is thrown, not drunk.
+- **`applyTo`** tests each filter's condition before it takes anything out of the backpack. The mixin
+  answers false for a filter holding plain water (`WaterPurity.isPlainWaterDrink`), so water stays the
+  player's own choice, never drunk at a full bar or without a look at its grade. Sophisticated's potion
+  definition already skips a potion with no effects, water included, so this only matters for a
+  definition another mod adds through `AlchemyUpgradeWrapper.addItemDefinition`. Refusing at the
+  condition rather than at the end matters: a refused finish would leave the upgrade starting to drink
+  again every check, taking the bottle out and putting it back.
+
+The filter slot still accepts a water bottle; it just never fires.
+
 ## Testing
 
 The gametests run without Sophisticated and prove the node still loads without it. The upgrades are
@@ -109,5 +132,16 @@ player to food 6, sets thirst to 4, and hands them a backpack with a Feeding upg
 slices. Checked on 2026-09-19: seven slices were eaten, food went to 20 and thirst to 20. With the
 mixin left out of the config, food went to 20 and thirst stayed at 4.
 
+### Alchemy
+
+[tools/agent/sophisticated-alchemy.jsonl](../../../tools/agent/sophisticated-alchemy.jsonl) hands out two
+backpacks with three bottles each and an Alchemy upgrade set to Always on that bottle. Checked on
+2026-09-19: with Fire Resistance, one potion was drunk and thirst went from 4 to 10, quenched to 8; with
+dirty water, nothing was drunk and all three bottles stayed. With the mixin left out of the config the
+potion was still drunk but thirst stayed at 4, and the water was refused as well, which is
+Sophisticated's own rule rather than the mixin's.
+
+### Effects on the test player
+
 A world whose `level.dat` came from the Farmer's Delight check carries Nourishment on its player, which
-cancels all exhaustion, so the script clears the player's effects first.
+cancels all exhaustion, so the Feeding and Alchemy scripts clear the player's effects first.
