@@ -40,7 +40,7 @@ Put the jar in the `mods` folder of the server and of every client. NeoForge fil
 
 | Minecraft | Fabric Loader | Fabric API | Java |
 |---|---|---|---|
-| 26.2 | 0.19.5 or newer | 0.160.0+26.2 or newer | 25 |
+| 26.2 | 0.19.5 or newer | 0.161.0+26.2 or newer | 25 |
 | 26.1, 26.1.1, 26.1.2 | 0.19.5 or newer | 0.155.3+26.1.2 or newer | 25 |
 | 1.21.11 | 0.19.5 or newer | 0.141.6+1.21.11 or newer | 21 |
 | 1.21, 1.21.1 | 0.19.5 or newer | 0.116.17+1.21.1 or newer | 21 |
