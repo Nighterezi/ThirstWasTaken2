@@ -333,6 +333,10 @@ dependencies {
     // AppleSkin's own config screen.
     clientRunMods("maven.modrinth:cloth-config:${property("deps.cloth_config")}")
 
+    // Farmer's Delight, on the nodes that set it: nothing compiles against it, since the mod reaches it
+    // by registry id alone, so it is only here to test its drinks, the Cooking Pot and Nourishment.
+    findProperty("deps.farmersdelight")?.let { clientRunMods("maven.modrinth:farmers-delight:$it") }
+
     if (createVersion != null && createLibraries != null) {
         compileOnly("maven.modrinth:create:$createVersion") { isTransitive = false }
         compileOnly(files(createLibraries.map { it.destinationDir.listFiles().orEmpty().toList() })

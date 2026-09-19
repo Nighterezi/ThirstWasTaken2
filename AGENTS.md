@@ -121,21 +121,20 @@ Switch it with `./gradlew "Set active project to 1.21.11"` — that rewrites the
 `src/` in place, which is what makes the IDE resolve against that version. Run
 `./gradlew "Reset active project"` before committing.
 
-Publish a release — every jar to Modrinth:
+Publish a release — every jar to Modrinth and CurseForge:
 
 ```bash
 python tools/release/publish.py --dry-run
 ```
 
-`--dry-run` prints each of the eight uploads and sends nothing; without it the script builds every node
+`--dry-run` prints each upload to both sites and sends nothing; without it the script builds every node
 and uploads. What every upload says is read from `stonecutter.properties.toml` and `CHANGELOG.md`, so a
-node added to the build is released without editing the script. Releases go to Modrinth only: no tag and
-no GitHub release.
-[docs/dev/RELEASING.md](docs/dev/RELEASING.md) has the checklist that comes first and what each flag
-does.
+node added to the build is released without editing the script. The checklist before a release, the
+tokens it reads from `.env` and every flag are in the script's docstring.
 
 Gradle needs network access on the first run for `maven.modrinth` artifacts (Mod Menu, AppleSkin,
-Cloth Config, Jade, Farmer's Delight Refabricated, and Create Fly on the nodes that set it).
+Cloth Config, Jade, Farmer's Delight Refabricated on Fabric and Farmer's Delight on `1.21.1-neoforge`,
+and Create Fly on the nodes that set it).
 Once cached, `--offline` works — except that the client compile-only dependencies must already be
 cached.
 
@@ -361,7 +360,7 @@ Each area of the tree carries its own `AGENTS.md` with rules and conventions loc
 | Every difference between the supported versions, visible and underneath | [docs/dev/VERSION-DIFFERENCES.md](docs/dev/VERSION-DIFFERENCES.md) |
 | What to check by hand before a release, per version | [docs/dev/MANUAL-TESTING.md](docs/dev/MANUAL-TESTING.md) |
 | How each way of purifying water compares, and why the hanging pots' numbers are what they are | [docs/dev/WATER-PURIFICATION-BALANCE.md](docs/dev/WATER-PURIFICATION-BALANCE.md) |
-| Publishing a release: the eight uploads to Modrinth | [docs/dev/RELEASING.md](docs/dev/RELEASING.md) |
+| Publishing a release to Modrinth and CurseForge: the checklist, the tokens, every flag | [tools/release/publish.py](tools/release/publish.py) (its docstring) |
 | Automated in-game tests | [src/gametest/java/AGENTS.md](src/gametest/java/AGENTS.md) |
 | Development-only tooling: the source set, its gate and the harness the two tools share | [src/dev/java/AGENTS.md](src/dev/java/AGENTS.md) |
 | Performance and memory benchmark | [.../dev/benchmark/AGENTS.md](src/dev/java/com/thirstwastaken2/dev/benchmark/AGENTS.md) |
@@ -495,13 +494,14 @@ tools/agent/                            what an agent sends to a running game
   drive.py                             writes in.jsonl, waits for out.jsonl, matches the two up
   server-probe.jsonl                   what a server answers with nobody online
   client-sync.jsonl                    MANUAL-TESTING.md's "Sync to the client", as requests
+  farmers-delight.jsonl                Farmer's Delight drinks, Cooking Pot and Nourishment in a client
 
 tools/benchmark/                        running the benchmark often enough to believe the answer
   bench.py                             every node, k times, one Gradle invocation per run
   aggregate.py                         a set to a median and a spread; --compare calls a change noise
 
 tools/release/                          publishing a release
-  publish.py                           every jar to Modrinth, nothing else
+  publish.py                           every jar to Modrinth and CurseForge, deps read per node
 
 src/datagen/java/com/thirstwastaken2/datagen/  datagen-only mod, never packaged
   ThirstDatagen.java                   entrypoint: every provider has to be listed here
@@ -609,7 +609,7 @@ takes effect in singleplayer or when edited on the server.
 | Mod Menu | `modmenu` entrypoint | class only loads if Mod Menu resolves it. On NeoForge the mods list's own `IConfigScreenFactory` does the same job |
 | AppleSkin | `AppleSkin.isLoaded()` | the quenched outline, the exhaustion strip and the tooltip droplet rows; without it none of them is drawn |
 | Jade | `jade` entrypoint, `@WailaPlugin` | the water grade, or Salty, when looking at water, a waterlogged block or a water cauldron |
-| Farmer's Delight | registry ids, recipe load conditions | its drinks and meals in `ThirstConfig`, Cooking Pot purification recipes, Nourishment stopping the drain |
+| Farmer's Delight | registry ids, recipe load conditions | its drinks and meals in `ThirstConfig`, Cooking Pot purification recipes, Nourishment stopping the drain. Refabricated on Fabric, the original on `1.21.1-neoforge` |
 | Drinks from other mods | `c:drinks` tag, `enableDrinkTagMatching` | restores `drinkTagValue` for a tagged item neither table names |
 | Loot | always | `Loader.onLootTable` on 5 vanilla chests + Piglin bartering, including tables a data pack replaced |
 | Food mods | always | resolved by registry id in `ThirstConfig.drinks` / `foods`, no classes referenced |

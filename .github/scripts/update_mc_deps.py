@@ -79,6 +79,11 @@ class ModrinthDep:
     """Pinned by Modrinth version id instead of version number."""
     mirrors: tuple[Path, ...] = DOC_MIRRORS
     """The doc mirrors that print this dependency's version."""
+    neoforge_project: str | None = None
+    """Modrinth project slug on the NeoForge nodes, when that loader's build is a different project."""
+
+    def project_for(self, node: str) -> str:
+        return self.neoforge_project if self.neoforge_project and node_loader(node) == "neoforge" else self.project
 
 
 # Every per-node dependency the build resolves from Modrinth or from a Maven that publishes the same
@@ -91,7 +96,8 @@ MODRINTH_DEPS = [
     # The README names Cloth Config without a version; only the installation page prints one.
     ModrinthDep("cloth_config", "cloth-config", mirrors=(INSTALLATION,)),
     ModrinthDep("jade", "jade"),
-    ModrinthDep("farmersdelight", "farmers-delight-refabricated"),
+    # Refabricated is the Fabric port; the NeoForge nodes use vectorwing's original.
+    ModrinthDep("farmersdelight", "farmers-delight-refabricated", neoforge_project="farmers-delight"),
     ModrinthDep("create_fly", "create-fly"),
     # Create's version numbers are not spelled alike from one upload to the next, so it is pinned by id.
     ModrinthDep("create", "create", by_id=True),
@@ -241,13 +247,14 @@ def check_modrinth(props: Properties, node: str, minecraft: str, dep: ModrinthDe
         return
     index, pinned = found
 
-    current = modrinth_version(dep.project, pinned)
+    project = dep.project_for(node)
+    current = modrinth_version(project, pinned)
     if current is None:
-        warnings.append(f"`{node}` `deps.{dep.key}` = `{pinned}` was not found on Modrinth ({dep.project}); skipped.")
+        warnings.append(f"`{node}` `deps.{dep.key}` = `{pinned}` was not found on Modrinth ({project}); skipped.")
         return
 
     channels = {"release", current["version_type"]}
-    newest = next((v for v in modrinth_candidates(dep.project, minecraft, node_loader(node)) if v["version_type"] in channels), None)
+    newest = next((v for v in modrinth_candidates(project, minecraft, node_loader(node)) if v["version_type"] in channels), None)
     if newest is None or newest["date_published"] <= current["date_published"]:
         return
     value = newest["id"] if dep.by_id else newest["version_number"]
@@ -265,7 +272,7 @@ def check_modrinth(props: Properties, node: str, minecraft: str, dep: ModrinthDe
         new=value,
         old_label=current["version_number"],
         new_label=newest["version_number"],
-        url=f"https://modrinth.com/mod/{dep.project}/version/{newest['id']}",
+        url=f"https://modrinth.com/mod/{project}/version/{newest['id']}",
         mirrors=dep.mirrors if node_loader(node) == "fabric" else (),
     ))
 

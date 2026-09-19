@@ -38,6 +38,10 @@ deps.neoforge = "21.1.250"
 deps.appleskin = "uAKA6Laj"
 deps.cloth_config = "15.0.140+neoforge"
 deps.jade = "15.10.6+neoforge"
+# Farmer's Delight by vectorwing, the NeoForge original rather than the Refabricated port the Fabric
+# tables name, and like there only on the runClient classpath. Only this node sets it: the NeoForge
+# nodes on newer Minecraft versions were left without it for now.
+deps.farmersdelight = "1.21.1-1.3.4"
 # Only this node builds the Sand Filter on NeoForge; see src/main/create/AGENTS.md.
 # 6.0.10+mc1.21.1, the NeoForge upload.
 deps.create = "UjX6dr61"
@@ -118,7 +122,7 @@ deps.create_fly = "26.2-rc-2-6.0.9-1"
 [neoforge."26.2.x"]
 # The NeoForge nodes build from the same sources as the Fabric ones; see
 # src/main/java/com/thirstwastaken2/platform/AGENTS.md. Create Fly and Farmer's Delight are deliberately
-# absent from every NeoForge table: neither had a NeoForge build for 26.2, and `deps.create_fly` is what
+# absent from this NeoForge table: neither had a NeoForge build for 26.2, and `deps.create_fly` is what
 # decides whether a node compiles the Sand Filter at all.
 # Range written into neoforge.mods.toml, in NeoForge's syntax.
 mod.mc_compat = "[26.2,26.3)"

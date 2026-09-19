@@ -16,6 +16,9 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * What the server knows, as numbers. These answer wherever a server is running — a dedicated one, or
@@ -79,19 +82,39 @@ final class ServerProbes {
          * Runs a command and hands back what it returned and what it said. With `as`, it runs from the
          * console's own source moved to that player: `@s` resolves to them, and the permission level is
          * still the console's, so a check never fails because a development player is not an operator.
+         *
+         * A client polls its queue on the client thread, and the integrated server answers a block
+         * entity lookup from any other thread with null, so `data get block` would report every block
+         * entity missing. The command is therefore handed to the server's own thread and waited for.
          */
         dispatcher.register("server.command", (request, reply) -> {
             MinecraftServer server = server();
             String command = request.string("command").strip();
             if (command.startsWith("/")) command = command.substring(1);
             Feedback feedback = new Feedback();
-            CommandSourceStack source = server.createCommandSourceStack().withSource(feedback);
-            if (request.has("as")) {
-                ServerPlayer player = player(request, request.string("as"));
-                source = source.withEntity(player).withPosition(player.position());
-                if (player.level() instanceof ServerLevel level) source = source.withLevel(level);
+            CommandSourceStack console = server.createCommandSourceStack().withSource(feedback);
+            ServerPlayer as = request.has("as") ? player(request, request.string("as")) : null;
+            String line = command;
+            Runnable run = () -> {
+                CommandSourceStack source = console;
+                if (as != null) {
+                    source = source.withEntity(as).withPosition(as.position());
+                    if (as.level() instanceof ServerLevel level) source = source.withLevel(level);
+                }
+                server.getCommands().performPrefixedCommand(source, line);
+            };
+            if (server.isSameThread()) {
+                run.run();
+            } else {
+                try {
+                    server.submit(run).get(30, TimeUnit.SECONDS);
+                } catch (TimeoutException e) {
+                    throw new AgentException("server.command: the server did not run '" + command
+                            + "' within 30 seconds; is the world paused?");
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new AgentException("server.command: '" + command + "' failed: " + e);
+                }
             }
-            server.getCommands().performPrefixedCommand(source, command);
             JsonObject result = new JsonObject();
             result.addProperty("command", command);
             JsonArray messages = new JsonArray();

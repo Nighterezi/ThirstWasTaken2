@@ -17,8 +17,8 @@ tools/*
 # repository rather than on one machine.
 !tools/agent/
 !tools/benchmark/
-# What publishes a release to Modrinth. docs/dev/RELEASING.md documents it, and it reads the
-# properties file every node is described in, so it belongs beside them rather than on one machine.
+# What publishes a release to Modrinth and CurseForge. It reads the properties file every node is
+# described in, so it belongs beside them rather than on one machine; its tokens stay in .env.
 !tools/release/
 
 # Bytecode from running .github/scripts by hand.

@@ -65,8 +65,7 @@ The settings screen opens from the Config button in NeoForge's Mods list, with n
 | [Cloth Config](https://modrinth.com/mod/cloth-config) | 26.2.155, 26.1.154, 21.11.153, 15.0.140 | AppleSkin's own settings screen. |
 | [Jade](https://modrinth.com/mod/jade) | 26.2.10, 26.1.10, 21.1.7, 15.10.6 | The same as on Fabric. Client only. |
 | [Create](https://modrinth.com/mod/create) | 6.0.10 | The [Sand Filter](/docs/features/create). 1.21.1 only. |
-
-Farmer's Delight is not supported on NeoForge.
+| [Farmer's Delight](https://modrinth.com/mod/farmers-delight) | 1.21.1-1.3.4 | The same as on Fabric. 1.21.1 only. |
 
 Other food mods usually work as they are. Drinks their mod marks as drinks restore thirst, and any
 item can be given a value in [Configuration](/docs/configuration).

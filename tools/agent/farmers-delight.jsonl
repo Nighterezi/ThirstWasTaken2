@@ -1,0 +1,76 @@
+// Farmer's Delight in a real client: its drinks restore thirst through the real right click, the
+// Cooking Pot recipes load and boil water Pure, salt water is refused, and Nourishment stops the drain.
+// The saved inventory writes Slot as an int, so a check matches Slot:0, not Slot:0b.
+// Only nodes that set deps.farmersdelight have it on the runClient classpath. Run it unattended:
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/farmers-delight.jsonl -Pquickplay=FarmersDelightAgent
+// FarmersDelightAgent is a throwaway world: copy level.dat (and, from 26.1,
+// data/minecraft/world_gen_settings.dat) out of any world of the same Minecraft version into
+// run/<node>/saves/FarmersDelightAgent, fresh for each run. drive.py's expectations and checks are not
+// evaluated under -Pagent, so read run/<node>/agent/client/out.jsonl: every "execute if" line has to
+// say "Test passed", or run the same file through drive.py against a client that stays open.
+
+{"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "joined", "command": "client.state"}
+{"id": "float", "command": "server.command", "args": {"command": "effect give @p minecraft:slow_falling 120 0 true"}}
+{"id": "view", "command": "server.command", "args": {"command": "tp @p 0.5 200 -3.5 0 15"}}
+{"id": "chunks", "command": "wait", "args": {"ticks": 100}}
+{"id": "day", "command": "server.command", "args": {"command": "time set noon"}}
+{"id": "clear", "command": "server.command", "args": {"command": "weather clear 100000"}}
+{"id": "difficulty", "command": "server.command", "args": {"command": "difficulty normal"}}
+{"id": "air", "command": "server.command", "args": {"command": "fill -6 200 -6 6 206 6 minecraft:air"}}
+{"id": "floor", "command": "server.command", "args": {"command": "fill -6 199 -6 6 199 6 minecraft:stone"}}
+{"id": "stand", "command": "server.command", "args": {"command": "tp @p 0.5 200 -3.5 0 15"}}
+{"id": "fdLoaded", "command": "probe"}
+
+// Its drinks and meals carry thirst rows in the tooltip (AppleSkin is on the runClient classpath too).
+{"id": "cocoaTooltip", "command": "client.tooltip", "args": {"item": "farmersdelight:hot_cocoa"}}
+{"id": "brothTooltip", "command": "client.tooltip", "args": {"item": "farmersdelight:bone_broth"}}
+
+// Drinking hot cocoa through the real right click: 8 thirst, 13 quenched.
+{"id": "thirsty", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 4, "quenched": 0, "exhaustion": 0}}
+{"id": "lookUp", "command": "server.command", "args": {"command": "tp @p 0.5 200 -3.5 0 -90"}}
+{"id": "cocoa", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with farmersdelight:hot_cocoa"}}
+{"id": "settleCocoa", "command": "wait", "args": {"ticks": 10}}
+{"id": "drink", "command": "client.hold", "args": {"keys": ["use"], "ticks": 60}}
+{"id": "drunk", "command": "server.thirst.get", "args": {"player": "Dev"}}
+{"id": "bottleBack", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand minecraft:glass_bottle"}}
+
+// The Cooking Pot recipes are there, and a lit campfire under the pot boils murky water Pure. A salty
+// bottle in a second pot is refused and stays where it was put.
+{"id": "recipeBottle", "command": "server.command", "args": {"command": "execute as @p run recipe give @s thirstwastaken2:cooking_pot_purify_water_bottle"}}
+{"id": "recipeBowl", "command": "server.command", "args": {"command": "execute as @p run recipe give @s thirstwastaken2:cooking_pot_purify_water_bowl"}}
+{"id": "fire", "command": "server.command", "args": {"command": "setblock 0 200 0 minecraft:campfire"}}
+{"id": "pot", "command": "server.command", "args": {"command": "setblock 0 201 0 farmersdelight:cooking_pot"}}
+{"id": "saltFire", "command": "server.command", "args": {"command": "setblock 2 200 0 minecraft:campfire"}}
+{"id": "saltPot", "command": "server.command", "args": {"command": "setblock 2 201 0 farmersdelight:cooking_pot"}}
+{"id": "bowlFire", "command": "server.command", "args": {"command": "setblock -2 200 0 minecraft:campfire"}}
+{"id": "bowlPot", "command": "server.command", "args": {"command": "setblock -2 201 0 farmersdelight:cooking_pot"}}
+{"id": "potEmpty", "command": "server.command", "args": {"command": "data get block 0 201 0"}}
+{"id": "murky", "command": "server.command", "args": {"command": "data merge block 0 201 0 {Inventory:{Size:9,Items:[{Slot:0b,id:\"minecraft:potion\",count:1,components:{\"minecraft:potion_contents\":{potion:\"minecraft:water\"},\"thirstwastaken2:water_purity\":1,\"thirstwastaken2:water_salty\":false}}]}}"}}
+{"id": "salty", "command": "server.command", "args": {"command": "data merge block 2 201 0 {Inventory:{Size:9,Items:[{Slot:0b,id:\"minecraft:potion\",count:1,components:{\"minecraft:potion_contents\":{potion:\"minecraft:water\"},\"thirstwastaken2:water_salty\":true}}]}}"}}
+{"id": "dirtyBowl", "command": "server.command", "args": {"command": "data merge block -2 201 0 {Inventory:{Size:9,Items:[{Slot:0b,id:\"thirstwastaken2:terracotta_water_bowl\",count:1,components:{\"thirstwastaken2:water_purity\":0,\"thirstwastaken2:water_salty\":false}}]}}"}}
+{"id": "lookAtPots", "command": "server.command", "args": {"command": "tp @p 0.5 200 -3.5 0 25"}}
+{"id": "cooking", "command": "wait", "args": {"ticks": 60}}
+{"id": "potsBefore", "command": "client.capture", "args": {"name": "farmers-delight-cooking"}}
+{"id": "boil", "command": "wait", "args": {"ticks": 300}}
+{"id": "potAfter", "command": "server.command", "args": {"command": "data get block 0 201 0 Inventory"}}
+{"id": "bottlePure", "command": "server.command", "args": {"command": "execute if data block 0 201 0 Inventory.Items[{Slot:8,id:\"minecraft:potion\",components:{\"thirstwastaken2:water_purity\":3}}]"}}
+{"id": "murkyGone", "command": "server.command", "args": {"command": "execute unless data block 0 201 0 Inventory.Items[{Slot:0}]"}}
+{"id": "saltAfter", "command": "server.command", "args": {"command": "data get block 2 201 0 Inventory"}}
+{"id": "saltStays", "command": "server.command", "args": {"command": "execute if data block 2 201 0 Inventory.Items[{Slot:0,components:{\"thirstwastaken2:water_salty\":true}}]"}}
+{"id": "bowlAfter", "command": "server.command", "args": {"command": "data get block -2 201 0 Inventory"}}
+// The bowl comes out with no components of its own, which for a water bowl is Pure, its default.
+{"id": "bowlServed", "command": "server.command", "args": {"command": "execute if data block -2 201 0 Inventory.Items[{Slot:8,id:\"thirstwastaken2:terracotta_water_bowl\"}]"}}
+{"id": "bowlDefault", "command": "server.command", "args": {"command": "execute unless data block -2 201 0 Inventory.Items[{Slot:8}].components"}}
+{"id": "potsAfter", "command": "client.capture", "args": {"name": "farmers-delight-cooked"}}
+
+// Nourishment: without it, jumping in place builds exhaustion; with it, none is kept. Slow falling
+// comes off first, or a few slow jumps stay under the quarter point exhaustion is only written at.
+{"id": "land", "command": "server.command", "args": {"command": "effect clear @p minecraft:slow_falling"}}
+{"id": "baseline", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 0, "exhaustion": 0}}
+{"id": "jumpPlain", "command": "client.hold", "args": {"keys": ["jump"], "ticks": 300}}
+{"id": "plainDrain", "command": "server.thirst.get", "args": {"player": "Dev"}}
+{"id": "nourish", "command": "server.command", "args": {"command": "effect give @p farmersdelight:nourishment 60 0"}}
+{"id": "nourished", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 0, "exhaustion": 0}}
+{"id": "jumpNourished", "command": "client.hold", "args": {"keys": ["jump"], "ticks": 300}}
+{"id": "nourishedDrain", "command": "server.thirst.get", "args": {"player": "Dev"}}

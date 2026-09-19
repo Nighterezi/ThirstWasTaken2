@@ -148,6 +148,15 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
   </tr>
   <tr>
     <td width="55%">
+      <b><a href="https://modrinth.com/mod/farmers-delight">Farmer's Delight (1.21.1)</a></b><br>
+      Soups, stews, and drinks restore thirst. The Cooking Pot purifies water to Pure grade. The Nourishment effect pauses thirst depletion.
+    </td>
+    <td width="45%">
+      <img alt="A Farmer's Delight Cooking Pot boiling water bottles to Pure" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/farmers-delight-cooking-pot.png" width="100%">
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
       <b>Settings screen</b><br>
       Open it from the Config button in NeoForge's Mods list, with a real-time HUD preview to customize drain rates, sickness chances, and HUD positioning.
     </td>

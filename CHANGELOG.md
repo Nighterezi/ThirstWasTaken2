@@ -2,6 +2,17 @@
 
 All notable changes to ThirstWasTaken2 are documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- Farmer's Delight support on NeoForge for Minecraft 1.21.1: its drinks and meals restore thirst, the
+  Cooking Pot boils water Pure, and Nourishment stops the thirst bar from draining.
+
+### Notes
+
+- Farmer's Delight on the other NeoForge versions is not supported yet.
+
 ## [1.0.7] - 2026-09-18
 
 ### Added

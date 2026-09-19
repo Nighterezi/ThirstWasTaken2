@@ -126,8 +126,10 @@ What they leave out, and why:
 
 - **Create Fly.** A Fabric port; `src/main/createfly` never compiles here, because the node does not
   set `deps.create_fly`.
-- **Farmer's Delight at runtime.** No NeoForge build for 26.2 when this was written, and the older
-  nodes were kept the same. Its recipes still load or are skipped correctly, through the translated `neoforge:conditions`.
+- **Farmer's Delight at runtime, except on `1.21.1-neoforge`.** That node sets `deps.farmersdelight` to
+  vectorwing's original, which puts it on runClient; the mod itself names no class of it on any node.
+  The other NeoForge nodes have no build to test against yet. Its recipes load or are skipped
+  correctly everywhere, through the translated `neoforge:conditions`.
 - **`src/dev` and `src/datagen`.** Fabric only; each node reads the files the Fabric node on its
   Minecraft version generates.
 - **Minecraft 1.21.** The Fabric 1.21.1 jar covers it; NeoForge 21.0 is a generation of its own.

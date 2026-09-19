@@ -44,8 +44,14 @@ Three pieces, none of which loads a Farmer's Delight class:
   `setExhaustion(0)` on 1.21.1 and with negative `causeFoodExhaustion` calls from 1.21.11, which
   `PlayerMixin` mirrors, so relying on its side would drain thirst on one version and not the other.
 
-The gametests run without Farmer's Delight, so the Cooking Pot and Nourishment are checked by hand:
-`./gradlew ":26.2.x:runClient"` has it on the classpath.
+Fabric uses Farmer's Delight Refabricated, NeoForge vectorwing's original; both register the same ids,
+recipe type and effect, so nothing here differs per loader. Only `1.21.1-neoforge` sets
+`deps.farmersdelight` among the NeoForge nodes.
+
+The gametests run without Farmer's Delight, so the Cooking Pot and Nourishment are checked in a real
+client: `./gradlew ":26.2.x:runClient"` has it on the classpath, and
+[tools/agent/farmers-delight.jsonl](../../../../../../tools/agent/farmers-delight.jsonl) checks drinking, the
+Cooking Pot and Nourishment unattended on `1.21.1-neoforge`.
 
 ## Create Fly
 
