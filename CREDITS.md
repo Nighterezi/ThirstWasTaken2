@@ -22,6 +22,16 @@ Changes made:
 - Split the original model into separate pot, frame and item models.
 - Recoloured the copper texture to dark iron for the Iron Hanging Pot.
 
+## Yet Another Thirst
+
+The Parched effect icon in ThirstWasTaken2 is inspired by the Thirsty effect icon in Yet Another
+Thirst by minhnh303. The icon was redrawn from scratch; no pixels were copied.
+
+Yet Another Thirst is licensed under the MIT License.
+
+Original project:
+https://github.com/minhnh303/Yet-Another-Thirst
+
 ## ThirstWasTaken2
 
 Earlier versions of ThirstWasTaken2 were released under the MIT License.

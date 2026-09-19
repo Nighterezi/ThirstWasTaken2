@@ -154,6 +154,7 @@ Want to improve or add a translation? [Open a pull request](https://github.com/N
 
 * Based on [Thirst Was Taken](https://www.curseforge.com/minecraft/mc-mods/thirst-was-taken) by [ghen](https://github.com/ghen-git), under the MIT License.
 * Hanging Pot models adapted from [Dehydration](https://github.com/Globox1997/Dehydration) by [Globox1997](https://github.com/Globox1997), under the GPL-3.0.
+* Parched effect icon inspired by [Yet Another Thirst](https://github.com/minhnh303/Yet-Another-Thirst) by [minhnh303](https://github.com/minhnh303), redrawn from scratch.
 * Licensed under the [GPL-3.0](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/LICENSE) from 1.0.7. See [CREDITS.md](https://github.com/Nighterezi/ThirstWasTaken2/blob/main/CREDITS.md).
 
 ## Community
