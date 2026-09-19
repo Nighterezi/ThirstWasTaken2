@@ -3,7 +3,7 @@ package com.thirstwastaken2.create.mixin;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.simibubi.create.content.fluids.transfer.GenericItemEmptying;
-import com.thirstwastaken2.create.WaterFluids;
+import com.thirstwastaken2.neoforge.WaterFluids;
 import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.purity.WaterQuality;
 import net.createmod.catnip.data.Pair;

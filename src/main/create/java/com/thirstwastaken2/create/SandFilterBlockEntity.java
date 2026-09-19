@@ -6,6 +6,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
 import com.simibubi.create.foundation.fluid.SmartFluidTank;
 import com.simibubi.create.foundation.utility.CreateLang;
+import com.thirstwastaken2.neoforge.WaterFluids;
 import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.purity.WaterQuality;
 import net.createmod.catnip.lang.LangBuilder;
@@ -32,6 +33,8 @@ public final class SandFilterBlockEntity extends SmartBlockEntity implements IHa
     public static final int CAPACITY = 1000;
     /** 10 mB a tick, the original mod's default: a bucket every five seconds. */
     private static final int FILTERED_PER_TICK = 10;
+    /** Grades the filter adds per pass, the original mod's default. */
+    private static final int FILTRATION = 1;
 
     // Assigned from addBehaviours, which runs inside the super constructor. An initializer here would
     // run after it and wipe them.
@@ -127,11 +130,21 @@ public final class SandFilterBlockEntity extends SmartBlockEntity implements IHa
     /** The input water as it leaves the filter, rebuilt only when a different stack sits in the input. */
     private FluidStack filtered(FluidStack dirty) {
         if (dirty != filteredFrom) {
-            filtered = WaterFluids.filter(dirty.copyWithAmount(1));
+            filtered = filter(dirty.copyWithAmount(1));
             filteredFrom = dirty;
             matchedOutput = null;
         }
         return filtered;
+    }
+
+    /**
+     * One pass through sand. Sea water comes out as it went in: sand does not take the salt out, and
+     * cooking cannot either.
+     */
+    private static FluidStack filter(FluidStack stack) {
+        WaterQuality quality = WaterFluids.quality(stack);
+        if (quality instanceof WaterQuality.Fresh fresh) quality = WaterQuality.fresh(fresh.purity() + FILTRATION);
+        return WaterFluids.stamp(stack, quality);
     }
 
     /** Each tank with its grade, the way the original mod showed it through Engineer's Goggles. */

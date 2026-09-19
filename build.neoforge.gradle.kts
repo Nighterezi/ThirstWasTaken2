@@ -121,6 +121,20 @@ if (createVersion != null) {
     }
 }
 
+/**
+ * Sophisticated Core's Modrinth version id, set only on the nodes whose Sophisticated Core still moves
+ * fluid through `IFluidHandler`, today `1.21.1-neoforge`. Like Create, the integration is a source
+ * directory only such a node compiles. See src/main/sophisticated/AGENTS.md.
+ */
+val sophisticatedCoreVersion = findProperty("deps.sophisticated_core") as String?
+
+if (sophisticatedCoreVersion != null) {
+    sourceSets.main {
+        java.srcDir("src/main/sophisticated/java")
+        resources.srcDir("src/main/sophisticated/resources")
+    }
+}
+
 /*
  * The same gametests the Fabric nodes run, as their own small mod, so none of it reaches the jar.
  * `src/gametest/neoforge` holds the harness that finds and registers them, in place of Fabric API's;
@@ -344,6 +358,15 @@ dependencies {
         // Test the Sand Filter with pipes, pumps and spouts in runClient.
         clientRunMods("maven.modrinth:create:$createVersion") { isTransitive = false }
     }
+
+    if (sophisticatedCoreVersion != null) {
+        compileOnly("maven.modrinth:sophisticated-core:$sophisticatedCoreVersion") { isTransitive = false }
+        // Test the upgrades in runClient, inside a backpack.
+        clientRunMods("maven.modrinth:sophisticated-core:$sophisticatedCoreVersion") { isTransitive = false }
+        findProperty("deps.sophisticated_backpacks")?.let {
+            clientRunMods("maven.modrinth:sophisticated-backpacks:$it") { isTransitive = false }
+        }
+    }
 }
 
 /*
@@ -451,6 +474,24 @@ tasks.processResources {
                 |
                 |[[dependencies.thirstwastaken2]]
                 |modId = "create"
+                |type = "optional"
+                |ordering = "NONE"
+                |side = "BOTH"
+                |""".trimMargin())
+        }
+    }
+    // The same for the Sophisticated Core integration.
+    inputs.property("sophisticatedCore", sophisticatedCoreVersion ?: "")
+    if (sophisticatedCoreVersion != null) {
+        val manifest = destinationDir.resolve("META-INF/neoforge.mods.toml")
+        doLast {
+            manifest.appendText("""
+                |
+                |[[mixins]]
+                |config = "thirstwastaken2.sophisticated.mixins.json"
+                |
+                |[[dependencies.thirstwastaken2]]
+                |modId = "sophisticatedcore"
                 |type = "optional"
                 |ordering = "NONE"
                 |side = "BOTH"

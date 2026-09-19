@@ -146,6 +146,20 @@ public final class WaterPurity {
         return stack;
     }
 
+    /**
+     * A copy of {@code stack} without its quality, the plain container other mods compare against: both
+     * components and the salt-water sprite come off. Salt water loses its salt too, so only hand this to
+     * code that gets the quality back from the caller.
+     */
+    public static ItemStack unstamped(ItemStack stack) {
+        ItemStack plain = stack.copy();
+        plain.remove(ThirstComponents.WATER_PURITY);
+        plain.remove(ThirstComponents.WATER_SALTY);
+        Identifier saltModel = saltModel(plain);
+        if (saltModel != null) Vanilla.swapItemModel(plain, saltModel, false);
+        return plain;
+    }
+
     /** Raises the grade of fresh water. Salt water has no grade to raise and comes back unchanged. */
     public static ItemStack purify(ItemStack stack, int levels) {
         if (isWaterContainer(stack) && quality(stack) instanceof WaterQuality.Fresh fresh) {

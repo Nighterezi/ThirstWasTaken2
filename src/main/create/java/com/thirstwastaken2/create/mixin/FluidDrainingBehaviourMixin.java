@@ -3,7 +3,7 @@ package com.thirstwastaken2.create.mixin;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.simibubi.create.content.fluids.transfer.FluidDrainingBehaviour;
 import com.thirstwastaken2.create.SampledWater;
-import com.thirstwastaken2.create.WaterFluids;
+import com.thirstwastaken2.neoforge.WaterFluids;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.fluids.FluidStack;

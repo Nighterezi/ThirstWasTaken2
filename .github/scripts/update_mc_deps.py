@@ -101,6 +101,9 @@ MODRINTH_DEPS = [
     ModrinthDep("create_fly", "create-fly"),
     # Create's version numbers are not spelled alike from one upload to the next, so it is pinned by id.
     ModrinthDep("create", "create", by_id=True),
+    # Pinned by id like Create, and printed on no page.
+    ModrinthDep("sophisticated_core", "sophisticated-core", by_id=True, mirrors=()),
+    ModrinthDep("sophisticated_backpacks", "sophisticated-backpacks", by_id=True, mirrors=()),
 ]
 
 

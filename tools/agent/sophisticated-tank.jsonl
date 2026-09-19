@@ -1,0 +1,74 @@
+// Sophisticated Backpacks' Tank upgrade keeps water quality both ways: a dirty bucket comes back out as
+// dirty bottles, sea water stays sea water, water of another grade is refused, and unstamped water is
+// graded defaultPurity. Only nodes that set deps.sophisticated_core have it on the runClient classpath.
+//
+// Each backpack comes from a template in tools/agent/sophisticated-tank-pack. Sophisticated only unpacks
+// a template the first time the backpack is opened, so it is opened with the real right click and
+// closed again, then ticks in the main hand for a while, and is then written out with /sbp template create + export, which saves its contents as SNBT
+// under the world's datapacks/thirstout_backpack_templates. Read those four files: the templates say
+// what went in, and the expected result is written above each case below.
+//
+// SophisticatedAgent is a throwaway world: copy level.dat out of any 1.21.1 world into
+// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/sophisticated-tank-pack into its
+// datapacks folder, fresh for each run. Then:
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/sophisticated-tank.jsonl -Pquickplay=SophisticatedAgent
+
+{"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "joined", "command": "client.state"}
+{"id": "survival", "command": "server.command", "args": {"command": "gamemode survival @p"}}
+{"id": "safe", "command": "server.command", "args": {"command": "effect give @p minecraft:resistance 600 4 true"}}
+{"id": "lookUp", "command": "server.command", "args": {"command": "tp @p ~ ~ ~ 0 -90"}}
+{"id": "templates", "command": "server.command", "args": {"command": "sbp template list"}}
+
+// A purity-0 bucket is emptied into the tank and bottled: 750 mB with water_purity 0 left in the
+// tank, the empty bucket in slot 2, and one bottle with water_purity 0 in slot 3. Potions do not
+// stack, so the result slot is full after one and the other three glass bottles wait in slot 1.
+{"id": "dirty_bucket_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "dirty_bucket_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:dirty_bucket", "as": "Dev"}}
+{"id": "dirty_bucket_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
+{"id": "dirty_bucket_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "dirty_bucket_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "dirty_bucket_tick", "command": "wait", "args": {"ticks": 200}}
+{"id": "dirty_bucket_held", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand sophisticatedbackpacks:backpack"}}
+{"id": "dirty_bucket_create", "command": "server.command", "args": {"command": "sbp template create thirstout:dirty_bucket", "as": "Dev"}}
+{"id": "dirty_bucket_export", "command": "server.command", "args": {"command": "sbp template export thirstout:dirty_bucket", "as": "Dev"}}
+
+// Four sea-water bottles fill one bucket: a water bucket with water_salty true in slot 3, four
+// glass bottles in slot 2, and no fluid left. More than 1000 mB anywhere means a bottle was poured in
+// twice.
+{"id": "salt_bottles_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "salt_bottles_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:salt_bottles", "as": "Dev"}}
+{"id": "salt_bottles_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
+{"id": "salt_bottles_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "salt_bottles_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "salt_bottles_tick", "command": "wait", "args": {"ticks": 200}}
+{"id": "salt_bottles_held", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand sophisticatedbackpacks:backpack"}}
+{"id": "salt_bottles_create", "command": "server.command", "args": {"command": "sbp template create thirstout:salt_bottles", "as": "Dev"}}
+{"id": "salt_bottles_export", "command": "server.command", "args": {"command": "sbp template export thirstout:salt_bottles", "as": "Dev"}}
+
+// Pure water in the tank and a dirty bottle in the input: nothing is poured. The tank still holds
+// 250 mB with water_purity 3; Sophisticated moves the refused bottle on to slot 2, as it does with any
+// container whose fluid does not match the tank.
+{"id": "no_mix_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "no_mix_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:no_mix", "as": "Dev"}}
+{"id": "no_mix_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
+{"id": "no_mix_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "no_mix_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "no_mix_tick", "command": "wait", "args": {"ticks": 200}}
+{"id": "no_mix_held", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand sophisticatedbackpacks:backpack"}}
+{"id": "no_mix_create", "command": "server.command", "args": {"command": "sbp template create thirstout:no_mix", "as": "Dev"}}
+{"id": "no_mix_export", "command": "server.command", "args": {"command": "sbp template export thirstout:no_mix", "as": "Dev"}}
+
+// An unstamped bucket counts as defaultPurity (2): as for the dirty bucket, with water_purity 2 on
+// both the tank and the bottle.
+{"id": "plain_bucket_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "plain_bucket_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:plain_bucket", "as": "Dev"}}
+{"id": "plain_bucket_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
+{"id": "plain_bucket_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "plain_bucket_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "plain_bucket_tick", "command": "wait", "args": {"ticks": 200}}
+{"id": "plain_bucket_held", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand sophisticatedbackpacks:backpack"}}
+{"id": "plain_bucket_create", "command": "server.command", "args": {"command": "sbp template create thirstout:plain_bucket", "as": "Dev"}}
+{"id": "plain_bucket_export", "command": "server.command", "args": {"command": "sbp template export thirstout:plain_bucket", "as": "Dev"}}
+
+{"id": "done", "command": "wait", "args": {"ticks": 20}}

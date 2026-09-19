@@ -59,6 +59,12 @@ Not in this package: the Sand Filter extends Create classes, and Create Fly only
 Minecraft versions the mod supports, so it has source directories of its own that only those builds
 compile. See [src/main/createfly/AGENTS.md](../../../../createfly/AGENTS.md).
 
+## Sophisticated Backpacks
+
+Not in this package either: the Tank upgrade is reached through a mixin into Sophisticated Core, and
+only Core's `IFluidHandler` generation (1.21.1) is supported, so it has a source directory of its own.
+See [src/main/sophisticated/AGENTS.md](../../../../sophisticated/AGENTS.md).
+
 ## LootIntegration
 
 `Loader.onLootTable` replacing the original's Forge global loot modifiers (Fabric's

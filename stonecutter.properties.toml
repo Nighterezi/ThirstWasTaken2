@@ -45,6 +45,12 @@ deps.farmersdelight = "1.21.1-1.3.4"
 # Only this node builds the Sand Filter on NeoForge; see src/main/create/AGENTS.md.
 # 6.0.10+mc1.21.1, the NeoForge upload.
 deps.create = "UjX6dr61"
+# Only this node keeps water quality through Sophisticated Core's upgrades; from 1.21.11 its tanks use
+# NeoForge's transfer API instead. See src/main/sophisticated/AGENTS.md.
+# 1.21.1-1.5.1.2341, the NeoForge upload.
+deps.sophisticated_core = "PXl6rB3q"
+# 1.21.1-3.26.3.2158, only on the runClient classpath, as the storage the upgrades go in.
+deps.sophisticated_backpacks = "AhPnzNtJ"
 
 ["1.21.11"]
 mod.mc_releases = ["1.21.11"]
