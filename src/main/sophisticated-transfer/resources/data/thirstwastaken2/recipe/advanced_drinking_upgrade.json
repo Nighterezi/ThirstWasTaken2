@@ -1,0 +1,23 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:registered",
+      "value": "thirstwastaken2:advanced_drinking_upgrade"
+    }
+  ],
+  "type": "sophisticatedcore:upgrade_next_tier",
+  "key": {
+    "D": "#c:gems/diamond",
+    "G": "#c:ingots/gold",
+    "R": "#c:dusts/redstone",
+    "V": "thirstwastaken2:drinking_upgrade"
+  },
+  "pattern": [
+    " D ",
+    "GVG",
+    "RRR"
+  ],
+  "result": {
+    "id": "thirstwastaken2:advanced_drinking_upgrade"
+  }
+}

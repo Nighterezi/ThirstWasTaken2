@@ -8,7 +8,8 @@ targets Core and covers both. How the finished parts work is in
 work and what each step needs.
 
 Written on 2026-09-19 from Sophisticated Core `1.21.1-1.5.1.2341` and Sophisticated Backpacks
-`1.21.1-3.26.3.2158`, the versions `1.21.1-neoforge` compiles against.
+`1.21.1-3.26.3.2158`, the versions `1.21.1-neoforge` compiles against. The newer nodes compile against
+Core `1.21.11-1.5.0.2340`, `26.1.2-1.5.0.2334` and `26.2-1.5.0.2337`.
 
 ## Status
 
@@ -21,11 +22,12 @@ Written on 2026-09-19 from Sophisticated Core `1.21.1-1.5.1.2341` and Sophistica
 | 7 | Smoking recipes for purified water | data | **Done**, every version |
 | 6 | Waterskin and bowl as fluid containers | feature | **Done**, every NeoForge version |
 | 5 | Drinking upgrade | feature | **Done** on `1.21.1-neoforge` |
-| 8 | Newer NeoForge nodes (1.21.11, 26.1, 26.2) | port | To do |
+| 8 | Newer NeoForge nodes (1.21.11, 26.1, 26.2) | port | **Done**: items 1 to 5 on every NeoForge node |
 | 9 | Changelog and player docs | docs | To do |
 
 The order is the one agreed on: the bugs first, the Tank before the others because it let any water
-turn Clean, then the cheapest feature, then the rest. All four bugs are fixed on `1.21.1-neoforge`.
+turn Clean, then the cheapest feature, then the rest. All four bugs are fixed, and the Drinking
+upgrade is in, on every NeoForge node.
 
 ## Done
 
@@ -138,52 +140,79 @@ recipes in a crafting table, the upgrade in a Sophisticated Storage chest) and
 gained `client.click`, `client.slot(s)`, `client.language` and `client.textWidth` for them. The details
 are in `src/main/sophisticated/AGENTS.md`.
 
-## To do
-
 ### 8. Newer NeoForge nodes
 
-**Problem.** Only `1.21.1-neoforge` sets `deps.sophisticated_core`. Sophisticated has releases for
-1.21.11, 26.1 and 26.2, but from 1.21.11 its tanks move fluid through NeoForge's transfer API
-(`ResourceHandler<FluidResource>`, `ItemAccess`, transactions) instead of `IFluidHandler`. The
-`SophisticatedPresence` marker is the `IFluidHandler` generation's `SwapEmptyFluidContainerHandler`, so
-those nodes would skip the whole integration even if they compiled it.
+From 1.21.11 Sophisticated Core's tanks move fluid through NeoForge's transfer API
+(`ResourceHandler<FluidResource>`, `ItemAccess`, transactions) instead of `IFluidHandler`. All three
+newer nodes now set `deps.sophisticated_core` and `deps.sophisticated_backpacks`, and
+`deps.sophisticated_storage` for runClient.
 
-**Approach.**
+- **Split by generation, not by upgrade.** `src/main/sophisticated` holds what does not touch fluid:
+  the gate, the Feeding and Alchemy mixins and the Drinking upgrade. The tank and pump code lives in
+  `src/main/sophisticated-fluidhandler` (1.21.1) and `src/main/sophisticated-transfer` (1.21.11 and
+  later), with the same class names, so the mixin config is shared. `build.neoforge.gradle.kts`
+  picks one, the same way it picks `neoforge-fluidhandler` or `neoforge-transfer`.
+- **One gate, per generation.** `SophisticatedPresence` looks for `SophisticatedGeneration.MARKER`,
+  a class only the generation the node was written for has. The plan said to split the gate per
+  upgrade so the Feeding mixin could apply where the Tank one could not; with both generations
+  written there is no such node, and a split would only let a Core whose Feeding upgrade moved crash
+  the game.
+- **Tank.** `WaterQualityResourceHandler` wraps the handler `getFluidHandler(ItemStack, ItemAccess)`
+  finds, and `UnstampedItemAccess` shows it the container unstamped and stamps whatever it swaps in.
+  The transfer API builds the new container from scratch the same way `IFluidHandler` did, so the
+  grade is carried across as before. The quality is read from the real container every time, never
+  kept, so a rolled-back transaction leaves nothing stale.
+- **Pump.** Only two of 1.21.1's three fixes were needed. World water is stamped as it goes into the
+  tanks (`CollectedWaterStorage`), which covers a `BucketPickup` and a block's own capability alike.
+  Buckets in hand get the unstamped view. Pumping out needs nothing: this generation asks the tanks
+  for the resource they hold, components and all.
+- **Alchemy.** From 1.21.11 Core finishes through `ItemStack.finishUsingItem`, where the mod's own
+  hook already hands out thirst, so the `tick` hook is 1.21.1 only; with it a potion counted twice
+  (4 to 16 instead of 4 to 10). The plain-water refusal stays on every node. Feeding still calls
+  `Item.finishUsingItem` on every version, so its mixin is unchanged.
+- **Drinking upgrade.** `DrinkingStorage`, one per generation, reads the storage's slots and tanks;
+  everything else is shared, with Stonecutter branches for `ItemUseAnimation` (1.21.2), an item's id
+  in its properties (1.21.2) and `CompoundTag`'s getters (1.21.5).
+- **Recipes and unlocks** moved into the generation directories: 1.21.2 writes ingredients as ids,
+  and NeoForge's `item_exists` condition became `registered`. The item model definitions
+  (`assets/…/items/`) are shared; 1.21.1 ignores them.
 
-- Split the gate per upgrade, so the Feeding mixin can apply where the Tank mixin cannot. The Feeding
-  code is the same on every branch (`Item.finishUsingItem` at the same place), so its mixin should port
-  unchanged.
-  The Alchemy mixin should too, except for one line: `UseAnim` became `ItemUseAnimation` in 1.21.2, so
-  its drink-or-eat check needs a Stonecutter version comment. Check that `tick` and `applyTo` still
-  make the two calls it wraps.
-- Write the Tank and Pump fixes again against the transfer API in a source directory of their own
-  that only those nodes compile, the way `src/main/create` and `src/main/createfly` split one feature.
-  Check first how the transfer API's bucket and bottle handlers treat data components; the rule
-  may be different from `IFluidHandler`'s.
-- The mod's own waterskin and bowls already speak the transfer API there (item 6), and
-  `src/main/neoforge-transfer` is where the other transfer-API code belongs. The per-generation source
-  directory is chosen in `build.neoforge.gradle.kts`.
-- The Drinking upgrade (item 5) drinks from the tanks through `IStorageFluidHandler` and `FluidStack`,
-  and its wrapper names `UseAnim`, which 1.21.2 renamed, so it moves with the Tank code rather than
-  with Feeding.
-- Add `deps.sophisticated_core` and `deps.sophisticated_backpacks` to each node's table in
-  `stonecutter.properties.toml`. `update_mc_deps.py` already knows both keys.
+Checked in a real client on 1.21.11 and 26.2, with the same agent scripts as 1.21.1, which was run
+again afterwards to check nothing moved there. Every case gave the result 1.21.1 records, except:
+
+- the Create cases of the Pump script, since Create is on the runClient classpath of `1.21.1-neoforge`
+  only;
+- Farmer's Delight's cider in the Drinking script, for the same reason (thirst 8 rather than 16 in
+  that case);
+- a refused container in the Tank's input slot stays there from 1.21.11, where 1.21.1 moves it on to
+  the result slot. That is Core's own behaviour, not the integration's.
+
+26.1 compiles and passes its gametests, and its Core is the same code as 26.2's for everything the
+integration touches, but it was not run in a client.
+
+The scripts needed changes to run on the newer versions; `src/main/sophisticated/AGENTS.md` lists them.
+Two are Sophisticated's own quirks: from 1.21.11 a data-pack template given twice comes with what the
+first backpack from it ended up holding, and on 26.2 templates only load their items after a
+`/reload`.
+
+## To do
 
 ### 9. Changelog and player docs
 
 When the parts above are ready for a release: a CHANGELOG entry under `[Unreleased]`, a line in the
 installation page's list of supported mods, and a Modrinth and CurseForge mention. Use the
 `write-docs` skill, which keeps the plain, non-technical style those pages need. Say which Minecraft
-versions have it, since for a while only 1.21.1 will.
+versions have it: every NeoForge version, and no Fabric one.
 
 ## Testing, for every item
 
 - The gametests run without Sophisticated. They prove the node still loads without it, and must keep
-  passing: `./gradlew ":1.21.1-neoforge:runGametest"`.
+  passing on every NeoForge node: `./gradlew ":<node>-neoforge:runGametest"`.
 - Everything that needs Sophisticated is checked in a real client with an agent script and a backpack
-  template from `tools/agent/sophisticated-pack`. `/sbp template give` builds the backpack, opening it
-  once unpacks the template, and `/sbp template create` plus `export` write what is left as SNBT under
-  the world's `datapacks/`, so the result is read as text.
+  template from `tools/agent/sophisticated-pack`. `/sophisticatedbackpacks template give` builds the
+  backpack (the short `/sbp` is `/sb` from 1.21.11), opening it once unpacks the template, and
+  `template create <name> true` plus `export` write what is left as SNBT under the world's
+  `datapacks/`, so the result is read as text.
 - Run each check once with the new mixin left out of the config as well, to show the bug was real and
   that the check can tell the two apart.
 - A `level.dat` copied out of the Farmer's Delight world keeps Nourishment on its player, which cancels

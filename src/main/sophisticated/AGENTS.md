@@ -20,32 +20,45 @@ What is still to do across Sophisticated's upgrades is in
 [docs/dev/SOPHISTICATED-INTEGRATION.md](../../../docs/dev/SOPHISTICATED-INTEGRATION.md).
 
 This directory is **only compiled by nodes that set `deps.sophisticated_core`** in
-`stonecutter.properties.toml`. Today that is `1.21.1-neoforge`. From 1.21.11 Sophisticated Core's
-tanks move fluid through NeoForge's transfer API (`ResourceHandler<FluidResource>`, transactions)
-instead of `IFluidHandler`, so those nodes need an implementation of their own rather than a version
-branch in this one.
+`stonecutter.properties.toml`: every NeoForge node. Sophisticated Core comes in two generations, the
+same split as NeoForge's own fluid API. On 1.21.1 its tanks move fluid through `IFluidHandler`; from
+1.21.11 through the transfer API (`ResourceHandler<FluidResource>`, `ItemAccess`, transactions). What
+does not touch fluid is one copy for both, here, with a Stonecutter branch where Minecraft itself
+changed. The tank and pump code is written once per generation, in a directory of its own beside this
+one, and `build.neoforge.gradle.kts` adds the one that fits the node. Both use the same class names, so
+the mixin config is shared.
 
 ```
-java/com/thirstwastaken2/sophisticated/
-  SophisticatedPresence      the gate: FML's mod file for `sophisticatedcore`, and a marker class inside it
-  SophisticatedMixinPlugin   applies the mixins below only when the gate passes
-  WaterQualityFluidHandler   a container's IFluidHandlerItem with the grade carried across it
-  StampedWaterSource         world water as an IFluidHandler that hands out its sampled grade
-  mixin/TankUpgradeWrapperMixin     wraps the one method the Tank upgrade finds container handlers through
+sophisticated/java/com/thirstwastaken2/sophisticated/     every NeoForge node
+  SophisticatedPresence      the gate: FML's mod file for `sophisticatedcore`, and the generation's marker class inside it
+  SophisticatedMixinPlugin   applies the mixins only when the gate passes
+  SophisticatedEntrypoint    a second @Mod class that registers the Drinking upgrade after the gate
   mixin/FeedingUpgradeWrapperMixin  hands out thirst where the Feeding upgrade finishes eating
   mixin/AlchemyUpgradeWrapperMixin  the same for the Alchemy upgrade, and keeps plain water out of it
-  mixin/PumpUpgradeWrapperMixin     the Pump upgrade: world pickup, buckets in hand, pumping out
-  mixin/FluidFilterLogicMixin       a pump filter set to water takes water of any grade
-  SophisticatedEntrypoint    a second @Mod class that registers the Drinking upgrade after the gate
   drinking/DrinkingUpgrade           items, the two settings components, the settings containers
   drinking/DrinkingUpgradeItem       basic and advanced, told apart by filter size and `isAdvanced`
   drinking/DrinkingUpgradeWrapper    what to drink and when, on the upgrade tick
   drinking/DrinkingUpgradeContainer  the settings tab's server half
   drinking/DrinkAt                   how thirsty to be first: any, half a drink, a whole drink
-resources/
+sophisticated-fluidhandler/java/…/sophisticated/          1.21.1
+  SophisticatedGeneration    the marker class the gate looks for
+  WaterQualityFluidHandler   a container's IFluidHandlerItem with the grade carried across it
+  StampedWaterSource         world water as an IFluidHandler that hands out its sampled grade
+  mixin/TankUpgradeWrapperMixin     wraps the one method the Tank upgrade finds container handlers through
+  mixin/PumpUpgradeWrapperMixin     the Pump upgrade: world pickup, buckets in hand, pumping out
+  mixin/FluidFilterLogicMixin       a pump filter set to water takes water of any grade
+  drinking/DrinkingStorage          the storage's slots and tanks, as the Drinking upgrade reads them
+sophisticated-transfer/java/…/sophisticated/              1.21.11 and later
+  SophisticatedGeneration      the marker class the gate looks for
+  WaterQualityResourceHandler  a container's fluid ResourceHandler with the grade carried across it
+  UnstampedItemAccess          the container's ItemAccess, as the handler underneath sees it
+  CollectedWaterStorage        the tanks while the Pump fills them from world water, stamping it
+  mixin/…, drinking/DrinkingStorage   the same four classes as 1.21.1
+sophisticated/resources/                                  every NeoForge node
   thirstwastaken2.sophisticated.mixins.json
-  assets/…                  the two upgrade textures and models, the tab's button icons
-  data/…                    recipes and their unlocks (NeoForge conditions), both mods' upgrade tags
+  assets/…                  the two upgrade textures, models and item model definitions, the tab's button icons
+  data/…                    both mods' upgrade tags
+sophisticated-<generation>/resources/data/…               the recipes and their unlocks, in each generation's format
 ../../client/sophisticated/java/com/thirstwastaken2/client/sophisticated/
   SophisticatedClientEntrypoint  registers the settings tabs, after the gate
   DrinkingUpgradeTab             the basic and advanced tabs
@@ -55,16 +68,23 @@ resources/
 
 The same three layers as [src/main/create](../create/AGENTS.md).
 
-1. **Build.** `build.neoforge.gradle.kts` adds these directories and `src/client/sophisticated`, and
-   appends the mixin config and an optional `sophisticatedcore` dependency to the built
-   `neoforge.mods.toml`, only when `deps.sophisticated_core` is set.
-2. **Runtime gate.** `SophisticatedPresence` looks for the Tank upgrade's `SwapEmptyFluidContainerHandler`
-   inside Core's own jar, a class only the `IFluidHandler` generation has, so a Core the mixin would not
-   fit is skipped with a warning instead of crashing on a missing target. The mixin plugin and both
-   entrypoints ask it before anything that names a Sophisticated class is loaded.
+1. **Build.** `build.neoforge.gradle.kts` adds this directory, the generation's directory and
+   `src/client/sophisticated`, and appends the mixin config and an optional `sophisticatedcore`
+   dependency to the built `neoforge.mods.toml`, only when `deps.sophisticated_core` is set.
+2. **Runtime gate.** `SophisticatedPresence` looks inside Core's own jar for
+   `SophisticatedGeneration.MARKER`, a class only the generation this node was written for has:
+   `ITrackedContentsItemHandler` on 1.21.1, `MutableStackItemAccess` from 1.21.11. A Core of the other
+   generation is skipped with a warning instead of crashing on a missing mixin target. The mixin plugin
+   and both entrypoints ask it before anything that names a Sophisticated class is loaded.
+
+   The plan once split this gate per upgrade, so the Feeding mixin could apply on a node that had no
+   tank code yet. With both generations written there is no such node, and a split would only let a
+   Core whose Feeding upgrade had moved crash the game, so it stays one gate.
 3. **Data.** Each basic recipe needs its own mod's `upgrade_base` (`neoforge:mod_loaded`) and every
-   recipe needs the upgrade to exist (`neoforge:item_exists`), so a Core the gate refused leaves no
-   broken recipe behind. The tag entries are `required: false` for the same reason.
+   recipe needs the upgrade to exist, so a Core the gate refused leaves no broken recipe behind. That
+   condition is `neoforge:item_exists` on 1.21.1 and `neoforge:registered` from 1.21.11, which is one
+   reason the recipes live in the generation directories; the other is that 1.21.2 changed how a recipe
+   writes its ingredients. The tag entries are `required: false` for the same reason.
 
 **Nothing outside this directory may reference a class in it.**
 
@@ -94,6 +114,17 @@ stamped with that grade, the same as in Create.
 A backpack's tank can also be filled or drained through the backpack's own fluid capability, by a pipe
 for instance. Those transfers carry `FluidStack`s, which keep their components on their own.
 
+**From 1.21.11** the method is `getFluidHandler(ItemStack, ItemAccess)` and the handler works on the
+container through that `ItemAccess`, swapping in the new container inside a transaction. The same three
+rules hold, in `WaterQualityResourceHandler`, with the container side moved into `UnstampedItemAccess`:
+the handler underneath is found on the unstamped copy and sees the container unstamped, and whatever
+it swaps in (a filled bucket, a filled bottle) is stamped with the grade of the water moving into it.
+The access writes straight through to the tank's own, so rolling the transaction back undoes it, and
+the grade is always read from the real container rather than kept, so nothing stale survives a
+rollback. Core's bottle handler no longer checks its container on the way out, so the pour-in-forever
+bug has no counterpart here. A container the tank refuses stays in the input slot, which is Core's own
+change.
+
 ## The Feeding upgrade
 
 The mod hands out thirst for everything eaten or drunk at the head of `ItemStack.finishUsingItem`
@@ -108,13 +139,15 @@ thirsty is the Drinking upgrade's job, below.
 ## The Alchemy upgrade
 
 The Alchemy upgrade drinks or eats what its filters name, on a condition (always, on fire, hurt and so
-on), and finishes through `Item.finishUsingItem` like the Feeding upgrade. Its item definitions do that
-inside static lambdas, whose generated names are not something to target, so
+on). On 1.21.1 it finishes through `Item.finishUsingItem` like the Feeding upgrade; from 1.21.11 through
+`ItemStack.finishUsingItem`, where the mod's own hook already hands out thirst. Its item definitions do
+that inside static lambdas, whose generated names are not something to target, so
 `AlchemyUpgradeWrapperMixin` hooks the two named methods around them:
 
-- **`tick`** makes the one call that finishes whatever is being applied, `FinishUsing.apply`. The mixin
-  runs `ThirstManager.drinkItem` first, for a player and only for an item used by drinking or eating: a
-  splash potion is thrown, not drunk.
+- **`tick`**, 1.21.1 only, makes the one call that finishes whatever is being applied,
+  `FinishUsing.apply`. The mixin runs `ThirstManager.drinkItem` first, for a player and only for an
+  item used by drinking or eating: a splash potion is thrown, not drunk. From 1.21.11 this hook would
+  count every potion twice, so a Stonecutter branch leaves it out.
 - **`applyTo`** tests each filter's condition before it takes anything out of the backpack. The mixin
   answers false for a filter holding plain water (`WaterPurity.isPlainWaterDrink`), so water stays the
   player's own choice, never drunk at a full bar or without a look at its grade. Sophisticated's potion
@@ -153,6 +186,18 @@ A pump's fluid filter compares components too, and a filter is set from whatever
 clicked, so a filter made from a plain bucket refused every graded stack. `FluidFilterLogicMixin` makes
 a water filter match water of any grade.
 
+**From 1.21.11** the pump works on `ResourceHandler`s:
+
+- **Collecting from the world.** The tanks are wrapped instead of the source, in
+  `CollectedWaterStorage`, at the head of `fillFromBlock`: water going in is stamped with the sampled
+  grade. That covers a `BucketPickup` and a block's capability alike, since both hand out plain water.
+  The same guards as 1.21.1: a sample only at a source block, and only while the tanks have room.
+- **Buckets in hand.** `handleFluidContainerInHand` looks the handler up on the container's `ItemAccess`
+  through `CapabilityHelper.getFromFluidHandler`; the mixin hands that lookup the unstamped view and
+  wraps what it finds, as the Tank does.
+- **Pumping out** needs nothing: the pump asks the tanks for the resource they hold, components and all.
+- **The filter** is asked about both resources and stacks, so the mixin wraps both comparisons.
+
 ## The Drinking upgrade
 
 The mod's own upgrade, the thirst version of the Feeding upgrade, in a basic and an Advanced tier. It is
@@ -160,7 +205,7 @@ the first part of the integration that registers content, so it has `Sophisticat
 `@Mod` class like Create's, and a client one in `src/client/sophisticated` for the settings tab.
 
 **What it drinks.** `DrinkingUpgradeWrapper.canFilter` and `isDrink`: an item with a thirst value that is
-drunk (`UseAnim.DRINK`, or one of the mod's plain water drinks), minus what a player would not want
+drunk (the drink use animation, or one of the mod's plain water drinks), minus what a player would not want
 drunk for them: potions other than water, which are the Alchemy upgrade's, milk (`c:drinks/milk`, it
 clears every effect) and ominous bottles. The filter slots take the same items, by item, so an empty
 waterskin can be set as a filter. Water from a Tank upgrade in the same storage counts too, 250 mB at a
@@ -183,6 +228,9 @@ leaves goes back into the storage, or to the player. Tank water goes through `Th
 Only the Advanced tier reads them or shows their buttons, like Advanced Feeding; the basic one drinks at
 half a drink, Clean or better. The grade button goes up on a left click and down on a right click.
 
+**Storage.** `DrinkingStorage`, one per generation, is the only part that reads the storage's slots and
+tanks; the wrapper is shared.
+
 **Data.** Recipes mirror Feeding's: a waterskin, two glass bottles and an ender pearl around an upgrade
 base, one recipe per mod's base, and `sophisticatedcore:upgrade_next_tier` with a diamond, two gold and
 three redstone for the Advanced tier, which keeps the filter. Both items are in `sophisticatedbackpacks:upgrade`
@@ -194,6 +242,33 @@ The gametests run without Sophisticated and prove the node still loads without i
 checked in a real client, from backpack templates in `tools/agent/sophisticated-pack`. Both scripts
 say how to set the world up.
 
+The tables below were first run on 1.21.1. On 2026-09-19 every script was run on 1.21.11 and 26.2
+and again on 1.21.1, and every case matched, except the ones that need a mod only `1.21.1-neoforge`
+has on its runClient classpath (Create's Fluid Tank, Farmer's Delight's cider) and the refused bottle
+in the Tank's "no mix" case, which stays in the input slot from 1.21.11. 26.1 was not run in a client.
+
+What the scripts and the world need on the newer versions, all already in the files:
+
+- **Templates in both shapes.** Every template carries the 1.21.1 keys (`backpackItemRegistryName`,
+  `backpackContents`) and the 1.21.11 ones (`itemRegistryName`, `contents`, Core's `ContainerContents`
+  with positional `stacks`); each version ignores the other's. The legacy shape the newer Core still
+  accepts cannot be used: it needs the registries, which do not exist yet while data packs load, so
+  every item came out empty. A potion stacks to one, and 26.2 reads a larger stack in a Tank slot as
+  empty, so no template puts more than one in a slot.
+- **`/sophisticatedbackpacks`**, the one command name both versions share (`/sbp` became `/sb`).
+- **`/reload` first.** On 26.2 Sophisticated reads data-pack templates before item components exist,
+  so every item in them fails until a reload.
+- **One template per case.** From 1.21.11 a template given twice comes with what the first backpack
+  from it ended up holding, so the ocean pump case has its own `pump_world_ocean`.
+- **`template create <name> true`.** Created templates live in the world's saved data, and without the
+  override a second run exports the first run's result.
+- **Into the main hand from slot 1.** A world whose player has another hotbar slot selected gets the
+  backpack moved to the main hand after each give.
+- **The off hand** is read from `equipment.offhand` from 1.21.5 as well as `Inventory`.
+- **A 26.2 world** keeps its generation settings and players beside `level.dat`, so copy the whole
+  world rather than `level.dat` alone. The driven client passes NeoForge's loading warnings screen by
+  itself when none of the warnings is this mod's.
+
 ### Tank
 
 [tools/agent/sophisticated-tank.jsonl](../../../tools/agent/sophisticated-tank.jsonl) builds four
@@ -204,7 +279,7 @@ to show. Checked on 2026-09-19, and once with the mixin disabled for comparison:
 | Case | With the mixin | Without |
 |---|---|---|
 | purity-0 bucket, bottled | tank and bottle `water_purity: 0` | plain water, so the bottle reads Clean |
-| four sea-water bottles, one bucket | a bucket with `water_salty: true`, four glass bottles, empty tank | the bottles are refused |
+| four sea-water bottles, one bucket (since 2026-09-19: one bottle into 750 mB of sea water) | a bucket with `water_salty: true`, the glass bottles, empty tank | the bottles are refused |
 | dirty bottle into a Pure tank | refused, the tank keeps 250 mB of Pure | refused |
 | unstamped bucket, bottled | tank and bottle `water_purity: 2` | plain water |
 | a full murky waterskin poured in, an empty one filled | the second holds three servings of `water_purity: 1` | before the capability, neither moved |

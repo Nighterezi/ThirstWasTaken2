@@ -5,8 +5,6 @@ import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Files;
-
 /**
  * Whether the Sophisticated Core installed is one the integration was compiled against.
  *
@@ -16,12 +14,6 @@ import java.nio.file.Files;
  */
 public final class SophisticatedPresence {
     public static final String MOD_ID = "sophisticatedcore";
-    /**
-     * A class only the {@code IFluidHandler} generation of Sophisticated Core has: from 1.21.11 its tanks
-     * move fluid through NeoForge's transfer API instead. Looked up in the mod's own jar, so asking does
-     * not load it.
-     */
-    private static final String MARKER = "net/p3pp3rf1y/sophisticatedcore/upgrades/tank/TankUpgradeWrapper$SwapEmptyFluidContainerHandler.class";
 
     private static final Logger LOGGER = LoggerFactory.getLogger("thirstwastaken2");
 
@@ -33,7 +25,13 @@ public final class SophisticatedPresence {
         Boolean known = present;
         if (known == null) {
             ModFileInfo core = LoadingModList.get().getModFileById(MOD_ID);
-            known = core != null && Files.exists(core.getFile().findResource(MARKER));
+            // A class only the generation of Core this node's fluid code targets has, IFluidHandler on
+            // 1.21.1 or the transfer API from 1.21.11. Looked up in the mod's own jar, so asking does not
+            // load it.
+            //? if >=1.21.2 {
+            known = core != null && core.getFile().getContents().containsFile(SophisticatedGeneration.MARKER);
+            //?} else
+            /*known = core != null && java.nio.file.Files.exists(core.getFile().findResource(SophisticatedGeneration.MARKER));*/
             if (core != null && !known) {
                 LOGGER.warn("Sophisticated Core is installed but is not a version ThirstWasTaken2 supports; "
                         + "water quality through its upgrades is disabled");

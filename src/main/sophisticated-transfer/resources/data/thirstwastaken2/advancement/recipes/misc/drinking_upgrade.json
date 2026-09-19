@@ -1,0 +1,42 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "sophisticatedbackpacks"
+    },
+    {
+      "type": "neoforge:registered",
+      "value": "thirstwastaken2:drinking_upgrade"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "thirstwastaken2:drinking_upgrade"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_upgrade_base": {
+      "conditions": {
+        "items": [
+          {
+            "items": "sophisticatedbackpacks:upgrade_base"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_upgrade_base"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "thirstwastaken2:drinking_upgrade"
+    ]
+  }
+}

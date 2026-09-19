@@ -125,16 +125,21 @@ if (createVersion != null) {
 }
 
 /**
- * Sophisticated Core's Modrinth version id, set only on the nodes whose Sophisticated Core still moves
- * fluid through `IFluidHandler`, today `1.21.1-neoforge`. Like Create, the integration is a source
- * directory only such a node compiles. See src/main/sophisticated/AGENTS.md.
+ * Sophisticated Core's Modrinth version id, set on every NeoForge node Sophisticated has a release for.
+ * Like Create, the integration is a source directory only such a node compiles, plus one for the fluid
+ * API generation: Core's tanks move fluid through `IFluidHandler` on 1.21.1 and through the transfer API
+ * from 1.21.11, like NeoForge's own. See src/main/sophisticated/AGENTS.md.
  */
 val sophisticatedCoreVersion = findProperty("deps.sophisticated_core") as String?
 
 if (sophisticatedCoreVersion != null) {
     sourceSets.main {
+        val generation = if (sc.current.parsed >= "1.21.2") "transfer" else "fluidhandler"
         java.srcDir("src/main/sophisticated/java")
         resources.srcDir("src/main/sophisticated/resources")
+        // The tank and pump code, and the recipes, whose format changed at the same time.
+        java.srcDir("src/main/sophisticated-$generation/java")
+        resources.srcDir("src/main/sophisticated-$generation/resources")
         // The Drinking upgrade's settings tab, from the preprocessed client sources like the rest of them.
         java.srcDir(files(clientSources.resolve("sophisticated/java")).builtBy("stonecutterGenerateClient"))
     }

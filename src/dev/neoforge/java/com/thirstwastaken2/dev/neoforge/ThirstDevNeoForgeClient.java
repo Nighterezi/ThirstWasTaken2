@@ -14,5 +14,6 @@ public final class ThirstDevNeoForgeClient {
     public ThirstDevNeoForgeClient() {
         ThirstDevClient.initialize();
         ThirstDev.installBenchmark();
+        LoadingWarnings.register();
     }
 }

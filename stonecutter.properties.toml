@@ -45,8 +45,9 @@ deps.farmersdelight = "1.21.1-1.3.4"
 # Only this node builds the Sand Filter on NeoForge; see src/main/create/AGENTS.md.
 # 6.0.10+mc1.21.1, the NeoForge upload.
 deps.create = "UjX6dr61"
-# Only this node keeps water quality through Sophisticated Core's upgrades; from 1.21.11 its tanks use
-# NeoForge's transfer API instead. See src/main/sophisticated/AGENTS.md.
+# Sophisticated Core, whose upgrades keep water quality and take the Drinking upgrade. Its tanks move
+# fluid through IFluidHandler here and through NeoForge's transfer API from 1.21.11, so each generation
+# has its own source directory. See src/main/sophisticated/AGENTS.md.
 # 1.21.1-1.5.1.2341, the NeoForge upload.
 deps.sophisticated_core = "PXl6rB3q"
 # 1.21.1-3.26.3.2158, only on the runClient classpath, as the storage the upgrades go in.
@@ -76,6 +77,12 @@ deps.neoforge = "21.11.45"
 deps.appleskin = "MH9ov9DW"
 deps.cloth_config = "21.11.153+neoforge"
 deps.jade = "21.1.7+neoforge"
+# 1.21.11-1.5.0.2340, the NeoForge upload. The transfer-API generation; see src/main/sophisticated/AGENTS.md.
+deps.sophisticated_core = "l0tJHroU"
+# 1.21.11-3.26.2.2155, only on the runClient classpath.
+deps.sophisticated_backpacks = "MPfwVddi"
+# 1.21.11-1.5.102.2130, only on the runClient classpath.
+deps.sophisticated_storage = "PJ4lJy4t"
 
 ["26.1.x"]
 mod.mc_releases = ["26.1", "26.1.1", "26.1.2"]
@@ -102,6 +109,12 @@ deps.appleskin = "i8MiVItH"
 deps.cloth_config = "26.1.154+neoforge"
 # The newest release; 26.1.11+neoforge is a beta.
 deps.jade = "26.1.10+neoforge"
+# 26.1.2-1.5.0.2334, the NeoForge upload. The transfer-API generation; see src/main/sophisticated/AGENTS.md.
+deps.sophisticated_core = "OoXooxvB"
+# 26.1.2-3.26.2.2156, only on the runClient classpath.
+deps.sophisticated_backpacks = "3xlcYe9r"
+# 26.1.2-1.5.113.2133, only on the runClient classpath.
+deps.sophisticated_storage = "DGzw01EG"
 
 ["26.2.x"]
 # Releases to mark compatible when publishing.
@@ -140,3 +153,9 @@ deps.neoforge = "26.2.0.88"
 deps.appleskin = "slnk1Qah"
 deps.cloth_config = "26.2.155+neoforge"
 deps.jade = "26.2.10+neoforge"
+# 26.2-1.5.0.2337, the NeoForge upload. The transfer-API generation; see src/main/sophisticated/AGENTS.md.
+deps.sophisticated_core = "HJLJBWYT"
+# 26.2-3.26.2.2154, only on the runClient classpath.
+deps.sophisticated_backpacks = "LPnOSNVg"
+# 26.2-1.5.114.2132, only on the runClient classpath.
+deps.sophisticated_storage = "9jOzQdN5"

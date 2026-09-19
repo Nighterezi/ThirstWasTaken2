@@ -15,6 +15,8 @@
 //     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/sophisticated-feeding.jsonl -Pquickplay=SophisticatedAgent
 
 {"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "reloadTemplates", "command": "server.command", "args": {"command": "reload"}}
+{"id": "reloaded", "command": "wait", "args": {"ticks": 60}}
 {"id": "joined", "command": "client.state"}
 {"id": "effects", "command": "server.command", "args": {"command": "effect clear @p"}}
 {"id": "survival", "command": "server.command", "args": {"command": "gamemode survival @p"}}
@@ -31,11 +33,14 @@
 {"id": "thirsty", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 4, "quenched": 0, "exhaustion": 0}}
 {"id": "hungry", "command": "server.thirst.get", "args": {"player": "Dev"}}
 
-{"id": "give", "command": "server.command", "args": {"command": "sbp template give thirsttest:feeding_melon", "as": "Dev"}}
+{"id": "reclear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:feeding_melon", "as": "Dev"}}
+{"id": "give_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "give_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
 {"id": "opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "close", "command": "client.screen", "args": {"open": "none"}}
 {"id": "eating", "command": "wait", "args": {"ticks": 60}}
 {"id": "fed", "command": "server.thirst.get", "args": {"player": "Dev"}}
-{"id": "create", "command": "server.command", "args": {"command": "sbp template create thirstout:feeding_melon", "as": "Dev"}}
-{"id": "export", "command": "server.command", "args": {"command": "sbp template export thirstout:feeding_melon", "as": "Dev"}}
+{"id": "create", "command": "server.command", "args": {"command": "sophisticatedbackpacks template create thirstout:feeding_melon true", "as": "Dev"}}
+{"id": "export", "command": "server.command", "args": {"command": "sophisticatedbackpacks template export thirstout:feeding_melon", "as": "Dev"}}

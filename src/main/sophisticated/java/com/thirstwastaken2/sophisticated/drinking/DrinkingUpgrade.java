@@ -59,8 +59,8 @@ public final class DrinkingUpgrade {
             helper.register(ThirstWasTaken2.id("drink_min_purity"), MIN_PURITY);
         });
         event.register(Registries.ITEM, helper -> {
-            item = new DrinkingUpgradeItem(FILTER_SLOTS, false);
-            advancedItem = new DrinkingUpgradeItem(ADVANCED_FILTER_SLOTS, true);
+            item = new DrinkingUpgradeItem(ThirstWasTaken2.id(NAME), FILTER_SLOTS, false);
+            advancedItem = new DrinkingUpgradeItem(ThirstWasTaken2.id(ADVANCED_NAME), ADVANCED_FILTER_SLOTS, true);
             helper.register(ThirstWasTaken2.id(NAME), item);
             helper.register(ThirstWasTaken2.id(ADVANCED_NAME), advancedItem);
         });

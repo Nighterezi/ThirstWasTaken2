@@ -22,10 +22,17 @@ public final class DrinkingUpgradeContainer extends UpgradeContainerBase<Drinkin
 
     @Override
     public void handlePacket(CompoundTag data) {
+        // From 1.21.5 a tag's getters answer with an Optional, or a fallback.
         if (data.contains(DATA_DRINK_AT)) {
-            setDrinkAt(DrinkAt.byName(data.getString(DATA_DRINK_AT)));
+            //? if >=1.21.5 {
+            setDrinkAt(DrinkAt.byName(data.getStringOr(DATA_DRINK_AT, "")));
+            //?} else
+            /*setDrinkAt(DrinkAt.byName(data.getString(DATA_DRINK_AT)));*/
         } else if (data.contains(DATA_MIN_PURITY)) {
-            setMinPurity(data.getInt(DATA_MIN_PURITY));
+            //? if >=1.21.5 {
+            setMinPurity(data.getIntOr(DATA_MIN_PURITY, DrinkingUpgradeWrapper.DEFAULT_MIN_PURITY));
+            //?} else
+            /*setMinPurity(data.getInt(DATA_MIN_PURITY));*/
         }
         filterLogicContainer.handlePacket(data);
     }

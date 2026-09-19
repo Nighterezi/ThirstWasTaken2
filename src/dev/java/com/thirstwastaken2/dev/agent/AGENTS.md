@@ -101,8 +101,8 @@ throwaway world made from another world's `level.dat`.
 
 ## Driving a client while the machine is in use
 
-A client that is being driven is not being played, and two things a played client does get in the way
-of using the desktop it opened on. `-Pdriven` turns both around:
+A client that is being driven is not being played, and three things a played client does get in the way
+of using the desktop it opened on, or of the run going anywhere at all. `-Pdriven` turns them around:
 
 ```bash
 ./gradlew ":26.1.x-neoforge:runManualA" -Pdriven
@@ -118,6 +118,12 @@ of using the desktop it opened on. `-Pdriven` turns both around:
 - **It opens maximised**, rather than at the small size the run tasks ask for, which is what makes the
   HUD worth looking at while a script drives it. Maximised and not full screen, on purpose: exclusive
   full screen takes over the display the person is working on.
+- **On NeoForge it passes the "warnings while loading mods" screen** when no warning on it is this
+  mod's, as if the button had been pressed, and logs each warning it passes over. Other mods' warnings
+  (a deprecated `logoFile` in Cloth Config, AppleSkin's old translation key) otherwise stop a
+  `-Pquickplay` or `-Pagent` client before the world opens. It stays on the screen for an error, for a
+  warning about this mod, and for a warning that names no mod. `LoadingWarnings` in
+  `src/dev/neoforge`; the screen keeps its issues private, so it reads them by reflection.
 
 `-Pagent=<file>` implies `-Pdriven`, because an unattended run has nobody at the keyboard. It is off
 by default otherwise, because it is the opposite of what a manual pass needs: with no grab there is

@@ -26,6 +26,8 @@
 //     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/sophisticated-drinking.jsonl -Pquickplay=SophisticatedAgent
 
 {"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "reloadTemplates", "command": "server.command", "args": {"command": "reload"}}
+{"id": "reloaded", "command": "wait", "args": {"ticks": 60}}
 {"id": "joined", "command": "client.state"}
 {"id": "survival", "command": "server.command", "args": {"command": "gamemode survival @p"}}
 {"id": "difficulty", "command": "server.command", "args": {"command": "difficulty normal"}}
@@ -34,71 +36,83 @@
 {"id": "drinking_pick_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "drinking_pick_effects", "command": "server.command", "args": {"command": "effect clear @p"}}
 {"id": "drinking_pick_thirsty", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 4, "quenched": 0, "exhaustion": 0}}
-{"id": "drinking_pick_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "drinking_pick_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "drinking_pick_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "drinking_pick_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "drinking_pick_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
 {"id": "drinking_pick_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "drinking_pick_close", "command": "client.screen", "args": {"open": "none"}}
 {"id": "drinking_pick_drinking", "command": "wait", "args": {"ticks": 100}}
 {"id": "pickDrunk", "command": "server.thirst.get", "args": {"player": "Dev"}}
-{"id": "drinking_pick_create", "command": "server.command", "args": {"command": "sbp template create thirstout:drinking_pick", "as": "Dev"}}
-{"id": "drinking_pick_export", "command": "server.command", "args": {"command": "sbp template export thirstout:drinking_pick", "as": "Dev"}}
+{"id": "drinking_pick_create", "command": "server.command", "args": {"command": "sophisticatedbackpacks template create thirstout:drinking_pick true", "as": "Dev"}}
+{"id": "drinking_pick_export", "command": "server.command", "args": {"command": "sophisticatedbackpacks template export thirstout:drinking_pick", "as": "Dev"}}
 
 {"id": "drinking_tank_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "drinking_tank_effects", "command": "server.command", "args": {"command": "effect clear @p"}}
 {"id": "drinking_tank_thirsty", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 4, "quenched": 0, "exhaustion": 0}}
-{"id": "drinking_tank_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_tank", "as": "Dev"}}
+{"id": "drinking_tank_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_tank", "as": "Dev"}}
+{"id": "drinking_tank_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "drinking_tank_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "drinking_tank_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
 {"id": "drinking_tank_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "drinking_tank_close", "command": "client.screen", "args": {"open": "none"}}
 {"id": "drinking_tank_drinking", "command": "wait", "args": {"ticks": 100}}
 {"id": "tankDrunk", "command": "server.thirst.get", "args": {"player": "Dev"}}
-{"id": "drinking_tank_create", "command": "server.command", "args": {"command": "sbp template create thirstout:drinking_tank", "as": "Dev"}}
-{"id": "drinking_tank_export", "command": "server.command", "args": {"command": "sbp template export thirstout:drinking_tank", "as": "Dev"}}
+{"id": "drinking_tank_create", "command": "server.command", "args": {"command": "sophisticatedbackpacks template create thirstout:drinking_tank true", "as": "Dev"}}
+{"id": "drinking_tank_export", "command": "server.command", "args": {"command": "sophisticatedbackpacks template export thirstout:drinking_tank", "as": "Dev"}}
 
 {"id": "drinking_salt_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "drinking_salt_effects", "command": "server.command", "args": {"command": "effect clear @p"}}
 {"id": "drinking_salt_thirsty", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 4, "quenched": 0, "exhaustion": 0}}
-{"id": "drinking_salt_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_salt", "as": "Dev"}}
+{"id": "drinking_salt_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_salt", "as": "Dev"}}
+{"id": "drinking_salt_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "drinking_salt_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "drinking_salt_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
 {"id": "drinking_salt_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "drinking_salt_close", "command": "client.screen", "args": {"open": "none"}}
 {"id": "drinking_salt_drinking", "command": "wait", "args": {"ticks": 100}}
 {"id": "saltRefused", "command": "server.thirst.get", "args": {"player": "Dev"}}
-{"id": "drinking_salt_create", "command": "server.command", "args": {"command": "sbp template create thirstout:drinking_salt", "as": "Dev"}}
-{"id": "drinking_salt_export", "command": "server.command", "args": {"command": "sbp template export thirstout:drinking_salt", "as": "Dev"}}
+{"id": "drinking_salt_create", "command": "server.command", "args": {"command": "sophisticatedbackpacks template create thirstout:drinking_salt true", "as": "Dev"}}
+{"id": "drinking_salt_export", "command": "server.command", "args": {"command": "sophisticatedbackpacks template export thirstout:drinking_salt", "as": "Dev"}}
 
 {"id": "drinking_advanced_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "drinking_advanced_effects", "command": "server.command", "args": {"command": "effect clear @p"}}
 {"id": "drinking_advanced_thirsty", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 4, "quenched": 0, "exhaustion": 0}}
-{"id": "drinking_advanced_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "drinking_advanced_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "drinking_advanced_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "drinking_advanced_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "drinking_advanced_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
 {"id": "drinking_advanced_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "drinking_advanced_close", "command": "client.screen", "args": {"open": "none"}}
 {"id": "drinking_advanced_drinking", "command": "wait", "args": {"ticks": 100}}
 {"id": "advancedDrunk", "command": "server.thirst.get", "args": {"player": "Dev"}}
-{"id": "drinking_advanced_create", "command": "server.command", "args": {"command": "sbp template create thirstout:drinking_advanced", "as": "Dev"}}
-{"id": "drinking_advanced_export", "command": "server.command", "args": {"command": "sbp template export thirstout:drinking_advanced", "as": "Dev"}}
+{"id": "drinking_advanced_create", "command": "server.command", "args": {"command": "sophisticatedbackpacks template create thirstout:drinking_advanced true", "as": "Dev"}}
+{"id": "drinking_advanced_export", "command": "server.command", "args": {"command": "sophisticatedbackpacks template export thirstout:drinking_advanced", "as": "Dev"}}
 
 {"id": "drinking_other_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "drinking_other_effects", "command": "server.command", "args": {"command": "effect clear @p"}}
 {"id": "drinking_other_thirsty", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 4, "quenched": 0, "exhaustion": 0}}
-{"id": "drinking_other_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_other", "as": "Dev"}}
+{"id": "drinking_other_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_other", "as": "Dev"}}
+{"id": "drinking_other_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "drinking_other_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "drinking_other_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
 {"id": "drinking_other_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "drinking_other_close", "command": "client.screen", "args": {"open": "none"}}
 {"id": "drinking_other_drinking", "command": "wait", "args": {"ticks": 100}}
 {"id": "otherDrunk", "command": "server.thirst.get", "args": {"player": "Dev"}}
-{"id": "drinking_other_create", "command": "server.command", "args": {"command": "sbp template create thirstout:drinking_other", "as": "Dev"}}
-{"id": "drinking_other_export", "command": "server.command", "args": {"command": "sbp template export thirstout:drinking_other", "as": "Dev"}}
+{"id": "drinking_other_create", "command": "server.command", "args": {"command": "sophisticatedbackpacks template create thirstout:drinking_other true", "as": "Dev"}}
+{"id": "drinking_other_export", "command": "server.command", "args": {"command": "sophisticatedbackpacks template export thirstout:drinking_other", "as": "Dev"}}
 
 {"id": "drinking_order_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "drinking_order_effects", "command": "server.command", "args": {"command": "effect clear @p"}}
 {"id": "drinking_order_thirsty", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 14, "quenched": 0, "exhaustion": 0}}
-{"id": "drinking_order_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_order", "as": "Dev"}}
+{"id": "drinking_order_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_order", "as": "Dev"}}
+{"id": "drinking_order_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "drinking_order_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "drinking_order_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
 {"id": "drinking_order_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "drinking_order_close", "command": "client.screen", "args": {"open": "none"}}
 {"id": "drinking_order_drinking", "command": "wait", "args": {"ticks": 100}}
 {"id": "orderDrunk", "command": "server.thirst.get", "args": {"player": "Dev"}}
-{"id": "drinking_order_create", "command": "server.command", "args": {"command": "sbp template create thirstout:drinking_order", "as": "Dev"}}
-{"id": "drinking_order_export", "command": "server.command", "args": {"command": "sbp template export thirstout:drinking_order", "as": "Dev"}}
+{"id": "drinking_order_create", "command": "server.command", "args": {"command": "sophisticatedbackpacks template create thirstout:drinking_order true", "as": "Dev"}}
+{"id": "drinking_order_export", "command": "server.command", "args": {"command": "sophisticatedbackpacks template export thirstout:drinking_order", "as": "Dev"}}

@@ -141,7 +141,8 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | `src/main/neoforge-fluidhandler` / `neoforge-transfer` | NeoForge 1.21.1 / 1.21.11+, the fluid container API |
 | `src/main/createfly`, `src/client/createfly` | Where `deps.create_fly` is set (Fabric 26.1.x, 26.2.x) |
 | `src/main/create` | Where `deps.create` is set (`1.21.1-neoforge`) |
-| `src/main/sophisticated`, `src/client/sophisticated` | Where `deps.sophisticated_core` is set (`1.21.1-neoforge`) |
+| `src/main/sophisticated`, `src/client/sophisticated` | Where `deps.sophisticated_core` is set (every NeoForge node) |
+| `src/main/sophisticated-fluidhandler` / `sophisticated-transfer` | The same nodes, 1.21.1 / 1.21.11+: Sophisticated's tank and pump code |
 | `src/main/resources` | Hand-written assets and lang, all nodes |
 | `src/main/generated/<mc version>` | Datagen output, never hand-edited |
 | `src/datagen`, `src/gametest`, `src/dev` | Separate mods, never packaged |

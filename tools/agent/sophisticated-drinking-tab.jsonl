@@ -20,6 +20,8 @@
 //     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/sophisticated-drinking-tab.jsonl -Pquickplay=SophisticatedAgent
 
 {"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "reloadTemplates", "command": "server.command", "args": {"command": "reload"}}
+{"id": "reloaded", "command": "wait", "args": {"ticks": 60}}
 {"id": "joined", "command": "client.state"}
 {"id": "survival", "command": "server.command", "args": {"command": "gamemode survival @p"}}
 {"id": "difficulty", "command": "server.command", "args": {"command": "difficulty normal"}}
@@ -27,7 +29,9 @@
 
 {"id": "buttons_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "buttons_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
-{"id": "buttons_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "buttons_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "buttons_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "buttons_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "buttons_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
 {"id": "buttons_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "buttons_close", "command": "client.screen", "args": {"open": "none"}}
@@ -42,14 +46,16 @@
 {"id": "buttons_settle", "command": "wait", "args": {"ticks": 10}}
 {"id": "buttons_after", "command": "client.capture", "args": {"name": "drinking_buttons_after"}}
 {"id": "buttons_shut", "command": "client.screen", "args": {"open": "none"}}
-{"id": "buttons_create", "command": "server.command", "args": {"command": "sbp template create thirstout:drinking_buttons", "as": "Dev"}}
-{"id": "buttons_export", "command": "server.command", "args": {"command": "sbp template export thirstout:drinking_buttons", "as": "Dev"}}
+{"id": "buttons_create", "command": "server.command", "args": {"command": "sophisticatedbackpacks template create thirstout:drinking_buttons true", "as": "Dev"}}
+{"id": "buttons_export", "command": "server.command", "args": {"command": "sophisticatedbackpacks template export thirstout:drinking_buttons", "as": "Dev"}}
 
 {"id": "en_us_language", "command": "client.language", "args": {"code": "en_us"}}
 {"id": "en_us_widths", "command": "client.textWidth", "args": {"keys": ["gui.thirstwastaken2.upgrades.drinking", "gui.thirstwastaken2.upgrades.advanced_drinking"]}}
 {"id": "en_us_basic_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "en_us_basic_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
-{"id": "en_us_basic_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "en_us_basic_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "en_us_basic_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "en_us_basic_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "en_us_basic_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
 {"id": "en_us_basic_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "en_us_basic_close", "command": "client.screen", "args": {"open": "none"}}
@@ -60,7 +66,9 @@
 {"id": "en_us_basic_shut", "command": "client.screen", "args": {"open": "none"}}
 {"id": "en_us_advanced_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "en_us_advanced_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
-{"id": "en_us_advanced_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "en_us_advanced_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "en_us_advanced_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "en_us_advanced_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "en_us_advanced_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
 {"id": "en_us_advanced_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "en_us_advanced_close", "command": "client.screen", "args": {"open": "none"}}
@@ -74,7 +82,9 @@
 {"id": "vi_vn_widths", "command": "client.textWidth", "args": {"keys": ["gui.thirstwastaken2.upgrades.drinking", "gui.thirstwastaken2.upgrades.advanced_drinking"]}}
 {"id": "vi_vn_basic_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "vi_vn_basic_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
-{"id": "vi_vn_basic_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "vi_vn_basic_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "vi_vn_basic_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "vi_vn_basic_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "vi_vn_basic_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
 {"id": "vi_vn_basic_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "vi_vn_basic_close", "command": "client.screen", "args": {"open": "none"}}
@@ -85,7 +95,9 @@
 {"id": "vi_vn_basic_shut", "command": "client.screen", "args": {"open": "none"}}
 {"id": "vi_vn_advanced_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "vi_vn_advanced_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
-{"id": "vi_vn_advanced_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "vi_vn_advanced_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "vi_vn_advanced_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "vi_vn_advanced_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "vi_vn_advanced_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
 {"id": "vi_vn_advanced_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "vi_vn_advanced_close", "command": "client.screen", "args": {"open": "none"}}
@@ -99,7 +111,9 @@
 {"id": "fr_fr_widths", "command": "client.textWidth", "args": {"keys": ["gui.thirstwastaken2.upgrades.drinking", "gui.thirstwastaken2.upgrades.advanced_drinking"]}}
 {"id": "fr_fr_basic_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "fr_fr_basic_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
-{"id": "fr_fr_basic_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "fr_fr_basic_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "fr_fr_basic_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "fr_fr_basic_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "fr_fr_basic_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
 {"id": "fr_fr_basic_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "fr_fr_basic_close", "command": "client.screen", "args": {"open": "none"}}
@@ -110,7 +124,9 @@
 {"id": "fr_fr_basic_shut", "command": "client.screen", "args": {"open": "none"}}
 {"id": "fr_fr_advanced_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "fr_fr_advanced_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
-{"id": "fr_fr_advanced_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "fr_fr_advanced_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "fr_fr_advanced_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "fr_fr_advanced_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "fr_fr_advanced_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
 {"id": "fr_fr_advanced_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "fr_fr_advanced_close", "command": "client.screen", "args": {"open": "none"}}
@@ -124,7 +140,9 @@
 {"id": "ja_jp_widths", "command": "client.textWidth", "args": {"keys": ["gui.thirstwastaken2.upgrades.drinking", "gui.thirstwastaken2.upgrades.advanced_drinking"]}}
 {"id": "ja_jp_basic_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "ja_jp_basic_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
-{"id": "ja_jp_basic_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "ja_jp_basic_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "ja_jp_basic_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "ja_jp_basic_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "ja_jp_basic_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
 {"id": "ja_jp_basic_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "ja_jp_basic_close", "command": "client.screen", "args": {"open": "none"}}
@@ -135,7 +153,9 @@
 {"id": "ja_jp_basic_shut", "command": "client.screen", "args": {"open": "none"}}
 {"id": "ja_jp_advanced_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "ja_jp_advanced_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
-{"id": "ja_jp_advanced_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "ja_jp_advanced_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "ja_jp_advanced_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "ja_jp_advanced_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "ja_jp_advanced_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
 {"id": "ja_jp_advanced_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "ja_jp_advanced_close", "command": "client.screen", "args": {"open": "none"}}
@@ -149,7 +169,9 @@
 {"id": "ko_kr_widths", "command": "client.textWidth", "args": {"keys": ["gui.thirstwastaken2.upgrades.drinking", "gui.thirstwastaken2.upgrades.advanced_drinking"]}}
 {"id": "ko_kr_basic_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "ko_kr_basic_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
-{"id": "ko_kr_basic_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "ko_kr_basic_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "ko_kr_basic_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "ko_kr_basic_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "ko_kr_basic_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
 {"id": "ko_kr_basic_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "ko_kr_basic_close", "command": "client.screen", "args": {"open": "none"}}
@@ -160,7 +182,9 @@
 {"id": "ko_kr_basic_shut", "command": "client.screen", "args": {"open": "none"}}
 {"id": "ko_kr_advanced_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "ko_kr_advanced_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
-{"id": "ko_kr_advanced_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "ko_kr_advanced_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "ko_kr_advanced_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "ko_kr_advanced_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "ko_kr_advanced_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
 {"id": "ko_kr_advanced_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "ko_kr_advanced_close", "command": "client.screen", "args": {"open": "none"}}
@@ -174,7 +198,9 @@
 {"id": "pl_pl_widths", "command": "client.textWidth", "args": {"keys": ["gui.thirstwastaken2.upgrades.drinking", "gui.thirstwastaken2.upgrades.advanced_drinking"]}}
 {"id": "pl_pl_basic_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "pl_pl_basic_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
-{"id": "pl_pl_basic_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "pl_pl_basic_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "pl_pl_basic_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "pl_pl_basic_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "pl_pl_basic_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
 {"id": "pl_pl_basic_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "pl_pl_basic_close", "command": "client.screen", "args": {"open": "none"}}
@@ -185,7 +211,9 @@
 {"id": "pl_pl_basic_shut", "command": "client.screen", "args": {"open": "none"}}
 {"id": "pl_pl_advanced_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "pl_pl_advanced_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
-{"id": "pl_pl_advanced_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "pl_pl_advanced_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "pl_pl_advanced_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "pl_pl_advanced_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "pl_pl_advanced_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
 {"id": "pl_pl_advanced_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "pl_pl_advanced_close", "command": "client.screen", "args": {"open": "none"}}
@@ -199,7 +227,9 @@
 {"id": "ru_ru_widths", "command": "client.textWidth", "args": {"keys": ["gui.thirstwastaken2.upgrades.drinking", "gui.thirstwastaken2.upgrades.advanced_drinking"]}}
 {"id": "ru_ru_basic_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "ru_ru_basic_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
-{"id": "ru_ru_basic_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "ru_ru_basic_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "ru_ru_basic_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "ru_ru_basic_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "ru_ru_basic_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
 {"id": "ru_ru_basic_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "ru_ru_basic_close", "command": "client.screen", "args": {"open": "none"}}
@@ -210,7 +240,9 @@
 {"id": "ru_ru_basic_shut", "command": "client.screen", "args": {"open": "none"}}
 {"id": "ru_ru_advanced_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "ru_ru_advanced_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
-{"id": "ru_ru_advanced_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "ru_ru_advanced_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "ru_ru_advanced_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "ru_ru_advanced_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "ru_ru_advanced_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
 {"id": "ru_ru_advanced_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "ru_ru_advanced_close", "command": "client.screen", "args": {"open": "none"}}
@@ -224,7 +256,9 @@
 {"id": "zh_cn_widths", "command": "client.textWidth", "args": {"keys": ["gui.thirstwastaken2.upgrades.drinking", "gui.thirstwastaken2.upgrades.advanced_drinking"]}}
 {"id": "zh_cn_basic_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "zh_cn_basic_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
-{"id": "zh_cn_basic_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "zh_cn_basic_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "zh_cn_basic_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "zh_cn_basic_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "zh_cn_basic_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
 {"id": "zh_cn_basic_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "zh_cn_basic_close", "command": "client.screen", "args": {"open": "none"}}
@@ -235,7 +269,9 @@
 {"id": "zh_cn_basic_shut", "command": "client.screen", "args": {"open": "none"}}
 {"id": "zh_cn_advanced_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "zh_cn_advanced_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
-{"id": "zh_cn_advanced_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "zh_cn_advanced_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "zh_cn_advanced_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "zh_cn_advanced_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "zh_cn_advanced_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
 {"id": "zh_cn_advanced_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "zh_cn_advanced_close", "command": "client.screen", "args": {"open": "none"}}
@@ -249,7 +285,9 @@
 {"id": "zh_tw_widths", "command": "client.textWidth", "args": {"keys": ["gui.thirstwastaken2.upgrades.drinking", "gui.thirstwastaken2.upgrades.advanced_drinking"]}}
 {"id": "zh_tw_basic_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "zh_tw_basic_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
-{"id": "zh_tw_basic_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "zh_tw_basic_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_pick", "as": "Dev"}}
+{"id": "zh_tw_basic_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "zh_tw_basic_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "zh_tw_basic_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
 {"id": "zh_tw_basic_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "zh_tw_basic_close", "command": "client.screen", "args": {"open": "none"}}
@@ -260,7 +298,9 @@
 {"id": "zh_tw_basic_shut", "command": "client.screen", "args": {"open": "none"}}
 {"id": "zh_tw_advanced_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "zh_tw_advanced_full", "command": "server.thirst.set", "args": {"player": "Dev", "thirst": 20, "quenched": 20, "exhaustion": 0}}
-{"id": "zh_tw_advanced_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "zh_tw_advanced_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:drinking_advanced", "as": "Dev"}}
+{"id": "zh_tw_advanced_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "zh_tw_advanced_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "zh_tw_advanced_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 8}}
 {"id": "zh_tw_advanced_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "zh_tw_advanced_close", "command": "client.screen", "args": {"open": "none"}}

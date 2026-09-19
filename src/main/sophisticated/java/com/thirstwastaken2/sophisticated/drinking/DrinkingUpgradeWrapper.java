@@ -15,23 +15,22 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.UseAnim;
+//? if >=1.21.2 {
+import net.minecraft.world.item.ItemUseAnimation;
+//?} else
+/*import net.minecraft.world.item.UseAnim;*/
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
-import net.p3pp3rf1y.sophisticatedcore.api.IStorageFluidHandler;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.init.ModCoreDataComponents;
-import net.p3pp3rf1y.sophisticatedcore.inventory.ITrackedContentsItemHandler;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.FilterLogic;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.IFilteredUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.ITickableUpgrade;
@@ -87,7 +86,7 @@ public final class DrinkingUpgradeWrapper extends UpgradeWrapperBase<DrinkingUpg
             stillThirsty = drinkAndStillThirsty(player, level);
         } else {
             // A placed storage, or a backpack on something other than a player, serves whoever is close.
-            for (Player player : level.getEntities(EntityType.PLAYER, new AABB(pos).inflate(RANGE), player -> true)) {
+            for (Player player : level.getEntitiesOfClass(Player.class, new AABB(pos).inflate(RANGE))) {
                 stillThirsty |= drinkAndStillThirsty(player, level);
             }
         }
@@ -111,25 +110,24 @@ public final class DrinkingUpgradeWrapper extends UpgradeWrapperBase<DrinkingUpg
         DrinkAt drinkAt = getDrinkAt();
         int minPurity = getMinPurity();
 
-        ITrackedContentsItemHandler inventory = storageWrapper.getInventoryForUpgradeProcessing();
+        DrinkingStorage storage = new DrinkingStorage(storageWrapper);
         int bestSlot = -1;
         int bestRank = NONE;
-        for (int slot = 0; slot < inventory.getSlots(); slot++) {
-            int rank = rank(inventory.getStackInSlot(slot), missing, drinkAt, minPurity);
+        for (int slot = 0; slot < storage.slots(); slot++) {
+            int rank = rank(storage.get(slot), missing, drinkAt, minPurity);
             if (rank > bestRank) {
                 bestRank = rank;
                 bestSlot = slot;
             }
         }
 
-        IStorageFluidHandler tanks = storageWrapper.getFluidHandler().orElse(null);
-        FluidStack serving = tanks == null ? FluidStack.EMPTY : tankServing(tanks, missing, drinkAt, minPurity);
+        FluidStack serving = tankServing(storage, missing, drinkAt, minPurity);
         // At the same grade the tank goes first: it leaves no empty bottle behind to find room for.
-        if (!serving.isEmpty() && rank(WaterFluids.quality(serving)) >= bestRank && drinkFromTank(player, level, tanks, serving)) {
+        if (!serving.isEmpty() && rank(WaterFluids.quality(serving)) >= bestRank && drinkFromTank(player, level, storage, serving)) {
             return true;
         }
         if (bestSlot < 0) return false;
-        drinkFromSlot(player, level, inventory, bestSlot);
+        drinkFromSlot(player, level, storage, bestSlot);
         return true;
     }
 
@@ -150,11 +148,11 @@ public final class DrinkingUpgradeWrapper extends UpgradeWrapperBase<DrinkingUpg
     }
 
     /** A serving of the cleanest water the settings accept from any one tank, or empty. */
-    private static FluidStack tankServing(IStorageFluidHandler tanks, int missing, DrinkAt drinkAt, int minPurity) {
+    private static FluidStack tankServing(DrinkingStorage storage, int missing, DrinkAt drinkAt, int minPurity) {
         FluidStack best = FluidStack.EMPTY;
         int bestRank = NONE;
-        for (int tank = 0; tank < tanks.getTanks(); tank++) {
-            FluidStack fluid = tanks.getFluidInTank(tank);
+        for (int tank = 0; tank < storage.tanks(); tank++) {
+            FluidStack fluid = storage.tank(tank);
             if (!WaterFluids.isWater(fluid) || fluid.getAmount() < WaterContainerFluids.SERVING) continue;
             int rank = acceptedRank(WaterFluids.quality(fluid), minPurity);
             if (rank > bestRank) {
@@ -167,9 +165,8 @@ public final class DrinkingUpgradeWrapper extends UpgradeWrapperBase<DrinkingUpg
         return value != null && drinkAt.allows(missing, value[0]) ? best : FluidStack.EMPTY;
     }
 
-    private static boolean drinkFromTank(Player player, Level level, IStorageFluidHandler tanks, FluidStack serving) {
-        if (tanks.drain(serving, FluidAction.SIMULATE, true).getAmount() < serving.getAmount()) return false;
-        tanks.drain(serving, FluidAction.EXECUTE, true);
+    private static boolean drinkFromTank(Player player, Level level, DrinkingStorage storage, FluidStack serving) {
+        if (!storage.drain(serving)) return false;
         ThirstManager.drinkItem(player, waterBottle(WaterFluids.quality(serving)));
         playDrinkSound(player, level);
         return true;
@@ -180,23 +177,23 @@ public final class DrinkingUpgradeWrapper extends UpgradeWrapperBase<DrinkingUpg
         return WaterPurity.setQuality(PotionContents.createItemStack(Items.POTION, Potions.WATER), quality);
     }
 
-    private static void drinkFromSlot(Player player, Level level, ITrackedContentsItemHandler inventory, int slot) {
-        ItemStack stack = inventory.getStackInSlot(slot);
+    private static void drinkFromSlot(Player player, Level level, DrinkingStorage storage, int slot) {
+        ItemStack stack = storage.get(slot);
         ItemStack drunk = stack.copyWithCount(1);
-        inventory.setStackInSlot(slot, stack.copyWithCount(stack.getCount() - 1));
+        storage.set(slot, stack.copyWithCount(stack.getCount() - 1));
         // ItemStack's finishUsingItem, not the item's: the mod hands out thirst, sickness and advancements
         // at the head of that one, as for a drink finished by hand.
         ItemStack result = EventHooks.onItemUseFinish(player, drunk.copy(), 0, drunk.finishUsingItem(level, player));
         playDrinkSound(player, level);
         if (result.isEmpty()) return;
         // The empty bottle, bowl or lighter waterskin goes back where it came from, or to the player.
-        ItemStack left = inventory.insertItem(result, false);
+        ItemStack left = storage.insert(result);
         if (!left.isEmpty()) player.getInventory().placeItemBackInInventory(left);
     }
 
     private static void playDrinkSound(Player player, Level level) {
         level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.GENERIC_DRINK, SoundSource.PLAYERS,
-                0.5F, level.random.nextFloat() * 0.1F + 0.9F);
+                0.5F, level.getRandom().nextFloat() * 0.1F + 0.9F);
     }
 
     /**
@@ -217,7 +214,11 @@ public final class DrinkingUpgradeWrapper extends UpgradeWrapperBase<DrinkingUpg
         PotionContents potion = stack.get(DataComponents.POTION_CONTENTS);
         if (potion != null && !potion.is(Potions.WATER)) return false;
         if (ThirstApi.thirstValues(stack.getItem()) == null) return false;
-        return stack.getUseAnimation() == UseAnim.DRINK || WaterPurity.isPlainWaterDrink(stack);
+        //? if >=1.21.2 {
+        boolean drunk = stack.getUseAnimation() == ItemUseAnimation.DRINK;
+        //?} else
+        /*boolean drunk = stack.getUseAnimation() == UseAnim.DRINK;*/
+        return drunk || WaterPurity.isPlainWaterDrink(stack);
     }
 
     @Override

@@ -14,27 +14,33 @@
 //     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/sophisticated-cooking.jsonl -Pquickplay=SophisticatedAgent
 
 {"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "reloadTemplates", "command": "server.command", "args": {"command": "reload"}}
+{"id": "reloaded", "command": "wait", "args": {"ticks": 60}}
 {"id": "joined", "command": "client.state"}
 {"id": "effects", "command": "server.command", "args": {"command": "effect clear @p"}}
 {"id": "survival", "command": "server.command", "args": {"command": "gamemode survival @p"}}
 {"id": "float", "command": "server.command", "args": {"command": "effect give @p minecraft:slow_falling 600 0 true"}}
 
 {"id": "cook_smoking_clear", "command": "server.command", "args": {"command": "clear @p"}}
-{"id": "cook_smoking_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:cook_smoking", "as": "Dev"}}
+{"id": "cook_smoking_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:cook_smoking", "as": "Dev"}}
+{"id": "cook_smoking_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "cook_smoking_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "cook_smoking_lookUp", "command": "server.command", "args": {"command": "tp @p -240.5 201 160.5 0 -90"}}
 {"id": "cook_smoking_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
 {"id": "cook_smoking_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "cook_smoking_close", "command": "client.screen", "args": {"open": "none"}}
 {"id": "cook_smoking_cooking", "command": "wait", "args": {"ticks": 300}}
-{"id": "cook_smoking_create", "command": "server.command", "args": {"command": "sbp template create thirstout:cook_smoking", "as": "Dev"}}
-{"id": "cook_smoking_export", "command": "server.command", "args": {"command": "sbp template export thirstout:cook_smoking", "as": "Dev"}}
+{"id": "cook_smoking_create", "command": "server.command", "args": {"command": "sophisticatedbackpacks template create thirstout:cook_smoking true", "as": "Dev"}}
+{"id": "cook_smoking_export", "command": "server.command", "args": {"command": "sophisticatedbackpacks template export thirstout:cook_smoking", "as": "Dev"}}
 
 {"id": "cook_smelting_clear", "command": "server.command", "args": {"command": "clear @p"}}
-{"id": "cook_smelting_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:cook_smelting", "as": "Dev"}}
+{"id": "cook_smelting_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:cook_smelting", "as": "Dev"}}
+{"id": "cook_smelting_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "cook_smelting_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "cook_smelting_lookUp", "command": "server.command", "args": {"command": "tp @p -240.5 201 160.5 0 -90"}}
 {"id": "cook_smelting_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
 {"id": "cook_smelting_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "cook_smelting_close", "command": "client.screen", "args": {"open": "none"}}
 {"id": "cook_smelting_cooking", "command": "wait", "args": {"ticks": 300}}
-{"id": "cook_smelting_create", "command": "server.command", "args": {"command": "sbp template create thirstout:cook_smelting", "as": "Dev"}}
-{"id": "cook_smelting_export", "command": "server.command", "args": {"command": "sbp template export thirstout:cook_smelting", "as": "Dev"}}
+{"id": "cook_smelting_create", "command": "server.command", "args": {"command": "sophisticatedbackpacks template create thirstout:cook_smelting true", "as": "Dev"}}
+{"id": "cook_smelting_export", "command": "server.command", "args": {"command": "sophisticatedbackpacks template export thirstout:cook_smelting", "as": "Dev"}}

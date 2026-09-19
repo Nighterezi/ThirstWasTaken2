@@ -34,6 +34,8 @@
 //     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/sophisticated-pump.jsonl -Pquickplay=SophisticatedAgent
 
 {"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "reloadTemplates", "command": "server.command", "args": {"command": "reload"}}
+{"id": "reloaded", "command": "wait", "args": {"ticks": 60}}
 {"id": "joined", "command": "client.state"}
 {"id": "effects", "command": "server.command", "args": {"command": "effect clear @p"}}
 {"id": "survival", "command": "server.command", "args": {"command": "gamemode survival @p"}}
@@ -56,44 +58,52 @@
 {"id": "plainsBottle", "command": "server.command", "args": {"command": "data get entity @p SelectedItem"}}
 
 {"id": "pump_world_plains_clear", "command": "server.command", "args": {"command": "clear @p"}}
-{"id": "pump_world_plains_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:pump_world", "as": "Dev"}}
+{"id": "pump_world_plains_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:pump_world", "as": "Dev"}}
+{"id": "pump_world_plains_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "pump_world_plains_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "pump_world_plains_lookUp", "command": "server.command", "args": {"command": "tp @p -240.5 201 160.5 0 -90"}}
 {"id": "pump_world_plains_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
 {"id": "pump_world_plains_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "pump_world_plains_close", "command": "client.screen", "args": {"open": "none"}}
 {"id": "pump_world_plains_pumping", "command": "wait", "args": {"ticks": 100}}
 {"id": "pump_world_plains_poolGone", "command": "server.command", "args": {"command": "execute unless block -238 200 160 minecraft:water[level=0]"}}
-{"id": "pump_world_plains_create", "command": "server.command", "args": {"command": "sbp template create thirstout:pump_world_plains", "as": "Dev"}}
-{"id": "pump_world_plains_export", "command": "server.command", "args": {"command": "sbp template export thirstout:pump_world_plains", "as": "Dev"}}
+{"id": "pump_world_plains_create", "command": "server.command", "args": {"command": "sophisticatedbackpacks template create thirstout:pump_world_plains true", "as": "Dev"}}
+{"id": "pump_world_plains_export", "command": "server.command", "args": {"command": "sophisticatedbackpacks template export thirstout:pump_world_plains", "as": "Dev"}}
 
 {"id": "biome_ocean", "command": "server.command", "args": {"command": "fillbiome -246 190 154 -234 210 166 minecraft:ocean"}}
 {"id": "pool_ocean", "command": "server.command", "args": {"command": "setblock -238 200 160 minecraft:water"}}
 {"id": "pump_world_ocean_clear", "command": "server.command", "args": {"command": "clear @p"}}
-{"id": "pump_world_ocean_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:pump_world", "as": "Dev"}}
+{"id": "pump_world_ocean_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:pump_world_ocean", "as": "Dev"}}
+{"id": "pump_world_ocean_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "pump_world_ocean_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "pump_world_ocean_lookUp", "command": "server.command", "args": {"command": "tp @p -240.5 201 160.5 0 -90"}}
 {"id": "pump_world_ocean_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
 {"id": "pump_world_ocean_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "pump_world_ocean_close", "command": "client.screen", "args": {"open": "none"}}
 {"id": "pump_world_ocean_pumping", "command": "wait", "args": {"ticks": 100}}
 {"id": "pump_world_ocean_poolGone", "command": "server.command", "args": {"command": "execute unless block -238 200 160 minecraft:water[level=0]"}}
-{"id": "pump_world_ocean_create", "command": "server.command", "args": {"command": "sbp template create thirstout:pump_world_ocean", "as": "Dev"}}
-{"id": "pump_world_ocean_export", "command": "server.command", "args": {"command": "sbp template export thirstout:pump_world_ocean", "as": "Dev"}}
+{"id": "pump_world_ocean_create", "command": "server.command", "args": {"command": "sophisticatedbackpacks template create thirstout:pump_world_ocean true", "as": "Dev"}}
+{"id": "pump_world_ocean_export", "command": "server.command", "args": {"command": "sophisticatedbackpacks template export thirstout:pump_world_ocean", "as": "Dev"}}
 
 {"id": "biome_plains_again", "command": "server.command", "args": {"command": "fillbiome -246 190 154 -234 210 166 minecraft:plains"}}
 {"id": "pool_filter", "command": "server.command", "args": {"command": "setblock -238 200 160 minecraft:water"}}
 {"id": "pump_world_filter_clear", "command": "server.command", "args": {"command": "clear @p"}}
-{"id": "pump_world_filter_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:pump_world_filter", "as": "Dev"}}
+{"id": "pump_world_filter_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:pump_world_filter", "as": "Dev"}}
+{"id": "pump_world_filter_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "pump_world_filter_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "pump_world_filter_lookUp", "command": "server.command", "args": {"command": "tp @p -240.5 201 160.5 0 -90"}}
 {"id": "pump_world_filter_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
 {"id": "pump_world_filter_opened", "command": "wait", "args": {"ticks": 10}}
 {"id": "pump_world_filter_close", "command": "client.screen", "args": {"open": "none"}}
 {"id": "pump_world_filter_pumping", "command": "wait", "args": {"ticks": 100}}
 {"id": "pump_world_filter_poolGone", "command": "server.command", "args": {"command": "execute unless block -238 200 160 minecraft:water[level=0]"}}
-{"id": "pump_world_filter_create", "command": "server.command", "args": {"command": "sbp template create thirstout:pump_world_filter", "as": "Dev"}}
-{"id": "pump_world_filter_export", "command": "server.command", "args": {"command": "sbp template export thirstout:pump_world_filter", "as": "Dev"}}
+{"id": "pump_world_filter_create", "command": "server.command", "args": {"command": "sophisticatedbackpacks template create thirstout:pump_world_filter true", "as": "Dev"}}
+{"id": "pump_world_filter_export", "command": "server.command", "args": {"command": "sophisticatedbackpacks template export thirstout:pump_world_filter", "as": "Dev"}}
 
 {"id": "pump_hand_in_clear", "command": "server.command", "args": {"command": "clear @p"}}
-{"id": "pump_hand_in_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:pump_hand_in", "as": "Dev"}}
+{"id": "pump_hand_in_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:pump_hand_in", "as": "Dev"}}
+{"id": "pump_hand_in_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "pump_hand_in_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "pump_hand_in_lookUp", "command": "server.command", "args": {"command": "tp @p -240.5 201 160.5 0 -90"}}
 {"id": "pump_hand_in_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
 {"id": "pump_hand_in_opened", "command": "wait", "args": {"ticks": 10}}
@@ -102,11 +112,14 @@
 {"id": "pump_hand_in_pumping", "command": "wait", "args": {"ticks": 60}}
 {"id": "handInEmptied", "command": "server.command", "args": {"command": "execute if items entity @p weapon.offhand minecraft:bucket"}}
 {"id": "pump_hand_in_offhand", "command": "server.command", "args": {"command": "data get entity @p Inventory[{Slot:-106b}]"}}
-{"id": "pump_hand_in_create", "command": "server.command", "args": {"command": "sbp template create thirstout:pump_hand_in", "as": "Dev"}}
-{"id": "pump_hand_in_export", "command": "server.command", "args": {"command": "sbp template export thirstout:pump_hand_in", "as": "Dev"}}
+{"id": "pump_hand_in_offhand_equipment", "command": "server.command", "args": {"command": "data get entity @p equipment.offhand"}}
+{"id": "pump_hand_in_create", "command": "server.command", "args": {"command": "sophisticatedbackpacks template create thirstout:pump_hand_in true", "as": "Dev"}}
+{"id": "pump_hand_in_export", "command": "server.command", "args": {"command": "sophisticatedbackpacks template export thirstout:pump_hand_in", "as": "Dev"}}
 
 {"id": "pump_hand_out_clear", "command": "server.command", "args": {"command": "clear @p"}}
-{"id": "pump_hand_out_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:pump_hand_out", "as": "Dev"}}
+{"id": "pump_hand_out_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:pump_hand_out", "as": "Dev"}}
+{"id": "pump_hand_out_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "pump_hand_out_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "pump_hand_out_lookUp", "command": "server.command", "args": {"command": "tp @p -240.5 201 160.5 0 -90"}}
 {"id": "pump_hand_out_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
 {"id": "pump_hand_out_opened", "command": "wait", "args": {"ticks": 10}}
@@ -115,14 +128,17 @@
 {"id": "pump_hand_out_pumping", "command": "wait", "args": {"ticks": 60}}
 {"id": "handOutFilled", "command": "server.command", "args": {"command": "execute if items entity @p weapon.offhand minecraft:water_bucket[thirstwastaken2:water_purity=3]"}}
 {"id": "pump_hand_out_offhand", "command": "server.command", "args": {"command": "data get entity @p Inventory[{Slot:-106b}]"}}
-{"id": "pump_hand_out_create", "command": "server.command", "args": {"command": "sbp template create thirstout:pump_hand_out", "as": "Dev"}}
-{"id": "pump_hand_out_export", "command": "server.command", "args": {"command": "sbp template export thirstout:pump_hand_out", "as": "Dev"}}
+{"id": "pump_hand_out_offhand_equipment", "command": "server.command", "args": {"command": "data get entity @p equipment.offhand"}}
+{"id": "pump_hand_out_create", "command": "server.command", "args": {"command": "sophisticatedbackpacks template create thirstout:pump_hand_out true", "as": "Dev"}}
+{"id": "pump_hand_out_export", "command": "server.command", "args": {"command": "sophisticatedbackpacks template export thirstout:pump_hand_out", "as": "Dev"}}
 
 // A Create Fluid Tank next to the player, filled from the backpack, then emptied into another one.
 {"id": "pump_block_out_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "pump_block_out_tank", "command": "server.command", "args": {"command": "setblock -240 201 160 create:fluid_tank"}}
 {"id": "pump_block_out_placed", "command": "wait", "args": {"ticks": 20}}
-{"id": "pump_block_out_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:pump_block_out", "as": "Dev"}}
+{"id": "pump_block_out_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:pump_block_out", "as": "Dev"}}
+{"id": "pump_block_out_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "pump_block_out_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "pump_block_out_lookUp", "command": "server.command", "args": {"command": "tp @p -240.5 201 160.5 0 -90"}}
 {"id": "pump_block_out_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
 {"id": "pump_block_out_opened", "command": "wait", "args": {"ticks": 10}}
@@ -131,8 +147,8 @@
 {"id": "pump_block_out_read", "command": "client.command", "args": {"command": "data get block -240 201 160 TankContent"}}
 {"id": "pump_block_out_check", "command": "client.command", "args": {"command": "execute if data block -240 201 160 TankContent.Fluid{amount:1000,components:{\"thirstwastaken2:water_purity\":3}}"}}
 {"id": "pump_block_out_chat", "command": "wait", "args": {"ticks": 5}}
-{"id": "pump_block_out_create", "command": "server.command", "args": {"command": "sbp template create thirstout:pump_block_out", "as": "Dev"}}
-{"id": "pump_block_out_export", "command": "server.command", "args": {"command": "sbp template export thirstout:pump_block_out", "as": "Dev"}}
+{"id": "pump_block_out_create", "command": "server.command", "args": {"command": "sophisticatedbackpacks template create thirstout:pump_block_out true", "as": "Dev"}}
+{"id": "pump_block_out_export", "command": "server.command", "args": {"command": "sophisticatedbackpacks template export thirstout:pump_block_out", "as": "Dev"}}
 {"id": "pump_block_in_clear", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "pump_block_in_reset", "command": "server.command", "args": {"command": "setblock -240 201 160 minecraft:air"}}
 {"id": "pump_block_in_tank", "command": "server.command", "args": {"command": "setblock -240 201 160 create:fluid_tank"}}
@@ -140,7 +156,9 @@
 {"id": "pump_block_in_fill", "command": "client.command", "args": {"command": "data merge block -240 201 160 {TankContent:{Fluid:{id:\"minecraft:water\",amount:1000,components:{\"thirstwastaken2:water_purity\":0}}}}"}}
 {"id": "pump_block_in_filled", "command": "wait", "args": {"ticks": 5}}
 {"id": "pump_block_in_before", "command": "client.command", "args": {"command": "data get block -240 201 160 TankContent"}}
-{"id": "pump_block_in_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:pump_block_in", "as": "Dev"}}
+{"id": "pump_block_in_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:pump_block_in", "as": "Dev"}}
+{"id": "pump_block_in_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "pump_block_in_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "pump_block_in_lookUp", "command": "server.command", "args": {"command": "tp @p -240.5 201 160.5 0 -90"}}
 {"id": "pump_block_in_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
 {"id": "pump_block_in_opened", "command": "wait", "args": {"ticks": 10}}
@@ -148,13 +166,15 @@
 {"id": "pump_block_in_pumping", "command": "wait", "args": {"ticks": 60}}
 {"id": "pump_block_in_read", "command": "client.command", "args": {"command": "data get block -240 201 160 TankContent"}}
 {"id": "pump_block_in_chat", "command": "wait", "args": {"ticks": 5}}
-{"id": "pump_block_in_create", "command": "server.command", "args": {"command": "sbp template create thirstout:pump_block_in", "as": "Dev"}}
-{"id": "pump_block_in_export", "command": "server.command", "args": {"command": "sbp template export thirstout:pump_block_in", "as": "Dev"}}
+{"id": "pump_block_in_create", "command": "server.command", "args": {"command": "sophisticatedbackpacks template create thirstout:pump_block_in true", "as": "Dev"}}
+{"id": "pump_block_in_export", "command": "server.command", "args": {"command": "sophisticatedbackpacks template export thirstout:pump_block_in", "as": "Dev"}}
 {"id": "pump_block_cleanup", "command": "server.command", "args": {"command": "setblock -240 201 160 minecraft:air"}}
 
 // An empty waterskin in the off hand, filled from the backpack.
 {"id": "pump_hand_skin_clear", "command": "server.command", "args": {"command": "clear @p"}}
-{"id": "pump_hand_skin_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:pump_hand_skin", "as": "Dev"}}
+{"id": "pump_hand_skin_give", "command": "server.command", "args": {"command": "sophisticatedbackpacks template give thirsttest:pump_hand_skin", "as": "Dev"}}
+{"id": "pump_hand_skin_hand", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand from entity @p hotbar.0"}}
+{"id": "pump_hand_skin_dedupe", "command": "server.command", "args": {"command": "execute unless data entity @p {SelectedItemSlot:0} run item replace entity @p hotbar.0 with minecraft:air"}}
 {"id": "pump_hand_skin_lookUp", "command": "server.command", "args": {"command": "tp @p -240.5 201 160.5 0 -90"}}
 {"id": "pump_hand_skin_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
 {"id": "pump_hand_skin_opened", "command": "wait", "args": {"ticks": 10}}
@@ -163,5 +183,6 @@
 {"id": "pump_hand_skin_pumping", "command": "wait", "args": {"ticks": 60}}
 {"id": "handSkinFilled", "command": "server.command", "args": {"command": "execute if items entity @p weapon.offhand thirstwastaken2:waterskin[thirstwastaken2:water_servings=3,thirstwastaken2:water_purity=3]"}}
 {"id": "pump_hand_skin_offhand", "command": "server.command", "args": {"command": "data get entity @p Inventory[{Slot:-106b}]"}}
-{"id": "pump_hand_skin_create", "command": "server.command", "args": {"command": "sbp template create thirstout:pump_hand_skin", "as": "Dev"}}
-{"id": "pump_hand_skin_export", "command": "server.command", "args": {"command": "sbp template export thirstout:pump_hand_skin", "as": "Dev"}}
+{"id": "pump_hand_skin_offhand_equipment", "command": "server.command", "args": {"command": "data get entity @p equipment.offhand"}}
+{"id": "pump_hand_skin_create", "command": "server.command", "args": {"command": "sophisticatedbackpacks template create thirstout:pump_hand_skin true", "as": "Dev"}}
+{"id": "pump_hand_skin_export", "command": "server.command", "args": {"command": "sophisticatedbackpacks template export thirstout:pump_hand_skin", "as": "Dev"}}
