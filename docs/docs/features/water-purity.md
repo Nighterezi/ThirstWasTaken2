@@ -71,7 +71,7 @@ Nausea lasts 5 seconds, Hunger 30 seconds and Poison 10 seconds.
 
 ## Cleaning fresh water
 
-Put a water bottle, terracotta water bowl or water bucket in a furnace or on a campfire.
+Put a water bottle, terracotta water bowl or water bucket in a furnace, a smoker or on a campfire.
 
 ![A dirty water bottle comes out of the furnace clean](/screenshots/furnace-clean-water.png)
 
@@ -81,7 +81,7 @@ Put a water bottle, terracotta water bowl or water bucket in a furnace or on a c
 | Murky | Pure |
 | Clean | Pure |
 
-A furnace takes ten seconds, a campfire thirty. Other ways to clean water:
+A furnace takes ten seconds, a smoker five, a campfire thirty. Other ways to clean water:
 
 - A [Hanging Pot](#copper-hanging-pot) boils a whole bucket Pure.
 - The Farmer's Delight [Cooking Pot](/docs/features/farmers-delight#boiling-water-in-the-cooking-pot)

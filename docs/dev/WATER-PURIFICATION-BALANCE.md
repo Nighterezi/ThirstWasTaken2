@@ -15,6 +15,7 @@ servings, the same rate a cauldron uses.
 | Furnace, one bottle or bowl | 10 s | 1 | up two grades | yes | `SMELTING_TIME` in `ThirstRecipeProvider` |
 | Furnace, one bucket | 10 s | 3 | up two grades | yes | a bucket is one item, so it is the furnace's best input |
 | Furnace, dirty bucket to Pure | 20 s | 3 | Pure | yes | two passes: 0 → 2 → 3 |
+| Smoker, one item | 5 s | 1 or 3 | up two grades | yes | `SMOKING_TIME`; half the furnace, as a smoker is for food. Also Sophisticated's Smoking upgrades |
 | Campfire, four slots | 30 s | up to 12 (four buckets) | up two grades | no | `CAMPFIRE_TIME`; highest throughput of anything |
 | Cooking Pot (Farmer's Delight) | 10 s | 1 | Pure | heat source below | only with Farmer's Delight installed |
 | **Copper Hanging Pot** | **4 s a serving, 12 s full** | **3** | **Pure** | no | needs a lit campfire below |

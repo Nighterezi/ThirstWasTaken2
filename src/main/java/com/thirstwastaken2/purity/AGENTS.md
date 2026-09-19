@@ -35,7 +35,7 @@ that know the encoding.
 ## Rules the code keeps
 
 - **Salt water carries no grade.** `setQuality` removes `water_purity` from a salty stack. That is
-  what keeps the 18 purification recipes, which all match on a grade, from matching sea water, and
+  what keeps the 27 purification recipes, which all match on a grade, from matching sea water, and
   what stops `get` from inventing one. Anything asking "how clean is it" goes through `quality`.
 - **A fresh container always writes `water_salty: false`,** even though false is the component's
   default. Every cooking recipe matches on it, so a container that leaves it out silently stops being

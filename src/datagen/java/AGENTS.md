@@ -49,8 +49,8 @@ the codec that omits a field on write supplies the same value on read.
 Two of these are worth knowing before reading a diff and thinking something broke:
 
 - **`cookingtime` is omitted when it is the default**, which is 200 for smelting and 100 for
-  campfire cooking. The campfire recipes are 600, so they always write it; the smelting ones are 200,
-  so on 26.2 they never do.
+  smoking and campfire cooking. The campfire recipes are 600, so they always write it; the smelting
+  ones are 200 and the smoking ones 100, so on 26.2 neither does.
 - **Before 26.1 a recipe result is a live `ItemStack`**, whose components serialize as the delta from
   the item's own defaults. `ThirstItems.TERRACOTTA_WATER_BOWL` defaults to grade 3, fresh, custom
   model data `[0, 3]`, so on 1.21.11 a bowl result that sets exactly those writes no components at

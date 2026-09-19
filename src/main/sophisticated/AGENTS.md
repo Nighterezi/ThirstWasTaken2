@@ -188,12 +188,23 @@ with only the filter mixin left out:
 | plains pool, pump filter set to water | `water_purity: 1` | with only the filter mixin out: nothing collected |
 | purity-0 bucket in the off hand, poured in | tank `water_purity: 0`, an empty bucket back | plain water |
 | 1000 mB of purity 3, pumped into an empty bucket in the off hand | a bucket with `water_purity: 3`, empty tank | the bucket stays empty |
+| 1000 mB of purity 3, pumped into a Create Fluid Tank next to the player | the Create tank holds 1000 mB of `water_purity: 3` | not run |
+| a Create Fluid Tank of purity-0 water next to the player, pumped in | tank `water_purity: 0`, the Create tank empty | not run |
 
 The client ignores the facing part of `tp ... facing`; turn the player with an explicit yaw and pitch.
 Holding `use` needs more than four ticks to register as a click.
 
-Not checked yet: the neighbouring-block path (`interact_with_fluid_handler`), which goes through the
-same `fillFluidHandler` and `fillFromFluidHandler` as the hand.
+The two Create Fluid Tank cases were added and run afterwards, with every mixin in, on the same day. A
+block entity is not readable from `server.command`, which runs off the server thread, so they read the
+Create tank with `client.command` and the answer is the `[CHAT]` line in the client's log.
+
+### Cooking upgrades
+
+Nothing in this directory: the Smelting and Smoking upgrades cook with the vanilla recipe types, and
+the mod ships smoking recipes for water alongside the smelting ones.
+[tools/agent/sophisticated-cooking.jsonl](../../../tools/agent/sophisticated-cooking.jsonl) gives each
+upgrade a purity-0 bottle and a piece of coal. Checked on 2026-09-19: both came out with
+`water_purity: 2`, through `purify_water_bottle_0_smoking` and `_smelting`.
 
 ### Effects on the test player
 

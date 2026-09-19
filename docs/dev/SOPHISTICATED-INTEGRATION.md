@@ -18,7 +18,7 @@ Written on 2026-09-19 from Sophisticated Core `1.21.1-1.5.1.2341` and Sophistica
 | 1 | Feeding upgrade restores thirst | bug | **Done** on `1.21.1-neoforge` |
 | 2 | Alchemy upgrade drinks through the mod | bug | **Done** on `1.21.1-neoforge` |
 | 4 | Pump upgrade keeps water quality | bug | **Done** on `1.21.1-neoforge` |
-| 7 | Smoking recipes for purified water | data | To do |
+| 7 | Smoking recipes for purified water | data | **Done**, every version |
 | 6 | Waterskin and bowl as fluid containers | feature | To do |
 | 5 | Drinking upgrade | feature | To do |
 | 8 | Newer NeoForge nodes (1.21.11, 26.1, 26.2) | port | To do |
@@ -83,24 +83,22 @@ of any grade (`FluidFilterLogicMixin`), since a filter made from a plain bucket 
 Checked with `tools/agent/sophisticated-pump.jsonl`: a plains pool gave the same grade as a bottle
 filled from it by hand, an ocean pool gave salt water, a filtered pump still collected, and buckets
 went in and out with their grades. Without the mixins every case lost its grade or, pumping out,
-moved nothing. The neighbouring-block path goes through the same code but was not run.
-
-## To do
+moved nothing. The neighbouring-block path, through a Create Fluid Tank next to the player, was run
+afterwards and keeps the grade both ways too.
 
 ### 7. Smoking recipes
 
-**Problem.** Water is purified by `smelting` and `campfire_cooking` recipes. The Smelting and
-Auto-Smelting upgrades use vanilla smelting recipes, so they should purify already. The Smoking
-upgrades, and a vanilla Smoker, only read `smoking` recipes, and there are none.
+Water was purified by `smelting` and `campfire_cooking` recipes only, so the Smoking upgrades, and a
+vanilla Smoker, could not purify it. The datagen now writes nine `smoking` recipes per version next to
+the smelting ones, at 100 ticks, half a furnace, as a smoker is for food. They count for the
+`boil_water` advancement, since a smoker credits the player the same way a furnace does, and
+`PurificationGameTest` checks them, salt water included. This is plain data, so it covers every
+version and both loaders, not just the nodes with Sophisticated.
 
-**Approach.** Add `smoking` variants to the purification recipes in `src/datagen`, and run
-`runDatagen` for every version (`checkDatagen` fails otherwise). It is plain data, so it needs no
-Sophisticated code and also makes the vanilla Smoker work. Decide whether a smoker cooks faster, as it
-does for food, and put the number in `WATER-PURIFICATION-BALANCE.md`.
+Checked with `tools/agent/sophisticated-cooking.jsonl`: a purity-0 bottle came out of both the
+Smoking and the Smelting upgrade with `water_purity: 2`.
 
-**Test.** A gametest for the new recipes, in the style of the existing purification ones, and one real
-check that the Smelting upgrade purifies a bottle inside a backpack. The component ingredient is the
-part to watch.
+## To do
 
 ### 6. Waterskin and bowl as fluid containers
 

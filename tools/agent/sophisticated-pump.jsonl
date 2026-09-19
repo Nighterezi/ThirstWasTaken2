@@ -13,6 +13,12 @@
 // - pump_world_filter: the plains pool again, with the pump's filter set to plain water. A filter set to
 //   water takes water of any grade, so the tank holds the plains grade as in the first case. Without the
 //   integration's filter rule it would stay empty.
+// - pump_block_out and pump_block_in: the same through a Create Fluid Tank next to the player, the
+//   pump's "fluid handlers" setting. Create is on this node's runClient classpath. A block entity is not
+//   readable from server.command, which runs off the server thread, so these ask with client.command and
+//   the answer is the "[CHAT]" line in the client's log: pump_block_out has to leave the Create tank with
+//   1000 mB of water_purity 3 ("Test passed"), and pump_block_in has to empty a Create tank of purity-0
+//   water into the backpack, whose export then holds water_purity 0.
 // - pump_hand_in: a purity-0 bucket in the off hand is poured in. "handInEmptied" passes, and the tank
 //   holds 1000 mB with water_purity 0.
 // - pump_hand_out: 1000 mB of purity-3 water is pumped into an empty bucket in the off hand.
@@ -109,3 +115,37 @@
 {"id": "pump_hand_out_offhand", "command": "server.command", "args": {"command": "data get entity @p Inventory[{Slot:-106b}]"}}
 {"id": "pump_hand_out_create", "command": "server.command", "args": {"command": "sbp template create thirstout:pump_hand_out", "as": "Dev"}}
 {"id": "pump_hand_out_export", "command": "server.command", "args": {"command": "sbp template export thirstout:pump_hand_out", "as": "Dev"}}
+
+// A Create Fluid Tank next to the player, filled from the backpack, then emptied into another one.
+{"id": "pump_block_out_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "pump_block_out_tank", "command": "server.command", "args": {"command": "setblock -240 201 160 create:fluid_tank"}}
+{"id": "pump_block_out_placed", "command": "wait", "args": {"ticks": 20}}
+{"id": "pump_block_out_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:pump_block_out", "as": "Dev"}}
+{"id": "pump_block_out_lookUp", "command": "server.command", "args": {"command": "tp @p -240.5 201 160.5 0 -90"}}
+{"id": "pump_block_out_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
+{"id": "pump_block_out_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "pump_block_out_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "pump_block_out_pumping", "command": "wait", "args": {"ticks": 60}}
+{"id": "pump_block_out_read", "command": "client.command", "args": {"command": "data get block -240 201 160 TankContent"}}
+{"id": "pump_block_out_check", "command": "client.command", "args": {"command": "execute if data block -240 201 160 TankContent.Fluid{amount:1000,components:{\"thirstwastaken2:water_purity\":3}}"}}
+{"id": "pump_block_out_chat", "command": "wait", "args": {"ticks": 5}}
+{"id": "pump_block_out_create", "command": "server.command", "args": {"command": "sbp template create thirstout:pump_block_out", "as": "Dev"}}
+{"id": "pump_block_out_export", "command": "server.command", "args": {"command": "sbp template export thirstout:pump_block_out", "as": "Dev"}}
+{"id": "pump_block_in_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "pump_block_in_reset", "command": "server.command", "args": {"command": "setblock -240 201 160 minecraft:air"}}
+{"id": "pump_block_in_tank", "command": "server.command", "args": {"command": "setblock -240 201 160 create:fluid_tank"}}
+{"id": "pump_block_in_placed", "command": "wait", "args": {"ticks": 20}}
+{"id": "pump_block_in_fill", "command": "client.command", "args": {"command": "data merge block -240 201 160 {TankContent:{Fluid:{id:\"minecraft:water\",amount:1000,components:{\"thirstwastaken2:water_purity\":0}}}}"}}
+{"id": "pump_block_in_filled", "command": "wait", "args": {"ticks": 5}}
+{"id": "pump_block_in_before", "command": "client.command", "args": {"command": "data get block -240 201 160 TankContent"}}
+{"id": "pump_block_in_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:pump_block_in", "as": "Dev"}}
+{"id": "pump_block_in_lookUp", "command": "server.command", "args": {"command": "tp @p -240.5 201 160.5 0 -90"}}
+{"id": "pump_block_in_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
+{"id": "pump_block_in_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "pump_block_in_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "pump_block_in_pumping", "command": "wait", "args": {"ticks": 60}}
+{"id": "pump_block_in_read", "command": "client.command", "args": {"command": "data get block -240 201 160 TankContent"}}
+{"id": "pump_block_in_chat", "command": "wait", "args": {"ticks": 5}}
+{"id": "pump_block_in_create", "command": "server.command", "args": {"command": "sbp template create thirstout:pump_block_in", "as": "Dev"}}
+{"id": "pump_block_in_export", "command": "server.command", "args": {"command": "sbp template export thirstout:pump_block_in", "as": "Dev"}}
+{"id": "pump_block_cleanup", "command": "server.command", "args": {"command": "setblock -240 201 160 minecraft:air"}}

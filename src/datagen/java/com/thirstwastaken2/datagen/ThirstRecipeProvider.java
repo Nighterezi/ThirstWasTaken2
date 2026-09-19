@@ -41,6 +41,7 @@ import net.minecraft.world.item.crafting.CookingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
+import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.level.ItemLike;
 
 import java.util.List;
@@ -79,6 +80,8 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
 
     static final float PURIFY_EXPERIENCE = 0.35F;
     private static final int SMELTING_TIME = 200;
+    /** Half a furnace's time, as a smoker cooks food, which also suits Sophisticated's Smoking upgrade. */
+    private static final int SMOKING_TIME = 100;
     private static final int CAMPFIRE_TIME = 600;
 
     public ThirstRecipeProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
@@ -369,9 +372,10 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
         }
     }
 
-    /** Smelting and campfire cooking differ only in how long they take. */
+    /** Smelting, smoking and campfire cooking differ only in how long they take. */
     private enum Heat {
         SMELTING("smelting", SMELTING_TIME),
+        SMOKING("smoking", SMOKING_TIME),
         CAMPFIRE("campfire", CAMPFIRE_TIME);
 
         private final String suffix;
@@ -387,15 +391,19 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
             Recipe.CommonInfo common = new Recipe.CommonInfo(true);
             AbstractCookingRecipe.CookingBookInfo book =
                     new AbstractCookingRecipe.CookingBookInfo(CookingBookCategory.MISC, "");
-            return this == SMELTING
-                    ? new SmeltingRecipe(common, book, ingredient, result, PURIFY_EXPERIENCE, time)
-                    : new CampfireCookingRecipe(common, book, ingredient, result, PURIFY_EXPERIENCE, time);
+            return switch (this) {
+                case SMELTING -> new SmeltingRecipe(common, book, ingredient, result, PURIFY_EXPERIENCE, time);
+                case SMOKING -> new SmokingRecipe(common, book, ingredient, result, PURIFY_EXPERIENCE, time);
+                case CAMPFIRE -> new CampfireCookingRecipe(common, book, ingredient, result, PURIFY_EXPERIENCE, time);
+            };
         }
         //?} else {
         /*AbstractCookingRecipe create(Ingredient ingredient, ItemStack result) {
-            return this == SMELTING
-                    ? new SmeltingRecipe("", CookingBookCategory.MISC, ingredient, result, PURIFY_EXPERIENCE, time)
-                    : new CampfireCookingRecipe("", CookingBookCategory.MISC, ingredient, result, PURIFY_EXPERIENCE, time);
+            return switch (this) {
+                case SMELTING -> new SmeltingRecipe("", CookingBookCategory.MISC, ingredient, result, PURIFY_EXPERIENCE, time);
+                case SMOKING -> new SmokingRecipe("", CookingBookCategory.MISC, ingredient, result, PURIFY_EXPERIENCE, time);
+                case CAMPFIRE -> new CampfireCookingRecipe("", CookingBookCategory.MISC, ingredient, result, PURIFY_EXPERIENCE, time);
+            };
         }
         *///?}
     }

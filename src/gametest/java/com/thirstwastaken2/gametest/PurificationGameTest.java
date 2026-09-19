@@ -74,12 +74,17 @@ public final class PurificationGameTest {
 
         TestFixtures.check(helper, !hasSmeltingRecipe(helper, salty),
                 "salt water must not be smeltable, or boiling it would quietly desalinate it");
+        TestFixtures.check(helper, TestFixtures.cook(helper, RecipeType.SMOKING, salty).isEmpty(),
+                "salt water must not be smokable either");
         TestFixtures.check(helper, hasSmeltingRecipe(helper, dirty),
                 "dirty fresh water must still be smeltable, otherwise the test above proves nothing");
         helper.succeed();
     }
 
-    /** The table in ThirstRecipeProvider: two grades up, stopping at pure, the same in a furnace and on a campfire. */
+    /**
+     * The table in ThirstRecipeProvider: two grades up, stopping at pure, the same in a furnace, a smoker
+     * and on a campfire.
+     */
     @GameTest
     public void boilingRaisesTheGradeByTwoAndStopsAtPure(GameTestHelper helper) {
         for (ItemStack container : List.of(TestFixtures.waterBottle(),
@@ -88,6 +93,7 @@ public final class PurificationGameTest {
                 ItemStack input = WaterPurity.setQuality(container.copy(), WaterQuality.fresh(grade));
                 WaterQuality expected = WaterQuality.fresh(Math.min(grade + 2, WaterPurity.MAX));
                 boiled(helper, input, TestFixtures.cook(helper, RecipeType.SMELTING, input), expected, "a furnace");
+                boiled(helper, input, TestFixtures.cook(helper, RecipeType.SMOKING, input), expected, "a smoker");
                 boiled(helper, input, TestFixtures.cook(helper, RecipeType.CAMPFIRE_COOKING, input), expected, "a campfire");
             }
         }

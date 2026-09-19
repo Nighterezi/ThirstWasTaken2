@@ -1,0 +1,50 @@
+// Water quality through Create on NeoForge, after SampledWater and WaterFluids moved to src/main/neoforge:
+// the Sand Filter raises a tank of Murky water to Clean, and a Mechanical Pump drawing from a sea-water
+// pool through an open pipe end fills a Fluid Tank with water_salty water. Only nodes that set
+// deps.create have Create on the runClient classpath; today that is 1.21.1-neoforge.
+//
+// A block entity is not readable from server.command, which runs off the server thread, so the tanks
+// are read with client.command and the answers are the "[CHAT]" lines in the client's log:
+// - "filterRead" shows the Sand Filter's OutputTanks holding water_purity 2, and "filterCheck" passes;
+// - "pumpRead" shows the Fluid Tank holding water with water_salty true, and "pumpCheck" passes. If
+//   the tank is empty, the pump turned the other way: the Creative Motor is at its default speed.
+//
+// Any throwaway 1.21.1 world works; SophisticatedAgent's setup is enough (copy level.dat out of any
+// 1.21.1 world into run/1.21.1-neoforge/saves/SophisticatedAgent). Then:
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/create-water.jsonl -Pquickplay=SophisticatedAgent
+
+{"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "joined", "command": "client.state"}
+{"id": "effects", "command": "server.command", "args": {"command": "effect clear @p"}}
+{"id": "float", "command": "server.command", "args": {"command": "effect give @p minecraft:slow_falling 600 0 true"}}
+{"id": "up", "command": "server.command", "args": {"command": "tp @p -240.5 201 160.5 0 -90"}}
+{"id": "chunks", "command": "wait", "args": {"ticks": 60}}
+{"id": "air", "command": "server.command", "args": {"command": "fill -246 199 154 -234 206 166 minecraft:air"}}
+{"id": "floor", "command": "server.command", "args": {"command": "fill -246 199 154 -234 200 166 minecraft:stone"}}
+{"id": "biome", "command": "server.command", "args": {"command": "fillbiome -246 190 154 -234 210 166 minecraft:ocean"}}
+
+// The Sand Filter, given a bucket of Murky water by NBT.
+{"id": "filter", "command": "server.command", "args": {"command": "setblock -244 201 156 thirstwastaken2:sand_filter"}}
+{"id": "filterPlaced", "command": "wait", "args": {"ticks": 20}}
+{"id": "filterFill", "command": "client.command", "args": {"command": "data merge block -244 201 156 {InputTanks:[{TankContent:{Fluid:{id:\"minecraft:water\",amount:1000,components:{\"thirstwastaken2:water_purity\":1}}}}]}"}}
+{"id": "filtering", "command": "wait", "args": {"ticks": 140}}
+{"id": "filterRead", "command": "client.command", "args": {"command": "data get block -244 201 156 OutputTanks"}}
+{"id": "filterCheck", "command": "client.command", "args": {"command": "execute if data block -244 201 156 OutputTanks[0].TankContent.Fluid.components{\"thirstwastaken2:water_purity\":2}"}}
+{"id": "filterChat", "command": "wait", "args": {"ticks": 5}}
+
+// A one-block sea-water pool, an open pipe end, a Mechanical Pump turned by a Creative Motor through a
+// cogwheel, and a Fluid Tank.
+{"id": "walls1", "command": "server.command", "args": {"command": "setblock -235 201 164 minecraft:stone"}}
+{"id": "walls2", "command": "server.command", "args": {"command": "setblock -236 201 163 minecraft:stone"}}
+{"id": "walls3", "command": "server.command", "args": {"command": "setblock -236 201 165 minecraft:stone"}}
+{"id": "pool", "command": "server.command", "args": {"command": "setblock -236 201 164 minecraft:water"}}
+{"id": "pipeIn", "command": "server.command", "args": {"command": "setblock -237 201 164 create:fluid_pipe[east=true,west=true]"}}
+{"id": "pump", "command": "server.command", "args": {"command": "setblock -238 201 164 create:mechanical_pump[facing=west]"}}
+{"id": "pipeOut", "command": "server.command", "args": {"command": "setblock -239 201 164 create:fluid_pipe[east=true,west=true]"}}
+{"id": "tank", "command": "server.command", "args": {"command": "setblock -240 201 164 create:fluid_tank"}}
+{"id": "cog", "command": "server.command", "args": {"command": "setblock -238 201 165 create:cogwheel[axis=x]"}}
+{"id": "motor", "command": "server.command", "args": {"command": "setblock -239 201 165 create:creative_motor[facing=east]"}}
+{"id": "pumping", "command": "wait", "args": {"ticks": 200}}
+{"id": "pumpRead", "command": "client.command", "args": {"command": "data get block -240 201 164 TankContent"}}
+{"id": "pumpCheck", "command": "client.command", "args": {"command": "execute if data block -240 201 164 TankContent.Fluid.components{\"thirstwastaken2:water_salty\":1b}"}}
+{"id": "pumpChat", "command": "wait", "args": {"ticks": 5}}

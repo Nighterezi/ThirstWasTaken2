@@ -34,9 +34,9 @@ import java.util.function.Consumer;
  * {@code com.thirstwastaken2.advancement.ThirstAdvancements}, so the ids and the criterion name have
  * to match that class. {@code AdvancementGameTest} is what catches it when they stop matching.
  *
- * <p>{@code boil_water} is the exception: a furnace credits the player who takes the result, so
- * vanilla's {@code recipe_crafted} trigger can see it. The nine campfire recipes cannot be in it,
- * because a campfire has no player to credit.
+ * <p>{@code boil_water} is the exception: a furnace or a smoker credits the player who takes the
+ * result, so vanilla's {@code recipe_crafted} trigger can see it. The nine campfire recipes cannot be
+ * in it, because a campfire has no player to credit.
  */
 public final class ThirstAdvancementProvider extends FabricAdvancementProvider {
     /** The criterion name {@code ThirstAdvancements} awards by. */
@@ -97,8 +97,9 @@ public final class ThirstAdvancementProvider extends FabricAdvancementProvider {
     }
 
     /**
-     * Boiling any of the nine smelting recipes, as an OR. Vanilla sees this one without help, which
-     * is why it is also the parent of {@code purified_water} rather than a sibling.
+     * Boiling any of the nine smelting or nine smoking recipes, as an OR. Vanilla sees these without
+     * help, because a furnace and a smoker credit the player who takes the result, which is why this
+     * is also the parent of {@code purified_water} rather than a sibling.
      */
     private static AdvancementHolder boilWater(AdvancementHolder parent) {
         Advancement.Builder builder = builder()
@@ -108,18 +109,20 @@ public final class ThirstAdvancementProvider extends FabricAdvancementProvider {
 
         for (String container : List.of("bottle", "bowl", "bucket")) {
             for (int purity = 0; purity < 3; purity++) {
-                Identifier id = ThirstWasTaken2.id("purify_water_" + container + "_" + purity + "_smelting");
-                // Recipes are registry entries with keys from 1.21.2; before it the trigger takes the id.
-                //? if >=1.21.2 {
-                ResourceKey<Recipe<?>> key = ResourceKey.create(Registries.RECIPE, id);
-                //?} else
-                /*Identifier key = id;*/
-                builder.addCriterion(container + "_" + purity, new Criterion<>(CriteriaTriggers.RECIPE_CRAFTED,
-                        new RecipeCraftedTrigger.TriggerInstance(java.util.Optional.empty(), key, List.of())));
+                for (String heat : List.of("smelting", "smoking")) {
+                    Identifier id = ThirstWasTaken2.id("purify_water_" + container + "_" + purity + "_" + heat);
+                    // Recipes are registry entries with keys from 1.21.2; before it the trigger takes the id.
+                    //? if >=1.21.2 {
+                    ResourceKey<Recipe<?>> key = ResourceKey.create(Registries.RECIPE, id);
+                    //?} else
+                    /*Identifier key = id;*/
+                    builder.addCriterion(container + "_" + purity + "_" + heat, new Criterion<>(CriteriaTriggers.RECIPE_CRAFTED,
+                            new RecipeCraftedTrigger.TriggerInstance(java.util.Optional.empty(), key, List.of())));
+                }
             }
         }
 
-        // Any one of the nine is enough, so one requirements list holding all of them.
+        // Any one of the eighteen is enough, so one requirements list holding all of them.
         return builder
                 .requirements(AdvancementRequirements.Strategy.OR)
                 .build(ThirstWasTaken2.id("boil_water"));

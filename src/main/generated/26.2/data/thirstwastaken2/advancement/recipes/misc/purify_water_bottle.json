@@ -38,10 +38,13 @@
   "rewards": {
     "recipes": [
       "thirstwastaken2:purify_water_bottle_0_smelting",
+      "thirstwastaken2:purify_water_bottle_0_smoking",
       "thirstwastaken2:purify_water_bottle_0_campfire",
       "thirstwastaken2:purify_water_bottle_1_smelting",
+      "thirstwastaken2:purify_water_bottle_1_smoking",
       "thirstwastaken2:purify_water_bottle_1_campfire",
       "thirstwastaken2:purify_water_bottle_2_smelting",
+      "thirstwastaken2:purify_water_bottle_2_smoking",
       "thirstwastaken2:purify_water_bottle_2_campfire"
     ]
   }
