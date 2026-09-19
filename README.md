@@ -52,7 +52,7 @@ Put the jar in the `mods` folder of the server and of every client. NeoForge fil
 | 26.2 | 26.2.0.88 or newer | 25 |
 | 26.1, 26.1.1, 26.1.2 | 26.1.2.109 or newer | 25 |
 | 1.21.11 | 21.11.45 or newer | 21 |
-| 1.21.1 | 21.1.250 or newer | 21 |
+| 1.21.1 | 21.1.251 or newer | 21 |
 
 Optional mods and their versions are listed in the
 [installation guide](https://nighterezi.github.io/ThirstWasTaken2/docs/installation#compatible-mods).

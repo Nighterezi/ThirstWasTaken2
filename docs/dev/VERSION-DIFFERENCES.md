@@ -8,14 +8,14 @@ Supported nodes and their jars:
 
 | Node | Jar suffix | Runs on | Java | Loader API |
 |---|---|---|---|---|
-| `26.2.x` | `+26.2` | 26.2 | 25 | Fabric API 0.160.0+26.2 |
+| `26.2.x` | `+26.2` | 26.2 | 25 | Fabric API 0.161.0+26.2 |
 | `26.1.x` | `+26.1.2` | 26.1, 26.1.1, 26.1.2 | 25 | Fabric API 0.155.3+26.1.2 |
 | `1.21.11` | `+1.21.11` | 1.21.11 | 21 | Fabric API 0.141.6+1.21.11 |
 | `1.21.1` | `+1.21.1` | 1.21, 1.21.1 | 21 | Fabric API 0.116.17+1.21.1 |
 | `26.2.x-neoforge` | `+26.2-neoforge` | 26.2 | 25 | NeoForge 26.2.0.88 |
 | `26.1.x-neoforge` | `+26.1.2-neoforge` | 26.1, 26.1.1, 26.1.2 | 25 | NeoForge 26.1.2.109 |
 | `1.21.11-neoforge` | `+1.21.11-neoforge` | 1.21.11 | 21 | NeoForge 21.11.45 |
-| `1.21.1-neoforge` | `+1.21.1-neoforge` | 1.21.1 | 21 | NeoForge 21.1.250 |
+| `1.21.1-neoforge` | `+1.21.1-neoforge` | 1.21.1 | 21 | NeoForge 21.1.251 |
 
 The NeoForge jars are built and tested on every node. A NeoForge node builds the same Minecraft
 version as the Fabric node it sits under, so everything on this page applies to both. 1.21 is the

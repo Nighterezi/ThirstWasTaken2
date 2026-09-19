@@ -61,7 +61,7 @@ body:
     id: fabric-api
     attributes:
       label: Fabric API version
-      placeholder: 0.160.0+26.2
+      placeholder: 0.161.0+26.2
     validations:
       required: true
 

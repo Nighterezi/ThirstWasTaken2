@@ -26,11 +26,11 @@ Rules:
 - Fabric Loader is one global value and comes from Fabric's meta API, stable builds only. Raising it
   raises the minimum loader players need, since fabric.mod.json writes it as `>=`.
 - Loom is left alone: a Loom bump tends to need a Gradle bump alongside it.
-- README.md and docs/docs/installation.md print the same versions for people to read, so a bump rewrites
-  them too, and only there: CHANGELOG.md says what a past release was built against and has to keep
-  saying it. Both pages print Fabric Loader, Fabric API and NeoForge; only the installation page prints
-  the optional mods, and only their Fabric builds.
-- `--check` goes the other way: it reports a version the properties file pins that those two pages do
+- README.md, docs/docs/installation.md and docs/dev/VERSION-DIFFERENCES.md print the same versions for
+  people to read, so a bump rewrites them too, and only there: CHANGELOG.md says what a past release was
+  built against and has to keep saying it. All three print Fabric API and NeoForge; the first two print
+  Fabric Loader; only the installation page prints the optional mods, and only their Fabric builds.
+- `--check` goes the other way: it reports a version the properties file pins that those pages do
   not name, which is what a bump made by hand leaves behind. It reads those three files and nothing
   else, so it needs no network and gates a pull request in well under a second. What lets it work
   offline is that an id-pinned version carries its number in a comment above it, so `--check` also
@@ -56,10 +56,13 @@ PROPERTIES = ROOT / "stonecutter.properties.toml"
 SETTINGS = ROOT / "settings.gradle.kts"
 README = ROOT / "README.md"
 INSTALLATION = ROOT / "docs" / "docs" / "installation.md"
+VERSION_DIFFERENCES = ROOT / "docs" / "dev" / "VERSION-DIFFERENCES.md"
 # The only files besides the properties file this script ever writes. An allowlist rather than a search,
 # because most other mentions must not move: CHANGELOG.md records what a past release was built against
 # and has to keep saying so, and docs/dev names versions inside prose no rewrite can follow.
-DOC_MIRRORS = (README, INSTALLATION)
+DOC_MIRRORS = (README, INSTALLATION, VERSION_DIFFERENCES)
+# The pages that print Fabric Loader. VERSION-DIFFERENCES.md lists each node's loader API only.
+LOADER_MIRRORS = (README, INSTALLATION)
 # Modrinth puts the loader on some version numbers. The docs leave it off.
 LOADER_SUFFIXES = ("+fabric", "+neoforge")
 
@@ -90,7 +93,7 @@ class ModrinthDep:
 # Every per-node dependency the build resolves from Modrinth or from a Maven that publishes the same
 # version numbers (Fabric API). Add a line here when build.gradle.kts gains a `deps.*` property.
 MODRINTH_DEPS = [
-    # The README's requirements table prints Fabric API; every optional mod is on the installation page only.
+    # Every page prints Fabric API; the optional mods are on the installation page only.
     ModrinthDep("fabric_api", "fabric-api", mirrors=DOC_MIRRORS),
     ModrinthDep("modmenu", "modmenu"),
     # AppleSkin shares one version number between its Fabric and NeoForge uploads.
@@ -299,7 +302,7 @@ def check_loader(props: Properties, changes: list[Change]) -> None:
         return
     props.set(index, "deps.fabric_loader", newest)
     changes.append(Change(None, "fabric_loader", pinned, newest, pinned, newest,
-                          "https://github.com/FabricMC/fabric-loader/releases", DOC_MIRRORS))
+                          "https://github.com/FabricMC/fabric-loader/releases", LOADER_MIRRORS))
 
 
 def neoforge_versions() -> list[str]:
@@ -310,7 +313,7 @@ def neoforge_versions() -> list[str]:
 
 def check_neoforge(props: Properties, node: str, changes: list[Change]) -> None:
     """NeoForge's version starts with the Minecraft version it is built for and ends with the build
-    number, `26.2.0.88` for 26.2 and `21.1.250` for 1.21.1, so only builds sharing everything but the
+    number, `26.2.0.88` for 26.2 and `21.1.251` for 1.21.1, so only builds sharing everything but the
     pinned version's last part are candidates. Betas are skipped unless the pinned build is one."""
     found = props.find(node, "deps.neoforge")
     if found is None:
@@ -392,7 +395,7 @@ def check_docs(props: Properties) -> list[str]:
     """Every version the doc mirrors are meant to print, checked against what the properties file pins.
 
     This is the half a bump made by hand forgets: the build moves and the pages people read do not. It
-    reads the properties file and those two pages and nothing else, so it needs no network and is cheap
+    reads the properties file and those pages and nothing else, so it needs no network and is cheap
     enough to gate a pull request.
     """
     pages = {path: read(path) for path in DOC_MIRRORS}
@@ -408,7 +411,7 @@ def check_docs(props: Properties) -> list[str]:
     problems: list[str] = []
     loader = props.find(None, "deps.fabric_loader")
     if loader:
-        problems += missing("Fabric Loader", loader[1], DOC_MIRRORS, None)
+        problems += missing("Fabric Loader", loader[1], LOADER_MIRRORS, None)
 
     for node in node_minecraft_versions():
         # A node without a loader table is not a node; main warns about that separately.
