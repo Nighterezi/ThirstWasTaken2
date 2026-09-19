@@ -34,6 +34,8 @@ Riding a horse, boat or minecart costs nothing. Creative and spectator players a
 
 - Fire Resistance halves the drain. Fire Protection slows it further, down to a quarter.
 - Nausea adds extra drain while it lasts.
+- Parched adds extra drain while it lasts, twice as much at level II. Bad water and sea water cause
+  it.
 - On Peaceful the bar refills on its own, unless the server turns that off.
 
 Every rate is a setting. See [Configuration](/docs/configuration#thirst-depletion).

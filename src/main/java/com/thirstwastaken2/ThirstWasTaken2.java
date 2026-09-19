@@ -8,6 +8,7 @@ import com.thirstwastaken2.compat.LootIntegration;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.data.ThirstData;
 import com.thirstwastaken2.data.ThirstManager;
+import com.thirstwastaken2.effect.ThirstEffects;
 import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.platform.Loader;
 import com.thirstwastaken2.purity.ThirstComponents;
@@ -47,6 +48,7 @@ public final class ThirstWasTaken2 {
         Loader.onRegister(Registries.DATA_COMPONENT_TYPE, ThirstComponents::register);
         Loader.onRegister(Registries.ITEM, ThirstItems::register);
         Loader.onRegister(Registries.CREATIVE_MODE_TAB, ThirstItems::registerCreativeTab);
+        Loader.onRegister(Registries.MOB_EFFECT, ThirstEffects::register);
         LootIntegration.register();
 
         Loader.onServerTickEnd(ThirstManager::tick);

@@ -1,0 +1,87 @@
+// Parched in a real client: bad water and sea water make the player Parched through the real right
+// click, never Hungry; Parched drains thirst on the server tick, faster at level II; the client names
+// it in English and Vietnamese. Run it unattended in a singleplayer world:
+//     ./gradlew ":<node>:runClient" -Pagent=tools/agent/parched.jsonl -Pquickplay=ParchedAgent
+// ParchedAgent is a throwaway world: copy level.dat (and, from 26.1,
+// data/minecraft/world_gen_settings.dat) out of any world of the same Minecraft version into
+// run/<node>/saves/ParchedAgent, fresh for each run. Then read run/<node>/agent/client/out.jsonl:
+// every "execute if" and "execute unless" line has to say "Test passed". The drain is read off
+// client.state before and after each wait, as spent = 4 * (thirst + quenched lost) + exhaustion
+// gained: nothing while plain, some while Parched I, more while Parched II. /thirst set keeps
+// exhaustion, which is why each wait has a reading before it, taken a few ticks after the set so
+// the client has it. The player is always @p, since the dev player's name differs between loaders.
+// The capture in run/<node>/agent/client/screenshots/ shows the dry-tongue icon at the top right of
+// the HUD.
+
+{"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "joined", "command": "client.state"}
+{"id": "float", "command": "server.command", "args": {"command": "effect give @p minecraft:slow_falling 120 0 true"}}
+{"id": "view", "command": "server.command", "args": {"command": "tp @p 0.5 200 -3.5 0 15"}}
+{"id": "chunks", "command": "wait", "args": {"ticks": 100}}
+{"id": "day", "command": "server.command", "args": {"command": "time set noon"}}
+{"id": "clear", "command": "server.command", "args": {"command": "weather clear 100000"}}
+{"id": "difficulty", "command": "server.command", "args": {"command": "difficulty normal"}}
+{"id": "survival", "command": "server.command", "args": {"command": "gamemode survival @p"}}
+{"id": "air", "command": "server.command", "args": {"command": "fill -4 200 -4 4 204 4 minecraft:air"}}
+{"id": "floor", "command": "server.command", "args": {"command": "fill -4 199 -4 4 199 4 minecraft:stone"}}
+{"id": "stand", "command": "server.command", "args": {"command": "tp @p 0.5 200 -3.5 0 15"}}
+{"id": "land", "command": "server.command", "args": {"command": "effect clear @p"}}
+{"id": "landed", "command": "wait", "args": {"ticks": 40}}
+
+// The client has the effect's name, in English and in Vietnamese.
+{"id": "nameEn", "command": "client.textWidth", "args": {"keys": ["effect.thirstwastaken2.parched"]}}
+{"id": "toVi", "command": "client.language", "args": {"code": "vi_vn"}}
+{"id": "nameVi", "command": "client.textWidth", "args": {"keys": ["effect.thirstwastaken2.parched"]}}
+{"id": "toEn", "command": "client.language", "args": {"code": "en_us"}}
+
+// A dirty water bottle through the real right click: Nausea and Parched I, no Hunger, and it still
+// quenches.
+{"id": "thirsty", "command": "server.command", "args": {"command": "thirst set @p 10 0"}}
+{"id": "lookUp", "command": "server.command", "args": {"command": "tp @p 0.5 200 -3.5 0 -90"}}
+{"id": "dirty", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with minecraft:potion[minecraft:potion_contents={potion:\"minecraft:water\"},thirstwastaken2:water_purity=0,thirstwastaken2:water_salty=false]"}}
+{"id": "settleDirty", "command": "wait", "args": {"ticks": 10}}
+{"id": "drinkDirty", "command": "client.hold", "args": {"keys": ["use"], "ticks": 60}}
+{"id": "drunkDirty", "command": "client.state"}
+{"id": "dirtyParched", "command": "server.command", "args": {"command": "execute if entity @p[nbt={active_effects:[{id:\"thirstwastaken2:parched\"}]}]"}}
+{"id": "dirtyLevelOne", "command": "server.command", "args": {"command": "execute unless entity @p[nbt={active_effects:[{id:\"thirstwastaken2:parched\",amplifier:1b}]}]"}}
+{"id": "dirtyNausea", "command": "server.command", "args": {"command": "execute if entity @p[nbt={active_effects:[{id:\"minecraft:nausea\"}]}]"}}
+{"id": "noHunger", "command": "server.command", "args": {"command": "execute unless entity @p[nbt={active_effects:[{id:\"minecraft:hunger\"}]}]"}}
+{"id": "lookAhead", "command": "server.command", "args": {"command": "tp @p 0.5 200 -3.5 0 15"}}
+// Toasts for the advancements the drink earned cover the effect icons for about five seconds;
+// Parched lasts 30.
+{"id": "settleIcon", "command": "wait", "args": {"ticks": 140}}
+{"id": "icon", "command": "client.capture", "args": {"name": "parched-hud"}}
+
+// The drain, on the real server tick. Standing still costs nothing, so any exhaustion is Parched's.
+// Parched I is 0.01 a tick, so 200 ticks are about 2 exhaustion before the climate modifier; II is
+// twice that.
+{"id": "cured", "command": "server.command", "args": {"command": "effect clear @p"}}
+{"id": "baseline", "command": "server.command", "args": {"command": "thirst set @p 20 0"}}
+{"id": "baselineSynced", "command": "wait", "args": {"ticks": 5}}
+{"id": "plainBefore", "command": "client.state"}
+{"id": "still", "command": "wait", "args": {"ticks": 200}}
+{"id": "plainAfter", "command": "client.state"}
+{"id": "parchedOne", "command": "server.command", "args": {"command": "effect give @p thirstwastaken2:parched 30 0"}}
+{"id": "resetOne", "command": "server.command", "args": {"command": "thirst set @p 20 0"}}
+{"id": "resetOneSynced", "command": "wait", "args": {"ticks": 5}}
+{"id": "parchedBefore", "command": "client.state"}
+{"id": "stillOne", "command": "wait", "args": {"ticks": 200}}
+{"id": "parchedAfter", "command": "client.state"}
+{"id": "parchedTwo", "command": "server.command", "args": {"command": "effect give @p thirstwastaken2:parched 30 1"}}
+{"id": "resetTwo", "command": "server.command", "args": {"command": "thirst set @p 20 0"}}
+{"id": "resetTwoSynced", "command": "wait", "args": {"ticks": 5}}
+{"id": "veryParchedBefore", "command": "client.state"}
+{"id": "stillTwo", "command": "wait", "args": {"ticks": 200}}
+{"id": "veryParchedAfter", "command": "client.state"}
+
+// A salt water bottle through the real right click: Nausea and Parched II, and no thirst back.
+{"id": "curedAgain", "command": "server.command", "args": {"command": "effect clear @p"}}
+{"id": "thirstyAgain", "command": "server.command", "args": {"command": "thirst set @p 10 0"}}
+{"id": "lookUpAgain", "command": "server.command", "args": {"command": "tp @p 0.5 200 -3.5 0 -90"}}
+{"id": "salty", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with minecraft:potion[minecraft:potion_contents={potion:\"minecraft:water\"},thirstwastaken2:water_salty=true]"}}
+{"id": "settleSalty", "command": "wait", "args": {"ticks": 10}}
+{"id": "drinkSalty", "command": "client.hold", "args": {"keys": ["use"], "ticks": 60}}
+{"id": "drunkSalty", "command": "client.state"}
+{"id": "saltParchedTwo", "command": "server.command", "args": {"command": "execute if entity @p[nbt={active_effects:[{id:\"thirstwastaken2:parched\",amplifier:1b}]}]"}}
+{"id": "saltNausea", "command": "server.command", "args": {"command": "execute if entity @p[nbt={active_effects:[{id:\"minecraft:nausea\"}]}]"}}
+{"id": "saltNoHunger", "command": "server.command", "args": {"command": "execute unless entity @p[nbt={active_effects:[{id:\"minecraft:hunger\"}]}]"}}

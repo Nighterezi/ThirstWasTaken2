@@ -13,6 +13,7 @@ thirst, and the client only receives it through the `PlayerData` sync.
 | The state record itself (thirst, quenched, exhaustion) | `data/ThirstData` |
 | A new config key | `config/ThirstConfig` (field + `sanitize()`), then the client config screen |
 | Bowls, waterskin, creative tab | `item/` |
+| The mod's own mob effects (Parched) | `effect/ThirstEffects`; what they do lives where they matter, e.g. Parched's drain in `ThirstManager.tickPlayer` |
 | The copper and iron hanging pots: capacity, boiling, filling and drawing | `block/` |
 | Anything about water cleanliness | `purity/` (has its own AGENTS.md) |
 | A vanilla behaviour hook | `mixin/` (has its own AGENTS.md) |
@@ -28,11 +29,12 @@ thirst, and the client only receives it through the `PlayerData` sync.
 (`ThirstWasTaken2Fabric` in `src/main/fabric`, `ThirstWasTaken2NeoForge` in `src/main/neoforge`), and the
 order matters:
 `ThirstConfig.load()` → `ThirstData.register()` → `ThirstBlocks.register()` →
-`ThirstComponents.register()` → `ThirstItems.register()` → `ThirstItems.registerCreativeTab()` → `LootIntegration.register()` → events.
+`ThirstComponents.register()` → `ThirstItems.register()` → `ThirstItems.registerCreativeTab()` →
+`ThirstEffects.register()` → `LootIntegration.register()` → events.
 Nothing in this source set may import a mod loader's API; it goes through `platform/Loader` (see
 `platform/AGENTS.md`).
 
-The four registration calls go through `Loader.onRegister`, one per registry. Fabric runs them on the
+The five registration calls go through `Loader.onRegister`, one per registry. Fabric runs them on the
 spot; a loader that freezes its registries before mods start runs them later, from its own registration
 phase, so they must not depend on anything `initialize` does after them.
 

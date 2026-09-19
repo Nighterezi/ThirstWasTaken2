@@ -175,5 +175,6 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | Manual checks before a release | [docs/dev/MANUAL-TESTING.md](docs/dev/MANUAL-TESTING.md) |
 | Purification balance | [docs/dev/WATER-PURIFICATION-BALANCE.md](docs/dev/WATER-PURIFICATION-BALANCE.md) |
 | Sophisticated upgrades still to do | [docs/dev/SOPHISTICATED-INTEGRATION.md](docs/dev/SOPHISTICATED-INTEGRATION.md) |
+| Bad-water sickness rework, phase by phase | [docs/dev/WATER-SICKNESS.md](docs/dev/WATER-SICKNESS.md) |
 | Releasing | [tools/release/publish.py](tools/release/publish.py) and [publish_curseforge.py](tools/release/publish_curseforge.py) docstrings |
 | Documentation site, CHANGELOG, Modrinth and CurseForge pages | [docs/AGENTS.md](docs/AGENTS.md) and the `write-docs` skill |

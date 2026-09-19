@@ -1,6 +1,7 @@
 package com.thirstwastaken2.gametest;
 
 import com.thirstwastaken2.data.ThirstManager;
+import com.thirstwastaken2.effect.ThirstEffects;
 import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.purity.ThirstComponents;
 import com.thirstwastaken2.purity.WaterPurity;
@@ -8,6 +9,7 @@ import com.thirstwastaken2.purity.WaterQuality;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -31,19 +33,25 @@ public final class WaterEffectsGameTest {
 
         TestFixtures.check(helper, !hydrates, "salt water must not grant hydration");
         TestFixtures.check(helper, player.hasEffect(MobEffects.NAUSEA), "salt water should cause nausea");
+        MobEffectInstance parched = player.getEffect(ThirstEffects.PARCHED);
+        TestFixtures.check(helper, parched != null && parched.getAmplifier() == 1,
+                "salt water should make the player Parched II, got " + parched);
         helper.succeed();
     }
 
     @GameTest
-    public void dirtyWaterCausesNauseaAndHunger(GameTestHelper helper) {
+    public void dirtyWaterCausesNauseaAndParchedWithoutHunger(GameTestHelper helper) {
         ServerPlayer player = TestFixtures.mockPlayer(helper);
 
         WaterPurity.applyEffects(player, bowl(WaterQuality.fresh(0)));
 
         TestFixtures.check(helper, player.hasEffect(MobEffects.NAUSEA),
                 "purity 0 has a 100 percent nausea chance in the default config");
-        TestFixtures.check(helper, player.hasEffect(MobEffects.HUNGER),
-                "the nausea roll also applies hunger");
+        MobEffectInstance parched = player.getEffect(ThirstEffects.PARCHED);
+        TestFixtures.check(helper, parched != null && parched.getAmplifier() == 0,
+                "the nausea roll also makes the player Parched I, got " + parched);
+        TestFixtures.check(helper, !player.hasEffect(MobEffects.HUNGER),
+                "bad water dries the player out, it must not apply hunger");
         helper.succeed();
     }
 
@@ -54,8 +62,9 @@ public final class WaterEffectsGameTest {
         boolean hydrates = WaterPurity.applyEffects(player, bowl(WaterQuality.fresh(3)));
 
         TestFixtures.check(helper, hydrates, "purified water must grant hydration");
-        TestFixtures.check(helper, !player.hasEffect(MobEffects.NAUSEA) && !player.hasEffect(MobEffects.POISON),
-                "purity 3 has no nausea or poison chance in the default config");
+        TestFixtures.check(helper, !player.hasEffect(MobEffects.NAUSEA) && !player.hasEffect(MobEffects.POISON)
+                        && !player.hasEffect(ThirstEffects.PARCHED),
+                "purity 3 has no nausea, parched or poison chance in the default config");
         helper.succeed();
     }
 

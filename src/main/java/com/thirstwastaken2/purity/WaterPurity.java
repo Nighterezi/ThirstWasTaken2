@@ -3,6 +3,7 @@ package com.thirstwastaken2.purity;
 import com.thirstwastaken2.ThirstWasTaken2;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.data.ThirstManager;
+import com.thirstwastaken2.effect.ThirstEffects;
 import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.item.WaterskinItem;
 import com.thirstwastaken2.platform.Vanilla;
@@ -54,6 +55,10 @@ public final class WaterPurity {
     private static final int SURFACE_MOUNTAIN_Y = 100;
     private static final int DEEP_AQUIFER_Y = 32;
     private static final int SALTY_EXHAUSTION = 8;
+    /** How long a drink of bad or salt water leaves the player Parched, the time Hunger used to last. */
+    private static final int PARCHED_TICKS = 20 * 30;
+    /** Sea water's Parched level, as an amplifier: II, twice the drain of bad fresh water. */
+    private static final int SALT_PARCHED_LEVEL = 1;
 
     /** Bounds of the contamination score a sample is graded from. It is never stored on an item. */
     private static final int MIN_SCORE = 0;
@@ -211,14 +216,19 @@ public final class WaterPurity {
             case WaterQuality.Salt ignored -> {
                 ThirstManager.addExhaustion(player, SALTY_EXHAUSTION);
                 player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 20 * 5));
+                // Not in the original. Salt makes you thirstier: the body spends more water getting
+                // rid of it than the drink brought in, so sea water is worse than any fresh grade.
+                player.addEffect(new MobEffectInstance(ThirstEffects.PARCHED, PARCHED_TICKS, SALT_PARCHED_LEVEL));
                 return false;
             }
             case WaterQuality.Fresh fresh -> {
                 // A single roll drives both effects, exactly like the original mod.
                 float roll = player.getRandom().nextFloat() * 100.0F;
+                // The original applied Hunger with the Nausea. Bad water dries you out rather than
+                // making you hungry, so it makes you Parched instead.
                 if (roll < config.nauseaChance[fresh.purity()]) {
                     player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 20 * 5));
-                    player.addEffect(new MobEffectInstance(MobEffects.HUNGER, 20 * 30));
+                    player.addEffect(new MobEffectInstance(ThirstEffects.PARCHED, PARCHED_TICKS));
                 }
                 boolean poisoned = roll < config.poisonChance[fresh.purity()];
                 if (poisoned) player.addEffect(new MobEffectInstance(MobEffects.POISON, 20 * 10));

@@ -5,6 +5,7 @@ import com.thirstwastaken2.api.ThirstApi;
 import com.thirstwastaken2.compat.FarmersDelight;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.damage.ThirstDamageTypes;
+import com.thirstwastaken2.effect.ThirstEffects;
 import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.platform.Vanilla;
 import com.thirstwastaken2.purity.WaterPurity;
@@ -38,6 +39,12 @@ public final class ThirstManager {
     private static final float NAUSEA_EXHAUSTION = 0.06F;
     /** What {@code HungerMobEffect#applyEffectTick} charges per amplifier level, every tick. */
     private static final float HUNGER_EXHAUSTION = 0.005F;
+    /**
+     * Parched's drain per tick per level, the thirst counterpart of {@link #HUNGER_EXHAUSTION}. Parched I
+     * over the 30 seconds bad water gives costs 1.5 thirst before the climate modifier, about what the
+     * Nausea from the same drink costs.
+     */
+    private static final float PARCHED_EXHAUSTION = 0.01F;
     /**
      * How long a computed exhaustion modifier is reused. Climate, armour and Fire Resistance change far
      * more slowly than vanilla charges exhaustion, and it takes seconds of exhaustion to spend a single
@@ -153,6 +160,8 @@ public final class ThirstManager {
         MobEffectInstance hunger = player.getEffect(MobEffects.HUNGER);
         if (hunger != null) raw -= HUNGER_EXHAUSTION * (hunger.getAmplifier() + 1);
         if (config.depletesWhenNauseous && player.hasEffect(MobEffects.NAUSEA)) raw += NAUSEA_EXHAUSTION;
+        MobEffectInstance parched = player.getEffect(ThirstEffects.PARCHED);
+        if (parched != null) raw += PARCHED_EXHAUSTION * (parched.getAmplifier() + 1);
         // Nourishment stops thirst draining the way it stops hunger, as in the original mod. Everything
         // is dropped, including the negative amounts Farmer's Delight uses to cancel food exhaustion from
         // 1.21.11 on, so the Hunger refund above cannot turn into a refill either.

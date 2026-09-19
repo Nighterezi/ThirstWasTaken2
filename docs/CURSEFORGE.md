@@ -19,8 +19,8 @@ Water is graded based on where you collect it:
 
 | Grade | Common Sources | Effects |
 | :--- | :--- | :--- |
-| **Dirty** | Swamps, stagnant pools | High chance of Poison, Nausea, and Hunger |
-| **Murky** | Standard rivers, lakes, caves | Moderate chance of Nausea or Hunger |
+| **Dirty** | Swamps, stagnant pools | High chance of Poison, Nausea, and Parched |
+| **Murky** | Standard rivers, lakes, caves | Moderate chance of Nausea and Parched |
 | **Clean** | Mountain rivers, deep aquifers, boiled water | Safe to drink, high hydration |
 | **Pure** | Glaciers, rain cauldrons, refined drinks | Completely safe, maximum hydration |
 | **Salty** | Oceans and beaches | Cannot quench thirst; worsens dehydration |

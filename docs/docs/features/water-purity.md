@@ -38,7 +38,7 @@ cauldron or a hanging pot shows its grade, or Salty. It can be turned off in Jad
 Oceans and beaches give salt water. It has its own icon and tooltip line. On Minecraft 1.21 and
 1.21.1 only the bowl has its own icon.
 
-- Drinking it costs thirst and causes five seconds of Nausea.
+- Drinking it costs thirst, causes five seconds of Nausea and 30 seconds of Parched II.
 - It cannot be boiled clean.
 - One salty drink makes a whole waterskin, cauldron or hanging pot salty.
 
@@ -60,14 +60,15 @@ Neither improves water already in the cauldron.
 
 Fresh water always quenches thirst. The grade sets the risk.
 
-| Grade | Nausea and Hunger | Poison |
+| Grade | Nausea and Parched | Poison |
 |---|---|---|
 | Dirty | 100% | 30% |
 | Murky | 50% | 10% |
 | Clean | 5% | none |
 | Pure | none | none |
 
-Nausea lasts 5 seconds, Hunger 30 seconds and Poison 10 seconds.
+Nausea lasts 5 seconds, Parched 30 seconds and Poison 10 seconds. Parched makes thirst drain faster,
+the way Hunger does for food.
 
 ## Cleaning fresh water
 

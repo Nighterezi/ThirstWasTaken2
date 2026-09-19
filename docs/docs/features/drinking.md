@@ -66,10 +66,10 @@ Water bottles, Clean or Pure, turn up one to three at a time in:
 
 | Advancement | How to earn it |
 |---|---|
-| Thirst Was Taken | Start playing |
-| Wet Your Whistle | Drink water for the first time |
-| A Bitter Sip | Drink dirty water |
-| Rolling Boil | Purify water in a furnace |
-| Crystal Clear | Drink Pure water |
-| Salt of the Earth | Drink sea water |
+| ThirstWasTaken2 | Start playing |
+| First Sip | Drink water for the first time |
+| Dirty Water | Drink Dirty water |
+| Boil Your Water | Purify water in a furnace or smoker |
+| Pure Water | Drink Pure water |
+| Salt Water | Drink sea water |
 | Dry Heat | Drink in the Nether, or any dimension that boils water away |

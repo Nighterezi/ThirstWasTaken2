@@ -16,6 +16,14 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 - Smokers, and the Smoking Upgrade, purify water in half the time of a furnace.
 - On NeoForge, other mods' tanks, pumps and Spouts can fill and empty waterskins and terracotta water
   bowls. The water keeps its grade.
+- The Parched effect. Thirst drains faster while it lasts.
+
+### Changed
+
+- Bad water causes Parched instead of Hunger.
+- Sea water also causes Parched II.
+- The advancement tab is now named ThirstWasTaken2, and advancements have plainer names and
+  descriptions.
 
 ### Notes
 

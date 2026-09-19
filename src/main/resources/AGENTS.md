@@ -11,7 +11,7 @@ Everything here is shared by every loader.
 thirstwastaken2.mixins.json  every common mixin class must be listed here
 assets/thirstwastaken2/
   icon.png                   the Mod Menu icon, 512x512
-  textures/                  block, item, gui and font sheets
+  textures/                  block, item, gui, font and mob effect sheets
   models/block/              the copper hanging pot, and its frame and item templates, from Blockbench
   font/droplets.json         bitmap font for the tooltip droplet rows
   lang/                      9 locales
@@ -185,6 +185,12 @@ is 36x36 (four frames per row, one row per coloured `QuenchedOverlay`), and
 `textures/gui/appleskin_icons.png` is a 256x256 sheet whose only content is the `v = 18` AppleSkin
 exhaustion strip. `ThirstHud` documents the exact blits.
 
+## Mob effect icons
+
+`textures/mob_effect/<effect id>.png`, 18x18, drawn by hand. The game finds an effect's icon by its
+registry id, on every version, so an icon needs no JSON and no code. `parched.png` is the Parched
+effect's dry tongue.
+
 ## Lang
 
 Nine locales: `en_us`, `fr_fr`, `ja_jp`, `ko_kr`, `pl_pl`, `ru_ru`, `vi_vn`, `zh_cn`, `zh_tw`.
@@ -199,7 +205,7 @@ Key families, and who reads them:
 | `thirst.purity.*` | `WaterPurity.tooltip` and the chance sliders |
 | `thirst.water.salty` | `WaterPurity.saltTooltip`, the one line salt water gets instead of a grade |
 | `tooltip.thirstwastaken2.*` | `ThirstTooltip`: waterskin contents and the clay bowl hint |
-| `item.thirstwastaken2.*`, `block.thirstwastaken2.*`, `itemGroup.thirstwastaken2` | registration |
+| `item.thirstwastaken2.*`, `block.thirstwastaken2.*`, `effect.thirstwastaken2.*`, `itemGroup.thirstwastaken2` | registration |
 | `command.thirstwastaken2.*` | `ThirstCommands` |
 | `advancements.thirstwastaken2.*` | the `title` and `description` of every advancement in `data/thirstwastaken2/advancement/` |
 | `death.attack.dehydrate*` | the `dehydrate` damage type's `message_id` |

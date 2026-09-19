@@ -146,6 +146,10 @@ config screen *read* well, which is the sections below.
 - [x] Crouch with an empty hand and use water whose floor is out of reach (deep water, a waterfall):
       it is drunk all the same, once per click, and an item in the other hand is still used.
 - [x] Scooping with a bowl plays the bucket sound, with a waterskin the bottle sound.
+- [ ] After a drink of dirty water, the Parched icon (a dry tongue) shows at the top right of the HUD
+      and in the inventory's effect list, named "Parched". The effect itself, its level and its
+      drain are checked by [tools/agent/parched.jsonl](../../tools/agent/parched.jsonl), which also
+      captures the HUD.
 
 ### Config screen
 

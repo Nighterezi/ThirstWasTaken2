@@ -103,7 +103,8 @@ Default `true`. Water that poisons still restores thirst. Turn it off to make ba
 
 ### nauseaChance and poisonChance
 
-Four percentages each, one per grade from Dirty to Pure. The defaults are in
+Four percentages each, one per grade from Dirty to Pure. `nauseaChance` also sets the chance of
+Parched. The defaults are in
 [Drinking bad water](/docs/features/water-purity#drinking-bad-water).
 
 ## HUD

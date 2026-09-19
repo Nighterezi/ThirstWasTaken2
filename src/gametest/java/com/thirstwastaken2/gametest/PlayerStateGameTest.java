@@ -3,6 +3,7 @@ package com.thirstwastaken2.gametest;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.data.ThirstData;
 import com.thirstwastaken2.data.ThirstManager;
+import com.thirstwastaken2.effect.ThirstEffects;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -29,6 +30,7 @@ public final class PlayerStateGameTest {
     private static final float HUNGER_EXHAUSTION = 0.005F;
     /** Three of these stay inside one quarter-point sync step under any climate modifier the test world has. */
     private static final float SMALL_EXHAUSTION = 0.02F;
+    private static final int PARCHED_TICKS = 100;
 
     @GameTest
     public void sprintingIsBlockedWhenThirsty(GameTestHelper helper) {
@@ -103,6 +105,35 @@ public final class PlayerStateGameTest {
 
         TestFixtures.check(helper, ThirstManager.get(player).equals(before),
                 "the Hunger effect should not dehydrate, thirst moved to " + ThirstManager.get(player));
+        helper.succeed();
+    }
+
+    /**
+     * Parched is a marker, so the drain lives in the tick, not the effect. Ticked directly rather than
+     * through {@code ThirstManager.tick}, so that other tests' players do not tick with it. A hundred
+     * ticks spend a point or two of exhaustion, well past a sync step and short of a whole thirst point.
+     */
+    @GameTest
+    public void parchedDrainsThirstByLevel(GameTestHelper helper) {
+        ServerPlayer control = survivalPlayer(helper);
+        ServerPlayer parched = survivalPlayer(helper);
+        ServerPlayer veryParched = survivalPlayer(helper);
+        parched.addEffect(new MobEffectInstance(ThirstEffects.PARCHED, 200, 0));
+        veryParched.addEffect(new MobEffectInstance(ThirstEffects.PARCHED, 200, 1));
+
+        for (int i = 0; i < PARCHED_TICKS; i++) {
+            ThirstManager.tickPlayer(control);
+            ThirstManager.tickPlayer(parched);
+            ThirstManager.tickPlayer(veryParched);
+        }
+
+        float none = ThirstManager.get(control).exhaustion();
+        float one = ThirstManager.get(parched).exhaustion();
+        float two = ThirstManager.get(veryParched).exhaustion();
+        TestFixtures.check(helper, one > none,
+                "Parched should add thirst exhaustion, got " + one + " against " + none + " without it");
+        TestFixtures.check(helper, two > one,
+                "Parched II should drain faster than Parched I, got " + two + " against " + one);
         helper.succeed();
     }
 
