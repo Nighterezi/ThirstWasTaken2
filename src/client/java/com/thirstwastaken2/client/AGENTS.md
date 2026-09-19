@@ -67,6 +67,11 @@ Sprite geometry, which is easy to break:
   `U_EMPTY = 0` and `FILL_FRAMES = {8, 16, 24, 32}`.
 - Each droplet holds two thirst points, so `FILL_THRESHOLDS` is `{0.5, 1.0, 1.5, 2.0}` against
   `level - i * 2`.
+- `thirst_icons_parched.png` is the same sheet in dry sand, drawn instead while the player has
+  Parched, the way vanilla swaps to `food_*_hunger` for Hunger. Same size and frames, so every blit
+  argument is shared. `tools/generate_parched_icons.py` draws it from `thirst_icons.png`; rerun it
+  after touching the droplets rather than editing the parched sheet. The config preview always
+  draws the plain sheet.
 - The quarter and three-quarter frames come from `drainedFraction`, which spends the synced
   `exhaustion` (0..4) against the next point — and only once quenched is empty, so a quenched player
   never shows a partially drained droplet. There is no setting for this.
@@ -78,7 +83,7 @@ Sprite geometry, which is easy to break:
   `appleskin_icons.png`, blitted with the 256x256 texture size.
 - The quenched outline is AppleSkin-only, like the strip: `compat/AppleSkin.quenchedOverlay()` (common
   code) returns `OFF` without AppleSkin, and otherwise the player's `appleskinQuenchedOverlay`. It comes
-  from `quenched_overlay.png`, 36x36, at `u = 0/9/18/27` by quarter and `v = ordinal * 9`, so
+  from `quenched_overlay.png`, 36x45, at `u = 0/9/18/27` by quarter and `v = ordinal * 9`, so
   `QuenchedOverlay`'s order is the sheet's row order. Every sheet here has its own texture size — do
   not copy blit arguments between them.
 - `tools/generate_quenched_overlay.py` draws `quenched_overlay.png` and the matching tooltip glyphs.

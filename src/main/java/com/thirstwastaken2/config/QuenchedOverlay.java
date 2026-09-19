@@ -15,6 +15,11 @@ public enum QuenchedOverlay {
     GOLD,
     /** The gold AppleSkin draws saturation in, filling in the same direction its drumstick does. */
     APPLESKIN,
+    /**
+     * The original Thirst Was Taken's blue outline. Its full frame is the original's; the partial frames
+     * grow from it like the others, since the original's were AppleSkin's drumstick pieces in blue.
+     */
+    LEGACY,
     /** No outline on the thirst bar; the tooltip row keeps the plain blue outline it always had. */
     OFF
 }

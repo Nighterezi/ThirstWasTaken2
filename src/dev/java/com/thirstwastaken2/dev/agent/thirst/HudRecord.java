@@ -30,7 +30,7 @@ public final class HudRecord {
 
     /** One recorded draw of the bar. */
     public record Bar(int right, int top, int thirst, int quenched, float exhaustion, String overlay,
-                      boolean exhaustionStrip, boolean shake, long at) {
+                      boolean exhaustionStrip, boolean shake, boolean parched, long at) {
         /** The left edge: the ten droplets end at {@code right}, and the leftmost starts here. */
         public int left() {
             return right - BAR_WIDTH;
@@ -110,9 +110,9 @@ public final class HudRecord {
 
     /** Called by the mixin at the head of {@code ThirstHud.drawBar}. */
     public static void bar(int right, int top, int thirst, int quenched, float exhaustion, String overlay,
-                          boolean exhaustionStrip, boolean shake) {
+                          boolean exhaustionStrip, boolean shake, boolean parched) {
         installed = true;
-        Bar drawn = new Bar(right, top, thirst, quenched, exhaustion, overlay, exhaustionStrip, shake,
+        Bar drawn = new Bar(right, top, thirst, quenched, exhaustion, overlay, exhaustionStrip, shake, parched,
                 System.currentTimeMillis());
         if (inHud) hud = drawn;
         else preview = drawn;

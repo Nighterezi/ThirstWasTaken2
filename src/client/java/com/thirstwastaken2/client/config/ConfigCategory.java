@@ -4,6 +4,7 @@ import com.thirstwastaken2.client.platform.ClientVanilla;
 import com.thirstwastaken2.compat.AppleSkin;
 import com.thirstwastaken2.config.QuenchedOverlay;
 import com.thirstwastaken2.config.ThirstConfig;
+import net.minecraft.client.OptionInstance;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.OptionsList;
 import net.minecraft.util.Util;
@@ -11,6 +12,7 @@ import net.minecraft.util.Util;
 import static com.thirstwastaken2.client.config.ConfigOptions.chanceSlider;
 import static com.thirstwastaken2.client.config.ConfigOptions.cycle;
 import static com.thirstwastaken2.client.config.ConfigOptions.percentSlider;
+import static com.thirstwastaken2.client.config.ConfigOptions.secondsSlider;
 import static com.thirstwastaken2.client.config.ConfigOptions.slider;
 import static com.thirstwastaken2.client.config.ConfigOptions.text;
 import static com.thirstwastaken2.client.config.ConfigOptions.toggle;
@@ -103,6 +105,15 @@ enum ConfigCategory {
                         chanceSlider("poison_chance", index, config.poisonChance[index],
                                 value -> config.poisonChance[index] = value));
             }
+
+            ClientVanilla.addHeader(list, text("category.nausea_seconds"));
+            OptionInstance<?>[] seconds = new OptionInstance<?>[4];
+            for (int purity = 0; purity < 4; purity++) {
+                int index = purity;
+                seconds[index] = secondsSlider("nausea_seconds", index, config.nauseaSeconds[index], 1, 60,
+                        value -> config.nauseaSeconds[index] = value);
+            }
+            list.addSmall(seconds);
         }
 
         @Override
@@ -115,6 +126,7 @@ enum ConfigCategory {
             config.quenchWhenDebuffed = defaults.quenchWhenDebuffed;
             config.nauseaChance = defaults.nauseaChance.clone();
             config.poisonChance = defaults.poisonChance.clone();
+            config.nauseaSeconds = defaults.nauseaSeconds.clone();
         }
     },
 

@@ -19,11 +19,11 @@ Water is graded based on where you collect it:
 
 | Grade | Common Sources | Effects |
 | :--- | :--- | :--- |
-| **Dirty** | Swamps, stagnant pools | High chance of Poison, Nausea, and Parched |
-| **Murky** | Standard rivers, lakes, caves | Moderate chance of Nausea and Parched |
+| **Dirty** | Swamps, stagnant pools | High chance of Poison and Nausea |
+| **Murky** | Standard rivers, lakes, caves | Moderate chance of Nausea |
 | **Clean** | Mountain rivers, deep aquifers, boiled water | Safe to drink, high hydration |
 | **Pure** | Glaciers, rain cauldrons, refined drinks | Completely safe, maximum hydration |
-| **Salty** | Oceans and beaches | Cannot quench thirst; worsens dehydration |
+| **Salty** | Oceans and beaches | Cannot quench thirst; makes you Parched |
 
 * **Boiling:** Smelt water bottles, bowls, or buckets in a furnace or over a campfire to raise their purity grade.
 * **Hanging Pots:** Hang a Copper or Iron Hanging Pot over a lit campfire to boil a bucket of water into Pure water.
@@ -71,10 +71,10 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
   <tr>
     <td width="55%">
       <b><a href="https://modrinth.com/mod/appleskin">AppleSkin</a></b><br>
-      Displays your Quenched reserve directly on the HUD (Gold, Diamond, Ice, or Classic outline). Tooltips show exact thirst values for every drink and food item.
+      Displays your Quenched reserve directly on the HUD (Diamond, Ice, Gold, AppleSkin, or the original mod's Legacy outline). Tooltips show exact thirst values for every drink and food item.
     </td>
     <td width="45%">
-      <img alt="The thirst bar with AppleSkin, cycling through the Diamond, Ice, Gold and AppleSkin quenched outlines" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/hud-appleskin.gif" width="100%">
+      <img alt="The thirst bar with AppleSkin, cycling through the Diamond, Ice, Gold, AppleSkin and Legacy quenched outlines" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/hud-appleskin.gif" width="100%">
     </td>
   </tr>
   <tr>
@@ -122,10 +122,10 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
   <tr>
     <td width="55%">
       <b><a href="https://modrinth.com/mod/appleskin">AppleSkin</a></b><br>
-      Displays your Quenched reserve directly on the HUD (Gold, Diamond, Ice, or Classic outline). Tooltips show exact thirst values for every drink and food item.
+      Displays your Quenched reserve directly on the HUD (Diamond, Ice, Gold, AppleSkin, or the original mod's Legacy outline). Tooltips show exact thirst values for every drink and food item.
     </td>
     <td width="45%">
-      <img alt="The thirst bar with AppleSkin, cycling through the Diamond, Ice, Gold and AppleSkin quenched outlines" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/hud-appleskin.gif" width="100%">
+      <img alt="The thirst bar with AppleSkin, cycling through the Diamond, Ice, Gold, AppleSkin and Legacy quenched outlines" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/hud-appleskin.gif" width="100%">
     </td>
   </tr>
   <tr>

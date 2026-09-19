@@ -17,7 +17,8 @@ Shows the player's thirst and quenched to whoever ran the command.
 ```
 
 Both values are 0 to 20. Quenched cannot be higher than thirst, so `/thirst set @s 5 20` sets both
-to 5.
+to 5. It also clears any progress toward losing the next point, so the bar shows exactly the values
+set.
 
 ## /thirst enable
 

@@ -140,6 +140,7 @@ public final class ThirstApiGameTest {
             config.thirstBarYOffset = -9000;
             config.nauseaChance = new int[] {1};
             config.poisonChance = new int[] {150, -5, 0, 0};
+            config.nauseaSeconds = new int[] {0, 500, 5, 5};
             config.drinks.remove("minecraft:milk_bucket");
             config.drinks.remove("farmersdelight:milk_bottle");
             config.foods.remove("farmersdelight:bone_broth");
@@ -155,6 +156,8 @@ public final class ThirstApiGameTest {
                     "a nausea table of the wrong length should be reset, got " + Arrays.toString(config.nauseaChance));
             TestFixtures.check(helper, config.poisonChance[0] == 100 && config.poisonChance[1] == 0,
                     "poison chances should clamp to 0-100, got " + Arrays.toString(config.poisonChance));
+            TestFixtures.check(helper, config.nauseaSeconds[0] == 1 && config.nauseaSeconds[1] == 60,
+                    "nausea seconds should clamp to 1-60, got " + Arrays.toString(config.nauseaSeconds));
             TestFixtures.check(helper, config.drinks.containsKey("minecraft:milk_bucket"),
                     "a config file written before milk counted should have it merged back in");
             TestFixtures.check(helper, config.drinks.containsKey("farmersdelight:milk_bottle")

@@ -8,8 +8,9 @@ twice.
 | Step | What | Status |
 |---|---|---|
 | 1a | Drop Hunger from dirty water | done |
-| 1b | A Parched effect; dirty water makes you Parched | done |
-| 1c | Sea water makes you Parched too | done |
+| 1b | A Parched effect | done |
+| 1c | Sea water makes you Parched | done |
+| 1d | Longer Nausea as a stand-in, and a bigger sip by hand | done |
 | 2 | A new Upset Stomach effect | idea |
 | 3 | Incubation: sickness starts later, not on the sip | idea |
 | 4 | Salt and oral rehydration salts | idea |
@@ -22,7 +23,7 @@ twice.
 | | **Parched** | **Upset Stomach** |
 |---|---|---|
 | What it is | A symptom: a dry mouth, right after the drink | The illness, lasting longer |
-| From | Every sip of bad water, perhaps sea water (1c) | Bad water, after incubation (step 3) |
+| From | Sea water, right away | Bad water, after incubation (step 3) |
 | Does | Thirst drains faster | Thirst drains faster, food satisfies less, short bursts of Nausea |
 | Ends | On its own | On its own, faster with oral rehydration salts (step 4) |
 | Icon | `textures/mob_effect/parched.png`, a dry tongue | still to draw |
@@ -33,6 +34,11 @@ Dehydration: the word already means something else in the mod's death messages a
 
 Both effects drain thirst through one shared path in `ThirstManager`, with their own rate. Upset
 Stomach does not apply Parched on top, so the HUD never shows two icons for one consequence.
+
+**Bad fresh water does not make you Parched.** It was the first design, and was dropped after play:
+salt makes you thirsty at once, but bad water dries you out only later, once it makes you ill.
+Giving both the same instant effect blurred the two lessons. Bad water's dehydration is Upset
+Stomach's job.
 
 ## Why
 
@@ -67,7 +73,7 @@ exhaustion so that food poisoning does not double as dehydration.
 
 | Fact | Where it shows up |
 |---|---|
-| Bad water makes you sick through diarrhoea and vomiting, and the danger is dehydration | Steps 1b and 2: thirst drains faster, not hunger |
+| Bad water makes you sick through diarrhoea and vomiting, and the danger is dehydration | Step 2: thirst drains faster, not hunger |
 | An upset stomach kills the appetite | Phase 2: food restores less saturation |
 | Illness from water starts hours to days after drinking, not on the sip (norovirus about 12-48 hours, many bacteria a few days, Giardia one to three weeks) | Phase 3 |
 | The more contaminated the water, and the more of it you drink, the likelier and worse the illness | Phase 2: grade and repeated drinks set the level |
@@ -117,19 +123,20 @@ exhaustion per tick, which over 5 seconds is about 1.5 thirst points before the 
 
 ## Step 1b: Parched
 
-The same roll that gives Nausea now also makes the player Parched, where it used to give Hunger.
+The effect itself, thirst's counterpart of Hunger. Only sea water gives it (1c). It first came from
+the nausea roll of bad water too; that was dropped, see [The two effects](#the-two-effects).
 
 ### Design
 
-- Parched I lasts 30 seconds, the time Hunger used to, and adds thirst exhaustion every tick, scaled
-  by level like Hunger: start at **0.01 per tick per level**, 6 exhaustion or 1.5 thirst points over
-  30 seconds, before the climate modifier. Tune in play.
+- Adds thirst exhaustion every tick, scaled by level like Hunger: **0.01 per tick per level**, so
+  30 seconds of Parched II cost 3 thirst points before the climate modifier. Tune in play.
 - A harmful effect, so it shows in the inventory and the HUD with the dry-tongue icon.
+- While it lasts the thirst bar is drawn in dry sand, outlines and empty droplets included, the way
+  vanilla recolours the food bar for Hunger (`thirst_icons_parched.png`, drawn by
+  `tools/generate_parched_icons.py`).
+- A drink gives it without particles: a dry mouth is felt, not seen. The particle colour, tan, only
+  shows when a command gives it with them.
 - A second drink while Parched refreshes the duration; it does not stack.
-- **Balance check.** A dirty bottle restores 6 thirst and a bowl 4; with Nausea and Parched each
-  costing about 1.5, both still come out ahead, as they should (fresh water always quenches). A sip
-  by hand restores 1, so drinking from a swamp by hand costs more than it gives. Decide whether that
-  is the lesson or a problem.
 
 ### Changes
 
@@ -144,11 +151,10 @@ The same roll that gives Nausea now also makes the player Parched, where it used
 - [x] **The effect is a marker.** Do not override `applyEffectTick`: its signature differs between
   1.21.1 and later. `ThirstManager.tickPlayer` adds the exhaustion next to the Nausea line, from one
   `getEffect` lookup, so the tick's fast path allocates nothing.
-- [x] `WaterPurity.applyEffects` applies Parched where Hunger used to be.
 - [x] Lang in all nine files: `effect.thirstwastaken2.parched` (English "Parched", Vietnamese "Khô
-  họng"), and `nausea_chance.tooltip` now names Nausea and Parched.
-- [x] Gametests: a dirty drink makes the player Parched; Parched drains thirst faster than no effect;
-  a pure drink does nothing.
+  họng").
+- [x] Gametests: sea water makes the player Parched II without particles, a dirty drink does not,
+  Parched drains thirst faster by level, a pure drink does nothing.
 - [x] An agent-client script, [tools/agent/parched.jsonl](../../tools/agent/parched.jsonl): the real
   right click, the real server tick and the client's lang, on every node.
 - [x] Docs, written with the `write-docs` skill, covering 1a and 1b together:
@@ -165,9 +171,27 @@ The same roll that gives Nausea now also makes the player Parched, where it used
 ## Step 1c: sea water makes you Parched
 
 Sea water keeps its exhaustion, its five seconds of Nausea, and never hydrates, and adds Parched II
-for 30 seconds: twice the drain of bad fresh water, since the salt makes the body lose more water
-than the drink brought in. Its own CHANGELOG line, because it changes the balance of sea water rather
-than fixing Hunger. Whether it should keep Nausea is still worth a second look after some play.
+for 30 seconds, since the salt makes the body lose more water than the drink brought in. Level II,
+like vanilla's pufferfish gives Hunger III, so the one source of Parched hits hard. Its own
+CHANGELOG line. Whether it should keep Nausea is still worth a second look after some play.
+
+## Step 1d: longer Nausea, bigger sips
+
+Until Upset Stomach exists, Nausea is what bad fresh water costs. Five seconds ended before the
+screen had finished warping, so it now lasts by grade, set by `nauseaSeconds`:
+
+| Grade | Nausea | Thirst it costs, about | A bottle (+6) nets | A bowl (+4) nets |
+|---|---|---|---|---|
+| Dirty | 12 s | 3.6 | +2.4 | +0.4 |
+| Murky | 8 s | 2.4 | +3.6 | +1.6 |
+| Clean | 5 s | 1.5 | +4.5 | +2.5 |
+
+Bad water still always quenches, but barely. Drinking by hand now restores 2 thirst and 2 quenched,
+so a player who chooses to drink from a swamp does not have to click as often. Existing config files
+keep their old hand drinking values, since the config has no migration.
+
+When Upset Stomach arrives (step 2), Nausea can go back to being short: the illness will carry the
+thirst cost instead.
 
 ---
 

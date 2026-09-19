@@ -108,9 +108,11 @@ Fabric.
   extending `resolve`, not by importing anything.
 - **One roll drives both effects.** `applyEffects` rolls once for fresh water and compares it against
   `nauseaChance[purity]` and `poisonChance[purity]`, matching the original mod; it returns whether
-  thirst should still be restored (`quenchWhenDebuffed`). The nausea roll also makes the player
-  Parched I, where the original applied Hunger. Salt water never reaches the roll: it spends
-  exhaustion, applies Nausea and Parched II, and returns false. The plan behind these effects is
+  thirst should still be restored (`quenchWhenDebuffed`). The original also applied Hunger on the
+  nausea roll; this mod does not. Salt water never reaches the roll: it spends exhaustion, applies
+  Nausea and Parched II (without particles), and returns false. Only salt water makes the player
+  Parched: salt makes you thirsty at once, while bad fresh water dries you out only once it makes
+  you ill, which is the planned Upset Stomach. The plan behind these effects is
   `docs/dev/WATER-SICKNESS.md`.
 - **`purityKey` and `purityColor` own the lang key and the colour together**, and they are the only
   palette for water quality; the tooltip tiers in `src/main/java/com/thirstwastaken2/AGENTS.md` say

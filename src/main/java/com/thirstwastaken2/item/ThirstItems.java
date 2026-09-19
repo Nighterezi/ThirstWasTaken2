@@ -58,7 +58,7 @@ public final class ThirstItems {
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, CREATIVE_TAB_KEY,
                 Loader.creativeTabBuilder()
                         .title(Component.translatable("itemGroup.thirstwastaken2"))
-                        .icon(() -> new ItemStack(TERRACOTTA_WATER_BOWL))
+                        .icon(() -> new ItemStack(WATERSKIN))
                         .displayItems((parameters, entries) -> {
                             entries.accept(CLAY_BOWL);
                             entries.accept(TERRACOTTA_BOWL);

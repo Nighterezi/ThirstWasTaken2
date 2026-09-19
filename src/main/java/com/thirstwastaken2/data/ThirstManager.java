@@ -40,9 +40,8 @@ public final class ThirstManager {
     /** What {@code HungerMobEffect#applyEffectTick} charges per amplifier level, every tick. */
     private static final float HUNGER_EXHAUSTION = 0.005F;
     /**
-     * Parched's drain per tick per level, the thirst counterpart of {@link #HUNGER_EXHAUSTION}. Parched I
-     * over the 30 seconds bad water gives costs 1.5 thirst before the climate modifier, about what the
-     * Nausea from the same drink costs.
+     * Parched's drain per tick per level, the thirst counterpart of {@link #HUNGER_EXHAUSTION}. Over the
+     * 30 seconds sea water gives, Parched II costs 3 thirst before the climate modifier.
      */
     private static final float PARCHED_EXHAUSTION = 0.01F;
     /**

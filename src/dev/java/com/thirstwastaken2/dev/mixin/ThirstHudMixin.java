@@ -36,7 +36,7 @@ abstract class ThirstHudMixin {
     @Inject(method = "drawBar", at = @At("HEAD"))
     private static void thirst$recordBar(GuiGraphicsExtractor graphics, int right, int top, int thirst,
                                          int quenched, float exhaustion, QuenchedOverlay overlay,
-                                         boolean exhaustionStrip, boolean shake, CallbackInfo info) {
-        HudRecord.bar(right, top, thirst, quenched, exhaustion, overlay.name(), exhaustionStrip, shake);
+                                         boolean exhaustionStrip, boolean shake, boolean parched, CallbackInfo info) {
+        HudRecord.bar(right, top, thirst, quenched, exhaustion, overlay.name(), exhaustionStrip, shake, parched);
     }
 }

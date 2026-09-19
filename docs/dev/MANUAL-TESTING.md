@@ -68,7 +68,7 @@ Useful commands while testing:
       frames before a point is spent, and the bar shakes the way hunger does at zero saturation.
 - [x] `/thirst set @s 20 20`: the quenched outline is drawn over every droplet, cyan by default.
 - [x] Mod Menu → ThirstWasTaken2 → HUD & AppleSkin: Quenched Outline reads "Quenched Outline: Diamond"
-      (the name once) and cycles Diamond, Ice, Gold, AppleSkin and Off. The preview and the real bar
+      (the name once) and cycles Diamond, Ice, Gold, AppleSkin, Legacy and Off. The preview and the real bar
       change at once. Off removes the outline from the bar; the tooltip row falls back to the plain
       blue outline.
 - [x] The bar is hidden with F1, in creative and spectator, and while riding a horse, pig or strider
@@ -146,8 +146,9 @@ config screen *read* well, which is the sections below.
 - [x] Crouch with an empty hand and use water whose floor is out of reach (deep water, a waterfall):
       it is drunk all the same, once per click, and an item in the other hand is still used.
 - [x] Scooping with a bowl plays the bucket sound, with a waterskin the bottle sound.
-- [ ] After a drink of dirty water, the Parched icon (a dry tongue) shows at the top right of the HUD
-      and in the inventory's effect list, named "Parched". The effect itself, its level and its
+- [ ] After a drink of sea water, the Parched icon (a dry tongue) shows at the top right of the HUD
+      and in the inventory's effect list, named "Parched", the thirst bar turns sandy, empty droplets
+      included, and no particles swirl around the player. The effect itself, its level and its
       drain are checked by [tools/agent/parched.jsonl](../../tools/agent/parched.jsonl), which also
       captures the HUD.
 

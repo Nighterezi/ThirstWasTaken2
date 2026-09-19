@@ -8,6 +8,7 @@ import com.thirstwastaken2.config.QuenchedOverlay;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.data.ThirstData;
 import com.thirstwastaken2.data.ThirstManager;
+import com.thirstwastaken2.effect.ThirstEffects;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
@@ -17,6 +18,11 @@ import net.minecraft.world.entity.player.Player;
 
 public final class ThirstHud {
     private static final Identifier ICONS = ThirstWasTaken2.id("textures/gui/thirst_icons.png");
+    /**
+     * The same sheet in dry sand, drawn while the player is Parched, the way vanilla recolours the food
+     * bar for Hunger. {@code tools/generate_parched_icons.py} draws it from {@link #ICONS}.
+     */
+    private static final Identifier PARCHED_ICONS = ThirstWasTaken2.id("textures/gui/thirst_icons_parched.png");
     private static final Identifier OVERLAY_ICONS = ThirstWasTaken2.id("textures/gui/appleskin_icons.png");
     private static final Identifier QUENCHED_ICONS = ThirstWasTaken2.id("textures/gui/quenched_overlay.png");
     private static final RandomSource RANDOM = RandomSource.create();
@@ -35,7 +41,7 @@ public final class ThirstHud {
     private static final int OVERLAY_TEXTURE_SIZE = 256;
     /** Four frames across, one row per coloured {@link QuenchedOverlay}. */
     private static final int QUENCHED_TEXTURE_WIDTH = 36;
-    private static final int QUENCHED_TEXTURE_HEIGHT = 36;
+    private static final int QUENCHED_TEXTURE_HEIGHT = 45;
     private static final int OPAQUE = 0xFFFFFFFF;
     private static final int EXHAUSTION_TINT = 0xBFFFFFFF;
     private static final int BAR_WIDTH = 81;
@@ -70,7 +76,7 @@ public final class ThirstHud {
         boolean shake = quenched <= 0 && player.tickCount % (thirst * 3 + 1) == 0;
 
         drawBar(graphics, right, top, thirst, quenched, data.exhaustion(), AppleSkin.quenchedOverlay(),
-                AppleSkinIntegration.shouldShowExhaustion(), shake);
+                AppleSkinIntegration.shouldShowExhaustion(), shake, player.hasEffect(ThirstEffects.PARCHED));
     }
 
     /**
@@ -78,8 +84,10 @@ public final class ThirstHud {
      * synced state; the config screen's preview passes a made-up one.
      */
     public static void drawBar(GuiGraphicsExtractor graphics, int right, int top, int thirst, int quenched,
-                               float exhaustion, QuenchedOverlay overlay, boolean exhaustionStrip, boolean shake) {
+                               float exhaustion, QuenchedOverlay overlay, boolean exhaustionStrip, boolean shake,
+                               boolean parched) {
         if (exhaustionStrip) renderExhaustion(graphics, right, top, exhaustion);
+        Identifier icons = parched ? PARCHED_ICONS : ICONS;
 
         float level = thirst - drainedFraction(quenched, exhaustion);
         for (int i = 0; i < 10; i++) {
@@ -87,10 +95,10 @@ public final class ThirstHud {
             int y = top;
             if (shake) y += RANDOM.nextInt(3) - 1;
 
-            icon(graphics, x, y, U_EMPTY);
+            icon(graphics, icons, x, y, U_EMPTY);
             int fill = fillFrame(level - i * 2);
             if (fill >= 0) {
-                icon(graphics, x, y, fill);
+                icon(graphics, icons, x, y, fill);
             }
 
             renderQuenched(graphics, overlay, x, y, quenched / 2.0F - i);
@@ -114,8 +122,8 @@ public final class ThirstHud {
         return -1;
     }
 
-    private static void icon(GuiGraphicsExtractor graphics, int x, int y, int u) {
-        ClientVanilla.blit(graphics, ICONS, x, y, u, 0, ICON_SIZE, ICON_SIZE,
+    private static void icon(GuiGraphicsExtractor graphics, Identifier icons, int x, int y, int u) {
+        ClientVanilla.blit(graphics, icons, x, y, u, 0, ICON_SIZE, ICON_SIZE,
                 ICONS_TEXTURE_WIDTH, ICONS_TEXTURE_HEIGHT, OPAQUE);
     }
 

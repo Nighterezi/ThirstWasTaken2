@@ -33,7 +33,10 @@ public final class ThirstCommands {
                                                     int thirst = IntegerArgumentType.getInteger(context, "thirst");
                                                     int quenched = IntegerArgumentType.getInteger(context, "quenched");
                                                     var players = EntityArgument.getPlayers(context, "players");
-                                                    players.forEach(player -> ThirstManager.set(player, ThirstManager.get(player).withLevels(thirst, quenched)));
+                                                    // Exhaustion is cleared too. Left over, it shows on the HUD as a droplet
+                                                    // already draining once quenched is 0, so "set 20 0" would not look full.
+                                                    players.forEach(player -> ThirstManager.set(player,
+                                                            ThirstManager.get(player).withLevels(thirst, quenched).withExhaustion(0.0F)));
                                                     context.getSource().sendSuccess(() -> Component.translatable("command.thirstwastaken2.set", thirst, quenched), true);
                                                     return players.size();
                                                 })))))

@@ -42,6 +42,11 @@ Oceans and beaches give salt water. It has its own icon and tooltip line. On Min
 - It cannot be boiled clean.
 - One salty drink makes a whole waterskin, cauldron or hanging pot salty.
 
+Parched makes thirst drain faster, the way Hunger does for food, and turns the thirst bar the colour
+of dry sand.
+
+![The thirst bar in dry sand colours while Parched](/screenshots/parched-hud.png)
+
 ## Mixing and cauldrons
 
 - A waterskin takes the average grade of its drinks, rounded down.
@@ -60,15 +65,14 @@ Neither improves water already in the cauldron.
 
 Fresh water always quenches thirst. The grade sets the risk.
 
-| Grade | Nausea and Parched | Poison |
-|---|---|---|
-| Dirty | 100% | 30% |
-| Murky | 50% | 10% |
-| Clean | 5% | none |
-| Pure | none | none |
+| Grade | Nausea | Nausea lasts | Poison |
+|---|---|---|---|
+| Dirty | 100% | 12 seconds | 30% |
+| Murky | 50% | 8 seconds | 10% |
+| Clean | 5% | 5 seconds | none |
+| Pure | none | | none |
 
-Nausea lasts 5 seconds, Parched 30 seconds and Poison 10 seconds. Parched makes thirst drain faster,
-the way Hunger does for food.
+Nausea also makes thirst drain faster while it lasts. Poison lasts 10 seconds.
 
 ## Cleaning fresh water
 

@@ -62,11 +62,11 @@ Default `false`. When on, drinking by hand also needs the other hand empty.
 
 ### handDrinkingThirst
 
-Default `1`. Thirst restored by one drink by hand.
+Default `2`. Thirst restored by one drink by hand.
 
 ### handDrinkingQuenched
 
-Default `1`. Quenched restored by one drink by hand.
+Default `2`. Quenched restored by one drink by hand.
 
 ### extraThirstConvertsToQuenched
 
@@ -103,8 +103,13 @@ Default `true`. Water that poisons still restores thirst. Turn it off to make ba
 
 ### nauseaChance and poisonChance
 
-Four percentages each, one per grade from Dirty to Pure. `nauseaChance` also sets the chance of
-Parched. The defaults are in
+Four percentages each, one per grade from Dirty to Pure. The defaults are in
+[Drinking bad water](/docs/features/water-purity#drinking-bad-water).
+
+### nauseaSeconds
+
+Four values in seconds, one per grade from Dirty to Pure, from 1 to 60. How long Nausea from water of
+that grade lasts. The defaults are in
 [Drinking bad water](/docs/features/water-purity#drinking-bad-water).
 
 ## HUD
@@ -128,8 +133,8 @@ HUD Underlay** setting.
 
 ### appleskinQuenchedOverlay
 
-Default `DIAMOND`. The quenched outline colour: `DIAMOND`, `ICE`, `GOLD` or `APPLESKIN`. `OFF` hides
-the outline and the exhaustion strip.
+Default `DIAMOND`. The quenched outline colour: `DIAMOND`, `ICE`, `GOLD`, `APPLESKIN` or `LEGACY`, the
+blue outline of the original Thirst Was Taken. `OFF` hides the outline and the exhaustion strip.
 
 ### appleskinTooltipDroplets
 

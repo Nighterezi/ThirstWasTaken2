@@ -35,6 +35,23 @@ public final class CommandGameTest {
         helper.succeed();
     }
 
+    /**
+     * Leftover exhaustion would show on the HUD as the top droplet already draining once quenched is
+     * 0, so a full bar set by command would not look full.
+     */
+    @GameTest
+    public void setClearsExhaustion(GameTestHelper helper) {
+        ServerPlayer player = TestFixtures.mockPlayer(helper);
+        ThirstManager.set(player, ThirstManager.get(player).withExhaustion(3.0F));
+
+        run(helper, operator(helper, player), "thirst set @s 20 0");
+
+        levels(helper, player, 20, 0, "/thirst set 20 0");
+        TestFixtures.check(helper, ThirstManager.get(player).exhaustion() == 0.0F,
+                "/thirst set should clear exhaustion, got " + ThirstManager.get(player).exhaustion());
+        helper.succeed();
+    }
+
     @GameTest
     public void valuesOffTheBarAreRejected(GameTestHelper helper) {
         ServerPlayer player = TestFixtures.mockPlayer(helper);

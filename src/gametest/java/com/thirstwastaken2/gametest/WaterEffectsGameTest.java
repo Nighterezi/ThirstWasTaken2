@@ -1,5 +1,6 @@
 package com.thirstwastaken2.gametest;
 
+import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.data.ThirstManager;
 import com.thirstwastaken2.effect.ThirstEffects;
 import com.thirstwastaken2.item.ThirstItems;
@@ -36,22 +37,28 @@ public final class WaterEffectsGameTest {
         MobEffectInstance parched = player.getEffect(ThirstEffects.PARCHED);
         TestFixtures.check(helper, parched != null && parched.getAmplifier() == 1,
                 "salt water should make the player Parched II, got " + parched);
+        TestFixtures.check(helper, !parched.isVisible() && parched.showIcon(),
+                "Parched from a drink has no particles but keeps its icon, got " + parched);
         helper.succeed();
     }
 
     @GameTest
-    public void dirtyWaterCausesNauseaAndParchedWithoutHunger(GameTestHelper helper) {
+    public void dirtyWaterCausesNauseaWithoutHungerOrParched(GameTestHelper helper) {
         ServerPlayer player = TestFixtures.mockPlayer(helper);
 
         WaterPurity.applyEffects(player, bowl(WaterQuality.fresh(0)));
 
-        TestFixtures.check(helper, player.hasEffect(MobEffects.NAUSEA),
+        MobEffectInstance nausea = player.getEffect(MobEffects.NAUSEA);
+        TestFixtures.check(helper, nausea != null,
                 "purity 0 has a 100 percent nausea chance in the default config");
-        MobEffectInstance parched = player.getEffect(ThirstEffects.PARCHED);
-        TestFixtures.check(helper, parched != null && parched.getAmplifier() == 0,
-                "the nausea roll also makes the player Parched I, got " + parched);
+        int expected = 20 * ThirstConfig.get().nauseaSeconds[0];
+        TestFixtures.check(helper, nausea.getDuration() == expected,
+                "Nausea from dirty water should last nausea_seconds[0], " + expected + " ticks, got "
+                        + nausea.getDuration());
         TestFixtures.check(helper, !player.hasEffect(MobEffects.HUNGER),
-                "bad water dries the player out, it must not apply hunger");
+                "bad water makes the player ill, not hungry, so it must not apply hunger");
+        TestFixtures.check(helper, !player.hasEffect(ThirstEffects.PARCHED),
+                "only sea water makes the player Parched, bad fresh water must not");
         helper.succeed();
     }
 

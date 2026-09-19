@@ -527,6 +527,7 @@ final class ClientProbes {
         result.addProperty("overlay", drawn.overlay());
         result.addProperty("exhaustionStrip", drawn.exhaustionStrip());
         result.addProperty("shake", drawn.shake());
+        result.addProperty("parched", drawn.parched());
         result.addProperty("drawnMsAgo", drawn.ageMillis());
         // Droplet 0 is the rightmost, the way the HUD draws them.
         JsonArray droplets = new JsonArray();

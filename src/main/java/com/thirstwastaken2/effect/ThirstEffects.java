@@ -10,8 +10,9 @@ import net.minecraft.world.effect.MobEffectCategory;
 public final class ThirstEffects {
     /**
      * Thirst's counterpart to vanilla's Hunger effect: a dry mouth that drains the thirst bar faster,
-     * from bad water and sea water. The drain itself is charged by {@code ThirstManager.tickPlayer}.
-     * Its particles are the tan of dry sand: the red of the tongue in its icon read as healing.
+     * from sea water. The drain itself is charged by {@code ThirstManager.tickPlayer}.
+     * Drinks give it without particles; the colour, the tan of dry sand, only shows when a command
+     * gives it with them. The red of the tongue in its icon read as healing.
      */
     public static final Holder<MobEffect> PARCHED = register("parched", 0xD4B483);
 

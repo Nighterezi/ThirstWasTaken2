@@ -16,19 +16,39 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 - Smokers, and the Smoking Upgrade, purify water in half the time of a furnace.
 - On NeoForge, other mods' tanks, pumps and Spouts can fill and empty waterskins and terracotta water
   bowls. The water keeps its grade.
-- The Parched effect. Thirst drains faster while it lasts.
+- The Parched effect. Thirst drains faster while it lasts, and the thirst bar turns the colour of dry
+  sand.
+- A Legacy quenched outline, the blue one from the original Thirst Was Taken.
 
 ### Changed
 
-- Bad water causes Parched instead of Hunger.
+- Bad water no longer causes Hunger.
 - Sea water also causes Parched II.
 - The advancement tab is now named ThirstWasTaken2, and advancements have plainer names and
   descriptions.
+- The creative tab icon is now a waterskin.
+- Nausea from bad water lasts longer the worse the water: 12 seconds from Dirty water and 8 from
+  Murky, instead of 5. Its extra thirst drain lasts as long.
+- Drinking by hand restores 2 thirst and 2 quenched instead of 1 each.
+
+### Fixed
+
+- After `/thirst set` with a quenched of 0, the top droplet no longer shows as partly drained.
 
 ### Notes
 
 - Farmer's Delight on the other NeoForge versions is not supported yet.
 - Sophisticated Backpacks is supported on every NeoForge version and on no Fabric version.
+- Existing config files keep their hand drinking values. Set `handDrinkingThirst` and
+  `handDrinkingQuenched` to 2 for the new default.
+
+<details>
+<summary>Configuration file details</summary>
+
+- New `nauseaSeconds`: `[12, 8, 5, 5]` by default, one value per grade from Dirty to Pure.
+- `handDrinkingThirst` and `handDrinkingQuenched` now default to `2`.
+
+</details>
 
 ## [1.0.7] - 2026-09-18
 

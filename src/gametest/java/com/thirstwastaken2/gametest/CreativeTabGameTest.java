@@ -1,6 +1,7 @@
 package com.thirstwastaken2.gametest;
 
 import com.thirstwastaken2.item.ThirstItems;
+import com.thirstwastaken2.item.WaterskinItem;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -37,12 +38,12 @@ public final class CreativeTabGameTest {
     }
 
     @GameTest
-    public void tabIconIsAWaterBowl(GameTestHelper helper) {
+    public void tabIconIsAWaterskin(GameTestHelper helper) {
         CreativeModeTab tab = requireTab(helper);
 
         ItemStack icon = tab.getIconItem();
-        TestFixtures.check(helper, icon.is(ThirstItems.TERRACOTTA_WATER_BOWL),
-                "the tab icon should be the terracotta water bowl, got " + icon);
+        TestFixtures.check(helper, icon.is(ThirstItems.WATERSKIN) && WaterskinItem.servings(icon) == 0,
+                "the tab icon should be an empty waterskin, got " + icon);
         helper.succeed();
     }
 

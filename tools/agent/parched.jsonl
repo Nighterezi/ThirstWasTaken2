@@ -1,17 +1,17 @@
-// Parched in a real client: bad water and sea water make the player Parched through the real right
-// click, never Hungry; Parched drains thirst on the server tick, faster at level II; the client names
-// it in English and Vietnamese. Run it unattended in a singleplayer world:
+// Parched in a real client: sea water makes the player Parched through the real right click, bad
+// water does not, and neither makes them Hungry; Parched drains thirst on the server tick, faster at
+// level II; the client names it in English and Vietnamese. Run it unattended in a singleplayer world:
 //     ./gradlew ":<node>:runClient" -Pagent=tools/agent/parched.jsonl -Pquickplay=ParchedAgent
 // ParchedAgent is a throwaway world: copy level.dat (and, from 26.1,
 // data/minecraft/world_gen_settings.dat) out of any world of the same Minecraft version into
 // run/<node>/saves/ParchedAgent, fresh for each run. Then read run/<node>/agent/client/out.jsonl:
 // every "execute if" and "execute unless" line has to say "Test passed". The drain is read off
 // client.state before and after each wait, as spent = 4 * (thirst + quenched lost) + exhaustion
-// gained: nothing while plain, some while Parched I, more while Parched II. /thirst set keeps
-// exhaustion, which is why each wait has a reading before it, taken a few ticks after the set so
-// the client has it. The player is always @p, since the dev player's name differs between loaders.
-// The capture in run/<node>/agent/client/screenshots/ shows the dry-tongue icon at the top right of
-// the HUD.
+// gained: nothing while plain, some while Parched I, more while Parched II. Each wait has a reading
+// before it, taken a few ticks after /thirst set so the client has the new values. sandyBar's
+// "parched" has to be true: the HUD drew the sand-coloured droplets. The player is always @p, since
+// the dev player's name differs between loaders. The capture in
+// run/<node>/agent/client/screenshots/ shows the dry-tongue icon at the top right of the HUD.
 
 {"id": "load", "command": "wait", "args": {"ticks": 400}}
 {"id": "joined", "command": "client.state"}
@@ -34,23 +34,47 @@
 {"id": "nameVi", "command": "client.textWidth", "args": {"keys": ["effect.thirstwastaken2.parched"]}}
 {"id": "toEn", "command": "client.language", "args": {"code": "en_us"}}
 
-// A dirty water bottle through the real right click: Nausea and Parched I, no Hunger, and it still
-// quenches.
+// A dirty water bottle through the real right click: Nausea for longer than it used to last, but
+// neither Parched nor Hunger, and it still quenches.
 {"id": "thirsty", "command": "server.command", "args": {"command": "thirst set @p 10 0"}}
 {"id": "lookUp", "command": "server.command", "args": {"command": "tp @p 0.5 200 -3.5 0 -90"}}
 {"id": "dirty", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with minecraft:potion[minecraft:potion_contents={potion:\"minecraft:water\"},thirstwastaken2:water_purity=0,thirstwastaken2:water_salty=false]"}}
-{"id": "settleDirty", "command": "wait", "args": {"ticks": 10}}
+{"id": "settleDirty", "command": "wait", "args": {"ticks": 30}}
 {"id": "drinkDirty", "command": "client.hold", "args": {"keys": ["use"], "ticks": 60}}
 {"id": "drunkDirty", "command": "client.state"}
-{"id": "dirtyParched", "command": "server.command", "args": {"command": "execute if entity @p[nbt={active_effects:[{id:\"thirstwastaken2:parched\"}]}]"}}
-{"id": "dirtyLevelOne", "command": "server.command", "args": {"command": "execute unless entity @p[nbt={active_effects:[{id:\"thirstwastaken2:parched\",amplifier:1b}]}]"}}
+{"id": "dirtyNotParched", "command": "server.command", "args": {"command": "execute unless entity @p[nbt={active_effects:[{id:\"thirstwastaken2:parched\"}]}]"}}
 {"id": "dirtyNausea", "command": "server.command", "args": {"command": "execute if entity @p[nbt={active_effects:[{id:\"minecraft:nausea\"}]}]"}}
 {"id": "noHunger", "command": "server.command", "args": {"command": "execute unless entity @p[nbt={active_effects:[{id:\"minecraft:hunger\"}]}]"}}
-{"id": "lookAhead", "command": "server.command", "args": {"command": "tp @p 0.5 200 -3.5 0 15"}}
-// Toasts for the advancements the drink earned cover the effect icons for about five seconds;
-// Parched lasts 30.
-{"id": "settleIcon", "command": "wait", "args": {"ticks": 140}}
-{"id": "icon", "command": "client.capture", "args": {"name": "parched-hud"}}
+// Dirty water's Nausea lasts 12 seconds, 240 ticks, minus the few ticks since the bottle emptied.
+// Anything above 100 ticks is more than the old five seconds.
+{"id": "nauseaLeft", "command": "server.command", "args": {"command": "data get entity @p active_effects[{id:\"minecraft:nausea\"}].duration"}}
+
+// One sip by hand from a small pool: crouch, then three ticks of use on the water, one sip since a
+// use repeats only every four. The dev clients have toggleCrouch on, so the sneak key is pressed
+// once to crouch and once more to stand. handSip's thirst and quenched have to rise by
+// handDrinkingThirst and handDrinkingQuenched from the node's
+// run/<node>/config/thirstwastaken2.json: 2 each by default, but a config file written before 2 was
+// the default keeps its 1.
+// The world may spawn by the sea, and water there samples as salt, so the pool is made plains first.
+{"id": "poolBiome", "command": "server.command", "args": {"command": "fillbiome -8 190 -8 8 210 8 minecraft:plains"}}
+{"id": "poolFloor", "command": "server.command", "args": {"command": "fill -1 198 -2 1 198 0 minecraft:stone"}}
+{"id": "pool", "command": "server.command", "args": {"command": "fill -1 199 -2 1 199 0 minecraft:water"}}
+{"id": "handEmpty", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with minecraft:air"}}
+// From the edge of the pool, crouched: the crosshair passes over the water and lands on the stone
+// under it, which is the case ThirstManager.drinkByHand reads the water above.
+{"id": "lookAtPool", "command": "server.command", "args": {"command": "tp @p 0.5 200 -2.5 0 45"}}
+{"id": "handThirsty", "command": "server.command", "args": {"command": "thirst set @p 10 0"}}
+{"id": "crouch", "command": "client.key", "args": {"key": "sneak", "down": true}}
+{"id": "crouched", "command": "wait", "args": {"ticks": 10}}
+{"id": "handBefore", "command": "client.state"}
+{"id": "sip", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "sipSettle", "command": "wait", "args": {"ticks": 10}}
+{"id": "handSip", "command": "client.state"}
+{"id": "crouchKeyUp", "command": "client.key", "args": {"key": "sneak", "down": false}}
+{"id": "standDown", "command": "client.key", "args": {"key": "sneak", "down": true}}
+{"id": "standWait", "command": "wait", "args": {"ticks": 2}}
+{"id": "standUp", "command": "client.key", "args": {"key": "sneak", "down": false}}
+{"id": "drainPool", "command": "server.command", "args": {"command": "fill -1 199 -2 1 199 0 minecraft:stone"}}
 
 // The drain, on the real server tick. Standing still costs nothing, so any exhaustion is Parched's.
 // Parched I is 0.01 a tick, so 200 ticks are about 2 exhaustion before the climate modifier; II is
@@ -79,9 +103,17 @@
 {"id": "thirstyAgain", "command": "server.command", "args": {"command": "thirst set @p 10 0"}}
 {"id": "lookUpAgain", "command": "server.command", "args": {"command": "tp @p 0.5 200 -3.5 0 -90"}}
 {"id": "salty", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with minecraft:potion[minecraft:potion_contents={potion:\"minecraft:water\"},thirstwastaken2:water_salty=true]"}}
-{"id": "settleSalty", "command": "wait", "args": {"ticks": 10}}
+{"id": "settleSalty", "command": "wait", "args": {"ticks": 30}}
 {"id": "drinkSalty", "command": "client.hold", "args": {"keys": ["use"], "ticks": 60}}
 {"id": "drunkSalty", "command": "client.state"}
 {"id": "saltParchedTwo", "command": "server.command", "args": {"command": "execute if entity @p[nbt={active_effects:[{id:\"thirstwastaken2:parched\",amplifier:1b}]}]"}}
 {"id": "saltNausea", "command": "server.command", "args": {"command": "execute if entity @p[nbt={active_effects:[{id:\"minecraft:nausea\"}]}]"}}
 {"id": "saltNoHunger", "command": "server.command", "args": {"command": "execute unless entity @p[nbt={active_effects:[{id:\"minecraft:hunger\"}]}]"}}
+// No particles from a drink, but the icon stays and the thirst bar turns sandy.
+{"id": "noParticles", "command": "server.command", "args": {"command": "execute if entity @p[nbt={active_effects:[{id:\"thirstwastaken2:parched\",show_particles:0b}]}]"}}
+{"id": "sandyBar", "command": "client.hud"}
+{"id": "lookAhead", "command": "server.command", "args": {"command": "tp @p 0.5 200 -3.5 0 15"}}
+// Toasts for the advancements the drink earned cover the effect icons for about five seconds;
+// Parched lasts 30.
+{"id": "settleIcon", "command": "wait", "args": {"ticks": 140}}
+{"id": "icon", "command": "client.capture", "args": {"name": "parched-hud"}}

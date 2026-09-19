@@ -38,8 +38,9 @@ public final class ThirstConfig {
     public boolean preventSprintingWhenThirsty = true;
     public boolean canDrinkByHand = true;
     public boolean drinkByHandNeedsBothHandsEmpty = false;
-    public int handDrinkingThirst = 1;
-    public int handDrinkingQuenched = 1;
+    /** Two rather than the original's one, so a drink by hand is worth the click, bad water included. */
+    public int handDrinkingThirst = 2;
+    public int handDrinkingQuenched = 2;
     public boolean extraThirstConvertsToQuenched = true;
     public boolean dehydrationHaltsHealthRegen = true;
 
@@ -71,6 +72,13 @@ public final class ThirstConfig {
     public boolean quenchWhenDebuffed = true;
     public int[] nauseaChance = {100, 50, 5, 0};
     public int[] poisonChance = {30, 10, 0, 0};
+    /**
+     * Seconds of Nausea from water of each grade, Dirty first. The original gave five for every grade,
+     * which ends before the screen has finished warping. Worse water lasts longer, and with
+     * {@link #depletesWhenNauseous} that is also what bad water costs in thirst, until the planned
+     * Upset Stomach (docs/dev/WATER-SICKNESS.md) takes that over.
+     */
+    public int[] nauseaSeconds = {12, 8, 5, 5};
 
     // ---- item values ------------------------------------------------------
     /**
@@ -191,6 +199,7 @@ public final class ThirstConfig {
         if (itemBlacklist == null) itemBlacklist = new LinkedHashSet<>();
         if (nauseaChance == null || nauseaChance.length != 4) nauseaChance = new int[]{100, 50, 5, 0};
         if (poisonChance == null || poisonChance.length != 4) poisonChance = new int[]{30, 10, 0, 0};
+        if (nauseaSeconds == null || nauseaSeconds.length != 4) nauseaSeconds = new int[]{12, 8, 5, 5};
         if (drinkTagValue == null || drinkTagValue.length != 2) drinkTagValue = new int[]{6, 8};
         if (keywordDrinkValue == null || keywordDrinkValue.length != 2) keywordDrinkValue = new int[]{10, 14};
         if (keywordSoupValue == null || keywordSoupValue.length != 2) keywordSoupValue = new int[]{4, 5};
@@ -198,6 +207,7 @@ public final class ThirstConfig {
         for (int i = 0; i < 4; i++) {
             nauseaChance[i] = clamp(nauseaChance[i], 0, 100);
             poisonChance[i] = clamp(poisonChance[i], 0, 100);
+            nauseaSeconds[i] = clamp(nauseaSeconds[i], 1, 60);
         }
         defaultPurity = clamp(defaultPurity, 0, 3);
         rainwaterPurity = clamp(rainwaterPurity, 0, 3);

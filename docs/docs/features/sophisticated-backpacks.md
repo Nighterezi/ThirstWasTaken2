@@ -40,6 +40,8 @@ and two buttons:
 
 The basic upgrade drinks once half the drink fits, and only Clean water or better.
 
+![A Drinking Upgrade, a diamond, two gold ingots and three redstone make an Advanced Drinking Upgrade](/screenshots/advanced-drinking-upgrade-recipe.png)
+
 ## Water grades in upgrades
 
 - The Tank Upgrade keeps the grade of the water poured in, and fills bottles, buckets, waterskins and

@@ -13,7 +13,7 @@ The droplets shake when the reserve is empty, like the hunger bar.
 With AppleSkin installed, quenched shows as an outline over the droplets. The colour can be changed
 or turned off in [Configuration](/docs/configuration#appleskinquenchedoverlay).
 
-![The thirst bar with AppleSkin, cycling through the Diamond, Ice, Gold and AppleSkin quenched outlines](/screenshots/hud-appleskin.gif)
+![The thirst bar with AppleSkin, cycling through the Diamond, Ice, Gold, AppleSkin and Legacy quenched outlines](/screenshots/hud-appleskin.gif)
 
 ## What drains it
 
@@ -34,8 +34,7 @@ Riding a horse, boat or minecart costs nothing. Creative and spectator players a
 
 - Fire Resistance halves the drain. Fire Protection slows it further, down to a quarter.
 - Nausea adds extra drain while it lasts.
-- Parched adds extra drain while it lasts, twice as much at level II. Bad water and sea water cause
-  it.
+- Parched adds extra drain while it lasts, and the droplets turn sandy. Sea water causes it.
 - On Peaceful the bar refills on its own, unless the server turns that off.
 
 Every rate is a setting. See [Configuration](/docs/configuration#thirst-depletion).

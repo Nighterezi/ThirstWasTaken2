@@ -78,7 +78,7 @@ final class ConfigPreview {
         int thirstTop = foodTop - 10;
 
         ThirstHud.drawBar(graphics, right, thirstTop, 20, level, exhaustion, AppleSkin.quenchedOverlay(),
-                AppleSkinIntegration.shouldShowExhaustion(), false);
+                AppleSkinIntegration.shouldShowExhaustion(), false, false);
         paintFood(graphics, right, foodTop, level);
 
         Component caption = Component.translatable("thirstwastaken2.config.preview");

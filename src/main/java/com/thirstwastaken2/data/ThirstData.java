@@ -76,6 +76,10 @@ public record ThirstData(int thirst, int quenched, float exhaustion, boolean ena
         return new ThirstData(safeThirst, Math.max(0, Math.min(safeThirst, quenched)), exhaustion, enabled);
     }
 
+    public ThirstData withExhaustion(float value) {
+        return new ThirstData(thirst, quenched, Math.max(0.0F, value), enabled);
+    }
+
     public ThirstData withEnabled(boolean value) {
         return new ThirstData(thirst, quenched, exhaustion, value);
     }
