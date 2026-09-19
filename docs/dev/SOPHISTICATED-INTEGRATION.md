@@ -17,7 +17,7 @@ Written on 2026-09-19 from Sophisticated Core `1.21.1-1.5.1.2341` and Sophistica
 | 3 | Tank upgrade keeps water quality | bug | **Done** on `1.21.1-neoforge` |
 | 1 | Feeding upgrade restores thirst | bug | **Done** on `1.21.1-neoforge` |
 | 2 | Alchemy upgrade drinks through the mod | bug | **Done** on `1.21.1-neoforge` |
-| 4 | Pump upgrade samples the water it collects | bug | To do |
+| 4 | Pump upgrade keeps water quality | bug | **Done** on `1.21.1-neoforge` |
 | 7 | Smoking recipes for purified water | data | To do |
 | 6 | Waterskin and bowl as fluid containers | feature | To do |
 | 5 | Drinking upgrade | feature | To do |
@@ -25,7 +25,7 @@ Written on 2026-09-19 from Sophisticated Core `1.21.1-1.5.1.2341` and Sophistica
 | 9 | Changelog and player docs | docs | To do |
 
 The order is the one agreed on: the bugs first, the Tank before the others because it let any water
-turn Clean, then the cheapest feature, then the rest.
+turn Clean, then the cheapest feature, then the rest. All four bugs are fixed on `1.21.1-neoforge`.
 
 ## Done
 
@@ -64,28 +64,28 @@ condition check anyway, so a definition another mod adds cannot drink it either.
 Checked with `tools/agent/sophisticated-alchemy.jsonl`: a Fire Resistance potion took thirst from 4 to
 10, and dirty water was left alone. With the mixin off the potion was drunk and thirst stayed at 4.
 
-## To do
-
 ### 4. Pump upgrade
 
-**Problem.** The Pump upgrade collects water from the world (`PumpUpgradeWrapper.fillFromBlock`, through
-`BucketPickup`), fills and empties containers held by nearby players, and places water back. Water it
-collects carries no quality, so a pump in a swamp fills the tank with water that reads Clean, and one
-at the beach collects fresh water.
+Three problems, one of them caused by item 3:
 
-**Approach.**
+- water collected from the world carried no grade, so a pump by a swamp filled the tank with water
+  that read Clean, and one by the sea collected fresh water;
+- buckets in a player's hand lost their grade going in, because the pump looks up their handler
+  itself rather than through the Tank upgrade;
+- once the Tank fix stamped the water in the tanks, the pump could not pump it out at all: it asks the
+  backpack for a stack with no components, and the backpack only hands out matching ones.
 
-- **World pickup.** Sample with `WaterPurity.sampleAt` and stamp the collected `FluidStack`. The pump
-  runs on a tick, which `purity/AGENTS.md` only allows with a cache, so reuse the Create integration's
-  `SampledWater` idea: one sample per pump, kept for 100 ticks. A cauldron's stored quality is a
-  blockstate read and needs no cache. `SampledWater` lives in `src/main/create`; move it next to
-  `WaterFluids` in `src/main/neoforge` first, like `WaterFluids`.
-- **Containers in hand.** `handleFluidContainerInHand` looks up the item's fluid capability itself, so
-  it bypasses the Tank fix. Wrap that lookup with `WaterQualityFluidHandler.wrap` too.
-- **Placing water.** Placed water becomes world water and is graded by where it is, like a poured
-  bucket. Nothing to do.
+`PumpUpgradeWrapperMixin` samples world water at the source (through `SampledWater`, moved to
+`src/main/neoforge` and shared with Create, and only once the tanks have room), wraps buckets in hand,
+and builds the pump-out request from the water in the tank. A pump filter set to water now takes water
+of any grade (`FluidFilterLogicMixin`), since a filter made from a plain bucket refused graded water.
 
-**Test.** A pump over a pool in a biome with a known grade, and over the sea, then export the tank.
+Checked with `tools/agent/sophisticated-pump.jsonl`: a plains pool gave the same grade as a bottle
+filled from it by hand, an ocean pool gave salt water, a filtered pump still collected, and buckets
+went in and out with their grades. Without the mixins every case lost its grade or, pumping out,
+moved nothing. The neighbouring-block path goes through the same code but was not run.
+
+## To do
 
 ### 7. Smoking recipes
 

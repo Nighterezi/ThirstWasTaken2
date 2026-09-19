@@ -66,7 +66,8 @@ that know the encoding.
   reads nothing the client lacks: blockstates, the biome and its tags. **Keep it that way** - a new
   input that only the server knows would make the overlay lie. A Create Fly pump or Hose Pulley
   collects water on a tick, so it reuses one sample per pump for 100 ticks
-  (`src/main/createfly/.../SampledWater`).
+  (`src/main/createfly/.../SampledWater`), and so do Create on NeoForge and Sophisticated's Pump
+  upgrade (`src/main/neoforge/.../SampledWater`).
 - **The contamination score is never stored.** `sampleAt` scores a source, grades it, and keeps only
   the grade, so no container carries a hidden number that the player cannot see and the tooltip
   cannot explain.

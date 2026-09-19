@@ -1,0 +1,111 @@
+// Sophisticated Backpacks' Pump upgrade keeps water quality: water collected from the world is graded
+// where it lies, and buckets in the hand are emptied into and filled from the tank with their grade.
+// Only nodes that set deps.sophisticated_core have it on the runClient classpath.
+//
+// Every backpack is a gold backpack from tools/agent/sophisticated-pack with a Tank and a Pump upgrade.
+// Sophisticated only unpacks a template the first time the backpack is opened, so each is opened with
+// the real right click and closed again. Read the exports under the world's
+// datapacks/thirstout_backpack_templates, and the replies named below:
+// - pump_world_plains: a one-block pool in a plains biome is pumped into the tank. "plainsBottle" is a
+//   bottle filled from the same pool by hand first; the tank has to hold 1000 mB with that same
+//   water_purity.
+// - pump_world_ocean: the same pool with its biome set to ocean: the tank holds water_salty.
+// - pump_world_filter: the plains pool again, with the pump's filter set to plain water. A filter set to
+//   water takes water of any grade, so the tank holds the plains grade as in the first case. Without the
+//   integration's filter rule it would stay empty.
+// - pump_hand_in: a purity-0 bucket in the off hand is poured in. "handInEmptied" passes, and the tank
+//   holds 1000 mB with water_purity 0.
+// - pump_hand_out: 1000 mB of purity-3 water is pumped into an empty bucket in the off hand.
+//   "handOutFilled" passes, and the tank is empty. Without the integration the bucket stays empty: the
+//   pump asks for plain water and the backpack only hands out water whose components match.
+//
+// SophisticatedAgent is a throwaway world: copy level.dat out of any 1.21.1 world (its player keeps
+// their effects, so the script clears them: a Farmer's Delight world leaves Nourishment behind) into
+// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/sophisticated-pack into its datapacks
+// folder, fresh for each run. Then:
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/sophisticated-pump.jsonl -Pquickplay=SophisticatedAgent
+
+{"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "joined", "command": "client.state"}
+{"id": "effects", "command": "server.command", "args": {"command": "effect clear @p"}}
+{"id": "survival", "command": "server.command", "args": {"command": "gamemode survival @p"}}
+{"id": "float", "command": "server.command", "args": {"command": "effect give @p minecraft:slow_falling 600 0 true"}}
+{"id": "day", "command": "server.command", "args": {"command": "time set noon"}}
+{"id": "clearWeather", "command": "server.command", "args": {"command": "weather clear 100000"}}
+{"id": "up", "command": "server.command", "args": {"command": "tp @p -240.5 201 160.5"}}
+{"id": "chunks", "command": "wait", "args": {"ticks": 60}}
+{"id": "air", "command": "server.command", "args": {"command": "fill -246 199 154 -234 206 166 minecraft:air"}}
+{"id": "floor", "command": "server.command", "args": {"command": "fill -246 199 154 -234 200 166 minecraft:stone"}}
+
+// The grade a bottle filled by hand from the plains pool gets.
+{"id": "biome_plains", "command": "server.command", "args": {"command": "fillbiome -246 190 154 -234 210 166 minecraft:plains"}}
+{"id": "pool_plains", "command": "server.command", "args": {"command": "setblock -238 200 160 minecraft:water"}}
+{"id": "bottleClear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "bottle", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with minecraft:glass_bottle"}}
+{"id": "facePool", "command": "server.command", "args": {"command": "tp @p -240.5 201 160.5 -90 29"}}
+{"id": "settle", "command": "wait", "args": {"ticks": 10}}
+{"id": "fillBottle", "command": "client.hold", "args": {"keys": ["use"], "ticks": 6}}
+{"id": "plainsBottle", "command": "server.command", "args": {"command": "data get entity @p SelectedItem"}}
+
+{"id": "pump_world_plains_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "pump_world_plains_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:pump_world", "as": "Dev"}}
+{"id": "pump_world_plains_lookUp", "command": "server.command", "args": {"command": "tp @p -240.5 201 160.5 0 -90"}}
+{"id": "pump_world_plains_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
+{"id": "pump_world_plains_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "pump_world_plains_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "pump_world_plains_pumping", "command": "wait", "args": {"ticks": 100}}
+{"id": "pump_world_plains_poolGone", "command": "server.command", "args": {"command": "execute unless block -238 200 160 minecraft:water[level=0]"}}
+{"id": "pump_world_plains_create", "command": "server.command", "args": {"command": "sbp template create thirstout:pump_world_plains", "as": "Dev"}}
+{"id": "pump_world_plains_export", "command": "server.command", "args": {"command": "sbp template export thirstout:pump_world_plains", "as": "Dev"}}
+
+{"id": "biome_ocean", "command": "server.command", "args": {"command": "fillbiome -246 190 154 -234 210 166 minecraft:ocean"}}
+{"id": "pool_ocean", "command": "server.command", "args": {"command": "setblock -238 200 160 minecraft:water"}}
+{"id": "pump_world_ocean_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "pump_world_ocean_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:pump_world", "as": "Dev"}}
+{"id": "pump_world_ocean_lookUp", "command": "server.command", "args": {"command": "tp @p -240.5 201 160.5 0 -90"}}
+{"id": "pump_world_ocean_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
+{"id": "pump_world_ocean_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "pump_world_ocean_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "pump_world_ocean_pumping", "command": "wait", "args": {"ticks": 100}}
+{"id": "pump_world_ocean_poolGone", "command": "server.command", "args": {"command": "execute unless block -238 200 160 minecraft:water[level=0]"}}
+{"id": "pump_world_ocean_create", "command": "server.command", "args": {"command": "sbp template create thirstout:pump_world_ocean", "as": "Dev"}}
+{"id": "pump_world_ocean_export", "command": "server.command", "args": {"command": "sbp template export thirstout:pump_world_ocean", "as": "Dev"}}
+
+{"id": "biome_plains_again", "command": "server.command", "args": {"command": "fillbiome -246 190 154 -234 210 166 minecraft:plains"}}
+{"id": "pool_filter", "command": "server.command", "args": {"command": "setblock -238 200 160 minecraft:water"}}
+{"id": "pump_world_filter_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "pump_world_filter_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:pump_world_filter", "as": "Dev"}}
+{"id": "pump_world_filter_lookUp", "command": "server.command", "args": {"command": "tp @p -240.5 201 160.5 0 -90"}}
+{"id": "pump_world_filter_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
+{"id": "pump_world_filter_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "pump_world_filter_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "pump_world_filter_pumping", "command": "wait", "args": {"ticks": 100}}
+{"id": "pump_world_filter_poolGone", "command": "server.command", "args": {"command": "execute unless block -238 200 160 minecraft:water[level=0]"}}
+{"id": "pump_world_filter_create", "command": "server.command", "args": {"command": "sbp template create thirstout:pump_world_filter", "as": "Dev"}}
+{"id": "pump_world_filter_export", "command": "server.command", "args": {"command": "sbp template export thirstout:pump_world_filter", "as": "Dev"}}
+
+{"id": "pump_hand_in_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "pump_hand_in_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:pump_hand_in", "as": "Dev"}}
+{"id": "pump_hand_in_lookUp", "command": "server.command", "args": {"command": "tp @p -240.5 201 160.5 0 -90"}}
+{"id": "pump_hand_in_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
+{"id": "pump_hand_in_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "pump_hand_in_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "pump_hand_in_bucket", "command": "server.command", "args": {"command": "item replace entity @p weapon.offhand with minecraft:water_bucket[thirstwastaken2:water_purity=0,thirstwastaken2:water_salty=false]"}}
+{"id": "pump_hand_in_pumping", "command": "wait", "args": {"ticks": 60}}
+{"id": "handInEmptied", "command": "server.command", "args": {"command": "execute if items entity @p weapon.offhand minecraft:bucket"}}
+{"id": "pump_hand_in_offhand", "command": "server.command", "args": {"command": "data get entity @p Inventory[{Slot:-106b}]"}}
+{"id": "pump_hand_in_create", "command": "server.command", "args": {"command": "sbp template create thirstout:pump_hand_in", "as": "Dev"}}
+{"id": "pump_hand_in_export", "command": "server.command", "args": {"command": "sbp template export thirstout:pump_hand_in", "as": "Dev"}}
+
+{"id": "pump_hand_out_clear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "pump_hand_out_give", "command": "server.command", "args": {"command": "sbp template give thirsttest:pump_hand_out", "as": "Dev"}}
+{"id": "pump_hand_out_lookUp", "command": "server.command", "args": {"command": "tp @p -240.5 201 160.5 0 -90"}}
+{"id": "pump_hand_out_open", "command": "client.hold", "args": {"keys": ["use"], "ticks": 5}}
+{"id": "pump_hand_out_opened", "command": "wait", "args": {"ticks": 10}}
+{"id": "pump_hand_out_close", "command": "client.screen", "args": {"open": "none"}}
+{"id": "pump_hand_out_bucket", "command": "server.command", "args": {"command": "item replace entity @p weapon.offhand with minecraft:bucket"}}
+{"id": "pump_hand_out_pumping", "command": "wait", "args": {"ticks": 60}}
+{"id": "handOutFilled", "command": "server.command", "args": {"command": "execute if items entity @p weapon.offhand minecraft:water_bucket[thirstwastaken2:water_purity=3]"}}
+{"id": "pump_hand_out_offhand", "command": "server.command", "args": {"command": "data get entity @p Inventory[{Slot:-106b}]"}}
+{"id": "pump_hand_out_create", "command": "server.command", "args": {"command": "sbp template create thirstout:pump_hand_out", "as": "Dev"}}
+{"id": "pump_hand_out_export", "command": "server.command", "args": {"command": "sbp template export thirstout:pump_hand_out", "as": "Dev"}}

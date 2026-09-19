@@ -1,4 +1,4 @@
-package com.thirstwastaken2.create;
+package com.thirstwastaken2.neoforge;
 
 import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.purity.WaterQuality;
@@ -8,7 +8,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * The quality of the water one pump or hose pulley draws, remembered for a few seconds.
+ * The quality of the water one pump draws, remembered for a few seconds: a Create pump or hose
+ * pulley, or a Sophisticated Pump upgrade.
  *
  * <p>Collecting water is where the mod samples it, and a pipe collects every tick it pulls. The
  * neighbourhood scan behind {@link WaterPurity#sampleAt} is kept off that tick path by reusing its

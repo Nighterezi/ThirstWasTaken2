@@ -2,7 +2,7 @@ package com.thirstwastaken2.create.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.simibubi.create.content.fluids.OpenEndedPipe;
-import com.thirstwastaken2.create.SampledWater;
+import com.thirstwastaken2.neoforge.SampledWater;
 import com.thirstwastaken2.neoforge.WaterFluids;
 import com.thirstwastaken2.purity.WaterQuality;
 import net.minecraft.core.BlockPos;

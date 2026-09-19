@@ -2,7 +2,7 @@
 
 [Sophisticated Backpacks](https://modrinth.com/mod/sophisticated-backpacks) keeps its upgrades in
 Sophisticated Core, which Sophisticated Storage shares, so everything here targets Core and works for
-both. Today it covers three upgrades:
+both. Today it covers four upgrades:
 
 - the **Tank upgrade** keeps water's grade: a dirty bucket poured in comes back out as dirty bottles,
   and sea water stays sea water. Without it the tank handed out plain water, which the mod reads as
@@ -10,7 +10,9 @@ both. Today it covers three upgrades:
 - the **Feeding upgrade** restores thirst for what it feeds. Without it a melon fed from a backpack
   filled the hunger bar and left the thirst bar where it was;
 - the **Alchemy upgrade** restores thirst for the potions and food it applies, and never drinks plain
-  water.
+  water;
+- the **Pump upgrade** grades the water it collects from the world where it lies, keeps the grade of
+  buckets it empties or fills in a player's hand, and can pump graded water back out at all.
 
 What is still to do across Sophisticated's upgrades is in
 [docs/dev/SOPHISTICATED-INTEGRATION.md](../../../docs/dev/SOPHISTICATED-INTEGRATION.md).
@@ -26,9 +28,12 @@ java/com/thirstwastaken2/sophisticated/
   SophisticatedPresence      the gate: FML's mod file for `sophisticatedcore`, and a marker class inside it
   SophisticatedMixinPlugin   applies the mixins below only when the gate passes
   WaterQualityFluidHandler   a container's IFluidHandlerItem with the grade carried across it
+  StampedWaterSource         world water as an IFluidHandler that hands out its sampled grade
   mixin/TankUpgradeWrapperMixin     wraps the one method the Tank upgrade finds container handlers through
   mixin/FeedingUpgradeWrapperMixin  hands out thirst where the Feeding upgrade finishes eating
   mixin/AlchemyUpgradeWrapperMixin  the same for the Alchemy upgrade, and keeps plain water out of it
+  mixin/PumpUpgradeWrapperMixin     the Pump upgrade: world pickup, buckets in hand, pumping out
+  mixin/FluidFilterLogicMixin       a pump filter set to water takes water of any grade
 resources/
   thirstwastaken2.sophisticated.mixins.json
 ```
@@ -102,6 +107,34 @@ inside static lambdas, whose generated names are not something to target, so
 
 The filter slot still accepts a water bottle; it just never fires.
 
+## The Pump upgrade
+
+The pump moves fluid between the backpack's tanks and three things: water in the world, buckets in
+the hands of nearby players, and the fluid handlers of neighbouring blocks. `PumpUpgradeWrapperMixin`
+covers each place the grade was lost:
+
+- **Collecting from the world.** `fillFromBlock` hands the tanks a `BucketPickup` (or the block's own
+  capability), which gives plain water. The mixin wraps it in `StampedWaterSource` with the grade from
+  `SampledWater` (in `src/main/neoforge`, shared with Create), sampled at the source block. The pump
+  runs on a tick and searches every source in range until one transfer works, so it only samples once
+  the tanks have room for water; a full backpack by a lake would otherwise sample the lake every two
+  seconds. `SampledWater` then keeps the answer for 100 ticks per source position.
+- **Buckets in hand.** `fillFromHand` and `fillContainerInHand` get the bucket's handler straight from
+  its capability, not through the Tank upgrade's lookup, so both are wrapped with
+  `WaterQualityFluidHandler.of`. That factory takes a handler already found on the stamped stack,
+  which is fine for NeoForge's bucket wrapper but not for Core's own bottle handler; bottles have no
+  capability, so the pump never sees them anyway.
+- **Pumping out.** `fillFluidHandler` asks the backpack for `new FluidStack(fluid, amount)`, a request
+  with no components, and the backpack's handler only drains fluid whose components match. Once the
+  Tank fix stamped the water in the tanks, the pump could no longer fill anything from them, a bucket
+  or a neighbouring tank. The mixin builds the request from the water actually in the tank instead.
+- **Placing water** in the world uses the tank's own stack and then becomes world water, graded where
+  it lies like any poured bucket. Nothing to do.
+
+A pump's fluid filter compares components too, and a filter is set from whatever container the player
+clicked, so a filter made from a plain bucket refused every graded stack. `FluidFilterLogicMixin` makes
+a water filter match water of any grade.
+
 ## Testing
 
 The gametests run without Sophisticated and prove the node still loads without it. The upgrades are
@@ -140,6 +173,27 @@ backpacks with three bottles each and an Alchemy upgrade set to Always on that b
 dirty water, nothing was drunk and all three bottles stayed. With the mixin left out of the config the
 potion was still drunk but thirst stayed at 4, and the water was refused as well, which is
 Sophisticated's own rule rather than the mixin's.
+
+### Pump
+
+[tools/agent/sophisticated-pump.jsonl](../../../tools/agent/sophisticated-pump.jsonl) builds a one-block
+pool on a stone platform and sets its biome with `/fillbiome`, so the grade does not depend on where the
+world spawned. Checked on 2026-09-19, then with the Pump and filter mixins left out of the config, then
+with only the filter mixin left out:
+
+| Case | With the mixins | Without them |
+|---|---|---|
+| plains pool | `water_purity: 1`, the same grade as a bottle filled from that pool by hand | plain water |
+| ocean pool | `water_salty: true` | plain water |
+| plains pool, pump filter set to water | `water_purity: 1` | with only the filter mixin out: nothing collected |
+| purity-0 bucket in the off hand, poured in | tank `water_purity: 0`, an empty bucket back | plain water |
+| 1000 mB of purity 3, pumped into an empty bucket in the off hand | a bucket with `water_purity: 3`, empty tank | the bucket stays empty |
+
+The client ignores the facing part of `tp ... facing`; turn the player with an explicit yaw and pitch.
+Holding `use` needs more than four ticks to register as a click.
+
+Not checked yet: the neighbouring-block path (`interact_with_fluid_handler`), which goes through the
+same `fillFluidHandler` and `fillFromFluidHandler` as the hand.
 
 ### Effects on the test player
 

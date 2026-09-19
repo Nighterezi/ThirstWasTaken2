@@ -18,7 +18,6 @@ java/com/thirstwastaken2/create/
   SandFilter              block, item, block entity type, fluid capability, creative tab entry
   SandFilterBlock         IBE and IWrenchable; the comparator reads the output tank
   SandFilterBlockEntity   two one-bucket tanks, the transfer, and the goggle tooltip
-  SampledWater            per-pump cache of WaterPurity.sampleAt
   mixin/                  quality through Create's item and world fluid transfers
 resources/
   thirstwastaken2.create.mixins.json
@@ -38,9 +37,9 @@ resources/
 
 **Nothing outside this directory may reference a class in it.**
 
-Water quality on NeoForge's `FluidStack` is `WaterFluids` in `src/main/neoforge`, shared with the
-Sophisticated Core integration; the one grade the Sand Filter adds per pass stays in
-`SandFilterBlockEntity`.
+Water quality on NeoForge's `FluidStack` is `WaterFluids`, and the per-pump sample cache is
+`SampledWater`, both in `src/main/neoforge` and shared with the Sophisticated Core integration; the
+one grade the Sand Filter adds per pass stays in `SandFilterBlockEntity`.
 
 ## Compiling against Create
 

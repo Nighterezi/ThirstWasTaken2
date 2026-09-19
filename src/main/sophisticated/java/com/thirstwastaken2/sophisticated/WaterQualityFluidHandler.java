@@ -47,6 +47,17 @@ public final class WaterQualityFluidHandler implements IFluidHandlerItem {
      * nothing after it has already filled itself, so stamping in place would pour the same bottle in
      * forever.
      */
+    /**
+     * A handler the caller already looked up on the real, stamped stack. That only suits a handler that
+     * does not compare its container's components, such as NeoForge's bucket wrapper; Core's own bottle
+     * handler has to go through {@link #wrap} instead.
+     */
+    public static IFluidHandlerItem of(IFluidHandlerItem handler) {
+        ItemStack container = handler.getContainer();
+        return new WaterQualityFluidHandler(handler,
+                WaterPurity.isWaterContainer(container) ? WaterPurity.quality(container) : null);
+    }
+
     @Override
     public ItemStack getContainer() {
         ItemStack container = delegate.getContainer();

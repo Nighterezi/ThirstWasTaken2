@@ -6,6 +6,8 @@
   "mixins": [
     "AlchemyUpgradeWrapperMixin",
     "FeedingUpgradeWrapperMixin",
+    "FluidFilterLogicMixin",
+    "PumpUpgradeWrapperMixin",
     "TankUpgradeWrapperMixin"
   ],
   "injectors": { "defaultRequire": 1 }
