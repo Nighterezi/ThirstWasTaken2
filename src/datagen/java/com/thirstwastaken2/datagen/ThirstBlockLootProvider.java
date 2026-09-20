@@ -5,6 +5,7 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import com.thirstwastaken2.ThirstWasTaken2;
 import com.thirstwastaken2.item.ThirstItems;
+import com.thirstwastaken2.platform.Vanilla;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
@@ -17,7 +18,6 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -60,8 +60,7 @@ public final class ThirstBlockLootProvider implements DataProvider {
         Identifier id = ThirstWasTaken2.id("blocks/" + block);
         LootTable table = LootTable.lootTable()
                 .setParamSet(LootContextParamSets.BLOCK)
-                .withPool(LootPool.lootPool()
-                        .setRolls(ConstantValue.exactly(1.0F))
+                .withPool(Vanilla.lootPool(1)
                         .add(LootItem.lootTableItem(item))
                         .when(ExplosionCondition.survivesExplosion()))
                 .setRandomSequence(id)

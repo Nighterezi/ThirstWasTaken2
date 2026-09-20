@@ -217,4 +217,42 @@ public final class Vanilla {
         }
         //?}
     }
+
+    /**
+     * Gives a player an item the inventory has no room for in hand, dropping what does not fit. 26.3
+     * asks every such call whether the client already predicted it; the mod's only caller runs on the
+     * server alone, which is what the older signature meant anyway.
+     */
+    public static void placeItemBackInInventory(net.minecraft.world.entity.player.Player player, ItemStack stack) {
+        //? if >=26.3 {
+        player.getInventory().placeItemBackInInventory(stack, net.minecraft.util.Prediction.SERVER_ONLY);
+        //?} else
+        /*player.getInventory().placeItemBackInInventory(stack);*/
+    }
+
+    /**
+     * A loot pool rolled {@code rolls} times. 26.3 split the number providers into an int and a float
+     * family and put every one behind a {@code Holder}, so the value a pool takes is a different type.
+     */
+    public static net.minecraft.world.level.storage.loot.LootPool.Builder lootPool(int rolls) {
+        //? if >=26.3 {
+        return net.minecraft.world.level.storage.loot.LootPool.lootPool().setRolls(
+                net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders.exactly(rolls));
+        //?} else {
+        /*return net.minecraft.world.level.storage.loot.LootPool.lootPool().setRolls(
+                net.minecraft.world.level.storage.loot.providers.number.ConstantValue.exactly(rolls));
+        *///?}
+    }
+
+    /** A loot function setting a stack's count anywhere between {@code min} and {@code max}. See {@link #lootPool}. */
+    public static net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction.Builder<?> setCount(
+            int min, int max) {
+        //? if >=26.3 {
+        return net.minecraft.world.level.storage.loot.functions.SetItemCountFunction.setCount(
+                net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders.between(min, max));
+        //?} else {
+        /*return net.minecraft.world.level.storage.loot.functions.SetItemCountFunction.setCount(
+                net.minecraft.world.level.storage.loot.providers.number.UniformGenerator.between(min, max));
+        *///?}
+    }
 }

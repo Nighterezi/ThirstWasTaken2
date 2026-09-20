@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "thirstwastaken2:copper_hanging_pot"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "thirstwastaken2:blocks/copper_hanging_pot"
+}

@@ -1,6 +1,7 @@
 package com.thirstwastaken2.compat;
 
 import com.thirstwastaken2.platform.Loader;
+import com.thirstwastaken2.platform.Vanilla;
 import com.thirstwastaken2.purity.ThirstComponents;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Items;
@@ -10,12 +11,9 @@ import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.EmptyLootItem;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
-import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
+import net.minecraft.world.level.storage.loot.entries.UniformContainerBase;
 import net.minecraft.world.level.storage.loot.functions.SetComponentsFunction;
-import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.functions.SetPotionFunction;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 
 import java.util.Set;
 
@@ -47,20 +45,19 @@ public final class LootIntegration {
     }
 
     private static LootPool.Builder waterPool(boolean chest) {
-        return LootPool.lootPool()
-                .setRolls(ConstantValue.exactly(1))
+        return Vanilla.lootPool(1)
                 .add(water(2).setWeight(chest ? 10 : 2))
                 .add(water(3).setWeight(chest ? 10 : 1))
                 .add(EmptyLootItem.emptyItem().setWeight(chest ? 20 : 37));
     }
 
-    private static LootPoolSingletonContainer.Builder<?> water(int purity) {
+    private static UniformContainerBase.Builder<?> water(int purity) {
         return LootItem.lootTableItem(Items.POTION)
                 .apply(SetPotionFunction.setPotion(Potions.WATER))
                 .apply(SetComponentsFunction.setComponent(ThirstComponents.WATER_PURITY, purity))
                 // Fresh, and stamped as such: the purification recipes match on this component, so a
                 // looted bottle that left it out could never be boiled.
                 .apply(SetComponentsFunction.setComponent(ThirstComponents.WATER_SALTY, false))
-                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 3)));
+                .apply(Vanilla.setCount(1, 3));
     }
 }

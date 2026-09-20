@@ -43,8 +43,9 @@ final class AgentClientVanilla {
     }
 
     /**
-     * The GLFW handle of the game window, for the few things no Minecraft call covers: maximising a
-     * driven client's window. 1.21.11 renamed the accessor from {@code getWindow} to {@code handle}.
+     * The native handle of the game window, for the few things no Minecraft call covers: maximising a
+     * driven client's window. 1.21.11 renamed the accessor from {@code getWindow} to {@code handle}, and
+     * 26.3 changed what it points at, from a GLFW window to an SDL one; see {@link ClientWindow#open}.
      */
     static long windowHandle(Minecraft minecraft) {
         //? if >1.21.1 {

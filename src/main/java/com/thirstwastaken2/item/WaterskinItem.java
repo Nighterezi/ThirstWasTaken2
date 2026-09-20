@@ -162,6 +162,6 @@ public final class WaterskinItem extends DrinkItem {
             return;
         }
         carried.shrink(1);
-        player.getInventory().placeItemBackInInventory(remainder);
+        Vanilla.placeItemBackInInventory(player, remainder);
     }
 }

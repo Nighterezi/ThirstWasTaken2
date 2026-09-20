@@ -4,7 +4,7 @@ Server-side tests that run in a real Minecraft server with real registries, real
 player, headlessly and in a few seconds.
 
 ```bash
-./gradlew ":26.2.x:runGametest"
+./gradlew ":26.3.x:runGametest"
 ```
 
 ```bash
@@ -79,7 +79,7 @@ NeoForge's own registration, which only accepts vanilla's annotation and takes t
 namespace from a NeoForge annotation on the test class. That server has no `--report` option either,
 so the build passes the report path as `-Dthirstwastaken2.gametest.report` and the harness installs
 vanilla's `JUnitLikeTestReporter` itself. The report lists 136 tests there, without
-`minecraft:always_pass`, which the 26.2 nodes' reports do carry.
+`minecraft:always_pass`, which the 26.2 and 26.3 nodes' reports do carry.
 
 On 1.21.11 `TestData` has no padding and `TestEnvironmentDefinition` takes no type parameter; the
 harness leaves padding out before 26.1 and holds both values in `var`s.

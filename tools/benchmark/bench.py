@@ -1,7 +1,7 @@
 """Runs `runBenchmark` over several nodes, several times over, and keeps every report.
 
     python tools/benchmark/bench.py --repeats 3
-    python tools/benchmark/bench.py --nodes 26.2.x,26.2.x-neoforge --repeats 5 --profile quick
+    python tools/benchmark/bench.py --nodes 26.3.x,26.3.x-neoforge --repeats 5 --profile quick
 
 One run of one node answers "what did this cost just now". The benchmark's own notes put run-to-run
 noise at 25-30% on an interaction's mean and 9-20% on the allocation figures, so one run cannot
@@ -35,7 +35,7 @@ import time
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 # The nodes settings.gradle.kts declares. Add one here when a Minecraft version is added there.
-FABRIC = ["1.21.1", "1.21.11", "26.1.x", "26.2.x"]
+FABRIC = ["1.21.1", "1.21.11", "26.1.x", "26.2.x", "26.3.x"]
 NEOFORGE = [node + "-neoforge" for node in FABRIC]
 
 

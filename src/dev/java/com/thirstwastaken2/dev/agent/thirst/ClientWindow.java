@@ -1,7 +1,6 @@
 package com.thirstwastaken2.dev.agent.thirst;
 
 import net.minecraft.client.Minecraft;
-import org.lwjgl.glfw.GLFW;
 
 /**
  * What a client that is being driven rather than played does with its window and the mouse pointer.
@@ -50,7 +49,12 @@ public final class ClientWindow {
      */
     public static void open(Minecraft minecraft) {
         if (!DRIVEN) return;
-        GLFW.glfwMaximizeWindow(AgentClientVanilla.windowHandle(minecraft));
+        // 26.3 moved the game off GLFW onto SDL, so the window handle is an SDL one from there on.
+        //? if >=26.3 {
+        org.lwjgl.sdl.SDLVideo.SDL_MaximizeWindow(AgentClientVanilla.windowHandle(minecraft));
+        //?} else {
+        /*org.lwjgl.glfw.GLFW.glfwMaximizeWindow(AgentClientVanilla.windowHandle(minecraft));
+        *///?}
         if (minecraft.mouseHandler.isMouseGrabbed()) minecraft.mouseHandler.releaseMouse();
     }
 }

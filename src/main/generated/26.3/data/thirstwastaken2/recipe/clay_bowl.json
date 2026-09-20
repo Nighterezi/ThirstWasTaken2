@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "C": "minecraft:clay_ball"
+  },
+  "pattern": [
+    "C C",
+    " C "
+  ],
+  "result": {
+    "count": 4,
+    "id": "thirstwastaken2:clay_bowl"
+  }
+}

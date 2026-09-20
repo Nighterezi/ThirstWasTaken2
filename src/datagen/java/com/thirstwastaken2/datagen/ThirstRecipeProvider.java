@@ -18,6 +18,9 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeBuilder;
+//? if >=26.3 {
+import net.minecraft.data.worldgen.BootstrapContext;
+//?}
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
@@ -94,13 +97,22 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
     }
 
     // 1.21.2 moved building the recipes into a separate RecipeProvider the Fabric provider creates.
-    // Before it the Fabric provider builds them itself, and Recipes is only the helper it calls.
-    //? if >=1.21.2 {
+    // Before it the Fabric provider builds them itself, and Recipes is only the helper it calls. 26.3
+    // made recipes and their unlock advancements registries the provider bootstraps, so it is handed a
+    // context for each rather than one output to write files through.
+    //? if >=26.3 {
     @Override
+    protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries,
+                                                  BootstrapContext<Recipe<?>> recipes,
+                                                  BootstrapContext<Advancement> advancements) {
+        return new Recipes(registries, recipes, advancements);
+    }
+    //?} elif >=1.21.2 {
+    /*@Override
     protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
         return new Recipes(registries, output);
     }
-    //?} else {
+    *///?} else {
     /*@Override
     public void buildRecipes(RecipeOutput output) {
         new Recipes(output).buildRecipes();
@@ -116,8 +128,24 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
         static final List<Container> ALL = List.of(BOTTLE, BOWL, BUCKET);
     }
 
-    //? if >=1.21.2 {
+    //? if >=26.3 {
     static final class Recipes extends RecipeProvider {
+        private final HolderGetter<Item> items;
+        /** The recipes this provider is about to register, for the criteria that name one. */
+        private final HolderGetter<Recipe<?>> registered;
+
+        private Recipes(HolderLookup.Provider registries, BootstrapContext<Recipe<?>> recipes,
+                        BootstrapContext<Advancement> advancements) {
+            super(recipes, advancements);
+            this.items = registries.lookupOrThrow(Registries.ITEM);
+            this.registered = recipes.lookup(Registries.RECIPE);
+        }
+
+        private ShapedRecipeBuilder shaped(ItemLike result, int count) {
+            return ShapedRecipeBuilder.shaped(items, RecipeCategory.MISC, result, count);
+        }
+    //?} elif >=1.21.2 {
+    /*static final class Recipes extends RecipeProvider {
         private final HolderGetter<Item> items;
 
         private Recipes(HolderLookup.Provider registries, RecipeOutput output) {
@@ -128,7 +156,7 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
         private ShapedRecipeBuilder shaped(ItemLike result, int count) {
             return ShapedRecipeBuilder.shaped(items, RecipeCategory.MISC, result, count);
         }
-    //?} else {
+    *///?} else {
     /*static final class Recipes {
         private final RecipeOutput output;
 
@@ -256,7 +284,11 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
         private AdvancementHolder purifyUnlock(Container container) {
             var representative = recipe(purifyName(container, 0, Heat.SMELTING));
             Advancement.Builder builder = rootedRecipeAdvancement()
-                    .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(representative))
+                    // 26.3 made recipes a registry, so the criterion names a holder rather than a key.
+                    //? if >=26.3 {
+                    .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(registered.getOrThrow(representative)))
+                    //?} else
+                    /*.addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(representative))*/
                     .rewards(purifyRewards(container))
                     .requirements(AdvancementRequirements.Strategy.OR);
             purifyUnlockItems(container).forEach((name, item) -> builder.addCriterion(name, has(item)));
@@ -407,6 +439,53 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
         }
         *///?}
     }
+
+    //? if >=26.3 {
+    /**
+     * The recipe registry, as much of it as a criterion naming one of this mod's recipes needs.
+     *
+     * <p>26.3 made recipes a registry, and the criteria that name one name a holder rather than a key.
+     * A holder is only written out against the registry that vouches for it, and the recipes here are
+     * registered into a set of this generator's own that no other provider is handed — so the
+     * advancement provider and the Cooking Pot provider answer the recipe registry with this instead,
+     * which hands out a reference for any key it is asked for and vouches for the ones it made. The id
+     * is all a criterion writes either way, and the game, which loads every recipe file into the real
+     * registry, resolves it there.
+     */
+    static final class RecipeKeys implements net.minecraft.core.HolderGetter<Recipe<?>> {
+        @Override
+        public java.util.Optional<net.minecraft.core.Holder.Reference<Recipe<?>>> get(ResourceKey<Recipe<?>> key) {
+            return java.util.Optional.of(net.minecraft.core.Holder.Reference.createStandAlone(this, key));
+        }
+
+        @Override
+        public java.util.Optional<net.minecraft.core.HolderSet.Named<Recipe<?>>> get(TagKey<Recipe<?>> tag) {
+            return java.util.Optional.empty();
+        }
+
+        /** Serialization ops answering the recipe registry with this lookup and every other with {@code registries}. */
+        com.mojang.serialization.DynamicOps<com.google.gson.JsonElement> ops(HolderLookup.Provider registries) {
+            return net.minecraft.resources.RegistryOps.create(com.mojang.serialization.JsonOps.INSTANCE,
+                    new net.minecraft.resources.RegistryOps.RegistryInfoLookup() {
+                        @SuppressWarnings("unchecked")
+                        @Override
+                        public <T> java.util.Optional<net.minecraft.core.HolderGetter<T>> lookup(
+                                ResourceKey<? extends net.minecraft.core.Registry<? extends T>> registry) {
+                            if (Registries.RECIPE.equals(registry)) {
+                                return java.util.Optional.of((net.minecraft.core.HolderGetter<T>) RecipeKeys.this);
+                            }
+                            return registries.lookup(registry).map(lookup -> lookup);
+                        }
+                    });
+        }
+    }
+
+    /** The holder for {@code key} that {@code ops}, built by {@link RecipeKeys#ops}, can write out. */
+    static net.minecraft.core.Holder<Recipe<?>> recipeHolder(com.mojang.serialization.DynamicOps<?> ops,
+                                                             ResourceKey<Recipe<?>> key) {
+        return ((net.minecraft.resources.RegistryOps<?>) ops).getter(Registries.RECIPE).orElseThrow().getOrThrow(key);
+    }
+    //?}
 
     // Recipes are registry entries with keys from 1.21.2; before it a recipe is known by its id alone.
     //? if >=1.21.2 {

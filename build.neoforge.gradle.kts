@@ -354,8 +354,10 @@ dependencies {
 
     clientRunMods("maven.modrinth:appleskin:${property("deps.appleskin")}")
     clientRunMods("maven.modrinth:jade:${property("deps.jade")}")
-    // AppleSkin's own config screen.
-    clientRunMods("maven.modrinth:cloth-config:${property("deps.cloth_config")}")
+    // AppleSkin's own config screen, on the nodes that set it. Nothing compiles against Cloth Config and
+    // the mod never reaches for it, so a node whose Minecraft version has no NeoForge build of it yet
+    // simply runs the dev client without it.
+    findProperty("deps.cloth_config")?.let { clientRunMods("maven.modrinth:cloth-config:$it") }
 
     // Farmer's Delight, on the nodes that set it: nothing compiles against it, since the mod reaches it
     // by registry id alone, so it is only here to test its drinks, the Cooking Pot and Nourishment.

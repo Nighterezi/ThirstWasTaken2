@@ -72,7 +72,12 @@ public final class FarmersDelightRecipeProvider implements DataProvider {
     @Override
     public CompletableFuture<?> run(CachedOutput cache) {
         return registries.thenCompose(lookup -> {
-            DynamicOps<JsonElement> ops = lookup.createSerializationContext(JsonOps.INSTANCE);
+            // 26.3 only: the recipe these two unlocks name is written as JSON rather than registered,
+            // so the recipe registry is answered by ThirstRecipeProvider.RecipeKeys instead.
+            //? if >=26.3 {
+            DynamicOps<JsonElement> ops = new ThirstRecipeProvider.RecipeKeys().ops(lookup);
+            //?} else
+            /*DynamicOps<JsonElement> ops = lookup.createSerializationContext(JsonOps.INSTANCE);*/
             List<CompletableFuture<?>> writes = new ArrayList<>();
             for (Container container : CONTAINERS) {
                 String name = name(container);
@@ -115,7 +120,12 @@ public final class FarmersDelightRecipeProvider implements DataProvider {
         var key = ThirstRecipeProvider.recipe(name(container));
         Advancement advancement = Advancement.Builder.recipeAdvancement()
                 .parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT)
-                .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(key))
+                // 26.3 made recipes a registry, so the criterion names a holder rather than a key.
+                //? if >=26.3 {
+                .addCriterion("has_the_recipe",
+                        RecipeUnlockedTrigger.unlocked(ThirstRecipeProvider.recipeHolder(ops, key)))
+                //?} else
+                /*.addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(key))*/
                 .addCriterion("has_water", InventoryChangeTrigger.TriggerInstance.hasItems(container.item()))
                 .rewards(AdvancementRewards.Builder.recipe(key))
                 .requirements(AdvancementRequirements.Strategy.OR)

@@ -1,0 +1,41 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "entries": [
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "thirstwastaken2:item/terracotta_water_bowl_purity_1"
+        },
+        "threshold": 1.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "thirstwastaken2:item/terracotta_water_bowl_purity_2"
+        },
+        "threshold": 2.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "thirstwastaken2:item/terracotta_water_bowl_purity_3"
+        },
+        "threshold": 3.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "thirstwastaken2:item/terracotta_water_bowl_salty"
+        },
+        "threshold": 4.0
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "thirstwastaken2:item/terracotta_water_bowl_purity_0"
+    },
+    "index": 1,
+    "property": "minecraft:custom_model_data"
+  }
+}

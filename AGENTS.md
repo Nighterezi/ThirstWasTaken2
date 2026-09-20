@@ -1,6 +1,6 @@
 # ThirstWasTaken2
 
-A thirst mod for **Minecraft 26.2, 26.1.x, 1.21.11 and 1.21.1** on **Fabric** and **NeoForge**: a
+A thirst mod for **Minecraft 26.3, 26.2, 26.1.x, 1.21.11 and 1.21.1** on **Fabric** and **NeoForge**: a
 thirst bar, water purity and drinking. It began as a port of
 [Thirst Was Taken](https://github.com/ghen-git/Thirst-Mod) (Forge, 1.19.2) and has diverged, so
 upstream is a reference, not a spec. Its source is expected at `../Thirst-Mod` when comparing.
@@ -14,7 +14,7 @@ upstream is a reference, not a spec. Its source is expected at `../Thirst-Mod` w
 ## Build and run
 
 One source tree, one jar per node. Nodes are the Gradle subprojects in `settings.gradle.kts`:
-`26.2.x`, `26.1.x`, `1.21.11`, `1.21.1` on Fabric, and the same four with `-neoforge`
+`26.3.x`, `26.2.x`, `26.1.x`, `1.21.11`, `1.21.1` on Fabric, and the same five with `-neoforge`
 (`build.neoforge.gradle.kts`). The Fabric `1.21.1` jar also covers 1.21; the NeoForge one does not.
 
 | Command | What it does |
@@ -34,7 +34,7 @@ One source tree, one jar per node. Nodes are the Gradle subprojects in `settings
   reuse the Fabric output and translate its keys; `checkNeoForgeResources` fails if one survives.
 - Each node runs in its own `run/<node>/` (worlds are not portable across versions). A new one needs
   its own `eula.txt`.
-- Unqualified `./gradlew build` acts on the **active** node (`26.2.x`). `./gradlew "Set active project
+- Unqualified `./gradlew build` acts on the **active** node (`26.3.x`). `./gradlew "Set active project
   to <node>"` rewrites the versioned comments in `src/` for the IDE. **Run
   `./gradlew "Reset active project"` before committing.**
 - The first run needs network for `maven.modrinth`; after that `--offline` works.
@@ -99,7 +99,8 @@ Every difference between versions is listed in [docs/dev/VERSION-DIFFERENCES.md]
 ### Version policy
 
 - At most four Minecraft versions; adding one retires one. A NeoForge node on an existing version
-  does not count. When 26.3 arrives, drop 26.1.x.
+  does not count. **26.3 arrived and 26.1.x is still here, so there are five**: retiring 26.1.x is
+  the next version's job, and nothing else should be added before it is done.
 - 1.21.1 is kept for modpacks. If a feature needs a core-code fork for it, retire 1.21.1 instead.
 
 ### Adding a Minecraft version
@@ -139,9 +140,9 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | `src/main/fabric`, `src/client/fabric` | Fabric nodes |
 | `src/main/neoforge`, `src/client/neoforge` | NeoForge nodes (client compiled into main) |
 | `src/main/neoforge-fluidhandler` / `neoforge-transfer` | NeoForge 1.21.1 / 1.21.11+, the fluid container API |
-| `src/main/createfly`, `src/client/createfly` | Where `deps.create_fly` is set (Fabric 26.1.x, 26.2.x) |
+| `src/main/createfly`, `src/client/createfly` | Where `deps.create_fly` is set (Fabric 26.1.x, 26.2.x; Create Fly has no 26.3 build) |
 | `src/main/create` | Where `deps.create` is set (`1.21.1-neoforge`) |
-| `src/main/sophisticated`, `src/client/sophisticated` | Where `deps.sophisticated_core` is set (every NeoForge node) |
+| `src/main/sophisticated`, `src/client/sophisticated` | Where `deps.sophisticated_core` is set (every NeoForge node but `26.3.x-neoforge`) |
 | `src/main/sophisticated-fluidhandler` / `sophisticated-transfer` | The same nodes, 1.21.1 / 1.21.11+: Sophisticated's tank and pump code |
 | `src/main/resources` | Hand-written assets and lang, all nodes |
 | `src/main/generated/<mc version>` | Datagen output, never hand-edited |

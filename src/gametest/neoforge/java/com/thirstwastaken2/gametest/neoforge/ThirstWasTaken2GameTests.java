@@ -76,12 +76,18 @@ public final class ThirstWasTaken2GameTests {
     private void registerTests(RegisterGameTestsEvent event) {
         // `var`, because TestEnvironmentDefinition only takes a type parameter from 26.1 on.
         var environment = event.registerEnvironment(Identifier.fromNamespaceAndPath(MOD_ID, "default"));
-        // Test padding arrived with 26.1; before it the runner spaces tests out itself.
-        //? if >=26.1 {
+        // Test padding arrived with 26.1; before it the runner spaces tests out itself. 26.3 put the
+        // dimension a test runs in on the test rather than on the runner.
+        //? if >=26.3 {
         var data = new net.minecraft.gametest.framework.TestData<>(environment,
+                        net.minecraft.world.level.Level.OVERWORLD,
                         Identifier.fromNamespaceAndPath(MOD_ID, "empty"), MAX_TICKS, 0, true, Rotation.NONE,
                         false, 1, 1, false, PADDING);
-        //?} else {
+        //?} elif >=26.1 {
+        /*var data = new net.minecraft.gametest.framework.TestData<>(environment,
+                        Identifier.fromNamespaceAndPath(MOD_ID, "empty"), MAX_TICKS, 0, true, Rotation.NONE,
+                        false, 1, 1, false, PADDING);
+        *///?} else {
         /*var data = new net.minecraft.gametest.framework.TestData<>(environment,
                         Identifier.fromNamespaceAndPath(MOD_ID, "empty"), MAX_TICKS, 0, true, Rotation.NONE,
                         false, 1, 1, false);

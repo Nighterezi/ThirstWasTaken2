@@ -8,10 +8,12 @@ Supported nodes and their jars:
 
 | Node | Jar suffix | Runs on | Java | Loader API |
 |---|---|---|---|---|
+| `26.3.x` | `+26.3` | 26.3 | 25 | Fabric API 0.161.0+26.3 |
 | `26.2.x` | `+26.2` | 26.2 | 25 | Fabric API 0.161.0+26.2 |
 | `26.1.x` | `+26.1.2` | 26.1, 26.1.1, 26.1.2 | 25 | Fabric API 0.155.3+26.1.2 |
 | `1.21.11` | `+1.21.11` | 1.21.11 | 21 | Fabric API 0.141.6+1.21.11 |
 | `1.21.1` | `+1.21.1` | 1.21, 1.21.1 | 21 | Fabric API 0.116.17+1.21.1 |
+| `26.3.x-neoforge` | `+26.3-neoforge` | 26.3 | 25 | NeoForge 26.3.0.7-beta |
 | `26.2.x-neoforge` | `+26.2-neoforge` | 26.2 | 25 | NeoForge 26.2.0.88 |
 | `26.1.x-neoforge` | `+26.1.2-neoforge` | 26.1, 26.1.1, 26.1.2 | 25 | NeoForge 26.1.2.109 |
 | `1.21.11-neoforge` | `+1.21.11-neoforge` | 1.21.11 | 21 | NeoForge 21.11.45 |
@@ -21,13 +23,18 @@ The NeoForge jars are built and tested on every node. A NeoForge node builds the
 version as the Fabric node it sits under, so everything on this page applies to both. 1.21 is the
 one exception: the Fabric 1.21.1 jar claims it, and NeoForge 21.0 is a generation of its own.
 
+NeoForge has published only betas for 26.3, so `26.3.x-neoforge` is pinned to one and asks players for
+at least that build. Two of its optional integrations have no 26.3 release yet either: Cloth Config,
+which only AppleSkin's own settings screen needs in runClient, and Sophisticated Core, so that node
+alone among the NeoForge ones builds without the Sophisticated upgrades.
+
 **This page is the version axis only.** What differs between Fabric and NeoForge on the *same*
 Minecraft version, and which seam hides it, is in
 [src/main/java/com/thirstwastaken2/platform/AGENTS.md](../../src/main/java/com/thirstwastaken2/platform/AGENTS.md).
 Where an older NeoForge differs from a newer one, that is a version difference and it is on this page,
 under the release that changed it.
 
-Checked against the code on 2026-09-16: 87 `//? if` blocks, 8 replacement rules with 22 replacements
+Checked against the code on 2026-09-20: 126 `//? if` blocks, 9 replacement rules with 27 replacements
 in `stonecutter.gradle.kts`, and the version branches in `build.gradle.kts` and
 `build.neoforge.gradle.kts`.
 
@@ -36,12 +43,12 @@ in `stonecutter.gradle.kts`, and the version branches in `build.gradle.kts` and
 Gameplay is the same on every version: the same thirst rules, water grades, recipes, loot, commands
 and config. The gametests hold every node to that. Only these differ:
 
-| | 26.2 | 26.1.x | 1.21.11 | 1.21.1 |
-|---|---|---|---|---|
-| Sea water in a bottle or bucket has its own sprite | yes | yes | yes | **no**, it looks like ordinary water |
-| Droplets in item tooltips | no shadow | no shadow | no shadow | **with a shadow** |
-| Config screen section headings | vanilla heading | vanilla heading | vanilla heading | **a centred text row** |
-| The Sand Filter (Create Fly, Fabric only) | yes | yes | **no** | **no** |
+| | 26.3 | 26.2 | 26.1.x | 1.21.11 | 1.21.1 |
+|---|---|---|---|---|---|
+| Sea water in a bottle or bucket has its own sprite | yes | yes | yes | yes | **no**, it looks like ordinary water |
+| Droplets in item tooltips | no shadow | no shadow | no shadow | no shadow | **with a shadow** |
+| Config screen section headings | vanilla heading | vanilla heading | vanilla heading | vanilla heading | **a centred text row** |
+| The Sand Filter (Create Fly, Fabric only) | **no** | yes | yes | **no** | **no** |
 
 Everything else a player sees, the thirst bar, the bowl and waterskin sprites, the Salty tooltip line,
 the drinking animation and sound, is the same. On some versions it is produced differently, which is
@@ -65,7 +72,7 @@ bucket has no tint layer, and the shadow has no per-text switch, so those two st
 
 ### Why the Sand Filter is missing
 
-Not a Minecraft difference: Create Fly has no release for 1.21.11 or 1.21.1, and it is a Fabric port,
+Not a Minecraft difference: Create Fly has no release for 26.3, 1.21.11 or 1.21.1, and it is a Fabric port,
 so no NeoForge node has it either. A node compiles `src/main/createfly` only when it sets
 `deps.create_fly`; see [src/main/createfly/AGENTS.md](../../src/main/createfly/AGENTS.md). Farmer's
 Delight is absent from the NeoForge nodes for the same kind of reason, but nothing a player sees
@@ -78,6 +85,26 @@ section above its own line. The code column is where the difference is handled; 
 never see it.
 
 "Replacement" means a pure rename in `stonecutter.gradle.kts`, with no branch in any file.
+
+### 26.3 (affects 26.2, 26.1.x, 1.21.11, 1.21.1)
+
+| Difference | Code |
+|---|---|
+| Blocks lost their codec, and with it `simpleCodec` and the `codec()` override a block owed vanilla | `SupportedBlock`, which carried it for `HangingPotBlock` |
+| Every `PushReaction` constant was renamed; `DESTROY` is `POPPED` | replacement |
+| `LootPoolSingletonContainer` split into three classes, of which the entry builders are typed on `UniformContainerBase` | replacement |
+| Loot number providers split into an int and a float family, each behind a `Holder`, so a pool's rolls and a count are built differently | `Vanilla.lootPool`, `Vanilla.setCount` |
+| `Inventory#placeItemBackInInventory` asks whether the client predicted the call | `Vanilla.placeItemBackInInventory` |
+| Recipes became a registry: a recipe provider bootstraps them alongside their unlock advancements, and the criteria that name a recipe name a holder rather than a key | `ThirstRecipeProvider`, and `RecipeKeys` for the two providers outside that registry set |
+| The advancement builder's `display` split in two, and only `rootDisplay` still takes the tab background | replacement for the root, `ThirstAdvancementProvider.childDisplay` for the rest |
+| A saved block state is written under `id` and `properties` rather than `Name` and `Properties` | `CauldronGameTest` |
+| The renderer's pipeline type moved from Blaze3D into Renderpearl | replacement |
+| Opening a path in the file manager moved off `Util.OS` onto `Blaze3D` | `ClientVanilla.openPath` |
+| The game moved from GLFW to SDL, so the window handle is an SDL one | the agent client's `ClientWindow` |
+| A gametest's `TestData` names the dimension it runs in | NeoForge `ThirstWasTaken2GameTests` |
+
+Result: 26.3 writes its recipe unlocks with a `recipes` key holding the recipe id, where earlier
+versions write `recipe`. Nothing else in the generated files moved.
 
 ### 26.2 (affects 26.1.x, 1.21.11, 1.21.1)
 

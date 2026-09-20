@@ -11,6 +11,10 @@ Written on 2026-09-19 from Sophisticated Core `1.21.1-1.5.1.2341` and Sophistica
 `1.21.1-3.26.3.2158`, the versions `1.21.1-neoforge` compiles against. The newer nodes compile against
 Core `1.21.11-1.5.0.2340`, `26.1.2-1.5.0.2334` and `26.2-1.5.0.2337`.
 
+"Every NeoForge node" below means the four that existed on that date. `26.3.x-neoforge`, added on
+2026-09-20, has no Sophisticated Core build to compile against, so items 1 to 5 are absent there; the
+waterskin and bowl fluid containers of item 6 need no Sophisticated and do work on it.
+
 ## Status
 
 | # | Item | Kind | Status |

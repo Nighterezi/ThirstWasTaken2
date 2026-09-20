@@ -129,4 +129,13 @@ public final class ClientVanilla {
         com.mojang.blaze3d.systems.RenderSystem.disableBlend();
         *///?}
     }
+
+    /** Opens a folder or file in the player's file manager. 26.3 moved this off {@code Util.OS}. */
+    public static void openPath(java.nio.file.Path path) {
+        //? if >=26.3 {
+        com.mojang.blaze3d.Blaze3D.openPath(path);
+        //?} else {
+        /*net.minecraft.util.Util.getPlatform().openPath(path);
+        *///?}
+    }
 }

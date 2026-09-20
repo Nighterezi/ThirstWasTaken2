@@ -1,7 +1,8 @@
 # Benchmark baseline
 
 What `/thirst benchmark` measured on every node on 2026-09-16, as the mark later runs are read
-against. Each figure is the **median of three runs**, with the spread of those runs in brackets:
+against. The two 26.3 nodes came later and have no baseline yet; take one on the machine below before
+reading a 26.3 run against anything. Each figure is the **median of three runs**, with the spread of those runs in brackets:
 `(max - min) / median`. A later run that differs by less than the spread has shown nothing.
 
 Numbers are worth only what the machine they came from is worth, so this file records it. Take a

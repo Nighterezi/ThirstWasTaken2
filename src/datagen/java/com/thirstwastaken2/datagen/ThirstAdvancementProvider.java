@@ -1,9 +1,11 @@
 package com.thirstwastaken2.datagen;
 
+import com.google.gson.JsonElement;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import com.thirstwastaken2.ThirstWasTaken2;
 import com.thirstwastaken2.item.ThirstItems;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricAdvancementProvider;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementRequirements;
@@ -14,14 +16,19 @@ import net.minecraft.advancements.triggers.ImpossibleTrigger;
 import net.minecraft.advancements.triggers.PlayerTrigger;
 import net.minecraft.advancements.triggers.RecipeCraftedTrigger;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.CachedOutput;
+import net.minecraft.data.DataProvider;
+import net.minecraft.data.PackOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.level.ItemLike;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -38,18 +45,38 @@ import java.util.function.Consumer;
  * result, so vanilla's {@code recipe_crafted} trigger can see it. The nine campfire recipes cannot be
  * in it, because a campfire has no player to credit.
  */
-public final class ThirstAdvancementProvider extends FabricAdvancementProvider {
+public final class ThirstAdvancementProvider implements DataProvider {
     /** The criterion name {@code ThirstAdvancements} awards by. */
     private static final String CRITERION = "thirst";
 
+    private final PackOutput.PathProvider advancements;
+    private final CompletableFuture<HolderLookup.Provider> registries;
+
     public ThirstAdvancementProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
-        super(output, registries);
+        this.advancements = output.createPathProvider(PackOutput.Target.DATA_PACK, "advancement");
+        this.registries = registries;
     }
 
     @Override
-    public void generateAdvancement(HolderLookup.Provider registries, Consumer<AdvancementHolder> consumer) {
+    public CompletableFuture<?> run(CachedOutput cache) {
+        return registries.thenCompose(lookup -> {
+            // 26.3 only: the criteria in boil_water name recipes this provider's registry set does not
+            // hold, so the recipe registry is answered by ThirstRecipeProvider.RecipeKeys instead.
+            //? if >=26.3 {
+            DynamicOps<JsonElement> ops = new ThirstRecipeProvider.RecipeKeys().ops(lookup);
+            //?} else
+            /*DynamicOps<JsonElement> ops = lookup.createSerializationContext(JsonOps.INSTANCE);*/
+            List<CompletableFuture<?>> writes = new ArrayList<>();
+            generate(ops, advancement -> writes.add(DataProvider.saveStable(cache,
+                    Advancement.CODEC.encodeStart(ops, advancement.value()).getOrThrow(),
+                    advancements.json(advancement.id()))));
+            return CompletableFuture.allOf(writes.toArray(CompletableFuture[]::new));
+        });
+    }
+
+    private void generate(DynamicOps<JsonElement> ops, Consumer<AdvancementHolder> consumer) {
         AdvancementHolder root = builder()
-                .display(
+                .rootDisplay(
                         ThirstItems.WATERSKIN,
                         title("root"),
                         description("root"),
@@ -71,7 +98,7 @@ public final class ThirstAdvancementProvider extends FabricAdvancementProvider {
         AdvancementHolder dirtyWater = awarded(consumer, firstDrink, "dirty_water",
                 Items.MUD, AdvancementType.TASK);
 
-        AdvancementHolder boilWater = boilWater(dirtyWater);
+        AdvancementHolder boilWater = boilWater(ops, dirtyWater);
         consumer.accept(boilWater);
 
         awarded(consumer, boilWater, "purified_water", Items.GLASS_BOTTLE, AdvancementType.TASK);
@@ -84,11 +111,9 @@ public final class ThirstAdvancementProvider extends FabricAdvancementProvider {
             Consumer<AdvancementHolder> consumer,
             AdvancementHolder parent,
             String name,
-            ItemLike icon,
+            Item icon,
             AdvancementType type) {
-        AdvancementHolder advancement = builder()
-                .parent(parent)
-                .display(icon, title(name), description(name), null, type, true, true, false)
+        AdvancementHolder advancement = childDisplay(builder().parent(parent), icon, name, type)
                 .addCriterion(CRITERION, new Criterion<>(CriteriaTriggers.IMPOSSIBLE,
                         new ImpossibleTrigger.TriggerInstance()))
                 .build(ThirstWasTaken2.id(name));
@@ -101,21 +126,24 @@ public final class ThirstAdvancementProvider extends FabricAdvancementProvider {
      * help, because a furnace and a smoker credit the player who takes the result, which is why this
      * is also the parent of {@code purified_water} rather than a sibling.
      */
-    private static AdvancementHolder boilWater(AdvancementHolder parent) {
-        Advancement.Builder builder = builder()
-                .parent(parent)
-                .display(Items.FURNACE, title("boil_water"), description("boil_water"), null,
-                        AdvancementType.TASK, true, true, false);
+    private static AdvancementHolder boilWater(DynamicOps<JsonElement> ops, AdvancementHolder parent) {
+        Advancement.Builder builder =
+                childDisplay(builder().parent(parent), Items.FURNACE, "boil_water", AdvancementType.TASK);
 
         for (String container : List.of("bottle", "bowl", "bucket")) {
             for (int purity = 0; purity < 3; purity++) {
                 for (String heat : List.of("smelting", "smoking")) {
                     Identifier id = ThirstWasTaken2.id("purify_water_" + container + "_" + purity + "_" + heat);
-                    // Recipes are registry entries with keys from 1.21.2; before it the trigger takes the id.
-                    //? if >=1.21.2 {
-                    ResourceKey<Recipe<?>> key = ResourceKey.create(Registries.RECIPE, id);
-                    //?} else
-                    /*Identifier key = id;*/
+                    // Recipes are registry entries with keys from 1.21.2, and from 26.3 a registry of
+                    // their own, so the trigger names the holders rather than one key.
+                    //? if >=26.3 {
+                    HolderSet<Recipe<?>> key = HolderSet.direct(
+                            ThirstRecipeProvider.recipeHolder(ops, ResourceKey.create(Registries.RECIPE, id)));
+                    //?} elif >=1.21.2 {
+                    /*ResourceKey<Recipe<?>> key = ResourceKey.create(Registries.RECIPE, id);
+                    *///?} else {
+                    /*Identifier key = id;
+                    *///?}
                     builder.addCriterion(container + "_" + purity + "_" + heat, new Criterion<>(CriteriaTriggers.RECIPE_CRAFTED,
                             new RecipeCraftedTrigger.TriggerInstance(java.util.Optional.empty(), key, List.of())));
                 }
@@ -126,6 +154,18 @@ public final class ThirstAdvancementProvider extends FabricAdvancementProvider {
         return builder
                 .requirements(AdvancementRequirements.Strategy.OR)
                 .build(ThirstWasTaken2.id("boil_water"));
+    }
+
+    /**
+     * The icon, title, description and type of an advancement below the root. 26.3 split the tab
+     * background off into {@code rootDisplay}, so a child no longer passes one at all.
+     */
+    private static Advancement.Builder childDisplay(Advancement.Builder builder, Item icon, String name,
+                                                    AdvancementType type) {
+        //? if >=26.3 {
+        return builder.rootDisplay(icon, title(name), description(name), type, true, true, false);
+        //?} else
+        /*return builder.rootDisplay(icon, title(name), description(name), null, type, true, true, false);*/
     }
 
     /**

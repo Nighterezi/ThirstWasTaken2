@@ -1,7 +1,7 @@
 package com.thirstwastaken2.dev.mixin;
 
 //? if >=1.21.2 {
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 //?}
 import com.thirstwastaken2.dev.agent.thirst.HudRecord;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class GuiDrawMixin {
     // The render pipeline parameter was added with the rendering changes after 1.21.1.
     //? if >=1.21.2 {
-    @Inject(method = "blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V",
+    @Inject(method = "blitSprite(Lcom/mojang/renderpearl/api/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V",
             at = @At("HEAD"))
     private void thirst$recordHudSprite(RenderPipeline pipeline, Identifier sprite, int x, int y,
                                         int width, int height, CallbackInfo info) {

@@ -1,0 +1,24 @@
+{
+  "parent": "thirstwastaken2:first_drink",
+  "criteria": {
+    "thirst": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.thirstwastaken2.dirty_water.description"
+    },
+    "icon": {
+      "id": "minecraft:mud"
+    },
+    "title": {
+      "translate": "advancements.thirstwastaken2.dirty_water.title"
+    }
+  },
+  "requirements": [
+    [
+      "thirst"
+    ]
+  ]
+}

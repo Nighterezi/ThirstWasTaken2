@@ -40,6 +40,7 @@ Put the jar in the `mods` folder of the server and of every client. NeoForge fil
 
 | Minecraft | Fabric Loader | Fabric API | Java |
 |---|---|---|---|
+| 26.3 | 0.19.5 or newer | 0.161.0+26.3 or newer | 25 |
 | 26.2 | 0.19.5 or newer | 0.161.0+26.2 or newer | 25 |
 | 26.1, 26.1.1, 26.1.2 | 0.19.5 or newer | 0.155.3+26.1.2 or newer | 25 |
 | 1.21.11 | 0.19.5 or newer | 0.141.6+1.21.11 or newer | 21 |
@@ -49,6 +50,7 @@ Put the jar in the `mods` folder of the server and of every client. NeoForge fil
 
 | Minecraft | NeoForge | Java |
 |---|---|---|
+| 26.3 | 26.3.0.7-beta or newer | 25 |
 | 26.2 | 26.2.0.88 or newer | 25 |
 | 26.1, 26.1.1, 26.1.2 | 26.1.2.109 or newer | 25 |
 | 1.21.11 | 21.11.45 or newer | 21 |
@@ -92,15 +94,15 @@ cd ThirstWasTaken2
 
 One jar per Minecraft version and loader is created in `build/libs/`.
 
-Each version has its own project name: `26.2.x`, `26.1.x`, `1.21.11` and `1.21.1` for Fabric, and
-the same names ending in `-neoforge` for NeoForge. Use it to work on a single version:
+Each version has its own project name: `26.3.x`, `26.2.x`, `26.1.x`, `1.21.11` and `1.21.1` for
+Fabric, and the same names ending in `-neoforge` for NeoForge. Use it to work on a single version:
 
 | Task | Command |
 |---|---|
-| Build | `./gradlew ":26.2.x:build"` |
-| Start a test client | `./gradlew ":26.2.x:runClient"` |
-| Start a test server | `./gradlew ":26.2.x:runServer"` |
-| Run the in-game tests | `./gradlew ":26.2.x:runGametest"` |
+| Build | `./gradlew ":26.3.x:build"` |
+| Start a test client | `./gradlew ":26.3.x:runClient"` |
+| Start a test server | `./gradlew ":26.3.x:runServer"` |
+| Run the in-game tests | `./gradlew ":26.3.x:runGametest"` |
 
 To contribute, see [CONTRIBUTING.md](CONTRIBUTING.md).
 

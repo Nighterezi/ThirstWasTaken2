@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "cookingtime": 200,
+  "experience": 0.1,
+  "ingredient": "thirstwastaken2:clay_bowl",
+  "result": {
+    "id": "thirstwastaken2:terracotta_bowl"
+  }
+}

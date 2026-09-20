@@ -14,12 +14,31 @@ import java.util.function.IntConsumer;
  * and 1.21.2 reordered its parameters and moved tick scheduling onto an argument of its own, so the
  * override lives here once and hands the mod's blocks one signature for every version.
  *
+ * <p>It also carries the block codec, which is the other override a mod block used to owe vanilla and
+ * which 26.3 removed along with the whole codec. {@code copy} is what rebuilds the block from properties
+ * alone; from 26.3 nothing asks for it.
+ *
  * <p>A class rather than a method for the same reason as {@link DrinkItem}: what differs is an override.
  */
 public abstract class SupportedBlock extends Block {
-    protected SupportedBlock(Properties properties) {
+    //? if <26.3 {
+    /*private final com.mojang.serialization.MapCodec<? extends Block> codec;
+    *///?}
+
+    protected SupportedBlock(Properties properties,
+                             java.util.function.Function<Properties, ? extends SupportedBlock> copy) {
         super(properties);
+        //? if <26.3 {
+        /*this.codec = simpleCodec(copy::apply);
+        *///?}
     }
+
+    //? if <26.3 {
+    /*@Override
+    protected com.mojang.serialization.MapCodec<? extends Block> codec() {
+        return codec;
+    }
+    *///?}
 
     /**
      * The block below {@code pos} is now {@code below}. Returns the state this block should take, which

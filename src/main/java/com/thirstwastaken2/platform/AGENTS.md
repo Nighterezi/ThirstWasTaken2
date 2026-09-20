@@ -121,8 +121,8 @@ turned into the `items` holder set. From 1.21.11 on it is `neoforge:ingredient_t
 
 ### The NeoForge nodes' scope
 
-`26.2.x-neoforge`, `26.1.x-neoforge`, `1.21.11-neoforge` and `1.21.1-neoforge` are the NeoForge nodes.
-What they leave out, and why:
+`26.3.x-neoforge`, `26.2.x-neoforge`, `26.1.x-neoforge`, `1.21.11-neoforge` and `1.21.1-neoforge` are
+the NeoForge nodes. What they leave out, and why:
 
 - **Create Fly.** A Fabric port; `src/main/createfly` never compiles here, because the node does not
   set `deps.create_fly`.
@@ -130,6 +130,10 @@ What they leave out, and why:
   vectorwing's original, which puts it on runClient; the mod itself names no class of it on any node.
   The other NeoForge nodes have no build to test against yet. Its recipes load or are skipped
   correctly everywhere, through the translated `neoforge:conditions`.
+- **Sophisticated Backpacks, on `26.3.x-neoforge` only.** Sophisticated Core has no 26.3 build, so that
+  node alone does not set `deps.sophisticated_core` and does not compile `src/main/sophisticated`. Cloth
+  Config, which only AppleSkin's own settings screen needs in runClient, is missing there for the same
+  reason; `build.neoforge.gradle.kts` treats it as optional because of it.
 - **`src/dev` and `src/datagen`.** Fabric only; each node reads the files the Fabric node on its
   Minecraft version generates.
 - **Minecraft 1.21.** The Fabric 1.21.1 jar covers it; NeoForge 21.0 is a generation of its own.
@@ -139,8 +143,9 @@ What they leave out, and why:
 
 The jars are `ThirstWasTaken2-<version>+<minecraft>-neoforge.jar`. Every Minecraft version has a
 NeoForge node and the manual passes in
-[docs/dev/MANUAL-TESTING.md](../../../../../../docs/dev/MANUAL-TESTING.md) are done, so NeoForge
-ships marked beta.
+[docs/dev/MANUAL-TESTING.md](../../../../../../docs/dev/MANUAL-TESTING.md) are done, apart from 26.3's,
+so NeoForge ships marked beta. `26.3.x-neoforge` is pinned to a NeoForge beta as well, since 26.3 has
+no release build.
 
 Two mixins reach methods NeoForge patches: `ItemStack#addDetailsToTooltip`, where the mod's rows land
 after NeoForge's own tooltip hook, and `CauldronBlock#receiveStalactiteDrip`, whose `RETURN` injection

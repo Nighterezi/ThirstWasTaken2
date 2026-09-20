@@ -36,7 +36,9 @@ stonecutter {
         // of its own so the Fabric nodes keep theirs. `sc.current.version` is "26.2" on both, so
         // they share src/main/generated/26.2.
         version("26.2.x-neoforge", "26.2").buildscript = "build.neoforge.gradle.kts"
-        vcsVersion = "26.2.x"
+        version("26.3.x", "26.3")
+        version("26.3.x-neoforge", "26.3").buildscript = "build.neoforge.gradle.kts"
+        vcsVersion = "26.3.x"
     }
 }
 

@@ -20,7 +20,8 @@ What is still to do across Sophisticated's upgrades is in
 [docs/dev/SOPHISTICATED-INTEGRATION.md](../../../docs/dev/SOPHISTICATED-INTEGRATION.md).
 
 This directory is **only compiled by nodes that set `deps.sophisticated_core`** in
-`stonecutter.properties.toml`: every NeoForge node. Sophisticated Core comes in two generations, the
+`stonecutter.properties.toml`: every NeoForge node but `26.3.x-neoforge`, which has no Sophisticated
+Core build to compile against yet. Sophisticated Core comes in two generations, the
 same split as NeoForge's own fluid API. On 1.21.1 its tanks move fluid through `IFluidHandler`; from
 1.21.11 through the transfer API (`ResourceHandler<FluidResource>`, `ItemAccess`, transactions). What
 does not touch fluid is one copy for both, here, with a Stonecutter branch where Minecraft itself
@@ -29,7 +30,7 @@ one, and `build.neoforge.gradle.kts` adds the one that fits the node. Both use t
 the mixin config is shared.
 
 ```
-sophisticated/java/com/thirstwastaken2/sophisticated/     every NeoForge node
+sophisticated/java/com/thirstwastaken2/sophisticated/     every NeoForge node but 26.3
   SophisticatedPresence      the gate: FML's mod file for `sophisticatedcore`, and the generation's marker class inside it
   SophisticatedMixinPlugin   applies the mixins only when the gate passes
   SophisticatedEntrypoint    a second @Mod class that registers the Drinking upgrade after the gate
@@ -54,7 +55,7 @@ sophisticated-transfer/java/…/sophisticated/              1.21.11 and later
   UnstampedItemAccess          the container's ItemAccess, as the handler underneath sees it
   CollectedWaterStorage        the tanks while the Pump fills them from world water, stamping it
   mixin/…, drinking/DrinkingStorage   the same four classes as 1.21.1
-sophisticated/resources/                                  every NeoForge node
+sophisticated/resources/                                  every NeoForge node but 26.3
   thirstwastaken2.sophisticated.mixins.json
   assets/…                  the two upgrade textures, models and item model definitions, the tab's button icons
   data/…                    both mods' upgrade tags

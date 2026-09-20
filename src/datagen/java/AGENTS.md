@@ -4,7 +4,7 @@ Every recipe, advancement, tag, damage type, item model and model definition the
 written by the code in this directory. Nothing under `src/main/generated/` is edited by hand.
 
 ```bash
-./gradlew ":26.2.x:runDatagen"
+./gradlew ":26.3.x:runDatagen"
 ```
 
 That empties `src/main/generated/<minecraft version>/` and writes it again, so what is on disk
@@ -13,7 +13,7 @@ longer generated is gone. Commit what it changes. (Emptying first is deliberate:
 records what it last wrote, not what is on disk, so without it neither of those two would be noticed.)
 
 ```bash
-./gradlew ":26.2.x:checkDatagen"
+./gradlew ":26.3.x:checkDatagen"
 ```
 
 That regenerates and then fails if the result differs from what is committed, which is what catches

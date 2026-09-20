@@ -1,6 +1,5 @@
 package com.thirstwastaken2.block;
 
-import com.mojang.serialization.MapCodec;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.platform.SupportedBlock;
 import com.thirstwastaken2.purity.WaterPurity;
@@ -82,24 +81,17 @@ public final class HangingPotBlock extends SupportedBlock {
     private static final int BLOCK_UPDATE_FLAGS = 3;
 
     private final ToIntFunction<ThirstConfig> secondsPerServing;
-    private final MapCodec<HangingPotBlock> codec;
 
     /** A pot whose servings each take the config value {@code secondsPerServing} reads to boil. */
     public HangingPotBlock(Properties properties, ToIntFunction<ThirstConfig> secondsPerServing) {
-        super(properties);
+        super(properties, copy -> new HangingPotBlock(copy, secondsPerServing));
         this.secondsPerServing = secondsPerServing;
-        this.codec = simpleCodec(copy -> new HangingPotBlock(copy, secondsPerServing));
         registerDefaultState(stateDefinition.any()
                 .setValue(LEVEL, 0)
                 .setValue(WaterPurity.BLOCK_PURITY, WaterPurity.BLOCK_UNSET)
                 .setValue(BOIL, 0)
                 .setValue(HANGING, false)
                 .setValue(AXIS, Direction.Axis.X));
-    }
-
-    @Override
-    protected MapCodec<HangingPotBlock> codec() {
-        return codec;
     }
 
     @Override

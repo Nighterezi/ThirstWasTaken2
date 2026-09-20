@@ -42,7 +42,7 @@ public class DrinkItem extends Item {
         if (consumable != null) consumable.onConsume(level, entity, stack.copy());
         //?} else {
         /*if (entity instanceof net.minecraft.server.level.ServerPlayer player) {
-            net.minecraft.advancements.CriteriaTriggers.CONSUME_ITEM.trigger(player, stack);
+            net.minecraft.advancements.triggers.CriteriaTriggers.CONSUME_ITEM.trigger(player, stack);
             player.awardStat(net.minecraft.stats.Stats.ITEM_USED.get(stack.getItem()));
         }
         entity.gameEvent(net.minecraft.world.level.gameevent.GameEvent.DRINK);

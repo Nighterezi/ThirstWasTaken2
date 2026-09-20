@@ -7,7 +7,6 @@ import com.thirstwastaken2.config.ThirstConfig;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.OptionsList;
-import net.minecraft.util.Util;
 
 import static com.thirstwastaken2.client.config.ConfigOptions.chanceSlider;
 import static com.thirstwastaken2.client.config.ConfigOptions.cycle;
@@ -168,7 +167,7 @@ enum ConfigCategory {
                     toggle("enable_keyword_matching", config.enableKeywordMatching,
                             value -> config.enableKeywordMatching = value));
             ClientVanilla.addFullWidthRow(list, Button.builder(text("open_file"),
-                            button -> Util.getPlatform().openPath(ThirstConfig.path()))
+                            button -> ClientVanilla.openPath(ThirstConfig.path()))
                     .build());
         }
 

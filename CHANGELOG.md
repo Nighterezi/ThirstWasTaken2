@@ -2,6 +2,19 @@
 
 All notable changes to ThirstWasTaken2 are documented in this file.
 
+## [1.0.9] - 2026-09-20
+
+### Added
+
+- Support for Minecraft 26.3 on Fabric and NeoForge.
+
+### Notes
+
+- The 26.3 NeoForge file needs a NeoForge beta, because no release build exists for 26.3 yet.
+- On 26.3, Sophisticated Backpacks, Create Fly and the Sand Filter are unavailable until those mods
+  build for it.
+- Nothing changed on the other Minecraft versions. Existing worlds and config files need no changes.
+
 ## [1.0.8] - 2026-09-20
 
 ### Added

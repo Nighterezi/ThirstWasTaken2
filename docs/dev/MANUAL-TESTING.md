@@ -5,7 +5,7 @@ else is automated: see [src/gametest/java/AGENTS.md](../../src/gametest/java/AGE
 gametests cover, and run them first.
 
 ```bash
-./gradlew ":26.2.x:runGametest"
+./gradlew ":26.3.x:runGametest"
 ```
 
 A gametest runs on a headless dedicated server with mock players. That rules out four kinds of
@@ -20,9 +20,10 @@ check, and every item below belongs to one of them:
 
 ## How to run a pass
 
-1. `./gradlew ":<node>:runClient"`, where `<node>` is `26.2.x`, `26.1.x`, `1.21.11` or `1.21.1`, or
-   one of those with a `-neoforge` suffix. The dev client already has AppleSkin, Cloth Config and Jade,
-   and Mod Menu on the Fabric nodes.
+1. `./gradlew ":<node>:runClient"`, where `<node>` is `26.3.x`, `26.2.x`, `26.1.x`, `1.21.11` or
+   `1.21.1`, or one of those with a `-neoforge` suffix. The dev client already has AppleSkin, Cloth
+   Config and Jade, and Mod Menu on the Fabric nodes. `26.3.x-neoforge` has no Cloth Config, which has
+   no NeoForge build for 26.3, so AppleSkin's own settings screen is missing there.
 2. Create a new **survival** world on **Normal**, cheats on. Keep the world per version; saves do
    not move between versions.
 3. Work down the general checklist, then the section for that version.
@@ -193,6 +194,22 @@ config screen *read* well, which is the sections below.
 
 What differs between the nodes, and so what has to be looked at on that node in particular. Why
 each one differs is in [VERSION-DIFFERENCES.md](VERSION-DIFFERENCES.md).
+
+### 26.3
+
+Nothing a player sees differs from 26.2, and every gametest passes, but no pass has been run by hand
+yet. Run the general checklist on `26.3.x` and `26.3.x-neoforge` before the release that ships them,
+and then these:
+
+- [ ] F1 hides the bar, as on 26.2.
+- [ ] The config screen's "Open thirstwastaken2.json" button is one full-width row, and Done and
+      Cancel close the screen. 26.3 moved the call the button makes to open the file.
+- [ ] A sea-water bottle is drawn in the sea colour, and a sea-water bucket with its recoloured water.
+- [ ] The hanging pots drop themselves when broken. 26.3 removed the block codec they used to carry.
+- [ ] A waterskin filled from a stack of bottles puts the empty bottle back in the inventory.
+- [ ] Water bottles are found in the seeded structure chests and in Piglin barters, and the
+      `boil_water` advancement is awarded by a furnace or a smoker. Both are datapack shapes 26.3
+      changed.
 
 ### 26.2
 

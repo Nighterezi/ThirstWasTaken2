@@ -6,7 +6,8 @@ also fits [Sophisticated Storage](https://modrinth.com/mod/sophisticated-storage
 shulker boxes.
 
 ::: warning Supported versions
-NeoForge only, on every supported Minecraft version. The Fabric version ignores Sophisticated mods.
+NeoForge only, and not on Minecraft 26.3, which Sophisticated Backpacks has no build for yet. The
+Fabric version ignores Sophisticated mods.
 :::
 
 ## Drinking Upgrade

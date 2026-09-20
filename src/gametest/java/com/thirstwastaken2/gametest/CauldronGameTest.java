@@ -75,8 +75,14 @@ public final class CauldronGameTest {
         properties.addProperty("purity", "4");
         properties.addProperty("salty", "true");
         JsonObject saved = new JsonObject();
-        saved.addProperty("Name", "minecraft:powder_snow_cauldron");
+        // 26.3 renamed the two keys a saved block state is written under.
+        //? if >=26.3 {
+        saved.addProperty("id", "minecraft:powder_snow_cauldron");
+        saved.add("properties", properties);
+        //?} else {
+        /*saved.addProperty("Name", "minecraft:powder_snow_cauldron");
         saved.add("Properties", properties);
+        *///?}
 
         BlockState loaded = BlockState.CODEC.parse(JsonOps.INSTANCE, saved).result().orElse(null);
 

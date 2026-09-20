@@ -18,7 +18,7 @@ public final class ThirstBlocks {
                     .strength(1.0F)
                     .sound(SoundType.COPPER)
                     .noOcclusion()
-                    .pushReaction(PushReaction.DESTROY));
+                    .pushReaction(PushReaction.POPPED));
     /** The same pot in dark cast iron. Iron carries heat worse than copper, so it boils slower. */
     public static final HangingPotBlock IRON_HANGING_POT = Vanilla.registerBlock("iron_hanging_pot",
             properties -> new HangingPotBlock(properties, config -> config.ironPotSecondsPerServing),
@@ -27,7 +27,7 @@ public final class ThirstBlocks {
                     .strength(1.0F)
                     .sound(SoundType.METAL)
                     .noOcclusion()
-                    .pushReaction(PushReaction.DESTROY));
+                    .pushReaction(PushReaction.POPPED));
 
     private ThirstBlocks() { }
 

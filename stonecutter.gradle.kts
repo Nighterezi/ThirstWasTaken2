@@ -4,7 +4,7 @@ plugins {
 
 // The version the source tree is currently checked out for. Switch it with
 // `./gradlew "Set active project to <name>"`; every version is built regardless by `chiseledBuild`.
-stonecutter active "26.2.x"
+stonecutter active "26.3.x"
 
 
 stonecutter parameters {
@@ -60,6 +60,22 @@ stonecutter parameters {
                     "net.minecraft.advancements.$criterion.RecipeCraftedTrigger")
             replace("net.minecraft.advancements.triggers.RecipeUnlockedTrigger",
                     "net.minecraft.advancements.$criterion.RecipeUnlockedTrigger")
+        }
+
+        // 26.3 renamed every PushReaction constant and split LootPoolSingletonContainer into three
+        // classes, of which UniformContainerBase is the one the entry builders are typed on. Neither
+        // changed what the name means, and both keep the package they were in.
+        string(current.parsed < "26.3") {
+            replace("PushReaction.POPPED", "PushReaction.DESTROY")
+            replace("UniformContainerBase", "LootPoolSingletonContainer")
+            // 26.3 split the advancement builder's `display` in two: `rootDisplay` is the one that
+            // still takes the tab background, and the root advancement is the only caller of it.
+            replace(".rootDisplay(", ".display(")
+            // 26.3 moved the renderer's pipeline type out of Blaze3D into Renderpearl, keeping the
+            // class name. The dev HUD mixin names it twice: once as an import, once inside the
+            // descriptor of the method it injects into.
+            replace("com.mojang.renderpearl.api.pipeline.RenderPipeline", "com.mojang.blaze3d.pipeline.RenderPipeline")
+            replace("Lcom/mojang/renderpearl/api/pipeline/RenderPipeline;", "Lcom/mojang/blaze3d/pipeline/RenderPipeline;")
         }
 
         // 1.21.2 renamed the server-side CONSUME result to SUCCESS_SERVER, both meaning "done, and the

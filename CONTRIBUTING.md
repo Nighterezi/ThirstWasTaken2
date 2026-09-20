@@ -7,7 +7,7 @@ Thanks for helping out. Bug reports, translations, ideas and code are all welcom
 Open an [issue](https://github.com/Nighterezi/ThirstWasTaken2/issues/new/choose) with the bug report
 form. The most useful details are:
 
-- the full jar name, for example `ThirstWasTaken2-1.0.7+26.2.jar`, which gives both the mod and the
+- the full jar name, for example `ThirstWasTaken2-1.0.9+26.3.jar`, which gives both the mod and the
   Minecraft version;
 - Fabric or NeoForge, and the other mods installed;
 - the steps that cause the problem, and the log or crash report if there is one.
@@ -35,7 +35,7 @@ are.
 4. Run the in-game tests for at least one Fabric and one NeoForge version:
 
    ```bash
-   ./gradlew ":26.2.x:runGametest" ":26.2.x-neoforge:runGametest"
+   ./gradlew ":26.3.x:runGametest" ":26.3.x-neoforge:runGametest"
    ```
 
 5. Open a pull request that explains what changed and why. CI builds and tests every version.

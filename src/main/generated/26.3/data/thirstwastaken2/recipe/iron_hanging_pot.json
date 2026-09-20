@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "I": "#c:ingots/iron",
+    "K": "minecraft:iron_chain",
+    "S": "minecraft:stick"
+  },
+  "pattern": [
+    "SKS",
+    "I I",
+    "III"
+  ],
+  "result": {
+    "id": "thirstwastaken2:iron_hanging_pot"
+  }
+}

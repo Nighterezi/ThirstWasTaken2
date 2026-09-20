@@ -7,7 +7,8 @@ top comes out of the bottom one grade cleaner.
 This directory, and `src/client/createfly`, are **only compiled by nodes that set `deps.create_fly`**
 in `stonecutter.properties.toml`. Create Fly has no release for every Minecraft version the mod
 supports (none at all for 1.21.1), so the integration cannot live in `src/main/java`. Today
-`26.1.x` and `26.2.x` set it, and one body of code builds for both without a version branch. On
+`26.1.x` and `26.2.x` set it, and one body of code builds for both without a version branch. Create
+Fly has no 26.3 build, so `26.3.x` does not set it either. On
 NeoForge 1.21.1 the same filter is built on Create itself; see [src/main/create](../create/AGENTS.md).
 
 ```
