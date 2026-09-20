@@ -240,6 +240,11 @@ if (supplementaries != null) {
         java.srcDir("src/main/supplementaries/java")
         resources.srcDir("src/main/supplementaries/resources")
     }
+    // The Jade plugin for a jar and a goblet. Jade is a client-only dependency here, so it compiles
+    // with the rest of the client rather than with `main` like everything else the integration has.
+    sourceSets.named("client") {
+        java.srcDir("src/client/supplementaries/java")
+    }
 }
 
 /**
@@ -447,7 +452,9 @@ tasks.processResources {
         }
     }
 
-    // The same for the Supplementaries integration, which is mixins only and so names no entrypoint.
+    // The same for the Supplementaries integration: its mixin config, and the one entrypoint it has,
+    // the second Jade plugin. Jade reads that entrypoint whether or not Supplementaries is installed,
+    // so the class it names asks the gate before it loads anything of Moonlight's.
     inputs.property("supplementaries", supplementaries ?: "")
     if (supplementaries != null) {
         val manifest = destinationDir.resolve("fabric.mod.json")
@@ -456,6 +463,11 @@ tasks.processResources {
             val json = groovy.json.JsonSlurper().parse(manifest) as MutableMap<String, Any>
             @Suppress("UNCHECKED_CAST")
             (json.getValue("mixins") as MutableList<Any>).add("thirstwastaken2.supplementaries.mixins.json")
+            @Suppress("UNCHECKED_CAST")
+            val entrypoints = json.getValue("entrypoints") as MutableMap<String, Any>
+            @Suppress("UNCHECKED_CAST")
+            (entrypoints.getValue("jade") as MutableList<Any>)
+                .add("com.thirstwastaken2.client.supplementaries.SupplementariesJade")
             manifest.writeText(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json)))
         }
     }

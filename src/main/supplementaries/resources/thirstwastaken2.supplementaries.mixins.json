@@ -10,7 +10,9 @@
     "SoftFluidInternalMixin",
     "SoftFluidMixin",
     "SoftFluidStackMixin",
+    "SoftFluidStackTintMixin",
     "SoftFluidTankMixin",
+    "SoftFluidTankViewMixin",
     "WaterCauldronInteractionMixin"
   ],
   "injectors": {

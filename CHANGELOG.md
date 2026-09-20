@@ -7,13 +7,23 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 ### Added
 
 - Support for Minecraft 26.3 on Fabric and NeoForge.
+- Supplementaries support on Minecraft 1.21.1, Fabric and NeoForge. Water keeps its grade in Jars,
+  Goblets and Faucets, and sea water stays sea water. Before, a Jar handed out Clean water whatever
+  went in.
+- A Jar or a Goblet of water can be drunk with an empty hand.
+- A Faucet fills and empties Copper and Iron Hanging Pots, and grades the water it draws from a lake
+  or a pool the way filling a bottle there does.
+- Terracotta bowls fill and empty in Jars, Goblets and Faucets like a glass bottle.
+- The water in a Jar or a Goblet is coloured by its grade. A Jar broken while it holds water names the
+  grade on its tooltip, and Jade names it under the crosshair.
 
 ### Notes
 
 - The 26.3 NeoForge file needs a NeoForge beta, because no release build exists for 26.3 yet.
 - On 26.3, Sophisticated Backpacks, Create Fly and the Sand Filter are unavailable until those mods
   build for it.
-- Nothing changed on the other Minecraft versions. Existing worlds and config files need no changes.
+- Supplementaries is supported on Minecraft 1.21.1 only, because it has no build for a newer version.
+- Nothing changed on 26.2, 26.1.x or 1.21.11. Existing worlds and config files need no changes.
 
 ## [1.0.8] - 2026-09-20
 

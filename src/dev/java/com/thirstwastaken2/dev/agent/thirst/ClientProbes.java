@@ -262,7 +262,7 @@ final class ClientProbes {
         dispatcher.register("client.tooltip", (request, reply) -> {
             Minecraft minecraft = client();
             LocalPlayer player = player(minecraft);
-            ItemStack stack = stack(request);
+            ItemStack stack = stack(request, player);
             List<Component> lines = stack.getTooltipLines(Item.TooltipContext.of(player.level()), player,
                     request.flag("advanced", false) ? TooltipFlag.ADVANCED : TooltipFlag.NORMAL);
             JsonArray text = new JsonArray();
@@ -584,7 +584,23 @@ final class ClientProbes {
         return result;
     }
 
-    private static ItemStack stack(AgentRequest request) {
+    /**
+     * The stack a tooltip is asked about: one built from an item id, or, with {@code slot}, the one the
+     * player is actually holding. An id alone cannot carry components, and a tooltip line that comes
+     * from one - what a jar holds, a waterskin's servings, a grade - only exists on a real stack.
+     */
+    private static ItemStack stack(AgentRequest request, LocalPlayer player) {
+        if (request.has("slot")) {
+            String slot = request.string("slot");
+            if (slot.equals("mainhand")) return player.getMainHandItem();
+            if (slot.equals("offhand")) return player.getOffhandItem();
+            try {
+                return player.getInventory().getItem(Integer.parseInt(slot));
+            } catch (NumberFormatException e) {
+                throw new AgentException("client.tooltip: 'slot' is mainhand, offhand or an inventory "
+                        + "index, not '" + slot + "'");
+            }
+        }
         String name = request.string("item");
         Item item = BuiltInRegistries.ITEM.getOptional(Identifier.parse(name))
                 .orElseThrow(() -> new AgentException("client.tooltip: no item called '" + name + "'"));

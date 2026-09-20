@@ -25,6 +25,10 @@ server too, so the plugin class itself names no client class outside `registerCl
 under `config.jade.plugin_thirstwastaken2.water_purity`. Why client-side sampling is safe is in
 [purity/AGENTS.md](../purity/AGENTS.md).
 
+A block that keeps its water somewhere common code may not name, a Supplementaries jar for instance,
+is read through `JadeIntegration.addContainer`: an integration adds a reader from its own client entry
+point and the overlay stays one plugin with one entry in Jade's settings.
+
 The part of the Jade API it uses is identical on every supported version, so it carries no version
 branch. A water cauldron nothing was poured into shows the client's `defaultPurity`, the same
 limitation an unstamped item tooltip already has on a server with a different config.
@@ -69,6 +73,8 @@ See [src/main/sophisticated/AGENTS.md](../../../../sophisticated/AGENTS.md).
 
 Not in this package either: a jar, a goblet and a faucet all move water through Moonlight Lib's soft
 fluids, which are mixed into, and only the two 1.21.1 nodes have a Supplementaries to compile against.
+Its Jade half is the one thing that reaches back into this package, through
+`JadeIntegration.addContainer`.
 It is the one optional integration **both loaders** compile, since Moonlight is multi-loader. See
 [src/main/supplementaries/AGENTS.md](../../../../supplementaries/AGENTS.md).
 

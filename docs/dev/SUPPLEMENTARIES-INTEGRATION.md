@@ -68,19 +68,19 @@ as the place a thirst mod's grade goes.
 | 10 | Faucet on world water samples it | bug | **Done**, both loaders |
 | 5 | Faucet fills and drains the hanging pot | feature | **Done**, both loaders |
 | 6 | The mod's own bowls as containers Moonlight knows | data | **Done**, both loaders |
-| 7 | The grade is visible: tooltip, tint, Jade | feature | Not started |
-| 8 | Upstream: the two components in Moonlight's `water.json` | upstream | Not started |
-| 9 | Changelog and player docs | docs | Not started |
+| 7 | The grade is visible: tooltip, tint, Jade | feature | **Done**, both loaders |
+| 8 | Upstream: the two components in Moonlight's `water.json` | upstream | **Written**, not yet opened |
+| 9 | Changelog and player docs | docs | **Done** |
 
 Order as with Sophisticated: **the bugs first**, item 1 before the others because it is the root cause
 of most of them, then the cheapest feature, then the rest. Item 8 runs in parallel and blocks nothing.
 Item 9 last.
 
-Items 1 to 6 and 10 are in, on both 1.21.1 nodes. How they work is in
+Everything is in, on both 1.21.1 nodes. How it works is in
 [src/main/supplementaries/AGENTS.md](../../src/main/supplementaries/AGENTS.md); what each one turned
 out to need is below. Item 10 was found while building items 1 to 4 and is a bug of the same family,
-so it sits with them. What is left is the two that are only about showing a grade rather than
-keeping one, the upstream pull request, and the player docs: nothing here is announced yet.
+so it sits with them. Item 8 is a change to somebody else's repository and is only done when they
+merge it; nothing here waits on that.
 
 ## The bugs, and the one cause under them
 
@@ -303,23 +303,40 @@ so shipping our own `data/moonlight/moonlight/soft_fluid/water.json` replaces Mo
 which would silently drop every other mod's containers the day Moonlight adds one, and which pack wins
 is not something to rely on. Item 8 is where that file should change, upstream.
 
-### 7. The grade is visible
+### 7. The grade is visible (done)
 
 Three small pieces, none of them load bearing:
 
-- the jar and goblet item tooltips, which hold their contents in a `SOFT_FLUID_CONTENT` component, show
-  the grade line the mod's other containers show;
-- the fluid in a placed jar or goblet is tinted by grade, so a jar of sea water is turquoise and a dirty
-  one is brown, through Moonlight's soft fluid colour hook rather than by replacing textures;
-- Jade shows the grade of a jar, goblet or hanging pot under the crosshair, next to what it already
-  shows for world water and cauldrons.
+- **the tooltip** of a jar broken while it held water, which keeps what it held in a
+  `SOFT_FLUID_CONTENT` component. `SoftFluidTankViewMixin` puts the grade line under Supplementaries'
+  own fluid line, so the item reads `Water: 4 mBtl` then `Dirty`. The goblet keeps nothing when broken,
+  so there is nothing to say about its item;
+- **the colour** of the water in a placed jar or goblet, by grade rather than by biome, through
+  Moonlight's own still-colour call rather than by replacing textures. The five colours are read off
+  the terracotta water bowl's sprites, so a jar of water looks like a bowl of the same water. **Not**
+  the tooltip palette: that one is tuned for a dark tooltip and puts sea water in pale cream, which is
+  right for a line of text and wrong for a block of water;
+- **Jade**, which already covered world water, cauldrons and the hanging pots and now covers a jar and
+  a goblet too.
 
-The first two are client code and belong in `src/client/supplementaries`. Jade's part goes in the
-existing `client/compat/JadeIntegration`, which already samples blocks the same way.
+Jade's part was going to be a second plugin, and is not. A second plugin means a second entry in Jade's
+settings, which means a second name translated into nine languages, for a line that says exactly what
+the first one says. Instead `client/compat/JadeIntegration` gained a list of container readers, which
+is a hook that names no foreign class, and the integration adds one.
+
+That leaves **one entry point** for the whole integration, `SupplementariesJade`, and Jade's is the
+right one to borrow: it is called on a client exactly when there is a Jade to show anything. On Fabric
+it costs one line in the manifest, on NeoForge nothing at all.
+
+The tint and the Jade line are the two things a picture checks better than a number, so the script
+leaves two screenshots behind: five jars side by side, one of each grade and one of sea water, with
+Jade naming the one under the crosshair. The tooltip is a number after all: `client.tooltip` learned to
+read the stack a player is holding rather than build one from an item id, since an id carries no
+components and a grade only exists on a real stack.
 
 ## Upstream and docs
 
-### 8. Upstream: the two components in Moonlight's `water.json`
+### 8. Upstream: the two components in Moonlight's `water.json` (written)
 
 A pull request to Moonlight adding `thirstwastaken2:water_purity` and `thirstwastaken2:water_salty` to
 `preserved_components_from_item`, and the terracotta bowl pair to `containers` at a capacity of one
@@ -328,17 +345,26 @@ bottle. The file already carries
 `CodecUtils.lenientHomogeneousList` is what parses both fields, so entries for mods that are not
 installed are skipped rather than failing the load.
 
+Written, on the `1.21` branch of the fork at `../Moonlight`, which is the branch that builds
+`1.21.1-3.6.5`. It is not opened yet. It is one
+file: the two components added to `preserved_components_from_item` beside `thirst:purity`, and the
+terracotta bowl pair added to `containers` at a capacity of one bottle.
+
 If it is merged, the `getPreservedComponents` half of item 1 and the container half of item 6 can be
-deleted. The water mark stays either way: it is what tells the two registry entries apart, and every
-hook that has an entry rather than a stack needs it. If it is not, nothing is blocked. **Do not wait on it**, and do not make a
+deleted. **Do not delete them when it merges, delete them when the oldest Moonlight the build accepts
+has it**, since a player may have any release installed. The water mark stays either way: it is what
+tells the two registry entries apart, and every hook that has an entry rather than a stack needs it. If it is not, nothing is blocked. **Do not wait on it**, and do not make a
 released version depend on a Moonlight release that does not exist yet.
 
-### 9. Changelog and player docs
+### 9. Changelog and player docs (done)
 
-A CHANGELOG entry, a line on the installation page's compatible-mods list, and the Modrinth and
-CurseForge pages, in the plain style `docs/AGENTS.md` and the `write-docs` skill ask for. The 2026-09
-changelog line listing Supplementaries as an integration awaiting a compatible release needs updating
-too: it becomes 1.21.1 only, both loaders.
+A CHANGELOG entry, the installation page's compatible-mods list, a section on the feature page that
+explains where water keeps its grade, and the Modrinth and CurseForge pages, in the plain style
+`docs/AGENTS.md` and the `write-docs` skill ask for.
+
+The line in the 2026-09 changelog listing Supplementaries among the integrations awaiting a compatible
+release is left as it was: it was true of that release, and a changelog is what happened rather than
+what is true now.
 
 ## What the build needs
 
@@ -407,13 +433,17 @@ and both name their loader, so neither can live in a directory both loaders comp
 `src/main/java` call into this directory, since the nodes without Supplementaries would then not
 compile.
 
-**Everything built so far is mixins only**, reached through the mixin config and the config plugin, so
-none of it needs an entry point. Item 5 was expected to be the first that did, since it registers a
-behaviour with the faucet, and it would have cost two one-class directories,
-`src/main/supplementaries-fabric` and `src/main/supplementaries-neoforge`, each a shim calling one
-`init()`. Registering from a mixin into the place Supplementaries builds that list costs nothing and
-happens at the same moment, so it did not. Item 7 is the next candidate, and its client half would
-need one.
+**Everything that changes what water does is mixins only**, reached through the mixin config and the
+config plugin. Item 5 was expected to need an entry point, since it registers a behaviour with the
+faucet, and it would have cost two one-class directories, `src/main/supplementaries-fabric` and
+`src/main/supplementaries-neoforge`, each a shim calling one `init()`. Registering from a mixin into
+the place Supplementaries builds that list costs nothing and happens at the same moment, so it did not.
+
+Item 7's Jade half does need one, and borrows Jade's: `SupplementariesJade` in
+`src/client/supplementaries`, named in the Fabric manifest's `jade` entrypoint and found by its
+annotation on NeoForge. Both happen whether or not Supplementaries is installed, so it asks the gate
+before it loads anything of Moonlight's. Jade is a client-only dependency, which is why that one class
+compiles with the client rather than with `main` like the rest of the integration.
 
 ### How it stays optional
 

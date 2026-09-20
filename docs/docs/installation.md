@@ -58,6 +58,7 @@ All optional except Fabric API. Versions are listed in the order 26.3, 26.2, 26.
 | [Farmer's Delight Refabricated](https://modrinth.com/mod/farmers-delight-refabricated) | 26.3-3.6.27, 26.2-3.6.26, 26.1-3.6.26, 1.21.11-3.6.16, 1.21.1-3.3.6 | Thirst from its [drinks and meals](/docs/features/farmers-delight), Pure water from the Cooking Pot, and no drain under Nourishment. |
 | [Create Fly](https://modrinth.com/mod/create-fly) | 26.2-rc-2-6.0.9-1, 26.1.2-6.0.9-4 | The [Sand Filter](/docs/features/create). 26.2 and 26.1.2 only. |
 | [Jade](https://modrinth.com/mod/jade) | 26.3.1, 26.2.11, 26.1.11, 21.1.6, 15.10.6 | The [grade of the water](/docs/features/water-purity#checking-water-with-jade) under the crosshair. Client only. |
+| [Supplementaries](https://modrinth.com/mod/supplementaries) | 1.21.1-3.9.9 | [Water that keeps its grade](/docs/features/supplementaries) in Jars, Goblets and Faucets, and a Jar or Goblet of water that can be drunk. 1.21.1 only. |
 
 ### NeoForge
 
@@ -71,6 +72,7 @@ The settings screen opens from the Config button in NeoForge's Mods list, with n
 | [Create](https://modrinth.com/mod/create) | 6.0.10 | The [Sand Filter](/docs/features/create). 1.21.1 only. |
 | [Farmer's Delight](https://modrinth.com/mod/farmers-delight) | 1.21.1-1.3.4 | The same as on Fabric. 1.21.1 only. |
 | [Sophisticated Backpacks](https://modrinth.com/mod/sophisticated-backpacks) | Core 26.2-1.5.0.2337, 26.1.2-1.5.0.2334, 1.21.11-1.5.0.2340, 1.21.1-1.5.1.2341. Not on 26.3 yet. | The [Drinking Upgrade](/docs/features/sophisticated-backpacks), and water that keeps its grade in the Tank and Pump Upgrades. Sophisticated Storage takes the Drinking Upgrade too. |
+| [Supplementaries](https://modrinth.com/mod/supplementaries) | 1.21.1-3.9.9 | The same as on Fabric. 1.21.1 only. |
 
 Other food mods usually work as they are. Drinks their mod marks as drinks restore thirst, and any
 item can be given a value in [Configuration](/docs/configuration).

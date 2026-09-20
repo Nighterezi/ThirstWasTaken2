@@ -90,7 +90,7 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
     <td width="55%">
       <b><a href="https://modrinth.com/mod/jade">Jade (WAILA)</a></b><br>
       <i>Fabric and NeoForge on 1.21.1, 1.21.11, 26.1.2, 26.2 and 26.3</i><br><br>
-      Shows the purity grade of water sources, waterlogged blocks, and cauldrons directly under your crosshair. On NeoForge, it also supports hanging pots.
+      Shows the purity grade of water sources, waterlogged blocks, and cauldrons directly under your crosshair.
     </td>
     <td width="45%">
       <img alt="Jade showing the water grade under the crosshair" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/jade-water.png" width="100%">
@@ -126,6 +126,16 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
     </td>
     <td width="45%">
       <img alt="A backpack of water with the Advanced Drinking Upgrade's settings open" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/sophisticated-drinking-upgrade.png" width="100%">
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
+      <b><a href="https://nighterezi.github.io/ThirstWasTaken2/docs/features/supplementaries">Supplementaries</a></b><br>
+      <i>Fabric and NeoForge: <a href="https://modrinth.com/mod/supplementaries">Supplementaries</a> on 1.21.1</i><br><br>
+      Water keeps its purity grade in Jars, Goblets and Faucets, and sea water stays sea water. A Jar or a Goblet of water can be drunk straight from the block, and the water inside is coloured by its grade. Faucets fill and empty hanging pots and grade the water they draw from a lake.
+    </td>
+    <td width="45%">
+      <img alt="Five jars of water side by side, brown, grey blue, blue, cyan and turquoise, with Jade naming the middle one Clean" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/supplementaries-jars.png" width="100%">
     </td>
   </tr>
   <tr>

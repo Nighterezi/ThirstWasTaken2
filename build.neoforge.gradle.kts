@@ -157,6 +157,9 @@ if (supplementariesVersion != null) {
     sourceSets.main {
         java.srcDir("src/main/supplementaries/java")
         resources.srcDir("src/main/supplementaries/resources")
+        // The Jade plugin for a jar and a goblet, from the preprocessed client sources like the rest
+        // of the client. NeoForge finds it by its annotation and needs no entrypoint.
+        java.srcDir(files(clientSources.resolve("supplementaries/java")).builtBy("stonecutterGenerateClient"))
     }
 }
 

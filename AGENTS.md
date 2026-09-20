@@ -143,7 +143,7 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | `src/main/createfly`, `src/client/createfly` | Where `deps.create_fly` is set (Fabric 26.1.x, 26.2.x; Create Fly has no 26.3 build) |
 | `src/main/create` | Where `deps.create` is set (`1.21.1-neoforge`) |
 | `src/main/sophisticated`, `src/client/sophisticated` | Where `deps.sophisticated_core` is set (every NeoForge node but `26.3.x-neoforge`) |
-| `src/main/supplementaries` | Where `deps.supplementaries` is set (both 1.21.1 nodes). The one optional integration both loaders compile |
+| `src/main/supplementaries`, `src/client/supplementaries` | Where `deps.supplementaries` is set (both 1.21.1 nodes). The one optional integration both loaders compile |
 | `src/main/sophisticated-fluidhandler` / `sophisticated-transfer` | The same nodes, 1.21.1 / 1.21.11+: Sophisticated's tank and pump code |
 | `src/main/resources` | Hand-written assets and lang, all nodes |
 | `src/main/generated/<mc version>` | Datagen output, never hand-edited |

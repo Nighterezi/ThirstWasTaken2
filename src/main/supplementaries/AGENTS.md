@@ -7,7 +7,8 @@ directory covers both of Supplementaries' blocks and its faucet. The only classe
 own that are touched are the faucet's list of behaviours and the two behaviours of it that move water
 this mod has something to say about.
 
-Today it fixes four ways water lost its quality and adds two things Supplementaries cannot do alone:
+Today it fixes four ways water lost its quality, adds two things Supplementaries cannot do alone,
+and shows the grade wherever a player would look for it:
 
 - **a jar or a goblet keeps the grade**: a dirty bottle poured in comes back out dirty, and a jar of
   Murky water will not take Clean water. Without it everything came back out plain, which reads as
@@ -22,8 +23,10 @@ Today it fixes four ways water lost its quality and adds two things Supplementar
   only drinks a fluid that names a food item, and `moonlight:water` names none;
 - **a faucet fills and drains the hanging pots**, the mod's own water block, keeping their grade and
   their boiling;
-- and **the mod's terracotta bowl is a container Moonlight knows**, so a jar, a goblet and a faucet
-  fill and empty it the way they do a vanilla bottle.
+- **the mod's terracotta bowl is a container Moonlight knows**, so a jar, a goblet and a faucet fill
+  and empty it the way they do a vanilla bottle;
+- and **the grade is visible**: on the tooltip of a jar that keeps its water, in the colour of the
+  water in a placed jar or goblet, and in Jade's overlay.
 
 What is still to do is in
 [docs/dev/SUPPLEMENTARIES-INTEGRATION.md](../../../docs/dev/SUPPLEMENTARIES-INTEGRATION.md).
@@ -55,8 +58,13 @@ supplementaries/java/com/thirstwastaken2/supplementaries/     both 1.21.1 nodes
   mixin/WaterCauldronInteractionMixin   the faucet's behaviour for vanilla cauldrons
   mixin/LiquidBlockInteractionMixin     the faucet's behaviour for water in the world
   mixin/FaucetBehaviorsManagerMixin     registers the hanging pots with the faucet
+  mixin/SoftFluidStackTintMixin         the colour water is drawn in, by grade
+  mixin/SoftFluidTankViewMixin          the grade line on the tooltip of a jar that holds water
 supplementaries/resources/
   thirstwastaken2.supplementaries.mixins.json
+../../client/supplementaries/java/com/thirstwastaken2/client/supplementaries/
+  SupplementariesJade          the integration's one entry point, borrowed from Jade
+  SoftFluidTooltip             how to read the water out of a jar, for the mod's own Jade plugin
 ```
 
 ## How a grade moves
@@ -139,6 +147,30 @@ deliberately left out: it holds three servings with a fill level of its own, and
 one empty item to one filled item at a fixed capacity, which cannot say that. On NeoForge a faucet
 reaches the waterskin through its fluid capability anyway.
 
+## Showing the grade
+
+Three places, none of them load bearing, and none of them a new palette:
+
+- **The tooltip** of a jar that was broken while it held water, which keeps what it held.
+  `SoftFluidTankViewMixin` puts the mod's own grade line under Supplementaries' own fluid line, so a
+  jar reads `Water: 4 mBtl` and then `Dirty`, in the words and the colour a bottle of the same water
+  uses.
+- **The colour** of the water in a placed jar or goblet, by grade rather than by biome, which is what
+  Moonlight asks for otherwise. The five colours are read off the terracotta water bowl's own sprites,
+  so a jar of water looks like a bowl of the same water: brown, grey blue, blue, cyan, and turquoise
+  for the sea. They are deliberately not the tooltip palette in `WaterPurity`, which is tuned to stay
+  legible on a dark tooltip and puts sea water in the pale cream of dried salt; `purity/AGENTS.md`
+  already says the sprites differ for that reason. Only the still colour is hooked: Moonlight works
+  the flowing and particle colours out from it for a fluid tinted both ways, which water is.
+- **Jade**, through the mod's own plugin rather than a second one. `client/compat/JadeIntegration` is
+  common client code and may name no foreign class, so it asks a list of container readers first, and
+  `SupplementariesJade` adds one. One plugin means one entry in Jade's settings with one name, rather
+  than two that say the same thing in nine languages.
+
+`SupplementariesJade` is the integration's **only entry point**, and Jade's is the right one to
+borrow: it is called on a client exactly when there is a Jade to show anything, and it costs one line
+in the Fabric manifest and nothing at all on NeoForge, which finds it by its annotation.
+
 ## How it stays optional
 
 The same three layers as [src/main/create](../create/AGENTS.md) and
@@ -156,9 +188,9 @@ The same three layers as [src/main/create](../create/AGENTS.md) and
    names no loader, unlike the gates of the other two integrations, because both loaders compile it.
    A mod of a version that moved either class is skipped with a warning rather than crashing on a
    missing mixin target.
-3. **Mixin plugin.** `SupplementariesMixinPlugin` asks the gate per mixin: Moonlight for the three
-   soft fluid ones, Supplementaries itself for the cauldron one, since other mods ship Moonlight
-   without Supplementaries.
+3. **Mixin plugin.** `SupplementariesMixinPlugin` asks the gate per mixin: Moonlight for the ones that
+   target the soft fluid system, Supplementaries itself for the faucet's behaviours and the jar's
+   tooltip, since other mods ship Moonlight without Supplementaries.
 
 ## Checking it
 
@@ -179,6 +211,10 @@ goblet, a dirty cauldron drained through a faucet arrives dirty while pure water
 cauldron leaves it dirty, a pot fills and empties with its grade, and the pool arrives as the grade
 plains water is sampled at rather than as the config default. The scene fixes its biome with
 `/fillbiome` so that last one is the same answer in both nodes' worlds.
+
+It also breaks a jar that holds water and reads the tooltip of the item that comes back, and leaves
+two screenshots behind: five jars side by side, one of each grade and one of sea water, with Jade
+naming the one under the crosshair.
 
 The script addresses the player by selector: a Fabric dev client names its player `Player<NN>` and a
 NeoForge one names it `Dev`.

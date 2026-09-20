@@ -150,6 +150,41 @@
 {"id": "drawnD", "command": "wait", "args": {"ticks": 10}}
 {"id": "bowlRefilled", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand thirstwastaken2:terracotta_water_bowl[thirstwastaken2:water_purity=1,thirstwastaken2:water_salty=false]"}}
 
+// What a player sees of all this. A jar broken back into an item keeps what it held, so its tooltip
+// is the mod own grade line under Supplementaries own fluid line; the water in a placed jar is tinted
+// by grade rather than by biome; and Jade names the grade of whatever jar or goblet is under the
+// crosshair, through the same overlay entry world water and cauldrons already use.
+//
+// Jar A was emptied again by the case above, so it is filled straight back up before it is broken.
+{"id": "clearE", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "refillJarA", "command": "server.command", "args": {"command": "data merge block 0 200 0 {fluid:{id:\"moonlight:water\",count:4,components:{\"thirstwastaken2:water_purity\":0}}}"}}
+{"id": "breakJarA", "command": "server.command", "args": {"command": "loot give @p mine 0 200 0"}}
+{"id": "looted", "command": "wait", "args": {"ticks": 20}}
+{"id": "jarTooltip", "command": "client.tooltip", "args": {"slot": "0"}, "checks": [{"left": "result.lines", "op": "contains", "value": "Dirty"}]}
+
+// Five jars side by side on the floor behind the scene, one of each grade and one of sea water, so
+// one picture says whether the tints tell each other apart. The player faces south, so east is on
+// the left: left to right the picture has dirty, murky, clean, pure, salty, with the crosshair on
+// the clean one for Jade.
+{"id": "tintJar0", "command": "server.command", "args": {"command": "setblock 2 200 4 supplementaries:jar"}}
+{"id": "tintFill0", "command": "server.command", "args": {"command": "data merge block 2 200 4 {fluid:{id:\"moonlight:water\",count:8,components:{\"thirstwastaken2:water_purity\":0}}}"}}
+{"id": "tintJar1", "command": "server.command", "args": {"command": "setblock 1 200 4 supplementaries:jar"}}
+{"id": "tintFill1", "command": "server.command", "args": {"command": "data merge block 1 200 4 {fluid:{id:\"moonlight:water\",count:8,components:{\"thirstwastaken2:water_purity\":1}}}"}}
+{"id": "tintJar2", "command": "server.command", "args": {"command": "setblock 0 200 4 supplementaries:jar"}}
+{"id": "tintFill2", "command": "server.command", "args": {"command": "data merge block 0 200 4 {fluid:{id:\"moonlight:water\",count:8,components:{\"thirstwastaken2:water_purity\":2}}}"}}
+{"id": "tintJar3", "command": "server.command", "args": {"command": "setblock -1 200 4 supplementaries:jar"}}
+{"id": "tintFill3", "command": "server.command", "args": {"command": "data merge block -1 200 4 {fluid:{id:\"moonlight:water\",count:8,components:{\"thirstwastaken2:water_purity\":3}}}"}}
+{"id": "tintJar4", "command": "server.command", "args": {"command": "setblock -2 200 4 supplementaries:jar"}}
+{"id": "tintFill4", "command": "server.command", "args": {"command": "data merge block -2 200 4 {fluid:{id:\"moonlight:water\",count:8,components:{\"thirstwastaken2:water_salty\":1b}}}"}}
+{"id": "tintView", "command": "server.command", "args": {"command": "tp @p 0.5 200 1.5 0 20"}}
+// Long enough for the advancement toasts the script set off earlier to clear the corner.
+{"id": "tintWait", "command": "wait", "args": {"ticks": 160}}
+{"id": "tints", "command": "client.capture", "args": {"name": "supplementaries-tints"}}
+
+// Jade, with the crosshair on the clean jar of that row.
+{"id": "jadeWait", "command": "wait", "args": {"ticks": 40}}
+{"id": "jade", "command": "client.capture", "args": {"name": "supplementaries-jade"}}
+
 // Back to somewhere the faucets are visible, and give them the rest of the time they need. Three
 // layers at twenty ticks a bottle is sixty; the wait is generous so a busy client cannot make it flaky.
 {"id": "watch", "command": "server.command", "args": {"command": "tp @p -5.5 201 4.5 180 20"}}

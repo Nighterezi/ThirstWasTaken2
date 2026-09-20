@@ -16,6 +16,7 @@ public final class SupplementariesMixinPlugin implements IMixinConfigPlugin {
     private static final Set<String> SUPPLEMENTARIES_MIXINS = Set.of(
             "FaucetBehaviorsManagerMixin",
             "LiquidBlockInteractionMixin",
+            "SoftFluidTankViewMixin",
             "WaterCauldronInteractionMixin");
 
     @Override
