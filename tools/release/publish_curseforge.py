@@ -10,6 +10,9 @@ sites. Only talking to CurseForge lives here.
 
 Without `--no-build` it builds every node first, as `publish.py` does.
 
+Files are uploaded from the oldest Minecraft version to the newest. CurseForge treats the last upload
+as the project's main file, so the newest Minecraft version must come last.
+
 The upload API only adds files to a project that already exists: the project itself was created by hand
 at https://authors.curseforge.com, with `docs/CURSEFORGE.md` as its description. Its numeric id goes in
 `.env` as `CURSEFORGE_PROJECT_ID`, beside `CURSEFORGE_TOKEN`, an upload token from
@@ -127,6 +130,14 @@ class CurseForge:
 
     def done_url(self) -> str:
         return f"https://authors.curseforge.com/#/projects/{self.project_id}/files"
+
+    @staticmethod
+    def order_nodes(nodes: list[Node]) -> list[Node]:
+        """Upload oldest Minecraft first so the newest version becomes CurseForge's main file."""
+        return sorted(nodes, key=lambda node: (
+            tuple(int(part) for part in node.minecraft.split(".")),
+            node.loader != "fabric",
+        ))
 
 
 if __name__ == "__main__":

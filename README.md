@@ -34,6 +34,17 @@ Download the mod from [Modrinth](https://modrinth.com/mod/thirst-was-taken-2). I
 Put the jar in the `mods` folder of the server and of every client. NeoForge files end in
 `-neoforge`.
 
+## Version Support
+
+| Minecraft version | Latest mod version | Support status |
+|---|---|---|
+| 26.3 | 1.0.9 | Active |
+| 26.2 | 1.0.9 | Active |
+| 26.1, 26.1.1, 26.1.2 | 1.0.9 | Active |
+| 1.21.11 | 1.0.9 | Active |
+| 1.21.1 | 1.0.9 | Active |
+| 1.21 (Fabric only) | 1.0.9 | Active |
+
 ## Requirements
 
 ### Fabric

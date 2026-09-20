@@ -73,7 +73,7 @@ You do not need glass bottles to stay hydrated:
 
 ## Mod Compatibility
 
-Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box:
+Thirst Was Taken 2 integrates seamlessly with popular mods out of the box:
 
 <table>
   <tr>
@@ -122,7 +122,7 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
     <td width="55%">
       <b><a href="https://modrinth.com/mod/sophisticated-backpacks">Sophisticated Backpacks</a></b><br>
       <i>NeoForge on 1.21.1, 1.21.11, 26.1.2 and 26.2 (no 26.3 build)</i><br><br>
-      Adds the Drinking Upgrade, which drinks from your backpack when you get thirsty, the cleanest water first. Water keeps its purity grade in the Tank and Pump Upgrades. Also works with Sophisticated Storage.
+      Adds the Drinking Upgrade, which drinks from your backpack when you get thirsty, the cleanest water first. Water keeps its purity grade in the Tank and Pump Upgrades. Also works with <a href="https://modrinth.com/mod/sophisticated-storage">Sophisticated Storage</a>.
     </td>
     <td width="45%">
       <img alt="A backpack of water with the Advanced Drinking Upgrade's settings open" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/sophisticated-drinking-upgrade.png" width="100%">
@@ -149,6 +149,17 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
     </td>
   </tr>
 </table>
+
+## Version Support
+
+| Minecraft version | Latest mod version | Support status |
+|---|---|---|
+| 26.3 | 1.0.9 | Active |
+| 26.2 | 1.0.9 | Active |
+| 26.1, 26.1.1, 26.1.2 | 1.0.9 | Active |
+| 1.21.11 | 1.0.9 | Active |
+| 1.21.1 | 1.0.9 | Active |
+| 1.21 (Fabric only) | 1.0.9 | Active |
 
 ## Quick FAQ
 

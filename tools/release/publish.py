@@ -1,7 +1,7 @@
 """Publishes one release of ThirstWasTaken2 to Modrinth, and holds what `publish_curseforge.py` shares.
 
-A release is eight files -- four Minecraft versions on two loaders -- each with its own jar, its own list
-of Minecraft releases and its own list of optional mods. Done by hand in a web form that is eight chances
+A release is ten files, five Minecraft versions on two loaders, each with its own jar, its own list
+of Minecraft releases and its own list of optional mods. Done by hand in a web form that is ten chances
 to attach the wrong jar or forget a game version, and nothing afterwards would say so. Everything a
 release needs is already written down in the repository, so it is read rather than retyped:
 
@@ -305,6 +305,11 @@ class Modrinth:
     def done_url(self) -> str:
         return f"https://modrinth.com/mod/{MODRINTH_PROJECT}/versions"
 
+    @staticmethod
+    def order_nodes(nodes: list[Node]) -> list[Node]:
+        """Keep Modrinth's existing newest-first upload order."""
+        return nodes
+
 
 def git(*args: str) -> str:
     result = run(["git", *args], capture_output=True)
@@ -367,6 +372,7 @@ def release(publisher_class, description: str) -> None:
     # The site is asked for what it already has before anything is sent, so a missing token or an
     # unknown game version stops the release before the first upload rather than halfway through it.
     publisher = publisher_class()
+    nodes = publisher.order_nodes(nodes)
     for node in nodes:
         number = version_number(node, mod_version)
         print(f"  {number}  ({node.name})")
