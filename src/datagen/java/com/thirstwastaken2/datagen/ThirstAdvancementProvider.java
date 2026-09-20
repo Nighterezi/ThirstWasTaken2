@@ -76,7 +76,14 @@ public final class ThirstAdvancementProvider implements DataProvider {
 
     private void generate(DynamicOps<JsonElement> ops, Consumer<AdvancementHolder> consumer) {
         AdvancementHolder root = builder()
+                // 26.3 split `display` in two, and the root is the only caller that still passes a
+                // background. This cannot be a replacement: `display` is also what a child calls on
+                // 26.3, so switching the active project would reverse the rule onto those too.
+                //? if >=26.3 {
                 .rootDisplay(
+                //?} else {
+                /*.display(
+                *///?}
                         ThirstItems.WATERSKIN,
                         title("root"),
                         description("root"),
@@ -163,9 +170,9 @@ public final class ThirstAdvancementProvider implements DataProvider {
     private static Advancement.Builder childDisplay(Advancement.Builder builder, Item icon, String name,
                                                     AdvancementType type) {
         //? if >=26.3 {
-        return builder.rootDisplay(icon, title(name), description(name), type, true, true, false);
+        return builder.display(icon, title(name), description(name), type, true, true, false);
         //?} else
-        /*return builder.rootDisplay(icon, title(name), description(name), null, type, true, true, false);*/
+        /*return builder.display(icon, title(name), description(name), null, type, true, true, false);*/
     }
 
     /**

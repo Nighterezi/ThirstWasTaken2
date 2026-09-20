@@ -68,9 +68,6 @@ stonecutter parameters {
         string(current.parsed < "26.3") {
             replace("PushReaction.POPPED", "PushReaction.DESTROY")
             replace("UniformContainerBase", "LootPoolSingletonContainer")
-            // 26.3 split the advancement builder's `display` in two: `rootDisplay` is the one that
-            // still takes the tab background, and the root advancement is the only caller of it.
-            replace(".rootDisplay(", ".display(")
             // 26.3 moved the renderer's pipeline type out of Blaze3D into Renderpearl, keeping the
             // class name. The dev HUD mixin names it twice: once as an import, once inside the
             // descriptor of the method it injects into.

@@ -96,7 +96,7 @@ never see it.
 | Loot number providers split into an int and a float family, each behind a `Holder`, so a pool's rolls and a count are built differently | `Vanilla.lootPool`, `Vanilla.setCount` |
 | `Inventory#placeItemBackInInventory` asks whether the client predicted the call | `Vanilla.placeItemBackInInventory` |
 | Recipes became a registry: a recipe provider bootstraps them alongside their unlock advancements, and the criteria that name a recipe name a holder rather than a key | `ThirstRecipeProvider`, and `RecipeKeys` for the two providers outside that registry set |
-| The advancement builder's `display` split in two, and only `rootDisplay` still takes the tab background | replacement for the root, `ThirstAdvancementProvider.childDisplay` for the rest |
+| The advancement builder's `display` split in two, and only `rootDisplay` still takes the tab background | `ThirstAdvancementProvider`, at both call sites. Not a replacement: `display` is still the name a child calls on 26.3, so a rule rewriting it would be reversed onto those too |
 | A saved block state is written under `id` and `properties` rather than `Name` and `Properties` | `CauldronGameTest` |
 | The renderer's pipeline type moved from Blaze3D into Renderpearl | replacement |
 | Opening a path in the file manager moved off `Util.OS` onto `Blaze3D` | `ClientVanilla.openPath` |
