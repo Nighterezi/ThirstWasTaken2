@@ -101,6 +101,7 @@ never see it.
 | The renderer's pipeline type moved from Blaze3D into Renderpearl | replacement |
 | Opening a path in the file manager moved off `Util.OS` onto `Blaze3D` | `ClientVanilla.openPath` |
 | The game moved from GLFW to SDL, so the window handle is an SDL one | the agent client's `ClientWindow` |
+| SDL numbers the mouse buttons from one, so left is 1 and right 3 where GLFW had 0 and 1, and a widget only takes the new left | the agent client's `AgentClientVanilla.click`, which reads the numbers out of `InputConstants` so that `client.click` means the same button on every node |
 | A gametest's `TestData` names the dimension it runs in | NeoForge `ThirstWasTaken2GameTests` |
 
 Result: 26.3 writes its recipe unlocks with a `recipes` key holding the recipe id, where earlier

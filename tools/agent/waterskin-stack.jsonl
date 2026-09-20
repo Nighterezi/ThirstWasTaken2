@@ -1,0 +1,77 @@
+// A waterskin filled from a stack of bottles puts the empty bottle back in the inventory.
+// 26.3 moved Inventory.placeItemBackInInventory onto a Prediction argument (see Vanilla.java), and
+// WaterskinItem.consumeContainer only reaches that call when the carried bottles are a stack: with a
+// single bottle the empty one replaces the cursor instead, which is the control this file checks
+// first and which WaterskinGameTest already covers.
+//
+//     ./gradlew ":26.3.x:runClient" -Pagent=tools/agent/waterskin-stack.jsonl -Pquickplay=AgentPass
+//
+// AgentPass is a throwaway world; any world of the node's Minecraft version will do.
+//
+// Vanilla water bottles stack to one, so the stack is made by giving the bottles a
+// minecraft:max_stack_size of their own. That is the same shape a pack which makes potions stackable
+// produces, and it is the only way the branch is reachable at all; WaterskinItem reads nothing but
+// the potion contents, so the extra component changes nothing it does.
+//
+// Every "execute if" and "execute unless" line has to answer "Test passed", and the expectations on
+// the client.slot replies are checked by drive.py. The player must be in survival: a creative player
+// never spends the bottle at all. The slot clicks go through the player's own inventory menu, which
+// is the open menu whenever no screen is.
+
+{"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "joined", "command": "client.state"}
+{"id": "float", "command": "server.command", "args": {"command": "effect give @p minecraft:slow_falling 600 0 true"}}
+{"id": "up", "command": "server.command", "args": {"command": "tp @p 0.5 200 0.5 0 15"}}
+{"id": "chunks", "command": "wait", "args": {"ticks": 100}}
+{"id": "air", "command": "server.command", "args": {"command": "fill -4 200 -4 4 204 4 minecraft:air"}}
+{"id": "floor", "command": "server.command", "args": {"command": "fill -4 199 -4 4 199 4 minecraft:stone"}}
+{"id": "stand", "command": "server.command", "args": {"command": "tp @p 0.5 200 0.5 0 15"}}
+{"id": "day", "command": "server.command", "args": {"command": "time set noon"}}
+{"id": "peaceful", "command": "server.command", "args": {"command": "difficulty peaceful"}}
+{"id": "survival", "command": "server.command", "args": {"command": "gamemode survival @p"}}
+{"id": "land", "command": "server.command", "args": {"command": "effect clear @p"}}
+{"id": "empty", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "tidy", "command": "server.command", "args": {"command": "kill @e[type=item]"}}
+{"id": "settle", "command": "wait", "args": {"ticks": 40}}
+
+// The control: one bottle on the cursor, so the empty bottle replaces it there and nothing is
+// placed back into the inventory.
+{"id": "skinOne", "command": "server.command", "args": {"command": "item replace entity @p container.9 with thirstwastaken2:waterskin"}}
+{"id": "oneBottle", "command": "server.command", "args": {"command": "item replace entity @p container.10 with minecraft:potion[minecraft:potion_contents={potion:\"minecraft:water\"},thirstwastaken2:water_purity=2,thirstwastaken2:water_salty=false] 1"}}
+{"id": "syncOne", "command": "wait", "args": {"ticks": 10}}
+{"id": "takeOne", "command": "client.slot", "args": {"inventory": 10, "button": 0, "action": "pickup"}, "expect": {"result.carried.item": "minecraft:potion", "result.carried.count": 1}}
+{"id": "fillOne", "command": "client.slot", "args": {"inventory": 9, "button": 1, "action": "pickup"}, "expect": {"result.carried.item": "minecraft:glass_bottle", "result.carried.count": 1}}
+{"id": "oneServing", "command": "server.command", "args": {"command": "execute if entity @p[nbt={Inventory:[{Slot:9b,id:\"thirstwastaken2:waterskin\",components:{\"thirstwastaken2:water_servings\":1}}]}]"}, "expect": {"result.messages.0": "Test passed. Count: 1"}}
+{"id": "noneBack", "command": "server.command", "args": {"command": "execute unless entity @p[nbt={Inventory:[{id:\"minecraft:glass_bottle\"}]}]"}, "expect": {"result.messages.0": "Test passed"}}
+
+// Put the cursor down and start again with a stack of three.
+{"id": "dropCursor", "command": "client.slot", "args": {"inventory": 11, "button": 0, "action": "pickup"}, "expect": {"result.carried.item": "minecraft:air"}}
+{"id": "clearAgain", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "tidyAgain", "command": "server.command", "args": {"command": "kill @e[type=item]"}}
+{"id": "clearedSync", "command": "wait", "args": {"ticks": 10}}
+
+// A stack of three bottles on the cursor, right-clicked onto a slotted waterskin. One serving goes
+// in, two bottles stay on the cursor, and the empty bottle goes into the inventory rather than
+// being lost, dropped on the floor or replacing the cursor.
+{"id": "skinStack", "command": "server.command", "args": {"command": "item replace entity @p container.9 with thirstwastaken2:waterskin"}}
+{"id": "threeBottles", "command": "server.command", "args": {"command": "item replace entity @p container.10 with minecraft:potion[minecraft:max_stack_size=16,minecraft:potion_contents={potion:\"minecraft:water\"},thirstwastaken2:water_purity=2,thirstwastaken2:water_salty=false] 3"}}
+{"id": "syncStack", "command": "wait", "args": {"ticks": 10}}
+{"id": "before", "command": "client.slots"}
+{"id": "takeStack", "command": "client.slot", "args": {"inventory": 10, "button": 0, "action": "pickup"}, "expect": {"result.carried.item": "minecraft:potion", "result.carried.count": 3}}
+{"id": "fillStack", "command": "client.slot", "args": {"inventory": 9, "button": 1, "action": "pickup"}, "expect": {"result.carried.item": "minecraft:potion", "result.carried.count": 2}}
+{"id": "settleStack", "command": "wait", "args": {"ticks": 10}}
+{"id": "after", "command": "client.slots"}
+{"id": "stackServing", "command": "server.command", "args": {"command": "execute if entity @p[nbt={Inventory:[{Slot:9b,id:\"thirstwastaken2:waterskin\",components:{\"thirstwastaken2:water_servings\":1}}]}]"}, "expect": {"result.messages.0": "Test passed. Count: 1"}}
+{"id": "bottleBack", "command": "server.command", "args": {"command": "execute if entity @p[nbt={Inventory:[{id:\"minecraft:glass_bottle\",count:1}]}]"}, "expect": {"result.messages.0": "Test passed. Count: 1"}}
+{"id": "noneDropped", "command": "server.command", "args": {"command": "execute unless entity @e[type=item,nbt={Item:{id:\"minecraft:glass_bottle\"}}]"}, "expect": {"result.messages.0": "Test passed"}}
+
+// Fill the skin to its three servings from the same stack: the second bottle is the placed-back path
+// again, and the third empties the cursor onto the empty bottle instead.
+{"id": "fillTwo", "command": "client.slot", "args": {"inventory": 9, "button": 1, "action": "pickup"}, "expect": {"result.carried.item": "minecraft:potion", "result.carried.count": 1}}
+{"id": "fillThree", "command": "client.slot", "args": {"inventory": 9, "button": 1, "action": "pickup"}, "expect": {"result.carried.item": "minecraft:glass_bottle", "result.carried.count": 1}}
+{"id": "settleFull", "command": "wait", "args": {"ticks": 10}}
+{"id": "full", "command": "client.slots"}
+{"id": "threeServings", "command": "server.command", "args": {"command": "execute if entity @p[nbt={Inventory:[{Slot:9b,id:\"thirstwastaken2:waterskin\",components:{\"thirstwastaken2:water_servings\":3}}]}]"}, "expect": {"result.messages.0": "Test passed. Count: 1"}}
+{"id": "twoBack", "command": "server.command", "args": {"command": "execute if entity @p[nbt={Inventory:[{id:\"minecraft:glass_bottle\",count:2}]}]"}, "expect": {"result.messages.0": "Test passed. Count: 1"}}
+{"id": "stillNoneDropped", "command": "server.command", "args": {"command": "execute unless entity @e[type=item,nbt={Item:{id:\"minecraft:glass_bottle\"}}]"}, "expect": {"result.messages.0": "Test passed"}}
+{"id": "shot", "command": "client.capture", "args": {"name": "waterskin-stack"}}

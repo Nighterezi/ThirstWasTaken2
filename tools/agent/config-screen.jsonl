@@ -1,0 +1,56 @@
+// The config screen's Item Values page: the "Open thirstwastaken2.json" row, and Done and Cancel
+// closing the screen. 26.3 moved the call that button makes onto Blaze3D.openPath, so pressing it is
+// the check: an action that failed to link would take the client down with it, and the requests after
+// it would go unanswered.
+//
+//     ./gradlew ":26.3.x:runClient" -Pagent=tools/agent/config-screen.jsonl -Pquickplay=AgentPass
+//
+// **Pressing that button opens config/thirstwastaken2.json in whatever the desktop uses for .json.**
+// Close it afterwards; nothing is written.
+//
+// The clicks are measured from an edge rather than from the corner, so the file does not depend on
+// this machine's window size: the category grid is centred between an equal header and footer, the
+// two footer buttons are 150 wide with 8 between them against the bottom edge, and the options list
+// is anchored under the 33 px title header. drive.py checks the screen each click left open; the
+// capture in run/<node>/agent/client/screenshots/ is what shows that the row is one full width,
+// which is a shape rather than a number.
+
+{"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "joined", "command": "client.state"}
+{"id": "window", "command": "client.info"}
+
+// The root screen, through the game rather than through a mouse.
+{"id": "openConfig", "command": "client.screen", "args": {"open": "config"}, "expect": {"result.screen": "com.thirstwastaken2.client.config.ThirstConfigScreen"}}
+{"id": "rootDrawn", "command": "wait", "args": {"ticks": 10}}
+{"id": "rootShot", "command": "client.capture", "args": {"name": "config-root"}}
+
+// Item Values is the fifth category, so it is the left column of the grid's third row: 79 px left of
+// the centre, and 37 px below it (three 20 px rows with 4 px between them, under the preview).
+{"id": "items", "command": "client.click", "args": {"x": -79, "y": 37, "button": 0}, "expect": {"result.taken": true}}
+{"id": "itemsDrawn", "command": "wait", "args": {"ticks": 10}}
+{"id": "onItems", "command": "client.info", "expect": {"result.screen": "com.thirstwastaken2.client.config.ThirstCategoryScreen"}}
+{"id": "itemsShot", "command": "client.capture", "args": {"name": "config-item-values"}}
+
+// The second row of the list, 90 px right of the centre: inside a full-width row, and outside the
+// left-hand half-width column a row that had not been made full width would sit in. This opens the
+// file. Everything after it is the proof that the call returned.
+{"id": "openFile", "command": "client.click", "args": {"x": 90, "y": 72, "button": 0, "from": "top"}}
+{"id": "opened", "command": "wait", "args": {"ticks": 20}}
+{"id": "aliveAfterOpen", "command": "client.info", "expect": {"result.screen": "com.thirstwastaken2.client.config.ThirstCategoryScreen"}}
+{"id": "stateAfterOpen", "command": "client.state"}
+
+// Done on the page goes back to the root screen; Done on the root screen closes it.
+{"id": "pageDone", "command": "client.click", "args": {"x": 79, "y": -18, "button": 0, "from": "bottom"}, "expect": {"result.taken": true}}
+{"id": "backDrawn", "command": "wait", "args": {"ticks": 10}}
+{"id": "backAtRoot", "command": "client.info", "expect": {"result.screen": "com.thirstwastaken2.client.config.ThirstConfigScreen"}}
+{"id": "rootDone", "command": "client.click", "args": {"x": 79, "y": -18, "button": 0, "from": "bottom"}, "expect": {"result.taken": true}}
+{"id": "closedDrawn", "command": "wait", "args": {"ticks": 10}}
+{"id": "closedByDone", "command": "client.info", "expect": {"result.screen": null}}
+
+// And Cancel closes it too.
+{"id": "reopen", "command": "client.screen", "args": {"open": "config"}, "expect": {"result.screen": "com.thirstwastaken2.client.config.ThirstConfigScreen"}}
+{"id": "reopenDrawn", "command": "wait", "args": {"ticks": 10}}
+{"id": "rootCancel", "command": "client.click", "args": {"x": -79, "y": -18, "button": 0, "from": "bottom"}, "expect": {"result.taken": true}}
+{"id": "cancelDrawn", "command": "wait", "args": {"ticks": 10}}
+{"id": "closedByCancel", "command": "client.info", "expect": {"result.screen": null}}
+{"id": "aliveAtEnd", "command": "client.state"}

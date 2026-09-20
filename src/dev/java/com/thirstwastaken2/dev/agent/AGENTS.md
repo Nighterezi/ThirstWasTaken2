@@ -48,9 +48,12 @@ time.** A command that takes ticks to finish — `wait`, `client.hold`, `client.
 sequence rather than a batch of things that all happen in one tick.
 
 `drive.py` also accepts an `expect` object keyed by dotted reply paths, plus relational `checks`.
-Expectations use exact JSON equality; a mismatch is printed as `assertionErrors` and exits 1. A check
-has `left`, `op`, and either another reply path in `right` or a literal in `value`. The operations are
-`eq`, `ne`, `lt`, `le`, `gt`, `ge`, `contains`, `not_contains`, and `within` (with `tolerance`).
+Expectations use exact JSON equality; a mismatch is printed as `assertionErrors` and exits 1. An
+expected `null` passes when the path is absent as well as when it is null, because Gson leaves a null
+property out of the reply: that is how "no screen is open" is written. A check has `left`, `op`, and
+either another reply path in `right` or a literal in `value`. The operations are `eq`, `ne`, `lt`,
+`le`, `gt`, `ge`, `contains`, `not_contains`, and `within` (with `tolerance`); `contains` on a list of
+messages is membership, not a substring, so a whole message goes in `value`.
 
 `client.hud` includes numeric rectangles from the real thirst, food and air draw calls.
 `client.hud.toggle` changes the same vanilla hidden-HUD state as F1, so a script can assert both the
@@ -92,7 +95,13 @@ Unattended, without an agent at all:
 ```
 
 `-Pagent=<file>` answers that file once the game is up and then stops the game. The path is relative
-to the repository root. It applies to every run task of the node, clients included.
+to the repository root. It applies to every run task of the node, clients included. Nothing in the
+game reads the `expect` and `checks` lines beside the requests, so a run like this is checked
+afterwards against what it recorded:
+
+```bash
+python tools/agent/drive.py run/1.21.11-neoforge/agent/server tools/agent/server-probe.jsonl --verify
+```
 
 A client script that needs a world gets one with `-Pquickplay=<world>`, which opens that singleplayer
 world of `run/<node>/saves` straight from launch; server commands then reach its integrated server.
@@ -159,9 +168,9 @@ a client answers all three.
 | `client.chat` | `message` | after sending it |
 | `client.hold` | `keys`, `ticks` | the movement state before and after holding those keys for that long |
 | `client.key` | `key`, `down` | after setting one key's state and leaving it there |
-| `client.screen` | `open` (`none`, `config`) | which screen is open now |
+| `client.screen` | `open` (`none`, `config`, `inventory`) | which screen is open now |
 | `client.tooltip` | `item`, `count`, `advanced` | the tooltip lines that item produced, as text, with their colours |
-| `client.click` | `x`, `y`, `button`, `from` (`centre`, `corner`) | after pressing and releasing a mouse button on the open screen: which child was under the point and whether the press was taken |
+| `client.click` | `x`, `y`, `button`, `from` (`centre`, `corner`, `top`, `bottom`) | after pressing and releasing a mouse button on the open screen: which child was under the point and whether the press was taken |
 | `client.slots` | | the open menu's slots that hold something, with their class and player inventory index, and what the cursor carries |
 | `client.slot` | `slot` or `inventory`, `button`, `action` (`pickup`, `quick_move`, …) | the same, a few ticks after clicking that slot through the game mode |
 | `client.language` | `code` | the language now selected, after loading its translations again |
@@ -185,9 +194,15 @@ the movement keys the agent is deliberately holding.
 Clicks are for controls nothing else reaches, another mod's settings buttons for instance; a screen the
 game can open, and a slot, have commands of their own. `client.click` measures from the centre of the
 screen by default because a container screen is centred, so a control on one keeps its offset from
-the centre at any window size. `client.slot` takes a player inventory index as `inventory`, the
-`container.N` of `/item replace`, and finds that slot in whatever menu is open. `client.language`
-loads only the translations again: a full resource reload in a world freed a font atlas that Jade's
+the centre at any window size. A screen made of a header, a list and a footer anchors its rows to an
+edge rather than to the centre, so `from: "top"` and `from: "bottom"` keep x measured from the centre
+and measure y from that edge, which is what makes a script for the config screen portable between
+window sizes. `button` is 0 left, 1 right and 2 middle everywhere: 26.3 moved the client from GLFW to
+SDL, which numbers the buttons from one, and `AgentClientVanilla.click` turns the number back so that
+a file written on one node presses the same button on another.
+
+`client.slot` takes a player inventory index as `inventory`, the `container.N` of `/item replace`,
+and finds that slot in whatever menu is open. `client.language` loads only the translations again: a full resource reload in a world freed a font atlas that Jade's
 overlay drew from a frame later and crashed the client, and the fonts already hold every script.
 
 ## What a check looks like

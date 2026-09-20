@@ -79,7 +79,7 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
   <tr>
     <td width="55%">
       <b><a href="https://modrinth.com/mod/appleskin">AppleSkin</a></b><br>
-      <i>Fabric and NeoForge</i><br><br>
+      <i>Fabric and NeoForge on 1.21.1, 1.21.11, 26.1.2, 26.2 and 26.3</i><br><br>
       Displays your Quenched reserve directly on the HUD, with multiple styles available to choose from. Tooltips show exact thirst values for food and drinks.
     </td>
     <td width="45%">
@@ -89,7 +89,7 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
   <tr>
     <td width="55%">
       <b><a href="https://modrinth.com/mod/jade">Jade (WAILA)</a></b><br>
-      <i>Fabric and NeoForge</i><br><br>
+      <i>Fabric and NeoForge on 1.21.1, 1.21.11, 26.1.2, 26.2 and 26.3</i><br><br>
       Shows the purity grade of water sources, waterlogged blocks, and cauldrons directly under your crosshair. On NeoForge, it also supports hanging pots.
     </td>
     <td width="45%">
@@ -99,7 +99,7 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
   <tr>
     <td width="55%">
       <b><a href="https://nighterezi.github.io/ThirstWasTaken2/docs/features/farmers-delight">Farmer's Delight</a></b><br>
-      <i>Fabric: <a href="https://modrinth.com/mod/farmers-delight-refabricated">Farmer's Delight Refabricated</a><br>
+      <i>Fabric: <a href="https://modrinth.com/mod/farmers-delight-refabricated">Farmer's Delight Refabricated</a> on 1.21.1, 1.21.11, 26.1.2, 26.2 and 26.3<br>
       NeoForge: <a href="https://modrinth.com/mod/farmers-delight">Farmer's Delight</a> on 1.21.1</i><br><br>
       Soups, stews, and drinks restore thirst. The Cooking Pot purifies water to Pure grade. The Nourishment effect pauses thirst depletion.
     </td>
@@ -110,7 +110,7 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
   <tr>
     <td width="55%">
       <b><a href="https://nighterezi.github.io/ThirstWasTaken2/docs/features/create">Create</a></b><br>
-      <i>Fabric: <a href="https://modrinth.com/mod/create-fly">Create Fly</a> on 26.1.2 and 26.2<br>
+      <i>Fabric: <a href="https://modrinth.com/mod/create-fly">Create Fly</a> on 26.1.2 and 26.2 (no 26.3 build)<br>
       NeoForge: <a href="https://modrinth.com/mod/create">Create</a> on 1.21.1</i><br><br>
       Adds a Sand Filter to purify dirty water by one grade. Water also keeps its purity grade through pipes, pumps, tanks, drains, and spouts.
     </td>
@@ -121,7 +121,7 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
   <tr>
     <td width="55%">
       <b><a href="https://modrinth.com/mod/sophisticated-backpacks">Sophisticated Backpacks</a></b><br>
-      <i>NeoForge</i><br><br>
+      <i>NeoForge on 1.21.1, 1.21.11, 26.1.2 and 26.2 (no 26.3 build)</i><br><br>
       Adds the Drinking Upgrade, which drinks from your backpack when you get thirsty, the cleanest water first. Water keeps its purity grade in the Tank and Pump Upgrades. Also works with Sophisticated Storage.
     </td>
     <td width="45%">

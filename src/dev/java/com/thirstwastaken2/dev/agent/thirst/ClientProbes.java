@@ -230,12 +230,17 @@ final class ClientProbes {
             reply.ok(result);
         });
 
-        /* Screens are opened through the game, not by clicking at coordinates that move with the window. */
+        /* Screens are opened through the game, not by clicking at coordinates that move with the window.
+         * The inventory is here rather than behind client.hold because vanilla opens it from
+         * consumeClick, which a held key never reaches; it is where the effect list is drawn. */
         dispatcher.register("client.screen", (request, reply) -> {
             Minecraft minecraft = client();
-            String open = request.choice("open", "none", "none", "config");
-            ClientVanilla.setScreen(minecraft, open.equals("config")
-                    ? new ThirstConfigScreen(AgentClientVanilla.screen(minecraft)) : null);
+            String open = request.choice("open", "none", "none", "config", "inventory");
+            ClientVanilla.setScreen(minecraft, switch (open) {
+                case "config" -> new ThirstConfigScreen(AgentClientVanilla.screen(minecraft));
+                case "inventory" -> new net.minecraft.client.gui.screens.inventory.InventoryScreen(player(minecraft));
+                default -> null;
+            });
             JsonObject result = new JsonObject();
             result.addProperty("screen", screenName(minecraft));
             reply.ok(result);
@@ -280,16 +285,24 @@ final class ClientProbes {
          * A mouse click on the open screen, for a control that has no other way in, such as another
          * mod's settings button. Coordinates are GUI pixels from the centre of the screen by default:
          * container screens are centred, so a control on one sits at the same offset from the centre
-         * whatever the window's size, which is not true of an offset from the corner. The answer says
-         * which of the screen's children was under the point, and whether it took the press.
+         * whatever the window's size, which is not true of an offset from the corner. A screen built
+         * from a header and a footer anchors its rows to one edge instead, so {@code top} and {@code
+         * bottom} keep x from the centre and measure y from that edge, {@code bottom} upwards. The
+         * answer says which of the screen's children was under the point, and whether it took the
+         * press. {@code button} is 0 left, 1 right and 2 middle on every version; see
+         * {@link AgentClientVanilla#click}, which is where 26.3's renumbering is undone.
          */
         dispatcher.register("client.click", (request, reply) -> {
             Minecraft minecraft = client();
             Screen screen = AgentClientVanilla.screen(minecraft);
             if (screen == null) throw new AgentException("client.click: no screen is open");
-            boolean fromCentre = request.choice("from", "centre", "centre", "corner").equals("centre");
-            double x = request.decimal("x", 0.0F) + (fromCentre ? screen.width / 2.0 : 0.0);
-            double y = request.decimal("y", 0.0F) + (fromCentre ? screen.height / 2.0 : 0.0);
+            String from = request.choice("from", "centre", "centre", "corner", "top", "bottom");
+            double x = request.decimal("x", 0.0F) + (from.equals("corner") ? 0.0 : screen.width / 2.0);
+            double y = request.decimal("y", 0.0F) + switch (from) {
+                case "centre" -> screen.height / 2.0;
+                case "bottom" -> screen.height;
+                default -> 0.0;
+            };
             int button = request.has("button") ? request.integer("button", 0, 2) : 0;
             String target = screen.getChildAt(x, y).map(child -> child.getClass().getName()).orElse(null);
             boolean taken = AgentClientVanilla.click(screen, x, y, button);

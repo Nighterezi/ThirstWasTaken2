@@ -11,7 +11,8 @@
 // before it, taken a few ticks after /thirst set so the client has the new values. sandyBar's
 // "parched" has to be true: the HUD drew the sand-coloured droplets. The player is always @p, since
 // the dev player's name differs between loaders. The capture in
-// run/<node>/agent/client/screenshots/ shows the dry-tongue icon at the top right of the HUD.
+// run/<node>/agent/client/screenshots/ shows the dry-tongue icon at the top right of the HUD, and
+// parched-inventory.png shows the same effect named in the inventory's effect list.
 
 {"id": "load", "command": "wait", "args": {"ticks": 400}}
 {"id": "joined", "command": "client.state"}
@@ -117,3 +118,11 @@
 // Parched lasts 30.
 {"id": "settleIcon", "command": "wait", "args": {"ticks": 140}}
 {"id": "icon", "command": "client.capture", "args": {"name": "parched-hud"}}
+
+// The same effect in the inventory's effect list, which is drawn by a screen rather than by the HUD.
+// The inventory is opened through client.screen: vanilla opens it from consumeClick, which a held
+// key never reaches. The capture in screenshots/ has to show the dry tongue and the name "Parched".
+{"id": "openInventory", "command": "client.screen", "args": {"open": "inventory"}, "expect": {"result.screen": "net.minecraft.client.gui.screens.inventory.InventoryScreen"}}
+{"id": "inventoryDrawn", "command": "wait", "args": {"ticks": 10}}
+{"id": "effectList", "command": "client.capture", "args": {"name": "parched-inventory"}}
+{"id": "closeInventory", "command": "client.screen", "args": {"open": "none"}}

@@ -2,6 +2,7 @@
 
     python tools/agent/drive.py run/<node>/agent/server requests.jsonl
     echo '{"command": "probe"}' | python tools/agent/drive.py run/<node>/agent/server -
+    python tools/agent/drive.py run/<node>/agent/client requests.jsonl --verify
 
 The queue itself is two text files, so none of this is required: appending a line to `in.jsonl` and
 reading `out.jsonl` is the whole protocol, and that is what an agent with only file tools does. This
@@ -11,9 +12,11 @@ each one, so what it prints is in the order asked rather than the order the game
 
 Requests may carry an ``expect`` object and relational ``checks``. They are evaluated against the
 reply, so a shell gets exit 1 when the game answered the wrong value as well as when it refused or
-failed to answer a request::
+failed to answer a request. Nothing in the game reads them, so an unattended ``-Pagent`` run is
+checked afterwards with ``--verify``, which replays the same lines over the ``out.jsonl`` it left::
 
     {"command":"client.state","expect":{"result.thirst":7}}
+    {"command":"client.info","expect":{"result.screen":null}}
     {"command":"client.hud","checks":[
       {"left":"result.bar.bottom","op":"le","right":"result.food.top"}
     ]}
@@ -82,6 +85,11 @@ def assertions(request, answer):
         try:
             actual = value_at(answer, path)
         except MissingPath:
+            # A null expectation means "nothing is here". Gson leaves a null property out of the
+            # reply altogether, so a missing path and a null one are the same answer: the screen
+            # that is not open, the item a slot does not hold.
+            if wanted is None:
+                continue
             failures.append("%s is missing (expected %r)" % (path, wanted))
             continue
         if actual != wanted:
@@ -213,6 +221,34 @@ def drive(queue, requests, timeout):
     return failed
 
 
+def verify(queue, requests):
+    """Checks a finished run's out.jsonl against the assertions written beside its requests.
+
+    `-Pagent` answers a file without an agent at the other end, and nothing in the game reads an
+    `expect` or a `checks`: they are drive.py's. This replays them over what that run recorded, so an
+    unattended run is checked by the same lines an attended one is.
+    """
+    recorded, _ = replies(queue, 0)
+    answers = {answer.get("id"): answer for answer in recorded}
+    failed = False
+    for request in requests:
+        answer = answers.get(request["id"])
+        if answer is None:
+            failed = True
+            print(json.dumps({"id": request["id"], "command": request.get("command"), "ok": False,
+                              "error": "not in %s" % OUT}))
+            continue
+        if not answer.get("ok"):
+            failed = True
+        assertion_failures = assertions(request, answer)
+        if assertion_failures:
+            failed = True
+            answer = dict(answer)
+            answer["assertionErrors"] = assertion_failures
+        print(json.dumps(answer))
+    return failed
+
+
 def main():
     started = time.time() * 1000.0
     parser = argparse.ArgumentParser(description=__doc__,
@@ -224,9 +260,17 @@ def main():
                              "leave it off for a game that is already running")
     parser.add_argument("--timeout", type=float, default=120.0,
                         help="seconds to wait for the last answer (default 120)")
+    parser.add_argument("--verify", action="store_true",
+                        help="send nothing: check the queue's out.jsonl, as a -Pagent run left it, "
+                             "against the assertions in the request file")
     arguments = parser.parse_args()
 
     queue = pathlib.Path(arguments.queue)
+    if arguments.verify:
+        requests = load(arguments.requests)
+        if not requests:
+            raise SystemExit("no requests to check")
+        sys.exit(1 if verify(queue, requests) else 0)
     if arguments.ready:
         about = wait_for_ready(queue, arguments.ready, started)
         print(json.dumps({"ready": about}))

@@ -32,9 +32,19 @@ check, and every item below belongs to one of them:
 A pass can be driven with computer use, but checks with an exact answer should use the agent client.
 `tools/agent/hud-layout.jsonl` compares the real thirst, food and air draw rectangles,
 `hud-hidden.jsonl` proves the bar stops receiving draw calls while the HUD is hidden,
-`hud-death-screen.jsonl` proves it keeps receiving them on the death screen, and
-`client-sync.jsonl` asserts the client-owned values. The `manual-testing` skill in `.claude/skills`
-remains useful for the genuinely qualitative parts such as whether text is comfortable to read.
+`hud-death-screen.jsonl` proves it keeps receiving them on the death screen,
+`client-sync.jsonl` asserts the client-owned values, `waterskin-stack.jsonl` fills a waterskin from a
+stack of bottles through the real inventory menu, `loot-and-boil.jsonl` rolls the chest and barter
+tables and takes a boiled bottle out of a furnace and a smoker, and `config-screen.jsonl` presses the
+config screen's own buttons. The `manual-testing` skill in `.claude/skills` remains useful for the
+genuinely qualitative parts such as whether text is comfortable to read.
+
+`-Pagent` answers a file but reads none of the `expect` lines in it, so an unattended run is checked
+afterwards:
+
+```bash
+python tools/agent/drive.py run/26.3.x/agent/client tools/agent/loot-and-boil.jsonl --verify
+```
 
 Add `-Pdriven` when the agent client is doing the work and you want the machine back:
 
@@ -147,11 +157,13 @@ config screen *read* well, which is the sections below.
 - [x] Crouch with an empty hand and use water whose floor is out of reach (deep water, a waterfall):
       it is drunk all the same, once per click, and an item in the other hand is still used.
 - [x] Scooping with a bowl plays the bucket sound, with a waterskin the bottle sound.
-- [ ] After a drink of sea water, the Parched icon (a dry tongue) shows at the top right of the HUD
+- [x] After a drink of sea water, the Parched icon (a dry tongue) shows at the top right of the HUD
       and in the inventory's effect list, named "Parched", the thirst bar turns sandy, empty droplets
       included, and no particles swirl around the player. The effect itself, its level and its
       drain are checked by [tools/agent/parched.jsonl](../../tools/agent/parched.jsonl), which also
-      captures the HUD.
+      captures the HUD and the inventory's effect list. Checked from those two captures on `26.3.x`
+      and `26.3.x-neoforge` on 2026-09-20: the dry tongue at the top right, "Parched II" beside it in
+      the inventory, sandy droplets including the empty ones, and `show_particles` off.
 
 ### Config screen
 
@@ -197,19 +209,46 @@ each one differs is in [VERSION-DIFFERENCES.md](VERSION-DIFFERENCES.md).
 
 ### 26.3
 
-Nothing a player sees differs from 26.2, and every gametest passes, but no pass has been run by hand
-yet. Run the general checklist on `26.3.x` and `26.3.x-neoforge` before the release that ships them,
-and then these:
+Every gametest passes on both loaders, and an agent-client pass ran on `26.3.x` and
+`26.3.x-neoforge` on 2026-09-20 with every item below green on both. Beside them it covered the 81 px
+HUD aligned above the 81 px food row, hide and show, thirst retained on the death screen and
+respawn, the config root and live preview, hanging-pot boiling and salt retention, and Parched I and
+II drain.
 
-- [ ] F1 hides the bar, as on 26.2.
-- [ ] The config screen's "Open thirstwastaken2.json" button is one full-width row, and Done and
+- [x] F1 hides the bar, as on 26.2. Checked with the agent client on Fabric and NeoForge on
+      2026-09-20; `barShouldRender` became false and no fresh thirst row was drawn.
+- [x] The config screen's "Open thirstwastaken2.json" button is one full-width row, and Done and
       Cancel close the screen. 26.3 moved the call the button makes to open the file.
-- [ ] A sea-water bottle is drawn in the sea colour, and a sea-water bucket with its recoloured water.
-- [ ] The hanging pots drop themselves when broken. 26.3 removed the block codec they used to carry.
-- [ ] A waterskin filled from a stack of bottles puts the empty bottle back in the inventory.
-- [ ] Water bottles are found in the seeded structure chests and in Piglin barters, and the
+      [tools/agent/config-screen.jsonl](../../tools/agent/config-screen.jsonl) opens the Item Values
+      page and presses the button through the real screen: the file opened in the desktop's editor and
+      the client answered every request after it, so `Blaze3D.openPath` linked and ran. Done on the
+      page came back to the root screen, and Done and Cancel each left no screen open. The row's width
+      is in the `config-item-values` capture beside the queue: it spans the two half-width toggles
+      above it, and the press was taken 90 px right of the centre, where a half-width row does not
+      reach.
+- [x] A sea-water bottle is drawn in the sea colour, and a sea-water bucket with its recoloured water.
+      Checked from agent-client captures on Fabric and NeoForge on 2026-09-20.
+- [x] The hanging pots drop themselves when broken. 26.3 removed the block codec they used to carry.
+      The agent client also checked on both loaders that murky water stayed murky before the boil,
+      became pure afterwards, and salty water stayed salty.
+- [x] A waterskin filled from a stack of bottles puts the empty bottle back in the inventory.
+      [tools/agent/waterskin-stack.jsonl](../../tools/agent/waterskin-stack.jsonl) right-clicks a
+      slotted waterskin with three bottles on the cursor, through the player's own inventory menu:
+      one serving went in, two bottles stayed on the cursor and one empty bottle appeared in the
+      inventory rather than on the floor, and the two after it left the skin at three servings and
+      two empty bottles. Vanilla bottles stack to one, so the file gives them a
+      `minecraft:max_stack_size` of their own; that is the only way the branch is reachable, and it
+      is the shape a pack which makes potions stackable produces. A single bottle, the control, still
+      leaves the empty one on the cursor and nothing in the inventory.
+- [x] Water bottles are found in the seeded structure chests and in Piglin barters, and the
       `boil_water` advancement is awarded by a furnace or a smoker. Both are datapack shapes 26.3
-      changed.
+      changed. [tools/agent/loot-and-boil.jsonl](../../tools/agent/loot-and-boil.jsonl) rolls each
+      table where the pool is added rather than walking into a generated dungeon, twelve rolls apiece:
+      the dungeon, mineshaft and shipwreck supply tables each dropped fresh water bottles (8 to 15 per
+      table), and about 150 rolls of the barter table dropped 26 on Fabric and 27 on NeoForge. A
+      furnace turned a dirty bottle clean and a smoker turned a murky one pure, and taking each result
+      out through the open screen awarded `boil_water`, which is what vanilla's `recipe_crafted`
+      trigger sees.
 
 ### 26.2
 

@@ -61,16 +61,35 @@ final class AgentClientVanilla {
      * the button into one event.
      */
     static boolean click(Screen screen, double x, double y, int button) {
+        int code = mouseButton(button);
         //? if >1.21.1 {
         net.minecraft.client.input.MouseButtonEvent event = new net.minecraft.client.input.MouseButtonEvent(x, y,
-                new net.minecraft.client.input.MouseButtonInfo(button, 0));
+                new net.minecraft.client.input.MouseButtonInfo(code, 0));
         boolean taken = screen.mouseClicked(event, false);
         screen.mouseReleased(event);
         //?} else {
-        /*boolean taken = screen.mouseClicked(x, y, button);
-        screen.mouseReleased(x, y, button);
+        /*boolean taken = screen.mouseClicked(x, y, code);
+        screen.mouseReleased(x, y, code);
         *///?}
         return taken;
+    }
+
+    /**
+     * The game's number for a mouse button, from the 0 left, 1 right, 2 middle a script writes.
+     *
+     * <p>26.3 moved the client off GLFW and onto SDL, which numbers the buttons from one: left became
+     * 1 and right 3, so a button the caller meant as left arrived as right and {@code
+     * AbstractWidget.isValidClickButton} refused it. Reading the numbers out of {@code InputConstants}
+     * rather than passing the caller's through keeps one meaning on every node; anything past middle
+     * is passed on as it was given.
+     */
+    private static int mouseButton(int button) {
+        return switch (button) {
+            case 0 -> com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_LEFT;
+            case 1 -> com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_RIGHT;
+            case 2 -> com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_MIDDLE;
+            default -> button;
+        };
     }
 
     /**
