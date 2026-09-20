@@ -18,13 +18,22 @@ import org.slf4j.LoggerFactory;
  */
 public final class SupplementariesPresence {
     private static final String MOONLIGHT = "net/mehvahdjukaar/moonlight/core/Moonlight.class";
-    /** The soft fluid tank, which every mixin but the cauldron one reaches. */
-    private static final String SOFT_FLUIDS = "net/mehvahdjukaar/moonlight/api/fluids/SoftFluidTank.class";
+    /**
+     * The soft fluid system: its tank, and the internal class a load finishes in. The second is
+     * Moonlight's own rather than its API, which is the more likely of the two to move.
+     */
+    private static final String[] SOFT_FLUIDS = {
+        "net/mehvahdjukaar/moonlight/api/fluids/SoftFluidTank.class",
+        "net/mehvahdjukaar/moonlight/core/fluid/SoftFluidInternal.class",
+    };
 
     private static final String SUPPLEMENTARIES = "net/mehvahdjukaar/supplementaries/Supplementaries.class";
-    /** The faucet behaviour for vanilla cauldrons, the one Supplementaries class the integration touches. */
-    private static final String WATER_CAULDRON =
-            "net/mehvahdjukaar/supplementaries/common/block/faucet/WaterCauldronInteraction.class";
+    /** The faucet: its list of behaviours, and the two of them the integration takes over. */
+    private static final String[] FAUCET = {
+        "net/mehvahdjukaar/supplementaries/common/block/faucet/FaucetBehaviorsManager.class",
+        "net/mehvahdjukaar/supplementaries/common/block/faucet/WaterCauldronInteraction.class",
+        "net/mehvahdjukaar/supplementaries/common/block/faucet/LiquidBlockInteraction.class",
+    };
 
     private static final Logger LOGGER = LoggerFactory.getLogger("thirstwastaken2");
 
@@ -36,7 +45,8 @@ public final class SupplementariesPresence {
     public static boolean hasMoonlight() {
         Boolean known = moonlight;
         if (known == null) {
-            known = has(SOFT_FLUIDS);
+            known = true;
+            for (String fluids : SOFT_FLUIDS) known = known && has(fluids);
             if (!known && has(MOONLIGHT)) {
                 LOGGER.warn("Moonlight Lib is installed but is not a version ThirstWasTaken2 supports; "
                         + "water quality in jars, goblets and faucets is disabled");
@@ -49,10 +59,11 @@ public final class SupplementariesPresence {
     public static boolean hasSupplementaries() {
         Boolean known = supplementaries;
         if (known == null) {
-            known = hasMoonlight() && has(WATER_CAULDRON);
+            known = hasMoonlight();
+            for (String faucet : FAUCET) known = known && has(faucet);
             if (!known && has(SUPPLEMENTARIES)) {
                 LOGGER.warn("Supplementaries is installed but is not a version ThirstWasTaken2 supports; "
-                        + "a faucet will not keep the grade of the water in a cauldron");
+                        + "a faucet will not keep the grade of the water it moves");
             }
             supplementaries = known;
         }

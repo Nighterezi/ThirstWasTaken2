@@ -65,9 +65,9 @@ as the place a thirst mod's grade goes.
 | 2 | Sea water stays sea water | bug | **Done**, both loaders |
 | 3 | Faucet and water cauldron keep the cauldron's grade | bug | **Done**, both loaders |
 | 4 | Drink from a jar or a goblet | feature | **Done**, both loaders |
-| 10 | Faucet on world water samples it | bug | Not started |
-| 5 | Faucet fills and drains the hanging pot | feature | Not started |
-| 6 | The mod's own bowls as containers Moonlight knows | data | Not started |
+| 10 | Faucet on world water samples it | bug | **Done**, both loaders |
+| 5 | Faucet fills and drains the hanging pot | feature | **Done**, both loaders |
+| 6 | The mod's own bowls as containers Moonlight knows | data | **Done**, both loaders |
 | 7 | The grade is visible: tooltip, tint, Jade | feature | Not started |
 | 8 | Upstream: the two components in Moonlight's `water.json` | upstream | Not started |
 | 9 | Changelog and player docs | docs | Not started |
@@ -76,19 +76,20 @@ Order as with Sophisticated: **the bugs first**, item 1 before the others becaus
 of most of them, then the cheapest feature, then the rest. Item 8 runs in parallel and blocks nothing.
 Item 9 last.
 
-Items 1 to 4 are in, on both 1.21.1 nodes. How they work is in
+Items 1 to 6 and 10 are in, on both 1.21.1 nodes. How they work is in
 [src/main/supplementaries/AGENTS.md](../../src/main/supplementaries/AGENTS.md); what each one turned
-out to need is below. Item 10 was found while building them and is a bug of the same family, so it
-comes before the features. The player docs of item 9 are still to write, so nothing here is announced
-yet.
+out to need is below. Item 10 was found while building items 1 to 4 and is a bug of the same family,
+so it sits with them. What is left is the two that are only about showing a grade rather than
+keeping one, the upstream pull request, and the player docs: nothing here is announced yet.
 
 ## The bugs, and the one cause under them
 
-The four finished items were checked in a real client on both 1.21.1 nodes with
+The seven finished items were checked in a real client on both 1.21.1 nodes with
 [tools/agent/supplementaries.jsonl](../../tools/agent/supplementaries.jsonl), which pours a dirty
-bottle and a salty one through a jar and draws them back, pours a pure bottle into a goblet and drinks
-it, and runs two faucets between cauldrons. Both nodes answer the same. The gametests, which run
-without either mod, still pass on every node, which is the other half of the check.
+bottle, a salty one and a terracotta bowl through a jar and draws each back, pours a pure bottle into a
+goblet and drinks it, and runs five faucets: two between cauldrons, one over a pool, one draining a
+hanging pot and one filling another. Both nodes answer the same. The gametests, which run without
+either mod, still pass on every node, which is the other half of the check.
 
 With both mods installed today, **a jar launders water**. A dirty bottle poured into a jar and drawn
 back out is a plain water bottle, which the mod reads as `defaultPurity`, Clean by default. The same
@@ -191,7 +192,7 @@ Checked in the same script, with two faucets: a full dirty cauldron drained into
 as `water_cauldron[level=3,purity=1]`, dirty, and a pure cauldron poured into a dirty one leaves it
 dirty, which is `WaterQuality.worse` doing what pouring by hand does.
 
-### 10. Faucet on world water samples it
+### 10. Faucet on world water samples it (done)
 
 Found while building the four above, and a bug of the same family rather than a feature. A faucet
 pointed at a water source block in the world offers plain water, which the tank then reads as
@@ -199,11 +200,20 @@ pointed at a water source block in the world offers plain water, which the tank 
 hand comes out Dirty. Nothing here made that worse, but item 1 is what makes it stand out: every other
 way into a jar now carries a real grade and this one does not.
 
-The fix is `LiquidBlockInteraction`'s `getProvidedFluid`, stamped with `WaterPurity.sampleAt`. It needs
-care rather than cleverness: **sampling must never land on a tick path**, and a faucet runs on one. It
-takes the same answer as Create's pumps and Sophisticated's, a sample per position reused for 100
-ticks, which is `SampledWater` in `src/main/neoforge` and again in `src/main/createfly`. A third copy
-would have to live here, since neither of those is compiled by both loaders.
+`LiquidBlockInteractionMixin` stamps what `getProvidedFluid` offers with `WaterPurity.sampleAt`.
+**Sampling must never land on a tick path**, and a faucet runs on one, so the answer is kept for 100
+ticks per position, the same span Create's pumps and Sophisticated's use.
+
+This copy of `SampledWater` remembers a few positions rather than one. The other two remember one each
+because a pump is one machine; here a single behaviour serves every faucet in the world, and two
+faucets over different water would throw the one remembered answer away and take it again every tick.
+It hangs off the behaviour, which Supplementaries builds again on every data pack reload, so nothing
+outlives a world.
+
+Checked in the script with a pool whose biome is pinned to plains by `/fillbiome`, so both nodes'
+worlds score it the same: 55 for an ordinary biome, less 5 for being above y 100, which is grade 1.
+That is not `defaultPurity`, so the cauldron reading grade 1 tells a real sample apart from the
+fallback.
 
 ## The features
 
@@ -231,36 +241,67 @@ Checked in the same script: a goblet filled from a Pure bottle takes thirst from
 empty. Drinking a jar or goblet of sea water, and what a Murky one gives, are left to the manual pass
 for now.
 
-### 5. Faucet fills and drains the hanging pot
+### 5. Faucet fills and drains the hanging pot (done)
 
 The copper and iron hanging pots are the mod's own water block, and a faucet above one is the obvious
-build. The pot keeps its quality in a blockstate with no block entity, so it is a `FaucetSource.BlState`
-and a `FaucetTarget.BlState`, registered through `FaucetBehaviorsManager.addRegisterFaucetInteractions`.
-Listener order does not matter here: no built-in claims this block, so ours is reached.
+build. The pot keeps its quality in a blockstate with no block entity, so `HangingPotFaucet` is a
+`FaucetSource.BlState` and a `FaucetTarget.BlState`. A serving of the pot is a bottle of soft fluid,
+which makes the two counts the same number, and what the pot then holds is the pot's own:
+`HangingPotBlock.withPoured` keeps the worse of the two grades and what has boiled so far, exactly as
+pouring a container in by hand does.
 
-This is the **first item that needs an entry point**, because a listener has to be registered at init.
-Items 1 to 4 are mixins only and need none. See the build notes below for what that costs.
+The plan said this was the first item to **need an entry point**, and that it would cost two one-class
+directories, one per loader, to add a listener from. It does not. `FaucetBehaviorsManagerMixin`
+registers it where Supplementaries builds its own list, which is the same place at the same moment a
+listener would run, so it inherits the same order, and order does not matter for a block no built-in
+behaviour claims. The integration is still mixins only, and items 7 and 5 no longer make a case for an
+entry point between them.
 
-Checked with `tools/agent/supplementaries-pot.jsonl`: a faucet fills a pot from a jar above it and
-drains it into a cauldron below, both keeping the grade, and a pot holding Murky water refuses Clean.
+Checked in the script with two faucets: one drains a pot of dirty water into an empty cauldron, which
+arrives dirty and leaves the pot empty, and one fills an empty pot from a Murky cauldron, which ends
+with the pot full at that grade and the cauldron empty.
 
-### 6. The mod's own bowls as containers Moonlight knows
+### 6. The mod's own bowls as containers Moonlight knows (done)
 
 `moonlight:water`'s `containers` list is how Moonlight learns that an item is a water container. It
-already names a handful of other mods' cups and buckets. Adding `thirstwastaken2:terracotta_bowl` to
-`thirstwastaken2:terracotta_water_bowl` at `BOWL` capacity makes the mod's bowl work in a jar, a goblet
-and a faucet the way a vanilla bottle does.
+already names a handful of other mods' cups and buckets. `thirstwastaken2:terracotta_bowl` to
+`thirstwastaken2:terracotta_water_bowl` joins them, and the mod's bowl now works in a jar, a goblet and
+a faucet the way a vanilla bottle does.
+
+**At one serving, not Moonlight's `BOWL`, which is two.** The plan said `BOWL`; every other part of the
+mod says a terracotta water bowl holds one serving, and `WaterContainerFluids` on NeoForge already
+moves it as 250 mB.
+
+It is added through Moonlight's own protected call, from `SoftFluidInternal`, where a load finishes:
+the list has to be written **before Moonlight builds the map from item to fluid**, which is what
+decides whether an item can be poured out at all. That is also the one place the integration looks
+water up by registry key, and both had to move there, twice:
+
+- the first attempt added the bowl from `SoftFluid.afterInit`, which is where Moonlight adds the
+  buckets of a fluid's equivalents. It never fired, because it asked the entry whether it was water and
+  a soft fluid's account of itself is the `c:water` fluid tag, which is not bound that early;
+- the second looked water up by key at the head of the post-init instead, which broke every jar in the
+  game. Moonlight remembers the holder it resolves for a key, so a key looked up before the registry
+  has finished is remembered wrong for the rest of the load.
+
+Water is now looked up once, where the item map is built, and the entry is **marked** rather than
+remembered in a field of this mod's own: a client and the server it plays on each load the registry
+for themselves, so there are two water entries and a single field can only be right about one of
+them. That was the third failure, and it is what `WaterSoftFluid` exists for.
+
+Checked in the script: a Murky terracotta water bowl poured into a jar leaves the jar holding Murky
+water and the player holding an empty terracotta bowl, and using it again fills the bowl back up
+Murky.
 
 The waterskin is deliberately left out: it holds three servings with a fill level of its own, and
 `FluidContainerList` maps one empty item to one filled item with a fixed capacity, which cannot express
 it. On NeoForge the waterskin is already reachable through its fluid capability, so the faucet path
 covers it there anyway.
 
-This one is **data, not code**, but it is the same file as item 8 and has the same problem: the entry is
-a whole registry object, so writing our own `data/moonlight/moonlight/soft_fluid/water.json` replaces
-Moonlight's copy in full, which would silently drop every other mod's containers the day Moonlight adds
-one, and which pack wins is not something to rely on. So: **do not ship an override.** Send item 8
-upstream, and until it lands, add the bowl the same way item 1 adds the components, from the mixin.
+It is deliberately **not** a data pack copy of `moonlight:water`. The entry is a whole registry object,
+so shipping our own `data/moonlight/moonlight/soft_fluid/water.json` replaces Moonlight's in full,
+which would silently drop every other mod's containers the day Moonlight adds one, and which pack wins
+is not something to rely on. Item 8 is where that file should change, upstream.
 
 ### 7. The grade is visible
 
@@ -281,13 +322,15 @@ existing `client/compat/JadeIntegration`, which already samples blocks the same 
 ### 8. Upstream: the two components in Moonlight's `water.json`
 
 A pull request to Moonlight adding `thirstwastaken2:water_purity` and `thirstwastaken2:water_salty` to
-`preserved_components_from_item`, and the terracotta bowl pair to `containers`. The file already carries
+`preserved_components_from_item`, and the terracotta bowl pair to `containers` at a capacity of one
+bottle. The file already carries
 `thirst:purity` and seven other mods' containers, so this is a change the author has taken before.
 `CodecUtils.lenientHomogeneousList` is what parses both fields, so entries for mods that are not
 installed are skipped rather than failing the load.
 
-If it is merged, the `getPreservedComponents` half of item 1 and all of item 6 can be deleted, and
-everything else stays. If it is not, nothing is blocked. **Do not wait on it**, and do not make a
+If it is merged, the `getPreservedComponents` half of item 1 and the container half of item 6 can be
+deleted. The water mark stays either way: it is what tells the two registry entries apart, and every
+hook that has an entry rather than a stack needs it. If it is not, nothing is blocked. **Do not wait on it**, and do not make a
 released version depend on a Moonlight release that does not exist yet.
 
 ### 9. Changelog and player docs
@@ -334,13 +377,19 @@ src/main/supplementaries/java/com/thirstwastaken2/supplementaries/     both 1.21
   SupplementariesPresence     the gate: a classpath probe for each of the two mods
   SupplementariesMixinPlugin  applies each mixin only where its target is installed
   SoftFluidQuality            the only map between SoftFluidStack and WaterQuality
+  WaterSoftFluid              the mark that says which registry entry is water
   SoftFluidDrinking           a serving out of a jar or a goblet
   CauldronQuality             what a faucet and a water cauldron say about the water between them
+  HangingPotFaucet            the hanging pots as a faucet source and target
+  SampledWater                the grade of world water a faucet draws, kept for a few seconds
   mixin/SoftFluidMixin                  the two components onto water, for Moonlight's own conversions
   mixin/SoftFluidStackMixin             the mod's own stamping rules on every container a tank fills
   mixin/SoftFluidTankMixin              what goes into a tank, and drinking out of one
+  mixin/SoftFluidInternalMixin          where a load finishes: the water mark and the bowl
+  mixin/FluidContainerListAccessor      the one protected call that adds a container to a fluid
   mixin/WaterCauldronInteractionMixin   the faucet and the cauldron's purity
-  HangingPotFaucet            item 5 only: the faucet source and target
+  mixin/LiquidBlockInteractionMixin     the faucet and water in the world
+  mixin/FaucetBehaviorsManagerMixin     registers the hanging pots with the faucet
 src/main/supplementaries/resources/
   thirstwastaken2.supplementaries.mixins.json
 src/client/supplementaries/java/...     item 7 only: tooltip lines and the fluid tint
@@ -351,19 +400,20 @@ config to the built manifest when `deps.supplementaries` is set, the way both al
 and Sophisticated. The Fabric side also needs the mods on the `runClient` classpath; the NeoForge side
 the same through `clientRunMods`.
 
-### The entry point, and why items 1 to 4 avoid it
+### The entry point, and why nothing needs one yet
 
 A Fabric entrypoint class must implement `ModInitializer` and a NeoForge one must be annotated `@Mod`,
 and both name their loader, so neither can live in a directory both loaders compile. Nor can
 `src/main/java` call into this directory, since the nodes without Supplementaries would then not
 compile.
 
-**Items 1 to 4 are mixins only**, reached through the mixin config and the config plugin, so they need
-no entry point at all. Item 5 is the first that does, and it costs two one-class directories,
+**Everything built so far is mixins only**, reached through the mixin config and the config plugin, so
+none of it needs an entry point. Item 5 was expected to be the first that did, since it registers a
+behaviour with the faucet, and it would have cost two one-class directories,
 `src/main/supplementaries-fabric` and `src/main/supplementaries-neoforge`, each a shim calling one
-`init()` in the shared directory. That is the same shape the build already uses to pick
-`neoforge-fluidhandler` or `neoforge-transfer`. Worth knowing before item 5 is scheduled, and a reason
-to land 1 to 4 first.
+`init()`. Registering from a mixin into the place Supplementaries builds that list costs nothing and
+happens at the same moment, so it did not. Item 7 is the next candidate, and its client half would
+need one.
 
 ### How it stays optional
 
@@ -404,6 +454,13 @@ No hard dependency, ever, and the two 1.21.1 jars must behave identically with n
   agent script in a real client, on both 1.21.1 nodes, as with Sophisticated and Farmer's Delight.
   `runGametest` must keep passing unchanged, which is itself the check that the mod is unaffected when
   the mods are absent.
+- **Anything looked up by registry key is looked up late.** Moonlight remembers the holder it resolves
+  for a key, per registry, so a key asked for before a load has finished is remembered wrong for the
+  rest of that load, and a wrong `moonlight:water` breaks every jar in the game. The integration asks
+  once, where the item map is built, and marks the entry it gets. Cost most of an afternoon; do not
+  move it earlier.
+- **A client and its server each load the registry.** There are two of every soft fluid entry, even in
+  singleplayer, so nothing about one of them may be kept in a field of this mod's own.
 - **Licence.** Supplementaries and Moonlight are under the Supplementaries Team License. Compiling
   against them and shipping nothing of theirs is fine; nothing of theirs may be bundled or
   redistributed, and the dependency stays a Modrinth coordinate.

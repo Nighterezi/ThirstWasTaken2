@@ -2,19 +2,22 @@ package com.thirstwastaken2.supplementaries;
 
 import com.mojang.datafixers.util.Pair;
 import com.thirstwastaken2.config.ThirstConfig;
+import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.purity.ThirstComponents;
 import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.purity.WaterQuality;
+import com.thirstwastaken2.supplementaries.mixin.FluidContainerListAccessor;
 import net.mehvahdjukaar.moonlight.api.fluids.FluidContainerList;
 import net.mehvahdjukaar.moonlight.api.fluids.MLBuiltinSoftFluids;
 import net.mehvahdjukaar.moonlight.api.fluids.SoftFluid;
 import net.mehvahdjukaar.moonlight.api.fluids.SoftFluidStack;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,18 +36,23 @@ import java.util.List;
  * <p>This is {@code WaterFluids} for soft fluids, and it keeps the same rules for the same reasons.
  */
 public final class SoftFluidQuality {
+    /** What a terracotta water bowl holds, in bottles. One serving, as every other part of the mod has it. */
+    private static final int BOWL_SERVINGS = 1;
+
     private SoftFluidQuality() { }
 
     public static boolean isWater(SoftFluidStack stack) {
         return !stack.isEmpty() && stack.is(MLBuiltinSoftFluids.WATER);
     }
 
-    /**
-     * Asked of the registry entry rather than of a stack, for the one hook that has no stack. A soft
-     * fluid names the vanilla fluids it stands for, and water's are the {@code c:water} tag.
-     */
+    /** Asked of the registry entry rather than of a stack, by the mark on it; see {@link WaterSoftFluid}. */
     public static boolean isWater(SoftFluid fluid) {
-        return fluid.getVanillaFluid().value().isSame(Fluids.WATER);
+        return fluid instanceof WaterSoftFluid water && water.thirst$isWater();
+    }
+
+    /** {@code servings} bottles of water of a known grade, as a faucet or a block hands it on. */
+    public static SoftFluidStack water(Level level, WaterQuality quality, int servings) {
+        return stamp(SoftFluidStack.of(MLBuiltinSoftFluids.WATER.getHolder(level), servings), quality);
     }
 
     /** Unstamped water, from a creative tank or a mod that knows nothing of grades, is the config default. */
@@ -101,9 +109,7 @@ public final class SoftFluidQuality {
      * NeoForge fluid stack: a jar is an {@code IFluidHandler} there, so a pipe or a faucet pointed at a
      * tank moves its water through one.
      */
-    public static HolderSet<DataComponentType<?>> preserving(SoftFluid fluid,
-                                                             HolderSet<DataComponentType<?>> preserved) {
-        if (!isWater(fluid)) return preserved;
+    public static HolderSet<DataComponentType<?>> preserving(HolderSet<DataComponentType<?>> preserved) {
         List<Holder<DataComponentType<?>>> types = new ArrayList<>(preserved.stream().toList());
         types.add(holder(ThirstComponents.WATER_PURITY));
         types.add(holder(ThirstComponents.WATER_SALTY));
@@ -112,5 +118,23 @@ public final class SoftFluidQuality {
 
     private static Holder<DataComponentType<?>> holder(DataComponentType<?> type) {
         return BuiltInRegistries.DATA_COMPONENT_TYPE.wrapAsHolder(type);
+    }
+
+    /**
+     * Marks the water entry of the load in progress, and tells Moonlight that the mod's terracotta bowl
+     * is one of its containers, so a jar, a goblet and a faucet fill and empty it the way they do a
+     * vanilla bottle. `moonlight:water` lists a handful of other mods' cups by hand and this is the same
+     * list; it has to be written before Moonlight builds the map from item to fluid, which is what
+     * decides whether an item can be poured out at all.
+     *
+     * <p>The waterskin is deliberately left out: it holds three servings with a fill level of its own,
+     * and a container list maps one empty item to one filled item at a fixed capacity, which cannot say
+     * that. On NeoForge a faucet reaches the waterskin through its fluid capability anyway.
+     */
+    public static void adoptWater(HolderLookup.Provider registries) {
+        SoftFluid fluid = MLBuiltinSoftFluids.WATER.get(registries);
+        ((WaterSoftFluid) fluid).thirst$markWater();
+        FluidContainerListAccessor containers = (FluidContainerListAccessor) (Object) fluid.getContainerList();
+        containers.thirst$add(ThirstItems.TERRACOTTA_BOWL, ThirstItems.TERRACOTTA_WATER_BOWL, BOWL_SERVINGS);
     }
 }

@@ -4,10 +4,16 @@
   "plugin": "com.thirstwastaken2.supplementaries.SupplementariesMixinPlugin",
   "compatibilityLevel": "${java}",
   "mixins": [
+    "FaucetBehaviorsManagerMixin",
+    "FluidContainerListAccessor",
+    "LiquidBlockInteractionMixin",
+    "SoftFluidInternalMixin",
     "SoftFluidMixin",
     "SoftFluidStackMixin",
     "SoftFluidTankMixin",
     "WaterCauldronInteractionMixin"
   ],
-  "injectors": { "defaultRequire": 1 }
+  "injectors": {
+    "defaultRequire": 1
+  }
 }

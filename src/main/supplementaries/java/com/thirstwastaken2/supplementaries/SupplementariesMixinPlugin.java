@@ -12,7 +12,11 @@ import java.util.Set;
  * Moonlight Lib for the soft fluid mixins, Supplementaries itself for the cauldron one.
  */
 public final class SupplementariesMixinPlugin implements IMixinConfigPlugin {
-    private static final String CAULDRON = "WaterCauldronInteractionMixin";
+    /** The mixins whose target is Supplementaries' own; the rest are Moonlight's. */
+    private static final Set<String> SUPPLEMENTARIES_MIXINS = Set.of(
+            "FaucetBehaviorsManagerMixin",
+            "LiquidBlockInteractionMixin",
+            "WaterCauldronInteractionMixin");
 
     @Override
     public void onLoad(String mixinPackage) { }
@@ -24,7 +28,8 @@ public final class SupplementariesMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        return mixinClassName.endsWith(CAULDRON)
+        String name = mixinClassName.substring(mixinClassName.lastIndexOf('.') + 1);
+        return SUPPLEMENTARIES_MIXINS.contains(name)
                 ? SupplementariesPresence.hasSupplementaries()
                 : SupplementariesPresence.hasMoonlight();
     }

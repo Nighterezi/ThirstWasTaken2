@@ -1,6 +1,8 @@
 // Supplementaries and Moonlight Lib in a real client: water keeps its grade through a jar, sea water
-// stays sea water, a goblet of water can be drunk, and a faucet keeps what a cauldron holds. Only the
-// two 1.21.1 nodes have them on the runClient classpath. Run it unattended in a singleplayer world:
+// stays sea water, a goblet of water can be drunk, a faucet keeps what a cauldron or a hanging pot
+// holds and samples the water it draws out of the world, and the mod own terracotta bowl is a
+// container Moonlight knows. Only the two 1.21.1 nodes have them on the runClient classpath. Run it
+// unattended in a singleplayer world:
 //     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/supplementaries.jsonl -Pquickplay=SupplementariesAgent
 //     ./gradlew ":1.21.1:runClient" -Pagent=tools/agent/supplementaries.jsonl -Pquickplay=SupplementariesAgent
 // SupplementariesAgent is a throwaway world: copy level.dat out of any 1.21.1 world into
@@ -38,8 +40,12 @@
 {"id": "chunks", "command": "wait", "args": {"ticks": 100}}
 {"id": "day", "command": "server.command", "args": {"command": "time set noon"}}
 {"id": "clearWeather", "command": "server.command", "args": {"command": "weather clear 100000"}}
-{"id": "air", "command": "server.command", "args": {"command": "fill -9 200 -6 9 206 6 minecraft:air"}}
-{"id": "floor", "command": "server.command", "args": {"command": "fill -9 199 -6 9 199 6 minecraft:stone"}}
+{"id": "air", "command": "server.command", "args": {"command": "fill -13 200 -6 13 206 6 minecraft:air"}}
+{"id": "floor", "command": "server.command", "args": {"command": "fill -13 199 -6 13 199 6 minecraft:stone"}}
+// Plains everywhere, so the water sampled below scores the same in both worlds: 55 for an ordinary
+// biome, less 5 for being above y 100, which is grade 1. That is not defaultPurity, so the assertion
+// tells a real sample apart from the fallback.
+{"id": "biome", "command": "server.command", "args": {"command": "fillbiome -13 199 -6 13 206 6 minecraft:plains"}}
 
 // Two faucets, started first so they run while the jars are being used. Each has its source cauldron
 // behind it and its target cauldron below. A faucet is open when exactly one of powered and enabled
@@ -55,6 +61,28 @@
 {"id": "source2", "command": "server.command", "args": {"command": "setblock -6 201 0 minecraft:water_cauldron[level=2,purity=4]"}}
 {"id": "target2", "command": "server.command", "args": {"command": "setblock -7 200 0 minecraft:water_cauldron[level=1,purity=1]"}}
 {"id": "faucet2", "command": "server.command", "args": {"command": "setblock -7 201 0 supplementaries:faucet[facing=west,enabled=true,powered=false]"}}
+
+// A faucet over a water source block in the world. Supplementaries offers plain water, so without
+// the sampling the cauldron below would read defaultPurity, Clean, which is purity 3 as a cauldron
+// stores it. Sampled, plains water is grade 1, which is purity 2. The source is boxed in so its
+// flow stays put; a source block placed with setblock stays a source whatever it spills.
+{"id": "poolFloor", "command": "server.command", "args": {"command": "setblock -10 200 0 minecraft:stone"}}
+{"id": "poolWalls", "command": "server.command", "args": {"command": "fill -10 201 -1 -10 201 1 minecraft:stone"}}
+{"id": "poolBack", "command": "server.command", "args": {"command": "setblock -9 201 0 minecraft:stone"}}
+{"id": "poolLid", "command": "server.command", "args": {"command": "setblock -10 202 0 minecraft:stone"}}
+{"id": "pool", "command": "server.command", "args": {"command": "setblock -10 201 0 minecraft:water"}}
+{"id": "target3", "command": "server.command", "args": {"command": "setblock -11 200 0 minecraft:cauldron"}}
+{"id": "faucet3", "command": "server.command", "args": {"command": "setblock -11 201 0 supplementaries:faucet[facing=west,enabled=true,powered=false]"}}
+
+// A faucet draining a hanging pot into a cauldron, and another filling a pot from one. The pot is
+// the mod own water block and keeps its grade in a blockstate, the way a cauldron does.
+{"id": "potSupport", "command": "server.command", "args": {"command": "setblock 9 200 0 minecraft:stone"}}
+{"id": "potFull", "command": "server.command", "args": {"command": "setblock 9 201 0 thirstwastaken2:copper_hanging_pot[level=2,purity=1]"}}
+{"id": "target4", "command": "server.command", "args": {"command": "setblock 8 200 0 minecraft:cauldron"}}
+{"id": "faucet4", "command": "server.command", "args": {"command": "setblock 8 201 0 supplementaries:faucet[facing=west,enabled=true,powered=false]"}}
+{"id": "source5", "command": "server.command", "args": {"command": "setblock 12 201 0 minecraft:water_cauldron[level=3,purity=2]"}}
+{"id": "potEmpty", "command": "server.command", "args": {"command": "setblock 11 200 0 thirstwastaken2:copper_hanging_pot[level=0]"}}
+{"id": "faucet5", "command": "server.command", "args": {"command": "setblock 11 201 0 supplementaries:faucet[facing=west,enabled=true,powered=false]"}}
 
 // A dirty water bottle poured into a jar and drawn back out is still dirty.
 {"id": "jarA", "command": "server.command", "args": {"command": "setblock 0 200 0 supplementaries:jar"}}
@@ -106,6 +134,22 @@
 {"id": "quenched", "command": "server.players", "checks": [{"left": "result.players.0.thirst", "op": "gt", "value": 4}]}
 {"id": "gobletEmpty", "command": "server.command", "args": {"command": "execute if data block 4 200 0 {fluid:{count:0}}"}}
 
+// The mod own terracotta bowl is a container Moonlight knows, so a jar fills and empties it the way
+// it does a vanilla bottle. Moonlight is told about it where it adds the buckets of its own fluids.
+{"id": "jarC", "command": "server.command", "args": {"command": "setblock 6 200 0 supplementaries:jar"}}
+{"id": "clearD", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "murkyBowl", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with thirstwastaken2:terracotta_water_bowl[thirstwastaken2:water_purity=1,thirstwastaken2:water_salty=false]"}}
+{"id": "standD", "command": "server.command", "args": {"command": "tp @p 6.5 201 0.5 0 90"}}
+{"id": "settleD", "command": "wait", "args": {"ticks": 20}}
+{"id": "pourD", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "pouredD", "command": "wait", "args": {"ticks": 10}}
+{"id": "jarCHolds", "command": "server.command", "args": {"command": "data get block 6 200 0 fluid"}}
+{"id": "jarCGraded", "command": "server.command", "args": {"command": "execute if data block 6 200 0 {fluid:{id:\"moonlight:water\",components:{\"thirstwastaken2:water_purity\":1}}}"}}
+{"id": "emptiedD", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand thirstwastaken2:terracotta_bowl"}}
+{"id": "drawD", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "drawnD", "command": "wait", "args": {"ticks": 10}}
+{"id": "bowlRefilled", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand thirstwastaken2:terracotta_water_bowl[thirstwastaken2:water_purity=1,thirstwastaken2:water_salty=false]"}}
+
 // Back to somewhere the faucets are visible, and give them the rest of the time they need. Three
 // layers at twenty ticks a bottle is sixty; the wait is generous so a busy client cannot make it flaky.
 {"id": "watch", "command": "server.command", "args": {"command": "tp @p -5.5 201 4.5 180 20"}}
@@ -114,4 +158,9 @@
 {"id": "dirtyCarried", "command": "server.command", "args": {"command": "execute if block -3 200 0 minecraft:water_cauldron[level=3,purity=1]"}}
 {"id": "sourceDrained", "command": "server.command", "args": {"command": "execute if block -2 201 0 minecraft:cauldron"}}
 {"id": "worseKept", "command": "server.command", "args": {"command": "execute if block -7 200 0 minecraft:water_cauldron[level=3,purity=1]"}}
+{"id": "sampled", "command": "server.command", "args": {"command": "execute if block -11 200 0 minecraft:water_cauldron[level=3,purity=2]"}}
+{"id": "potDrained", "command": "server.command", "args": {"command": "execute if block 9 201 0 thirstwastaken2:copper_hanging_pot[level=0]"}}
+{"id": "potGaveDirty", "command": "server.command", "args": {"command": "execute if block 8 200 0 minecraft:water_cauldron[level=2,purity=1]"}}
+{"id": "potFilled", "command": "server.command", "args": {"command": "execute if block 11 200 0 thirstwastaken2:copper_hanging_pot[level=3,purity=2]"}}
+{"id": "potSourceDrained", "command": "server.command", "args": {"command": "execute if block 12 201 0 minecraft:cauldron"}}
 {"id": "unforce", "command": "server.command", "args": {"command": "forceload remove all"}}
