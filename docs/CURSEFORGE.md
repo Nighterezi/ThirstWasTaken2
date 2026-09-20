@@ -69,12 +69,11 @@ You do not need glass bottles to stay hydrated:
 
 Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box:
 
-### NeoForge
-
 <table>
   <tr>
     <td width="55%">
       <b><a href="https://www.curseforge.com/minecraft/mc-mods/appleskin">AppleSkin</a></b><br>
+      <i>Fabric and NeoForge</i><br><br>
       Displays your Quenched reserve directly on the HUD, with multiple styles available to choose from. Tooltips show exact thirst values for food and drinks.
     </td>
     <td width="45%">
@@ -84,7 +83,8 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
   <tr>
     <td width="55%">
       <b><a href="https://www.curseforge.com/minecraft/mc-mods/jade">Jade (WAILA)</a></b><br>
-      Shows the purity grade of water sources, waterlogged blocks, cauldrons, and hanging pots directly under your crosshair.
+      <i>Fabric and NeoForge</i><br><br>
+      Shows the purity grade of water sources, waterlogged blocks, and cauldrons directly under your crosshair. On NeoForge, it also supports hanging pots.
     </td>
     <td width="45%">
       <img alt="Jade showing the water grade under the crosshair" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/jade-water.png" width="100%">
@@ -92,16 +92,9 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
   </tr>
   <tr>
     <td width="55%">
-      <b><a href="https://www.curseforge.com/minecraft/mc-mods/create">Create (1.21.1)</a></b><br>
-      Add Sand Filter to purify dirty water by one grade. Water also keeps its purity grade through pipes, pumps, tanks, drains, and spouts.
-    </td>
-    <td width="45%">
-      <img alt="Engineer's Goggles showing Murky water entering the Sand Filter and Clean water leaving it" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/create-sand-filter-goggles.png" width="100%">
-    </td>
-  </tr>
-  <tr>
-    <td width="55%">
-      <b><a href="https://www.curseforge.com/minecraft/mc-mods/farmers-delight">Farmer's Delight (1.21.1)</a></b><br>
+      <b><a href="https://nighterezi.github.io/ThirstWasTaken2/docs/features/farmers-delight">Farmer's Delight</a></b><br>
+      <i>Fabric: <a href="https://modrinth.com/mod/farmers-delight-refabricated">Farmer's Delight Refabricated</a><br>
+      NeoForge: <a href="https://www.curseforge.com/minecraft/mc-mods/farmers-delight">Farmer's Delight</a> on 1.21.1</i><br><br>
       Soups, stews, and drinks restore thirst. The Cooking Pot purifies water to Pure grade. The Nourishment effect pauses thirst depletion.
     </td>
     <td width="45%">
@@ -110,7 +103,19 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
   </tr>
   <tr>
     <td width="55%">
+      <b><a href="https://nighterezi.github.io/ThirstWasTaken2/docs/features/create">Create</a></b><br>
+      <i>Fabric: <a href="https://modrinth.com/mod/create-fly">Create Fly</a> on 26.1.2 and 26.2<br>
+      NeoForge: <a href="https://www.curseforge.com/minecraft/mc-mods/create">Create</a> on 1.21.1</i><br><br>
+      Adds a Sand Filter to purify dirty water by one grade. Water also keeps its purity grade through pipes, pumps, tanks, drains, and spouts.
+    </td>
+    <td width="45%">
+      <img alt="Engineer's Goggles showing Murky water entering the Sand Filter and Clean water leaving it" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/create-sand-filter-goggles.png" width="100%">
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
       <b><a href="https://www.curseforge.com/minecraft/mc-mods/sophisticated-backpacks">Sophisticated Backpacks</a></b><br>
+      <i>NeoForge</i><br><br>
       Adds the Drinking Upgrade, which drinks from your backpack when you get thirsty, the cleanest water first. Water keeps its purity grade in the Tank and Pump Upgrades. Also works with Sophisticated Storage.
     </td>
     <td width="45%">
@@ -119,18 +124,15 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
   </tr>
   <tr>
     <td width="55%">
-      <b>Settings screen</b><br>
-      Open it from the Config button in NeoForge's Mods list, with a real-time HUD preview to customize drain rates, sickness chances, and HUD positioning.
+      <b><a href="https://nighterezi.github.io/ThirstWasTaken2/docs/configuration">Settings screen</a></b><br>
+      <i>Fabric and NeoForge</i><br><br>
+      Configure the mod in game with a live HUD preview. Fabric requires <a href="https://modrinth.com/mod/modmenu">Mod Menu</a>; NeoForge uses the Config button in its Mods list.
     </td>
     <td width="45%">
       <img alt="The ThirstWasTaken2 settings screen with its live HUD preview" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/config-screen.png" width="100%">
     </td>
   </tr>
 </table>
-
-### Fabric
-
-The [Fabric](https://modrinth.com/mod/thirst-was-taken-2) version supports AppleSkin, Jade, Farmer's Delight Refabricated, Create Fly and Mod Menu. Its full compatibility list is on the Modrinth page.
 
 ## Quick FAQ
 
