@@ -81,7 +81,7 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
   <tr>
     <td width="55%">
       <b><a href="https://modrinth.com/mod/appleskin">AppleSkin</a></b><br>
-      Displays your Quenched reserve directly on the HUD (Diamond, Ice, Gold, AppleSkin, or the original mod's Legacy outline). Tooltips show exact thirst values for every drink and food item.
+      Displays your Quenched reserve directly on the HUD, with multiple styles available to choose from. Tooltips show exact thirst values for food and drinks.
     </td>
     <td width="45%">
       <img alt="The thirst bar with AppleSkin, cycling through the Diamond, Ice, Gold, AppleSkin and Legacy quenched outlines" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/hud-appleskin.gif" width="100%">
@@ -132,7 +132,7 @@ Thirst Was Taken 2 connects seamlessly with popular survival mods out of the box
   <tr>
     <td width="55%">
       <b><a href="https://modrinth.com/mod/appleskin">AppleSkin</a></b><br>
-      Displays your Quenched reserve directly on the HUD (Diamond, Ice, Gold, AppleSkin, or the original mod's Legacy outline). Tooltips show exact thirst values for every drink and food item.
+      Displays your Quenched reserve directly on the HUD, with multiple styles available to choose from. Tooltips show exact thirst values for food and drinks.
     </td>
     <td width="45%">
       <img alt="The thirst bar with AppleSkin, cycling through the Diamond, Ice, Gold, AppleSkin and Legacy quenched outlines" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/hud-appleskin.gif" width="100%">
