@@ -79,7 +79,7 @@ Thirst Was Taken 2 integrates seamlessly with popular mods out of the box:
   <tr>
     <td width="55%">
       <b><a href="https://modrinth.com/mod/appleskin">AppleSkin</a></b><br>
-      <i>Fabric and NeoForge on 1.21.1, 1.21.11, 26.1.2, 26.2 and 26.3</i><br><br>
+      <i>Fabric and NeoForge</i><br><br>
       Displays your Quenched reserve directly on the HUD, with multiple styles available to choose from. Tooltips show exact thirst values for food and drinks.
     </td>
     <td width="45%">
@@ -89,7 +89,7 @@ Thirst Was Taken 2 integrates seamlessly with popular mods out of the box:
   <tr>
     <td width="55%">
       <b><a href="https://modrinth.com/mod/jade">Jade (WAILA)</a></b><br>
-      <i>Fabric and NeoForge on 1.21.1, 1.21.11, 26.1.2, 26.2 and 26.3</i><br><br>
+      <i>Fabric and NeoForge</i><br><br>
       Shows the purity grade of water sources, waterlogged blocks, and cauldrons directly under your crosshair.
     </td>
     <td width="45%">
@@ -99,7 +99,7 @@ Thirst Was Taken 2 integrates seamlessly with popular mods out of the box:
   <tr>
     <td width="55%">
       <b><a href="https://nighterezi.github.io/ThirstWasTaken2/docs/features/farmers-delight">Farmer's Delight</a></b><br>
-      <i>Fabric: <a href="https://modrinth.com/mod/farmers-delight-refabricated">Farmer's Delight Refabricated</a> on 1.21.1, 1.21.11, 26.1.2, 26.2 and 26.3<br>
+      <i>Fabric: <a href="https://modrinth.com/mod/farmers-delight-refabricated">Farmer's Delight Refabricated</a><br>
       NeoForge: <a href="https://modrinth.com/mod/farmers-delight">Farmer's Delight</a> on 1.21.1</i><br><br>
       Soups, stews, and drinks restore thirst. The Cooking Pot purifies water to Pure grade. The Nourishment effect pauses thirst depletion.
     </td>
