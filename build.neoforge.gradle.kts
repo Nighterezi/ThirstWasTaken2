@@ -145,6 +145,21 @@ if (sophisticatedCoreVersion != null) {
     }
 }
 
+/**
+ * Supplementaries' Modrinth version id, set on the two 1.21.1 nodes and nowhere else, since
+ * Supplementaries has no release for a newer Minecraft version. Everything the integration touches is in
+ * Moonlight Lib, which is multi loader, so unlike Create and Sophisticated one source directory serves
+ * both loaders and this block has a twin in build.gradle.kts. See src/main/supplementaries/AGENTS.md.
+ */
+val supplementariesVersion = findProperty("deps.supplementaries") as String?
+
+if (supplementariesVersion != null) {
+    sourceSets.main {
+        java.srcDir("src/main/supplementaries/java")
+        resources.srcDir("src/main/supplementaries/resources")
+    }
+}
+
 /*
  * The same gametests the Fabric nodes run, as their own small mod, so none of it reaches the jar.
  * `src/gametest/neoforge` holds the harness that finds and registers them, in place of Fabric API's;
@@ -382,6 +397,17 @@ dependencies {
             clientRunMods("maven.modrinth:sophisticated-storage:$it") { isTransitive = false }
         }
     }
+
+    if (supplementariesVersion != null) {
+        // Moonlight carries the soft fluid system three of the mixins target; Supplementaries itself only
+        // the faucet's cauldron behaviour.
+        compileOnly("maven.modrinth:supplementaries:$supplementariesVersion") { isTransitive = false }
+        compileOnly("maven.modrinth:moonlight:${property("deps.moonlight")}") { isTransitive = false }
+        // Test jars, goblets and faucets in runClient. The gametests and runServer run without them, which
+        // is what proves the mod is unchanged when they are absent.
+        clientRunMods("maven.modrinth:supplementaries:$supplementariesVersion") { isTransitive = false }
+        clientRunMods("maven.modrinth:moonlight:${property("deps.moonlight")}") { isTransitive = false }
+    }
 }
 
 /*
@@ -507,6 +533,31 @@ tasks.processResources {
                 |
                 |[[dependencies.thirstwastaken2]]
                 |modId = "sophisticatedcore"
+                |type = "optional"
+                |ordering = "NONE"
+                |side = "BOTH"
+                |""".trimMargin())
+        }
+    }
+    // The same for the Supplementaries integration. Moonlight is named as well as Supplementaries: three
+    // of the four mixins are its, and other mods ship it.
+    inputs.property("supplementaries", supplementariesVersion ?: "")
+    if (supplementariesVersion != null) {
+        val manifest = destinationDir.resolve("META-INF/neoforge.mods.toml")
+        doLast {
+            manifest.appendText("""
+                |
+                |[[mixins]]
+                |config = "thirstwastaken2.supplementaries.mixins.json"
+                |
+                |[[dependencies.thirstwastaken2]]
+                |modId = "supplementaries"
+                |type = "optional"
+                |ordering = "NONE"
+                |side = "BOTH"
+                |
+                |[[dependencies.thirstwastaken2]]
+                |modId = "moonlight"
                 |type = "optional"
                 |ordering = "NONE"
                 |side = "BOTH"

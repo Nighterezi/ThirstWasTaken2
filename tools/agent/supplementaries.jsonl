@@ -1,0 +1,117 @@
+// Supplementaries and Moonlight Lib in a real client: water keeps its grade through a jar, sea water
+// stays sea water, a goblet of water can be drunk, and a faucet keeps what a cauldron holds. Only the
+// two 1.21.1 nodes have them on the runClient classpath. Run it unattended in a singleplayer world:
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/supplementaries.jsonl -Pquickplay=SupplementariesAgent
+//     ./gradlew ":1.21.1:runClient" -Pagent=tools/agent/supplementaries.jsonl -Pquickplay=SupplementariesAgent
+// SupplementariesAgent is a throwaway world: copy level.dat out of any 1.21.1 world into
+// run/<node>/saves/SupplementariesAgent, fresh for each run. Then check what it recorded:
+//     python tools/agent/drive.py run/<node>/agent/client tools/agent/supplementaries.jsonl --verify
+// Every "execute" line has to say "Test passed", and the captures in
+// run/<node>/agent/client/screenshots/ show the scene.
+//
+// The blocks are right clicked by standing on them and looking straight down, which is the one aim a
+// script cannot miss. World edits go through server.command, which runs with the console's
+// permissions, so the world does not need cheats on.
+//
+// The player is killed and respawned first. A world built from another world's level.dat drops the
+// player wherever that one left them, with new terrain underneath, so they usually fall to their
+// death during the opening wait; killing first makes that the same every run rather than a race, and
+// a dead player interacts with nothing. The scene is force loaded because it is nowhere near spawn.
+//
+// The player is addressed by selector throughout: a Fabric dev client calls its player Player<NN>
+// and a NeoForge one calls it Dev, so a name would only ever fit one of the two nodes.
+
+{"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "arrived", "command": "client.state"}
+{"id": "survival", "command": "server.command", "args": {"command": "gamemode survival @p"}}
+{"id": "kill", "command": "server.command", "args": {"command": "kill @p"}}
+{"id": "dying", "command": "wait", "args": {"ticks": 20}}
+{"id": "respawn", "command": "client.respawn"}
+{"id": "respawned", "command": "wait", "args": {"ticks": 60}}
+{"id": "alive", "command": "client.state", "expect": {"result.alive": true}}
+
+// Go to the scene: a world may spawn the player far from it, where nothing is loaded.
+{"id": "forceload", "command": "server.command", "args": {"command": "forceload add -9 -6 9 6"}}
+{"id": "float", "command": "server.command", "args": {"command": "effect give @p minecraft:slow_falling 600 0 true"}}
+{"id": "safe", "command": "server.command", "args": {"command": "effect give @p minecraft:resistance 600 4 true"}}
+{"id": "view", "command": "server.command", "args": {"command": "tp @p 0.5 202 0.5 0 90"}}
+{"id": "chunks", "command": "wait", "args": {"ticks": 100}}
+{"id": "day", "command": "server.command", "args": {"command": "time set noon"}}
+{"id": "clearWeather", "command": "server.command", "args": {"command": "weather clear 100000"}}
+{"id": "air", "command": "server.command", "args": {"command": "fill -9 200 -6 9 206 6 minecraft:air"}}
+{"id": "floor", "command": "server.command", "args": {"command": "fill -9 199 -6 9 199 6 minecraft:stone"}}
+
+// Two faucets, started first so they run while the jars are being used. Each has its source cauldron
+// behind it and its target cauldron below. A faucet is open when exactly one of powered and enabled
+// holds, and nothing here is wired to redstone, so enabled alone opens it.
+//
+// The first drains a full dirty cauldron into an empty one: without the integration the water arrives
+// plain, which reads as defaultPurity, Clean.
+{"id": "source1", "command": "server.command", "args": {"command": "setblock -2 201 0 minecraft:water_cauldron[level=3,purity=1]"}}
+{"id": "target1", "command": "server.command", "args": {"command": "setblock -3 200 0 minecraft:cauldron"}}
+{"id": "faucet1", "command": "server.command", "args": {"command": "setblock -3 201 0 supplementaries:faucet[facing=west,enabled=true,powered=false]"}}
+// The second pours pure water into a dirty cauldron: the cauldron keeps the worse of the two, as it
+// does when a container is poured in by hand.
+{"id": "source2", "command": "server.command", "args": {"command": "setblock -6 201 0 minecraft:water_cauldron[level=2,purity=4]"}}
+{"id": "target2", "command": "server.command", "args": {"command": "setblock -7 200 0 minecraft:water_cauldron[level=1,purity=1]"}}
+{"id": "faucet2", "command": "server.command", "args": {"command": "setblock -7 201 0 supplementaries:faucet[facing=west,enabled=true,powered=false]"}}
+
+// A dirty water bottle poured into a jar and drawn back out is still dirty.
+{"id": "jarA", "command": "server.command", "args": {"command": "setblock 0 200 0 supplementaries:jar"}}
+{"id": "clearA", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "dirtyBottle", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with minecraft:potion[minecraft:potion_contents={potion:\"minecraft:water\"},thirstwastaken2:water_purity=0,thirstwastaken2:water_salty=false]"}}
+{"id": "standA", "command": "server.command", "args": {"command": "tp @p 0.5 201 0.5 0 90"}}
+{"id": "settleA", "command": "wait", "args": {"ticks": 20}}
+{"id": "pourA", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "pouredA", "command": "wait", "args": {"ticks": 10}}
+{"id": "jarAHolds", "command": "server.command", "args": {"command": "data get block 0 200 0 fluid"}}
+{"id": "jarAGraded", "command": "server.command", "args": {"command": "execute if data block 0 200 0 {fluid:{id:\"moonlight:water\",components:{\"thirstwastaken2:water_purity\":0}}}"}}
+{"id": "emptiedA", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand minecraft:glass_bottle"}}
+{"id": "drawA", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "drawnA", "command": "wait", "args": {"ticks": 10}}
+{"id": "stillDirty", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand minecraft:potion[thirstwastaken2:water_purity=0,thirstwastaken2:water_salty=false]"}}
+
+// Sea water is a water bottle with no grade at all. Without the integration Moonlight reads it as an
+// ordinary water bottle, so a jar turned the sea drinkable.
+{"id": "jarB", "command": "server.command", "args": {"command": "setblock 2 200 0 supplementaries:jar"}}
+{"id": "clearB", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "saltyBottle", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with minecraft:potion[minecraft:potion_contents={potion:\"minecraft:water\"},thirstwastaken2:water_salty=true]"}}
+{"id": "standB", "command": "server.command", "args": {"command": "tp @p 2.5 201 0.5 0 90"}}
+{"id": "settleB", "command": "wait", "args": {"ticks": 20}}
+{"id": "pourB", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "pouredB", "command": "wait", "args": {"ticks": 10}}
+{"id": "jarBHolds", "command": "server.command", "args": {"command": "data get block 2 200 0 fluid"}}
+{"id": "jarBSalty", "command": "server.command", "args": {"command": "execute if data block 2 200 0 {fluid:{id:\"moonlight:water\",components:{\"thirstwastaken2:water_salty\":1b}}}"}}
+{"id": "emptiedB", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand minecraft:glass_bottle"}}
+{"id": "drawB", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "drawnB", "command": "wait", "args": {"ticks": 10}}
+{"id": "stillSalty", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand minecraft:potion[thirstwastaken2:water_salty=true]"}}
+{"id": "noGrade", "command": "server.command", "args": {"command": "execute unless items entity @p weapon.mainhand minecraft:potion[thirstwastaken2:water_purity=0]"}}
+
+// A goblet of water can be drunk, which Supplementaries alone cannot do: Moonlight only drinks a fluid
+// that names a food item, and water names none.
+{"id": "goblet", "command": "server.command", "args": {"command": "setblock 4 200 0 supplementaries:goblet"}}
+{"id": "clearC", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "pureBottle", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with minecraft:potion[minecraft:potion_contents={potion:\"minecraft:water\"},thirstwastaken2:water_purity=3,thirstwastaken2:water_salty=false]"}}
+{"id": "standC", "command": "server.command", "args": {"command": "tp @p 4.5 201 0.5 0 90"}}
+{"id": "settleC", "command": "wait", "args": {"ticks": 20}}
+{"id": "pourC", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "pouredC", "command": "wait", "args": {"ticks": 10}}
+{"id": "gobletHolds", "command": "server.command", "args": {"command": "data get block 4 200 0 fluid"}}
+{"id": "gobletFull", "command": "server.command", "args": {"command": "execute if data block 4 200 0 {fluid:{id:\"moonlight:water\",components:{\"thirstwastaken2:water_purity\":3}}}"}}
+{"id": "emptyHand", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "thirsty", "command": "server.command", "args": {"command": "thirst set @p 4 0"}}
+{"id": "drink", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "drunk", "command": "wait", "args": {"ticks": 20}}
+{"id": "quenched", "command": "server.players", "checks": [{"left": "result.players.0.thirst", "op": "gt", "value": 4}]}
+{"id": "gobletEmpty", "command": "server.command", "args": {"command": "execute if data block 4 200 0 {fluid:{count:0}}"}}
+
+// Back to somewhere the faucets are visible, and give them the rest of the time they need. Three
+// layers at twenty ticks a bottle is sixty; the wait is generous so a busy client cannot make it flaky.
+{"id": "watch", "command": "server.command", "args": {"command": "tp @p -5.5 201 4.5 180 20"}}
+{"id": "run", "command": "wait", "args": {"ticks": 300}}
+{"id": "scene", "command": "client.capture", "args": {"name": "supplementaries-scene"}}
+{"id": "dirtyCarried", "command": "server.command", "args": {"command": "execute if block -3 200 0 minecraft:water_cauldron[level=3,purity=1]"}}
+{"id": "sourceDrained", "command": "server.command", "args": {"command": "execute if block -2 201 0 minecraft:cauldron"}}
+{"id": "worseKept", "command": "server.command", "args": {"command": "execute if block -7 200 0 minecraft:water_cauldron[level=3,purity=1]"}}
+{"id": "unforce", "command": "server.command", "args": {"command": "forceload remove all"}}

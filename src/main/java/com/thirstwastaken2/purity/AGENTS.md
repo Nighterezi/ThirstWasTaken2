@@ -24,6 +24,7 @@ compile, which is what stops salt water from quietly inheriting a grade's toolti
 | Copper hanging pot | the same property, unset while empty | `HangingPotBlock.quality(state)` |
 | Water in the world | biome baseline plus small local modifiers | `WaterPurity.sampleAt(level, pos)` |
 | A NeoForge `FluidStack` | one component: `water_purity`, or `water_salty` for sea water | `WaterFluids.quality(stack)`, in `src/main/neoforge` |
+| A Moonlight `SoftFluidStack` | the same one component, in a Supplementaries jar, goblet or faucet | `SoftFluidQuality.quality(stack)`, in `src/main/supplementaries` |
 | Anything unstamped | `ThirstConfig.defaultPurity`, fresh | falls out of `quality` |
 
 The cauldron value is `0` for unset, `1..4` for the four grades (offset by one so that zero can mean

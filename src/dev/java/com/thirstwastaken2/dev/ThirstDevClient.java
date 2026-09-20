@@ -36,6 +36,9 @@ public final class ThirstDevClient {
                 ClientWindow.open(Minecraft.getInstance());
                 ThirstAgent.start();
             }
+            // Before the queue is polled: a script's first line waits for a world, and on a driven
+            // client the prompt vanilla puts in front of one is nobody's to press.
+            ClientWindow.passWorldPrompt(Minecraft.getInstance());
             ThirstAgent.tick();
         });
         DevClientLoader.onClientStopping(ThirstAgent::flush);

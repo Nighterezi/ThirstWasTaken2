@@ -55,8 +55,8 @@ One source tree, one jar per node. Nodes are the Gradle subprojects in `settings
   marker-class probe when extending a foreign class) and keep integration classes off the load path.
 - **Mixins**: in `com.thirstwastaken2.mixin`, package-private, `abstract`, every injected member
   prefixed `thirst$`, listed in `thirstwastaken2.mixins.json` or they silently do nothing. Client,
-  Fabric-client, dev, Create, Create Fly and Sophisticated mixins have their own configs next to their
-  sources. A new config goes in both loader manifests.
+  Fabric-client, dev, Create, Create Fly, Sophisticated and Supplementaries mixins have their own
+  configs next to their sources. A new config goes in both loader manifests.
 - **Player state** is the immutable record `ThirstData`. Derive a new one and write through
   `ThirstManager.set` only when it changed; every write is a sync packet.
 - **Config** is the Gson POJO `ThirstConfig`. A new field: add it, clamp it in `sanitize()`, and if
@@ -143,6 +143,7 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | `src/main/createfly`, `src/client/createfly` | Where `deps.create_fly` is set (Fabric 26.1.x, 26.2.x; Create Fly has no 26.3 build) |
 | `src/main/create` | Where `deps.create` is set (`1.21.1-neoforge`) |
 | `src/main/sophisticated`, `src/client/sophisticated` | Where `deps.sophisticated_core` is set (every NeoForge node but `26.3.x-neoforge`) |
+| `src/main/supplementaries` | Where `deps.supplementaries` is set (both 1.21.1 nodes). The one optional integration both loaders compile |
 | `src/main/sophisticated-fluidhandler` / `sophisticated-transfer` | The same nodes, 1.21.1 / 1.21.11+: Sophisticated's tank and pump code |
 | `src/main/resources` | Hand-written assets and lang, all nodes |
 | `src/main/generated/<mc version>` | Datagen output, never hand-edited |
@@ -158,6 +159,7 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | Create Fly (Fabric) | [src/main/createfly/AGENTS.md](src/main/createfly/AGENTS.md) |
 | Create (NeoForge) | [src/main/create/AGENTS.md](src/main/create/AGENTS.md) |
 | Sophisticated Backpacks and Storage | [src/main/sophisticated/AGENTS.md](src/main/sophisticated/AGENTS.md) |
+| Supplementaries and Moonlight Lib (both loaders, 1.21.1) | [src/main/supplementaries/AGENTS.md](src/main/supplementaries/AGENTS.md) |
 
 ## Where to look
 
@@ -176,6 +178,7 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | Manual checks before a release | [docs/dev/MANUAL-TESTING.md](docs/dev/MANUAL-TESTING.md) |
 | Purification balance | [docs/dev/WATER-PURIFICATION-BALANCE.md](docs/dev/WATER-PURIFICATION-BALANCE.md) |
 | Sophisticated upgrades still to do | [docs/dev/SOPHISTICATED-INTEGRATION.md](docs/dev/SOPHISTICATED-INTEGRATION.md) |
+| Supplementaries work still to do | [docs/dev/SUPPLEMENTARIES-INTEGRATION.md](docs/dev/SUPPLEMENTARIES-INTEGRATION.md) |
 | Bad-water sickness rework, phase by phase | [docs/dev/WATER-SICKNESS.md](docs/dev/WATER-SICKNESS.md) |
 | Releasing | [tools/release/publish.py](tools/release/publish.py) and [publish_curseforge.py](tools/release/publish_curseforge.py) docstrings |
 | Documentation site, CHANGELOG, Modrinth and CurseForge pages | [docs/AGENTS.md](docs/AGENTS.md) and the `write-docs` skill |

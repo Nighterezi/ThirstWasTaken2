@@ -1,13 +1,19 @@
 package com.thirstwastaken2.dev.agent.thirst;
 
+import com.thirstwastaken2.ThirstWasTaken2;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 
 /**
- * What a client that is being driven rather than played does with its window and the mouse pointer.
+ * What a client that is being driven rather than played does with its window, the mouse pointer and
+ * the screens between it and a world.
  *
  * <p>A driven client is one an agent sends requests to while the person who launched it is doing
- * something else on the same desktop. Two things about a played client get in the way of that, and
- * both are turned around by {@code -Pdriven}:
+ * something else on the same desktop. Three things about a played client get in the way of that, and
+ * all are turned around by {@code -Pdriven}:
  *
  * <ul>
  *   <li><b>The pointer.</b> Minecraft takes the cursor as soon as the window is focused with a world
@@ -21,6 +27,11 @@ import net.minecraft.client.Minecraft;
  *       side by side and wrong for reading a HUD. A driven one is maximised instead. Maximised, not
  *       full screen: exclusive full screen takes the whole display and is exactly what a person
  *       working beside it does not want.</li>
+ *   <li><b>Vanilla's experimental settings prompt.</b> "Worlds using Experimental Settings are not
+ *       supported" stands between {@code -Pquickplay} and the world whenever a mod on the classpath
+ *       turns a feature flag on, which the Supplementaries and Moonlight Lib clients do. A driven
+ *       client presses "I know what I'm doing!" for itself; a played one still gets to read it. This
+ *       is the loader independent sibling of NeoForge's {@code LoadingWarnings}.</li>
  * </ul>
  *
  * <p>It is off by default because it is the opposite of what a manual pass needs: without the grab
@@ -36,6 +47,9 @@ public final class ClientWindow {
     private static final boolean DRIVEN =
             Boolean.parseBoolean(System.getProperty("thirstwastaken2.agent.driven", "false"))
                     || System.getProperty("thirstwastaken2.agent.script") != null;
+
+    /** "I know what I'm doing!", the button that opens a world vanilla calls experimental. */
+    private static final Component SKIP_BACKUP = Component.translatable("selectWorld.backupJoinSkipButton");
 
     private ClientWindow() { }
 
@@ -56,5 +70,30 @@ public final class ClientWindow {
         /*org.lwjgl.glfw.GLFW.glfwMaximizeWindow(AgentClientVanilla.windowHandle(minecraft));
         *///?}
         if (minecraft.mouseHandler.isMouseGrabbed()) minecraft.mouseHandler.releaseMouse();
+    }
+
+    /**
+     * Presses "I know what I'm doing!" on vanilla's experimental settings prompt, on a driven client
+     * only. Called from the client tick while no world is loaded, which is the only time the prompt can
+     * be up and keeps this off the path a client in a world takes.
+     *
+     * <p>The button is found by its message rather than by naming the screen, so a version that moves
+     * or renames that screen leaves the prompt standing rather than failing to compile. It is pressed
+     * by clicking its middle through {@link AgentClientVanilla#click}, which is where the one version
+     * difference in a click already lives; {@code Button.onPress} took an argument from 26.3.
+     */
+    public static void passWorldPrompt(Minecraft minecraft) {
+        if (!DRIVEN || minecraft.level != null) return;
+        Screen screen = AgentClientVanilla.screen(minecraft);
+        if (screen == null) return;
+        for (GuiEventListener child : screen.children()) {
+            if (child instanceof Button button && SKIP_BACKUP.equals(button.getMessage())) {
+                ThirstWasTaken2.LOGGER.info("[ThirstAgent] passing \"{}\" on {}",
+                        button.getMessage().getString(), screen.getClass().getSimpleName());
+                AgentClientVanilla.click(screen, button.getX() + button.getWidth() / 2.0,
+                        button.getY() + button.getHeight() / 2.0, 0);
+                return;
+            }
+        }
     }
 }

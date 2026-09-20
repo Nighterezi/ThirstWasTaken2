@@ -110,7 +110,7 @@ throwaway world made from another world's `level.dat`.
 
 ## Driving a client while the machine is in use
 
-A client that is being driven is not being played, and three things a played client does get in the way
+A client that is being driven is not being played, and four things a played client does get in the way
 of using the desktop it opened on, or of the run going anywhere at all. `-Pdriven` turns them around:
 
 ```bash
@@ -127,6 +127,13 @@ of using the desktop it opened on, or of the run going anywhere at all. `-Pdrive
 - **It opens maximised**, rather than at the small size the run tasks ask for, which is what makes the
   HUD worth looking at while a script drives it. Maximised and not full screen, on purpose: exclusive
   full screen takes over the display the person is working on.
+- **It passes vanilla's experimental settings prompt.** "Worlds using Experimental Settings are not
+  supported" stands between `-Pquickplay` and the world whenever a mod on the classpath turns a feature
+  flag on, which the Supplementaries and Moonlight Lib clients do, so an unattended run waits on a
+  button nobody is there to press. A driven client presses "I know what I'm doing!" for itself and
+  writes a line to the log; a played one still gets to read it. `ClientWindow.passWorldPrompt`, on the
+  client tick while no world is loaded. It finds the button by its message rather than by naming the
+  screen, so a version that moves that screen leaves the prompt standing rather than failing to build.
 - **On NeoForge it passes the "warnings while loading mods" screen** when no warning on it is this
   mod's, as if the button had been pressed, and logs each warning it passes over. Other mods' warnings
   (a deprecated `logoFile` in Cloth Config, AppleSkin's old translation key) otherwise stop a

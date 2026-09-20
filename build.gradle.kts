@@ -227,6 +227,54 @@ if (createFly != null) {
 }
 
 /**
+ * Supplementaries' Modrinth version id, set on the two 1.21.1 nodes and nowhere else, since
+ * Supplementaries has no release for a newer Minecraft version. Everything the integration touches is in
+ * Moonlight Lib, which is multi loader, so unlike Create Fly and Sophisticated one source directory
+ * serves both loaders and this block has a twin in build.neoforge.gradle.kts.
+ * See src/main/supplementaries/AGENTS.md.
+ */
+val supplementaries = findProperty("deps.supplementaries") as String?
+
+if (supplementaries != null) {
+    sourceSets.main {
+        java.srcDir("src/main/supplementaries/java")
+        resources.srcDir("src/main/supplementaries/resources")
+    }
+}
+
+/**
+ * The mods Moonlight bundles inside its own jar, CodecUI, which it reads on its first line. Loom does
+ * not unpack a dependency's nested jars into a run - which is why Cloth Config is named by hand for
+ * AppleSkin below - so they are taken out of the jar the run already resolves, and are therefore always
+ * the versions Moonlight ships. CodecUI is published nowhere else: Moonlight's own build reads it from
+ * a local Maven. They go back on a mod configuration so that Loom remaps them, since a published nested
+ * jar is in intermediary names and a run is not.
+ *
+ * Unpacked while the build is configured rather than by a task, because Loom resolves the mod
+ * configurations then: a jar a task writes afterwards is not there to be remapped and the run starts
+ * without it. The marker file makes this one directory listing on every build after the first.
+ */
+fun moonlightNestedMods(version: String): List<File> {
+    val into = layout.buildDirectory.dir("moonlight/$version").get().asFile
+    val unpacked = File(into, ".unpacked")
+    if (!unpacked.isFile) {
+        val jar = configurations.detachedConfiguration(
+            dependencies.create("maven.modrinth:moonlight:$version")
+        ).apply { isTransitive = false }.singleFile
+        copy {
+            from(zipTree(jar)) {
+                include("META-INF/jars/*.jar")
+                eachFile { path = name }
+            }
+            includeEmptyDirs = false
+            into(into)
+        }
+        unpacked.writeText(version)
+    }
+    return into.listFiles().orEmpty().filter { it.extension == "jar" }
+}
+
+/**
  * Every datapack and asset JSON the mod ships, written by `src/datagen`. The directory is keyed by
  * Minecraft version rather than by build node, because two nodes of the same Minecraft version on
  * different loaders produce byte-identical files and should share one directory. It is a resource
@@ -311,7 +359,7 @@ loom {
  * Adds a client-only mod dependency. Loom prefixes these configurations with `mod` where it remaps
  * dependencies and leaves them bare where it does not, so resolve the name that actually exists.
  */
-fun clientMod(configuration: String, notation: String) {
+fun clientMod(configuration: String, notation: Any) {
     val prefixed = "mod${configuration.replaceFirstChar(Char::uppercase)}"
     val target = if (configurations.findByName(prefixed) != null) prefixed else configuration
     dependencies.add(target, notation)
@@ -352,6 +400,20 @@ dependencies {
             "devRuntimeOnly"("maven.modrinth:create-fly:$createFly")
         }
     }
+
+    if (supplementaries != null) {
+        val moonlight = property("deps.moonlight").toString()
+        // Mixed into, so both have to be remapped mods rather than plain libraries: Moonlight for the
+        // soft fluid system, Supplementaries for its faucet's cauldron behaviour.
+        "modCompileOnly"("maven.modrinth:supplementaries:$supplementaries") { isTransitive = false }
+        "modCompileOnly"("maven.modrinth:moonlight:$moonlight") { isTransitive = false }
+        // Test jars, goblets and faucets in runClient. The gametests and runServer run without them, which
+        // is what proves the mod is unchanged when they are absent. CodecUI comes out of Moonlight's own
+        // jar, since Loom leaves a dependency's nested mods packed.
+        clientMod("clientRuntimeOnly", "maven.modrinth:supplementaries:$supplementaries")
+        clientMod("clientRuntimeOnly", "maven.modrinth:moonlight:$moonlight")
+        clientMod("clientRuntimeOnly", files(moonlightNestedMods(moonlight)))
+    }
 }
 
 tasks.processResources {
@@ -381,6 +443,19 @@ tasks.processResources {
                 listOf("com.thirstwastaken2.client.createfly.CreateFlyClientEntrypoint")
             @Suppress("UNCHECKED_CAST")
             (json.getValue("mixins") as MutableList<Any>).add(1, "thirstwastaken2.createfly.mixins.json")
+            manifest.writeText(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json)))
+        }
+    }
+
+    // The same for the Supplementaries integration, which is mixins only and so names no entrypoint.
+    inputs.property("supplementaries", supplementaries ?: "")
+    if (supplementaries != null) {
+        val manifest = destinationDir.resolve("fabric.mod.json")
+        doLast {
+            @Suppress("UNCHECKED_CAST")
+            val json = groovy.json.JsonSlurper().parse(manifest) as MutableMap<String, Any>
+            @Suppress("UNCHECKED_CAST")
+            (json.getValue("mixins") as MutableList<Any>).add("thirstwastaken2.supplementaries.mixins.json")
             manifest.writeText(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json)))
         }
     }

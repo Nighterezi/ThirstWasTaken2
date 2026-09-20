@@ -109,6 +109,10 @@ MODRINTH_DEPS = [
     ModrinthDep("sophisticated_core", "sophisticated-core", by_id=True, mirrors=()),
     ModrinthDep("sophisticated_backpacks", "sophisticated-backpacks", by_id=True, mirrors=()),
     ModrinthDep("sophisticated_storage", "sophisticated-storage", by_id=True, mirrors=()),
+    # Supplementaries and the Moonlight Lib it needs share one version number between their Fabric and
+    # NeoForge uploads, like AppleSkin, so both are pinned by id.
+    ModrinthDep("supplementaries", "supplementaries", by_id=True, mirrors=()),
+    ModrinthDep("moonlight", "moonlight", by_id=True, mirrors=()),
 ]
 
 

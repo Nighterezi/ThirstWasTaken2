@@ -65,6 +65,13 @@ Not in this package either: the Tank upgrade is reached through a mixin into Sop
 only Core's `IFluidHandler` generation (1.21.1) is supported, so it has a source directory of its own.
 See [src/main/sophisticated/AGENTS.md](../../../../sophisticated/AGENTS.md).
 
+## Supplementaries
+
+Not in this package either: a jar, a goblet and a faucet all move water through Moonlight Lib's soft
+fluids, which are mixed into, and only the two 1.21.1 nodes have a Supplementaries to compile against.
+It is the one optional integration **both loaders** compile, since Moonlight is multi-loader. See
+[src/main/supplementaries/AGENTS.md](../../../../supplementaries/AGENTS.md).
+
 ## LootIntegration
 
 `Loader.onLootTable` replacing the original's Forge global loot modifiers (Fabric's
