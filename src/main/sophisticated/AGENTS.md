@@ -61,7 +61,8 @@ sophisticated/resources/                                  every NeoForge node bu
   data/…                    both mods' upgrade tags
 sophisticated-<generation>/resources/data/…               the recipes and their unlocks, in each generation's format
 ../../client/sophisticated/java/com/thirstwastaken2/client/sophisticated/
-  SophisticatedClientEntrypoint  registers the settings tabs, after the gate
+  SophisticatedClientEntrypoint  asks the gate, and nothing else
+  DrinkingUpgradeTabs            registers the settings tabs, past the gate
   DrinkingUpgradeTab             the basic and advanced tabs
 ```
 
@@ -77,6 +78,13 @@ The same three layers as [src/main/create](../create/AGENTS.md).
    `ITrackedContentsItemHandler` on 1.21.1, `MutableStackItemAccess` from 1.21.11. A Core of the other
    generation is skipped with a warning instead of crashing on a missing mixin target. The mixin plugin
    and both entrypoints ask it before anything that names a Sophisticated class is loaded.
+
+   Asking is not enough on its own: the JVM verifies a class whole when it links it, before any code
+   in it runs, so a method that never runs still makes the verifier load the types it returns. An
+   entrypoint therefore names no Sophisticated type at all and calls into another class instead,
+   `DrinkingUpgradeTabs` on the client and `DrinkingUpgrade` on both sides. Registering the tabs in
+   `SophisticatedClientEntrypoint` itself crashed every client without Sophisticated Core, since
+   verifying the tab factories loaded `DrinkingUpgradeTab` and with it its Sophisticated superclass.
 
    The plan once split this gate per upgrade, so the Feeding mixin could apply on a node that had no
    tank code yet. With both generations written there is no such node, and a split would only let a

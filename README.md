@@ -36,14 +36,14 @@ Put the jar in the `mods` folder of the server and of every client. NeoForge fil
 
 ## Version Support
 
-| Minecraft version | Latest mod version | Support status |
+| Minecraft version | Mod version | Support status |
 |---|---|---|
-| 26.3 | 1.0.9 | Active |
-| 26.2 | 1.0.9 | Active |
-| 26.1, 26.1.1, 26.1.2 | 1.0.9 | Active |
-| 1.21.11 | 1.0.9 | Active |
-| 1.21.1 | 1.0.9 | Active |
-| 1.21 (Fabric only) | 1.0.9 | Active |
+| 26.3 | Latest | Active |
+| 26.2 | Latest | Active |
+| 26.1.x | Latest | Active |
+| 1.21.11 | Latest | Active |
+| 1.21.1 | Latest | Active |
+| 1.21 (Fabric only) | Latest | Active |
 
 ## Requirements
 

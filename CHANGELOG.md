@@ -2,6 +2,18 @@
 
 All notable changes to ThirstWasTaken2 are documented in this file.
 
+## [1.0.9.1] - 2026-09-21
+
+### Fixed
+
+- NeoForge clients no longer crash on startup when Sophisticated Core is missing. Sophisticated
+  Backpacks and Sophisticated Storage both ship it, so the crash hit any client without one of them.
+
+### Notes
+
+- NeoForge only. The Fabric files are unchanged, and dedicated servers were never affected.
+- Minecraft 26.3 was not affected, because Sophisticated Backpacks has no build for it yet.
+
 ## [1.0.9] - 2026-09-20
 
 ### Added
