@@ -33,8 +33,8 @@ deps.farmersdelight = "1.21.1-3.3.6"
 # Fabric and NeoForge uploads share a version number. See src/main/supplementaries/AGENTS.md.
 # 1.21.1-3.9.9, the Fabric upload.
 deps.supplementaries = "h8FyJ2as"
-# 1.21.1-3.6.5, the Fabric upload.
-deps.moonlight = "Grv7RNwq"
+# 1.21.1-3.6.6, the Fabric upload.
+deps.moonlight = "216OFjXQ"
 
 [neoforge."1.21.1"]
 # NeoForge on 1.21.1 only. 1.21 is NeoForge 21.0, a separate generation, so unlike the Fabric jar this
@@ -66,8 +66,8 @@ deps.sophisticated_storage = "H7wGZ8Sl"
 # Supplementaries and Moonlight Lib, the same integration the Fabric table builds; see there.
 # 1.21.1-3.9.9, the NeoForge upload.
 deps.supplementaries = "WrZWfRjP"
-# 1.21.1-3.6.5, the NeoForge upload.
-deps.moonlight = "yYx5Qs1i"
+# 1.21.1-3.6.6, the NeoForge upload.
+deps.moonlight = "21e1Amlo"
 
 ["1.21.11"]
 mod.mc_releases = ["1.21.11"]
