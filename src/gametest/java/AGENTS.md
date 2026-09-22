@@ -118,7 +118,9 @@ cauldron bottle draw.
 | Class | Covers |
 |---|---|
 | `WaterFillingGameTest` | bottle and bucket filling, that each fill resamples the water, that an abandoned fill leaves nothing behind |
-| `WaterEffectsGameTest` | salt water, dirty water, purified water, drinking, boiling not desalinating |
+| `WaterEffectsGameTest` | salt water, the taste dirty water always leaves and that it still quenches, purified water, drinking, boiling not desalinating |
+| `WaterSicknessGameTest` | the one roll per drink, forced into every range of each difficulty's table: exactly Poisoning's effects with Upset Stomach, Upset Stomach alone, or only the taste; Peaceful giving only the taste, Pure giving nothing on Hard, drinking again (extend, I to II, twice the time at most, a milder illness changing nothing) and the classic preset |
+| `UpsetStomachGameTest` | Upset Stomach draining faster than nothing and faster at II, Nausea costing nothing on top of it, the saturation it cuts at I and II, and that it never hurts on its own |
 | `HealthRegenGameTest` | dehydration halting regeneration and the food refund that has to accompany it |
 | `WaterskinGameTest` | mixing, salinity, capacity, emptying |
 | `TooltipGameTest` | the lines the mod adds to a tooltip, droplet row arithmetic, that the rows need AppleSkin, and that cached lines are handed out as copies |
@@ -134,10 +136,10 @@ cauldron bottle draw.
 | `ThirstApiGameTest` | what items restore from the config, the blacklist, the `c:drinks` tag fallback (the gametest mod tags a nautilus shell for it) and the magic drinks it leaves out, keyword matching and its blacklist, the per-item cache dropping on commit, and `sanitize` clamping a hand-edited config |
 | `IntegrationApiGameTest` | what another mod can use: data pack values loading, an unknown item skipped without losing its file, every step of the resolution order (config and blacklist over a data pack, a data pack over `c:drinks`, an entry of nothing over keywords), re-parsing the same packs, the sync payload round trip, the player and purity methods on `ThirstApi`, and `ThirstEvents` changing, cancelling and surviving a throwing listener. The gametest mod ships its data pack file and tags dried kelp `c:drinks` for it. Listeners cannot be unregistered, so each acts on its own test's players only |
 | `CommandGameTest` | `/thirst set` and `/thirst enable` through the dispatcher, the argument range, and the permission requirement |
-| `WaterInteractionsGameTest` | scooping with the bowl and the waterskin, the clay bowl holding nothing, drawing the waterskin from a cauldron, pouring it out, and a bottle drawn from a cauldron keeping its grade |
+| `WaterInteractionsGameTest` | scooping with the bowl and the waterskin, the clay bowl holding nothing, filling the waterskin in one scoop, drawing it from a cauldron only as deep as the cauldron is, pouring it out, and a bottle drawn from a cauldron keeping its grade |
 | `LootGameTest` | graded water in each seeded chest and in piglin bartering, no water anywhere else, and a table a data pack replaced still getting it |
 | `ItemAppearanceGameTest` | the custom model data bowls and waterskins dispatch on, the sea-water item model (1.21.2 and later), and the waterskin bar's width and colour |
-| `ContainerFluidGameTest` | the waterskin and the bowls through NeoForge's item fluid capability: whole servings only, one grade per container, the grade carried both ways, sea water staying salty, water with no grade filling as `defaultPurity`, no lava. NeoForge only, through `platform/ContainerFluids`: 1.21.1's `IFluidHandlerItem` and the transfer API from 1.21.11 run the same assertions. Fabric skips it |
+| `ContainerFluidGameTest` | the waterskin and the bowls through each loader's item fluid API: whole servings only, one grade per container, the grade carried both ways, sea water staying salty, water with no grade filling as `defaultPurity`, no lava. `platform/ContainerFluids` runs the same assertions through NeoForge 1.21.1's `IFluidHandlerItem`, NeoForge's transfer API from 1.21.11 and Fabric's Transfer API, in millibuckets |
 | `PlayerSyncGameTest` | that a player is told their own thirst and no one else's, with three players in range of each other. NeoForge only: what it exists to catch is `Loader.syncsTo`, and Fabric's counterpart is a value handed to Fabric API rather than a function the mod writes. There the same check is two agent clients, as [.../dev/agent/AGENTS.md](../../dev/java/com/thirstwastaken2/dev/agent/AGENTS.md) describes |
 
 `WaterskinGameTest` also covers pouring a bottle or bucket into a slotted waterskin from the cursor,

@@ -29,12 +29,12 @@ this one owns where the code goes. When they disagree, the design page wins and 
 
 | What | Where |
 |---|---|
-| The drink roll | `WaterPurity.applyEffects` (`src/main/java/com/thirstwastaken2/purity/WaterPurity.java`) |
+| The drink roll | `effect/WaterSickness`, called by `WaterPurity.applyEffects` |
 | Thirst drain per tick | `ThirstManager.tickPlayer`: `NAUSEA_EXHAUSTION = 0.06`, `PARCHED_EXHAUSTION = 0.01`, Hunger refund |
 | Dehydration damage | `ThirstManager.tickPlayer`, every `DAMAGE_INTERVAL = 40` ticks at zero thirst |
-| Effects | `ThirstEffects.PARCHED` |
-| Chance tables | `ThirstConfig.nauseaChance`, `poisonChance`, `nauseaSeconds`, `quenchWhenDebuffed` |
-| Effect tests | `src/gametest/java/com/thirstwastaken2/gametest/WaterEffectsGameTest.java` |
+| Effects | `ThirstEffects.PARCHED`, `ThirstEffects.UPSET_STOMACH` |
+| Chance tables | `ThirstConfig.sicknessPreset`, `sicknessEasy`, `sicknessNormal`, `sicknessHard` (`config/SicknessTable`) |
+| Effect tests | `WaterEffectsGameTest`, `UpsetStomachGameTest`, `WaterSicknessGameTest` in `src/gametest/java/com/thirstwastaken2/gametest/` |
 | HUD | `client/ThirstHud`, registered per loader in `client/platform/ClientLoader` |
 | Icons | `textures/mob_effect/parched.png`; `upset_stomach.png` from `tools/generate_upset_stomach_icon.py` |
 
@@ -55,37 +55,37 @@ Normal, where the design says it stops at half a heart. Decide whether the exist
 Note: `tools/generate_parched_icons.py` is referenced in `client/AGENTS.md` and
 `src/main/resources/AGENTS.md` but is not in `tools/`.
 
-## Step 2: Upset Stomach
+## Done: 2
 
-- `ThirstEffects.UPSET_STOMACH`, harmful, particles in the icon's green. Icon already in place.
-- `tickPlayer`: `UPSET_STOMACH_EXHAUSTION = 0.005F` per level.
-- Nausea bursts: a chance per second by level, rolled on the slow tick, giving 3 s of Nausea. The
-  existing `depletesWhenNauseous` drain applies to them.
-- Saturation multiplier through the existing `FoodDataMixin`.
-- Lang: `effect.thirstwastaken2.upset_stomach` ("Upset Stomach", vi "Đau bụng").
-- Gametests: faster drain, faster at II, less saturation, never lowers health on its own.
+- **2** `ThirstEffects.UPSET_STOMACH`, numbers in `effect/UpsetStomach`. Nausea bursts only roll when
+  the player is not already nauseous. `FoodDataMixin` reads the saturation multiplier at the head of
+  `FoodData#tick`, since `FoodData` has no player, and applies it in `add`. The thirst bar turns green
+  (`thirst_icons_upset_stomach.png`, from `tools/generate_upset_stomach_bar.py`), ahead of Parched.
+  Tests in `UpsetStomachGameTest`.
+- **Nausea has to last to be seen.** Vanilla fades Nausea in over 150 ticks and starts fading it out
+  60 ticks before it ends (`setBlendDuration(150, 20, 60)` on 26.2; the same ramp by hand on 1.21.1),
+  so 3 s or less shows nothing. The planned 3 s bursts and 2 s taste were invisible in game. Bursts
+  are 10 s, the taste 7 s and sea water's Nausea 8 s. Nausea's own drain is not charged while the
+  player has Upset Stomach, whose drain went from 0.005 to 0.008 per level to pay for its bursts, so
+  level I still costs about 2.4 thirst a minute.
 
-## Step 3: Poisoning
+## Done: 3 and 4
 
-- No new effect. Plain vanilla `MobEffectInstance`s from a per-difficulty table in `ThirstConfig`,
-  applied in `applyEffects` together with Upset Stomach.
-- Gametest: a forced Poisoning roll gives exactly the difficulty's effects.
-
-## Step 4: one roll per drink
-
-- `applyEffects`: the 2 s taste Nausea for Dirty and Murky on every difficulty; then, unless
-  Peaceful, one roll from 0 to 100 walked from worst to mildest (Dysentery, Poisoning, Upset
-  Stomach). Difficulty from `player.level().getDifficulty()` at the drink.
-- Re-drink: a worse outcome replaces, the same outcome extends up to twice its duration, Upset
-  Stomach I becomes II.
-- Every fresh drink quenches. Remove `quenchWhenDebuffed`.
-- Config: `upsetStomachChance`, `poisoningChance`, `dysenteryChance` as `float[difficulty][grade]`,
-  0-100; `sicknessPreset` (`realistic`, `classic` = the old roll). Drop `nauseaChance`,
-  `poisonChance`, `nauseaSeconds`. One config page per difficulty.
-- No tooltip change.
-- Update the "One roll drives both effects" bullet in `src/main/java/com/thirstwastaken2/purity/AGENTS.md`.
-- Gametests, one per difficulty: force the roll into each range and check the outcome; Pure gives
-  nothing on Hard; Peaceful gives only the taste.
+- **3** Poisoning is `WaterSickness.poisoning(difficulty)`, plain vanilla effects, given with Upset
+  Stomach. Its durations and levels are constants there, not config.
+- **4** `WaterPurity.applyEffects` hands fresh water to `effect/WaterSickness` and always quenches.
+  `quenchWhenDebuffed`, `nauseaChance`, `poisonChance` and `nauseaSeconds` are gone; the config has
+  `sicknessPreset` (`REALISTIC`, `CLASSIC`) and `sicknessEasy`, `sicknessNormal`, `sicknessHard`, each a
+  `SicknessTable` of `poisoningChance`, `upsetStomachChance` and `upsetStomachLevel` for Dirty, Murky
+  and Clean. The chances are whole percents (`int[]`): nothing before Dysentery needs a fraction.
+  One config page per difficulty, a header per grade.
+- **Choices made here:**
+  - Dysentery has no range yet, so the walk is Poisoning then Upset Stomach, and a Dirty drink on
+    Normal makes the player ill 75% of the time instead of 80%. Step 5 adds `dysenteryChance` in front.
+  - The current illness is read from the effects: Upset Stomach with Mining Fatigue is Poisoning.
+  - Upset Stomach from a drink shows its particles; Parched from salt water does not.
+  - `CLASSIC` is the roll from before the rework with its old defaults, not configurable.
+- Tests: `WaterSicknessGameTest` forces the roll into every range of every table.
 
 ## Step 5: Dysentery
 

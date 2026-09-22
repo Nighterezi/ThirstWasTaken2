@@ -33,4 +33,6 @@ The recipe unlocks once a Nozzle is picked up.
   it holds.
 - Pouring water into a Basin, Item Drain or tank keeps its grade.
 - Filling a bottle or bucket from a Spout or tank gives it the water's grade.
+- A Spout fills a waterskin in one go, and a terracotta bowl too. An Item Drain empties both. The
+  water keeps its grade, and a waterskin only takes water of the grade it already holds.
 - Water of different grades does not mix in one tank or pipe.

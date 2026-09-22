@@ -44,11 +44,13 @@ but that water is always Dirty.
 ![The waterskin recipe uses three leather and one string](/screenshots/waterskin-recipe.png)
 
 - Holds three drinks. Each restores 4 thirst and 5 quenched.
-- Use it on water or a water cauldron to add one drink.
+- Use it on water to fill it in one go. From a water cauldron it takes as many drinks as the
+  cauldron holds, up to full.
 - In the inventory, right-click it with a water bottle to add one drink, or with a water bucket to
   fill it. The empty container is returned.
-- Sneak and use it on a block to pour it out.
+- Sneak and use it on a block to pour it out, with the same splash as pouring a water bottle.
 - Mixed water takes the average grade, rounded down. One salty drink makes all of it salty.
+- Pipes and tanks from other mods can fill and empty it, one whole drink at a time.
 
 ## Drinking by hand
 

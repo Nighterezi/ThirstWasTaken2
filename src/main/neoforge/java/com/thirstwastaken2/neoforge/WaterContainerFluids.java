@@ -1,7 +1,6 @@
 package com.thirstwastaken2.neoforge;
 
-import com.thirstwastaken2.item.ThirstItems;
-import com.thirstwastaken2.item.WaterskinItem;
+import com.thirstwastaken2.item.WaterContainers;
 import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.purity.WaterQuality;
 import net.minecraft.world.item.ItemStack;
@@ -30,8 +29,7 @@ public final class WaterContainerFluids {
     private WaterContainerFluids() { }
 
     public static boolean handles(ItemStack stack) {
-        return stack.is(ThirstItems.WATERSKIN) || stack.is(ThirstItems.TERRACOTTA_BOWL)
-                || stack.is(ThirstItems.TERRACOTTA_WATER_BOWL);
+        return WaterContainers.handles(stack);
     }
 
     /** Only still water, the fluid every water source and bucket holds. */
@@ -40,7 +38,7 @@ public final class WaterContainerFluids {
     }
 
     public static int capacity(ItemStack stack) {
-        return stack.is(ThirstItems.WATERSKIN) ? WaterskinItem.CAPACITY * SERVING : SERVING;
+        return WaterContainers.capacity(stack) * SERVING;
     }
 
     /** {@code amount} rounded down to whole servings, so a request for 300 mB moves one. */
@@ -50,8 +48,7 @@ public final class WaterContainerFluids {
 
     /** The water in one container, stamped with its grade, or empty. */
     public static FluidStack contents(ItemStack stack) {
-        int servings = stack.is(ThirstItems.WATERSKIN) ? WaterskinItem.servings(stack)
-                : stack.is(ThirstItems.TERRACOTTA_WATER_BOWL) ? 1 : 0;
+        int servings = WaterContainers.servings(stack);
         if (servings == 0) return FluidStack.EMPTY;
         return WaterFluids.stamp(new FluidStack(Fluids.WATER, servings * SERVING), WaterPurity.quality(stack));
     }
@@ -62,16 +59,7 @@ public final class WaterContainerFluids {
      * to gain water.
      */
     public static ItemStack holding(ItemStack container, WaterQuality quality, int amount) {
-        if (amount < 0 || amount % SERVING != 0 || amount > capacity(container)) return null;
-        int servings = amount / SERVING;
-        if (container.is(ThirstItems.WATERSKIN)) {
-            ItemStack skin = container.copyWithCount(1);
-            int held = WaterskinItem.servings(skin);
-            if (servings > held) WaterskinItem.addWater(skin, quality, servings - held);
-            else if (servings < held) WaterskinItem.removeWater(skin, held - servings);
-            return skin;
-        }
-        if (servings == 0) return new ItemStack(ThirstItems.TERRACOTTA_BOWL);
-        return WaterPurity.setQuality(new ItemStack(ThirstItems.TERRACOTTA_WATER_BOWL), quality);
+        if (amount < 0 || amount % SERVING != 0) return null;
+        return WaterContainers.holding(container, quality, amount / SERVING);
     }
 }

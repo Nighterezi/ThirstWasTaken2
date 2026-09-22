@@ -72,6 +72,9 @@ Sprite geometry, which is easy to break:
   argument is shared. `tools/generate_parched_icons.py` draws it from `thirst_icons.png`; rerun it
   after touching the droplets rather than editing the parched sheet. The config preview always
   draws the plain sheet.
+- `thirst_icons_upset_stomach.png` is the same sheet in a venom green, drawn while the player has
+  Upset Stomach. It wins over Parched when both are on. `tools/generate_upset_stomach_bar.py` draws
+  it from `thirst_icons.png` by swapping its nine blues for a hand-drawn ramp; rerun it rather than editing the sheet.
 - The quarter and three-quarter frames come from `drainedFraction`, which spends the synced
   `exhaustion` (0..4) against the next point — and only once quenched is empty, so a quenched player
   never shows a partially drained droplet. There is no setting for this.

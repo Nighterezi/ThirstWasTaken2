@@ -9,6 +9,7 @@ public final class ThirstWasTaken2Fabric implements ModInitializer {
     @Override
     public void onInitialize() {
         ThirstWasTaken2.initialize();
+        WaterContainerStorage.register();
         // The Sand Filter. Only the builds that compile it declare this entrypoint, so on every other
         // Minecraft version the list is empty. See src/main/createfly/AGENTS.md.
         FabricLoader.getInstance().getEntrypoints("thirstwastaken2:createfly", ModInitializer.class)

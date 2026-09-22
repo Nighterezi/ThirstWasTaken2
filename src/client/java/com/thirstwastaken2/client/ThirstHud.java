@@ -23,6 +23,12 @@ public final class ThirstHud {
      * bar for Hunger. {@code tools/generate_parched_icons.py} draws it from {@link #ICONS}.
      */
     private static final Identifier PARCHED_ICONS = ThirstWasTaken2.id("textures/gui/thirst_icons_parched.png");
+    /**
+     * The same sheet in a venom green, drawn while the player has Upset Stomach, ahead of Parched.
+     * {@code tools/generate_upset_stomach_bar.py} draws it from {@link #ICONS}.
+     */
+    private static final Identifier UPSET_STOMACH_ICONS =
+            ThirstWasTaken2.id("textures/gui/thirst_icons_upset_stomach.png");
     private static final Identifier OVERLAY_ICONS = ThirstWasTaken2.id("textures/gui/appleskin_icons.png");
     private static final Identifier QUENCHED_ICONS = ThirstWasTaken2.id("textures/gui/quenched_overlay.png");
     private static final RandomSource RANDOM = RandomSource.create();
@@ -76,7 +82,8 @@ public final class ThirstHud {
         boolean shake = quenched <= 0 && player.tickCount % (thirst * 3 + 1) == 0;
 
         drawBar(graphics, right, top, thirst, quenched, data.exhaustion(), AppleSkin.quenchedOverlay(),
-                AppleSkinIntegration.shouldShowExhaustion(), shake, player.hasEffect(ThirstEffects.PARCHED));
+                AppleSkinIntegration.shouldShowExhaustion(), shake, player.hasEffect(ThirstEffects.PARCHED),
+                player.hasEffect(ThirstEffects.UPSET_STOMACH));
     }
 
     /**
@@ -85,9 +92,9 @@ public final class ThirstHud {
      */
     public static void drawBar(GuiGraphicsExtractor graphics, int right, int top, int thirst, int quenched,
                                float exhaustion, QuenchedOverlay overlay, boolean exhaustionStrip, boolean shake,
-                               boolean parched) {
+                               boolean parched, boolean upsetStomach) {
         if (exhaustionStrip) renderExhaustion(graphics, right, top, exhaustion);
-        Identifier icons = parched ? PARCHED_ICONS : ICONS;
+        Identifier icons = upsetStomach ? UPSET_STOMACH_ICONS : parched ? PARCHED_ICONS : ICONS;
 
         float level = thirst - drainedFraction(quenched, exhaustion);
         for (int i = 0; i < 10; i++) {

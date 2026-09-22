@@ -3,15 +3,16 @@ package com.thirstwastaken2.client.config;
 import com.thirstwastaken2.client.platform.ClientVanilla;
 import com.thirstwastaken2.compat.AppleSkin;
 import com.thirstwastaken2.config.QuenchedOverlay;
+import com.thirstwastaken2.config.SicknessPreset;
+import com.thirstwastaken2.config.SicknessTable;
 import com.thirstwastaken2.config.ThirstConfig;
-import net.minecraft.client.OptionInstance;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.OptionsList;
 
 import static com.thirstwastaken2.client.config.ConfigOptions.chanceSlider;
 import static com.thirstwastaken2.client.config.ConfigOptions.cycle;
 import static com.thirstwastaken2.client.config.ConfigOptions.percentSlider;
-import static com.thirstwastaken2.client.config.ConfigOptions.secondsSlider;
+import static com.thirstwastaken2.client.config.ConfigOptions.gradeName;
 import static com.thirstwastaken2.client.config.ConfigOptions.slider;
 import static com.thirstwastaken2.client.config.ConfigOptions.text;
 import static com.thirstwastaken2.client.config.ConfigOptions.toggle;
@@ -92,27 +93,8 @@ enum ConfigCategory {
                             value -> config.copperPotSecondsPerServing = value),
                     slider("iron_pot_seconds_per_serving", config.ironPotSecondsPerServing, 1, 100,
                             value -> config.ironPotSecondsPerServing = value),
-                    toggle("quench_when_debuffed", config.quenchWhenDebuffed,
-                            value -> config.quenchWhenDebuffed = value));
-
-            ClientVanilla.addHeader(list, text("category.purity_chances"));
-            for (int purity = 0; purity < 4; purity++) {
-                int index = purity;
-                list.addSmall(
-                        chanceSlider("nausea_chance", index, config.nauseaChance[index],
-                                value -> config.nauseaChance[index] = value),
-                        chanceSlider("poison_chance", index, config.poisonChance[index],
-                                value -> config.poisonChance[index] = value));
-            }
-
-            ClientVanilla.addHeader(list, text("category.nausea_seconds"));
-            OptionInstance<?>[] seconds = new OptionInstance<?>[4];
-            for (int purity = 0; purity < 4; purity++) {
-                int index = purity;
-                seconds[index] = secondsSlider("nausea_seconds", index, config.nauseaSeconds[index], 1, 60,
-                        value -> config.nauseaSeconds[index] = value);
-            }
-            list.addSmall(seconds);
+                    cycle("sickness_preset", SicknessPreset.values(), config.sicknessPreset,
+                            value -> config.sicknessPreset = value));
         }
 
         @Override
@@ -122,10 +104,43 @@ enum ConfigCategory {
             config.dripstonePurity = defaults.dripstonePurity;
             config.copperPotSecondsPerServing = defaults.copperPotSecondsPerServing;
             config.ironPotSecondsPerServing = defaults.ironPotSecondsPerServing;
-            config.quenchWhenDebuffed = defaults.quenchWhenDebuffed;
-            config.nauseaChance = defaults.nauseaChance.clone();
-            config.poisonChance = defaults.poisonChance.clone();
-            config.nauseaSeconds = defaults.nauseaSeconds.clone();
+            config.sicknessPreset = defaults.sicknessPreset;
+        }
+    },
+
+    SICKNESS_EASY("sickness_easy", false) {
+        @Override
+        void addOptions(OptionsList list, ThirstConfig config) {
+            sicknessOptions(list, config.sicknessEasy);
+        }
+
+        @Override
+        void reset(ThirstConfig config, ThirstConfig defaults) {
+            config.sicknessEasy = defaults.sicknessEasy.copy();
+        }
+    },
+
+    SICKNESS_NORMAL("sickness_normal", false) {
+        @Override
+        void addOptions(OptionsList list, ThirstConfig config) {
+            sicknessOptions(list, config.sicknessNormal);
+        }
+
+        @Override
+        void reset(ThirstConfig config, ThirstConfig defaults) {
+            config.sicknessNormal = defaults.sicknessNormal.copy();
+        }
+    },
+
+    SICKNESS_HARD("sickness_hard", false) {
+        @Override
+        void addOptions(OptionsList list, ThirstConfig config) {
+            sicknessOptions(list, config.sicknessHard);
+        }
+
+        @Override
+        void reset(ThirstConfig config, ThirstConfig defaults) {
+            config.sicknessHard = defaults.sicknessHard.copy();
         }
     },
 
@@ -195,6 +210,26 @@ enum ConfigCategory {
 
     boolean hasPreview() {
         return preview;
+    }
+
+    /**
+     * One difficulty's table: per grade, the chance of Poisoning, the chance of Upset Stomach and its
+     * level. Only used by the realistic preset, which the page says at the top.
+     */
+    private static void sicknessOptions(OptionsList list, SicknessTable table) {
+        ClientVanilla.addHeader(list, text("sickness_realistic_only"));
+        // One header per grade, so the slider labels stay short enough for a half-width button.
+        for (int grade = 0; grade < SicknessTable.GRADES; grade++) {
+            int index = grade;
+            ClientVanilla.addHeader(list, gradeName(index));
+            list.addSmall(
+                    chanceSlider("poisoning_chance", table.poisoningChance[index],
+                            value -> table.poisoningChance[index] = value),
+                    chanceSlider("upset_stomach_chance", table.upsetStomachChance[index],
+                            value -> table.upsetStomachChance[index] = value));
+            list.addSmall(slider("upset_stomach_level", table.upsetStomachLevel[index], 1,
+                    SicknessTable.MAX_UPSET_STOMACH_LEVEL, value -> table.upsetStomachLevel[index] = value));
+        }
     }
 
     abstract void addOptions(OptionsList list, ThirstConfig config);

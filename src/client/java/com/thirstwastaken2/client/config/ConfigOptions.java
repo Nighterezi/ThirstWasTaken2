@@ -45,23 +45,16 @@ final class ConfigOptions {
                 initial, setter::accept);
     }
 
-    static OptionInstance<Integer> chanceSlider(String key, int purity, int initial, IntConsumer setter) {
-        return gradeSlider(key, purity, initial, 0, 100, "%", setter);
-    }
-
-    static OptionInstance<Integer> secondsSlider(String key, int purity, int initial, int min, int max,
-                                                 IntConsumer setter) {
-        return gradeSlider(key, purity, initial, min, max, "s", setter);
-    }
-
-    /** One value per water grade, labelled with the grade's name and {@code unit} after the value. */
-    private static OptionInstance<Integer> gradeSlider(String key, int purity, int initial, int min, int max,
-                                                       String unit, IntConsumer setter) {
-        Component label = Component.translatable(translationKey(key),
-                Component.translatable("thirst.purity." + purityName(purity)));
+    /** A percentage from 0 to 100, labelled {@code <name>: <value>%}. */
+    static OptionInstance<Integer> chanceSlider(String key, int initial, IntConsumer setter) {
         return new OptionInstance<>(translationKey(key), tooltip(key),
-                (caption, value) -> Component.translatable("options.generic_value", label, value + unit),
-                new OptionInstance.IntRange(min, max), initial, setter::accept);
+                (caption, value) -> Component.translatable("options.generic_value", caption, value + "%"),
+                new OptionInstance.IntRange(0, 100), initial, setter::accept);
+    }
+
+    /** The name the game gives water of {@code purity}, as its tooltip shows it. */
+    static Component gradeName(int purity) {
+        return Component.translatable("thirst.purity." + purityName(purity));
     }
 
     static OptionInstance<Integer> percentSlider(String key, double initial, int min, int max, DoubleConsumer setter) {

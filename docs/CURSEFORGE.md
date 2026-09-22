@@ -23,9 +23,9 @@ Water is graded based on where you collect it:
 
 | Grade | Common Sources | Effects |
 | :--- | :--- | :--- |
-| **Dirty** | Swamps, stagnant pools | High chance of Poison and Nausea |
-| **Murky** | Standard rivers, lakes, caves | Moderate chance of Nausea |
-| **Clean** | Mountain rivers, deep aquifers, boiled water | Safe to drink, high hydration |
+| **Dirty** | Swamps, stagnant pools | Often causes Upset Stomach or Poisoning, worse on harder difficulties |
+| **Murky** | Standard rivers, lakes, caves | Can cause Upset Stomach or Poisoning |
+| **Clean** | Mountain rivers, deep aquifers, boiled water | Rarely makes you ill, high hydration |
 | **Pure** | Glaciers, rain cauldrons, refined drinks | Completely safe, maximum hydration |
 | **Salty** | Oceans and beaches | Cannot quench thirst; makes you Parched |
 

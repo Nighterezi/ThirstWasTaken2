@@ -4,7 +4,9 @@ import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.item.WaterskinItem;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
@@ -39,10 +41,15 @@ public final class WaterInteractions {
     private static final Queue<Runnable> END_OF_TICK = new ArrayDeque<>();
     /** Block update + client notify, matching what vanilla cauldron interactions use. */
     private static final int BLOCK_UPDATE_FLAGS = 3;
+    /** As many as vanilla shows for a bottle poured on dirt. */
+    private static final int SPLASH_PARTICLES = 5;
 
     private WaterInteractions() { }
 
-    /** Lets the terracotta bowl and waterskin scoop from any water, including flowing water. */
+    /**
+     * Lets the terracotta bowl and waterskin scoop from any water, including flowing water. A waterskin
+     * is filled in one go rather than a serving per click: a lake has no levels to lower.
+     */
     public static InteractionResult fillFromWater(Player player, Level level, InteractionHand hand) {
         ItemStack held = player.getItemInHand(hand);
         boolean bowl = held.is(ThirstItems.TERRACOTTA_BOWL);
@@ -63,7 +70,7 @@ public final class WaterInteractions {
                     new ItemStack(ThirstItems.TERRACOTTA_WATER_BOWL), quality);
             player.setItemInHand(hand, ItemUtils.createFilledResult(held, player, filled));
         } else {
-            WaterskinItem.addWater(held, quality, 1);
+            WaterskinItem.addWater(held, quality, WaterskinItem.CAPACITY);
         }
         level.playSound(null, player.blockPosition(), bowl ? SoundEvents.BUCKET_FILL : SoundEvents.BOTTLE_FILL,
                 SoundSource.NEUTRAL, 1.0F, 1.0F);
@@ -71,7 +78,10 @@ public final class WaterInteractions {
         return InteractionResult.SUCCESS_SERVER;
     }
 
-    /** Draws one serving from a water cauldron and lowers it by one vanilla layer. */
+    /**
+     * Draws as many servings as the waterskin has room for from a water cauldron, one vanilla layer
+     * each, so a full cauldron fills an empty skin in one click.
+     */
     public static InteractionResult fillWaterskinFromCauldron(Player player, Level level, InteractionHand hand,
                                                                BlockHitResult hit) {
         ItemStack held = player.getItemInHand(hand);
@@ -84,14 +94,20 @@ public final class WaterInteractions {
         if (!state.is(Blocks.WATER_CAULDRON)) return InteractionResult.PASS;
         if (level.isClientSide()) return InteractionResult.SUCCESS;
 
-        WaterskinItem.addWater(held, WaterPurity.sampleAt(level, pos), 1);
-        LayeredCauldronBlock.lowerFillLevel(state, level, pos);
+        int drawn = Math.min(WaterskinItem.CAPACITY - WaterskinItem.servings(held),
+                state.getValue(LayeredCauldronBlock.LEVEL));
+        // Sampled before lowering: an emptied cauldron no longer holds the purity.
+        WaterskinItem.addWater(held, WaterPurity.sampleAt(level, pos), drawn);
+        for (int i = 0; i < drawn; i++) LayeredCauldronBlock.lowerFillLevel(level.getBlockState(pos), level, pos);
         level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
         level.gameEvent(player, GameEvent.FLUID_PICKUP, pos);
         return InteractionResult.SUCCESS_SERVER;
     }
 
-    /** Sneak-using a filled waterskin on a block pours away all of its stored water. */
+    /**
+     * Sneak-using a filled waterskin on a block pours away all of its stored water, with the splash,
+     * droplets and sound of a water bottle poured on dirt.
+     */
     public static InteractionResult emptyWaterskinOnBlock(Player player, Level level, InteractionHand hand,
                                                            BlockHitResult hit) {
         ItemStack held = player.getItemInHand(hand);
@@ -102,9 +118,21 @@ public final class WaterInteractions {
 
         WaterskinItem.removeWater(held, WaterskinItem.CAPACITY);
         BlockPos pos = hit.getBlockPos();
-        level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+        splash(level, pos);
         level.gameEvent(player, GameEvent.FLUID_PLACE, pos);
         return InteractionResult.SUCCESS_SERVER;
+    }
+
+    /** What {@code PotionItem#useOn} plays and shows when a water bottle turns dirt into mud. */
+    private static void splash(Level level, BlockPos pos) {
+        level.playSound(null, pos, SoundEvents.GENERIC_SPLASH, SoundSource.BLOCKS, 1.0F, 1.0F);
+        if (level instanceof ServerLevel server) {
+            for (int i = 0; i < SPLASH_PARTICLES; i++) {
+                server.sendParticles(ParticleTypes.SPLASH, pos.getX() + level.getRandom().nextDouble(), pos.getY() + 1,
+                        pos.getZ() + level.getRandom().nextDouble(), 1, 0.0, 0.0, 0.0, 1.0);
+            }
+        }
+        level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
     }
 
     /**

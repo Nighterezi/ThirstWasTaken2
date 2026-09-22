@@ -38,7 +38,7 @@ cauldron or a hanging pot shows its grade, or Salty. It can be turned off in Jad
 Oceans and beaches give salt water. It has its own icon and tooltip line. On Minecraft 1.21 and
 1.21.1 only the bowl has its own icon.
 
-- Drinking it costs thirst, causes five seconds of Nausea and 30 seconds of Parched II.
+- Drinking it costs thirst, causes eight seconds of Nausea and 30 seconds of Parched II.
 - It cannot be boiled clean.
 - One salty drink makes a whole waterskin, cauldron or hanging pot salty.
 
@@ -63,16 +63,50 @@ Neither improves water already in the cauldron.
 
 ## Drinking bad water
 
-Fresh water always quenches thirst. The grade sets the risk.
+Fresh water always quenches thirst. The grade sets the risk, and harder difficulties make it worse.
+Pure water is always safe.
 
-| Grade | Nausea | Nausea lasts | Poison |
+Dirty and Murky water taste bad: every drink gives seven seconds of Nausea, even on Peaceful. Then each
+drink can make the player ill, with at most one illness at a time.
+
+| Chance per drink | Dirty | Murky | Clean |
 |---|---|---|---|
-| Dirty | 100% | 12 seconds | 30% |
-| Murky | 50% | 8 seconds | 10% |
-| Clean | 5% | 5 seconds | none |
-| Pure | none | | none |
+| Peaceful | none | none | none |
+| Easy | 15% Poisoning, 50% Upset Stomach I | 5% Poisoning, 30% Upset Stomach I | 5% Upset Stomach I |
+| Normal | 25% Poisoning, 50% Upset Stomach II | 10% Poisoning, 40% Upset Stomach I | 2% Poisoning, 10% Upset Stomach I |
+| Hard | 33% Poisoning, 45% Upset Stomach II | 20% Poisoning, 46% Upset Stomach II | 5% Poisoning, 15% Upset Stomach I |
 
-Nausea also makes thirst drain faster while it lasts. Poison lasts 10 seconds.
+Drinking again while ill rolls again. The same illness lasts longer, up to twice its time, and Upset
+Stomach I becomes II. A worse one adds its effects. A milder one does nothing.
+
+The chances can be changed per difficulty, or the old Nausea and Poison brought back, with
+[sicknessPreset](/docs/configuration#sicknesspreset).
+
+### Upset Stomach
+
+The common one. It never hurts on its own.
+
+- Thirst drains faster, twice as fast at level II.
+- The screen warps now and then, about once a minute at level I and twice at level II.
+- Food fills less saturation: three quarters at level I, half at level II.
+- The thirst bar turns green while it lasts.
+
+It lasts 45 seconds on Easy, 60 on Normal and 90 on Hard.
+
+![The thirst bar in green while the player has Upset Stomach](/screenshots/upset-stomach-hud.png)
+
+### Poisoning
+
+A bad batch. It comes with Upset Stomach, and milk cures it.
+
+| | Easy | Normal | Hard |
+|---|---|---|---|
+| Weakness | I, 30 seconds | I, 60 seconds | II, 90 seconds |
+| Mining Fatigue | I, 30 seconds | I, 60 seconds | II, 90 seconds |
+| Slowness | | | I, 60 seconds |
+| Poison | | 8 seconds | 15 seconds |
+
+Poison stops at half a heart, so Poisoning never kills.
 
 ## Cleaning fresh water
 
@@ -106,7 +140,7 @@ On Minecraft 1.21 and 1.21.1 the recipe uses a chain instead of an iron chain.
 
 - Holds three servings, like a cauldron. A bucket fills or empties it. A bottle or bowl adds or takes
   one.
-- A waterskin adds one serving. Sneak to pour all of it in.
+- A waterskin fills up from it in one go, as far as the pot has water. Sneak to pour all of it in.
 - Each serving takes 4 seconds, set by
   [copperPotSecondsPerServing](/docs/configuration#copperpotsecondsperserving).
 - Adding water only adds that water's time. Putting the fire out pauses the boil.

@@ -182,7 +182,7 @@ already has by default. The stack the furnace hands out is the same; see
 | Difference | Code |
 |---|---|
 | Item tooltips gained `addDetailsToTooltip` | `ItemStackMixin`; on 1.21.1 it wraps the hover-text call in `getTooltipLines` |
-| The Confusion effect was renamed Nausea, `Entity#moveTo` became `snapTo` | replacement |
+| The Confusion effect was renamed Nausea, Dig Slowdown Mining Fatigue and Movement Slowdown Slowness; `Entity#moveTo` became `snapTo` | replacement |
 | Fabric API gained its own `@GameTest` annotation | replacement; on 1.21.1 tests use vanilla's with Fabric's empty structure |
 | `GameTestHelper#assertTrue` takes a `Component` | `TestFixtures.check` |
 | Blockstate generators hand over a parsed definition rather than JSON | `HangingPotModels` |

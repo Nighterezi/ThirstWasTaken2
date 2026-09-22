@@ -7,6 +7,7 @@ import com.thirstwastaken2.compat.FarmersDelight;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.damage.ThirstDamageTypes;
 import com.thirstwastaken2.effect.ThirstEffects;
+import com.thirstwastaken2.effect.UpsetStomach;
 import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.platform.Vanilla;
 import com.thirstwastaken2.purity.WaterPurity;
@@ -172,12 +173,26 @@ public final class ThirstManager {
         // contribution back out so poisoned food does not double as dehydration. Both sides are raw
         // amounts from the same tick, so they cancel exactly instead of leaving float noise behind that
         // would still cost a sync packet.
+        boolean slowTick = player.tickCount % SLOW_TICK_INTERVAL == 0;
+        MobEffectInstance upsetStomach = player.getEffect(ThirstEffects.UPSET_STOMACH);
+        // Nausea bursts, rolled on the slow tick so the fast path stays a lookup.
+        if (upsetStomach != null && slowTick && !player.hasEffect(MobEffects.NAUSEA)
+                && player.getRandom().nextFloat()
+                        < UpsetStomach.burstChance(upsetStomach.getAmplifier(), SLOW_TICK_INTERVAL)) {
+            player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, UpsetStomach.NAUSEA_TICKS, 0,
+                    false, false, true));
+        }
+
         float raw = mirrored;
         MobEffectInstance hunger = player.getEffect(MobEffects.HUNGER);
         if (hunger != null) raw -= HUNGER_EXHAUSTION * (hunger.getAmplifier() + 1);
-        if (config.depletesWhenNauseous && player.hasEffect(MobEffects.NAUSEA)) raw += NAUSEA_EXHAUSTION;
+        // Upset Stomach's own drain already pays for its bursts, so Nausea is not charged on top of it.
+        if (config.depletesWhenNauseous && upsetStomach == null && player.hasEffect(MobEffects.NAUSEA)) {
+            raw += NAUSEA_EXHAUSTION;
+        }
         MobEffectInstance parched = player.getEffect(ThirstEffects.PARCHED);
         if (parched != null) raw += PARCHED_EXHAUSTION * (parched.getAmplifier() + 1);
+        if (upsetStomach != null) raw += UpsetStomach.EXHAUSTION * (upsetStomach.getAmplifier() + 1);
         // Nourishment stops thirst draining the way it stops hunger, as in the original mod. Everything
         // is dropped, including the negative amounts Farmer's Delight uses to cancel food exhaustion from
         // 1.21.11 on, so the Hunger refund above cannot turn into a refill either.
@@ -194,7 +209,6 @@ public final class ThirstManager {
         boolean discards = peaceful && data.quenched() == 0;
         float added = discards ? -data.exhaustion()
                 : unsynced + (raw == 0.0F ? 0.0F : raw * exhaustionModifier(player));
-        boolean slowTick = player.tickCount % SLOW_TICK_INTERVAL == 0;
         boolean regenerates = peaceful && slowTick && data.thirst() < ThirstData.MAX;
         // The same clamp ThirstData#addExhaustion applies.
         float exhaustion = Math.max(0.0F, data.exhaustion() + added);

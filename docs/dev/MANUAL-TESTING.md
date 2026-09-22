@@ -178,12 +178,28 @@ holding `{"values": {"minecraft:bread": {"thirst": 1, "quenched": 0}}}`:
       captures the HUD and the inventory's effect list. Checked from those two captures on `26.3.x`
       and `26.3.x-neoforge` on 2026-09-20: the dry tongue at the top right, "Parched II" beside it in
       the inventory, sandy droplets including the empty ones, and `show_particles` off.
+- [x] With Upset Stomach the thirst bar turns venom green, empty droplets included, and wins
+      over Parched. Checked on `26.2.x` on 2026-09-22 from an agent capture after
+      `effect give @p thirstwastaken2:upset_stomach 1000 0 true` (`docs/public/screenshots/upset-stomach-hud.png`).
+- [x] A Nausea burst of 10 seconds visibly warps the screen, growing for most of the burst and fading
+      at the end. Checked on `26.2.x` on 2026-09-22 by capturing frames through one burst against a
+      still baseline. How often bursts come, about once a minute at level I and twice at II, is still
+      to be watched in play.
+- [ ] Sneak and use a filled waterskin on a block: it empties with a splash sound, droplets and the
+      bottle sound, like a water bottle poured on dirt.
+- [ ] One use of an empty waterskin on water fills all three drinks; on a full water cauldron it
+      empties the cauldron; on a cauldron or hanging pot with less, it takes what is there.
 
 ### Config screen
 
 - [x] Mod Menu → ThirstWasTaken2 → Configure opens the root screen: the animated preview (tooltip on
-      the left, thirst bar above the food bar on the right), five page buttons with hover text, the
+      the left, thirst bar above the food bar on the right), eight page buttons with hover text, the
       server note, and Cancel and Done.
+- [x] The three Sickness pages show "Used when Sickness is Realistic", then a header per grade (Dirty,
+      Murky, Clean) with Poisoning, Upset Stomach and Upset Stomach Level, no label cut off. Checked on
+      `26.2.x` in English and Vietnamese on 2026-09-22 from agent captures.
+- [ ] Water Purity's Sickness button cycles Realistic and Classic, and Classic brings back the old
+      Nausea and Poison on a dirty drink.
 - [x] Every page opens, every slider and toggle has a tooltip, and no slider can go outside its range.
 - [x] Reset to Defaults puts that page back and leaves the other pages alone.
 - [x] Item Values → "Open thirstwastaken2.json" opens the file.
@@ -286,6 +302,12 @@ II drain.
 - [x] The config screen's "Open thirstwastaken2.json" button is one full-width row, and Done and
       Cancel close the screen (26.2 opens screens through a different call).
 - [x] A sea-water bottle is drawn in the sea colour, and a sea-water bucket with its recoloured water.
+- [x] Create Fly: a Spout with 1B of Murky water fills an empty waterskin on a Depot below it with a
+      gap, all three drinks Murky, in one go, and spends 750 mB; an empty terracotta bowl becomes a
+      water bowl of the Spout's grade; a waterskin holding another grade passes through untouched. An
+      Item Drain takes a full waterskin's 750 mB, and a water bowl's 250 mB, with their grade, and hands
+      back the empty container. Checked on 2026-09-22 through the agent queue, the items dropped onto the
+      Depot and the Drain with `summon item`.
 
 ### 26.1.x
 

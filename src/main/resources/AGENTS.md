@@ -183,6 +183,8 @@ compatibility but are not emitted. `tools/generate_quenched_overlay.py` writes t
 
 `textures/gui/thirst_icons.png` is 41x9 (five frames, 8px stride), and `thirst_icons_parched.png`
 beside it is the same sheet in sand for the Parched effect, drawn by `tools/generate_parched_icons.py`.
+`thirst_icons_upset_stomach.png` is the same sheet in venom green for Upset Stomach, drawn by
+`tools/generate_upset_stomach_bar.py`.
 `textures/gui/quenched_overlay.png` is 36x45 (four frames per row, one row per coloured
 `QuenchedOverlay`), and `textures/gui/appleskin_icons.png` is a 256x256 sheet whose only content is
 the `v = 18` AppleSkin exhaustion strip. `ThirstHud` documents the exact blits.

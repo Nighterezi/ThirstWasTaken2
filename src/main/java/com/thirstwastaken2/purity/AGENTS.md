@@ -34,7 +34,7 @@ carries, and for a boolean that value is `true`**, so a separate salinity flag m
 cauldron read as sea water. `WaterPurity.storedValue` and `storedQuality` are the only two places
 that know the encoding.
 
-## The waterskin and the bowls as fluid containers (NeoForge)
+## The waterskin and the bowls as fluid containers
 
 On NeoForge the waterskin, the terracotta bowl and the terracotta water bowl carry the item fluid
 capability, so other mods' pipes, tanks and pumps can fill and empty them: a Create Spout or Item
@@ -56,9 +56,14 @@ rules, and each of NeoForge's two fluid APIs gets a thin handler over them, chos
 - The handlers answer with the stack as it is afterwards. The transfer handler swaps it through its
   `ItemAccess`, so a filled empty bowl becomes a water bowl in whatever slot the access allows.
 
-Fabric has no counterpart yet; the Transfer API would need its own storage for these.
-`ContainerFluidGameTest` checks both NeoForge handlers against one set of assertions and skips on
-Fabric.
+On Fabric the same three items are Transfer API fluid storage (`FluidStorage.ITEM`), through
+`WaterContainerStorage` in `src/main/fabric`. That is what a Create Fly Spout fills and an Item Drain
+empties, through Create Fly's own bridge to the Transfer API. The rules are the same, and so is the
+serving: 250 mB, 20250 droplets, not Fabric's 27000-droplet bottle, so both loaders move the same
+water. The grade rides on the `FluidVariant` as one component, as on Create's fluid stacks.
+
+What both loaders share, counted in servings, is `item/WaterContainers`. `ContainerFluidGameTest`
+checks all three implementations against one set of assertions, in millibuckets.
 
 ## Rules the code keeps
 
@@ -107,14 +112,16 @@ Fabric.
 - **Optional mod support is by registry id only.** `resolve` matches namespaces (currently only
   `farmersdelight`) as strings - no class is ever referenced, so no such mod is a dependency. Add support by
   extending `resolve`, not by importing anything.
-- **One roll drives both effects.** `applyEffects` rolls once for fresh water and compares it against
-  `nauseaChance[purity]` and `poisonChance[purity]`, matching the original mod; it returns whether
-  thirst should still be restored (`quenchWhenDebuffed`). The original also applied Hunger on the
-  nausea roll; this mod does not. Salt water never reaches the roll: it spends exhaustion, applies
-  Nausea and Parched II (without particles), and returns false. Only salt water makes the player
-  Parched: salt makes you thirsty at once, while bad fresh water dries you out only once it makes
-  you ill, which is the planned Upset Stomach. The plan behind these effects is
-  `../../../../../../docs/dev/mechanics/WATER-SICKNESS.md`, and where its code goes
+- **One roll per drink, by difficulty.** `applyEffects` hands fresh water to `effect/WaterSickness`
+  and always returns true: every fresh drink quenches, the illness is the price. Dirty and Murky
+  water give 7 s of Nausea, the taste, on every difficulty; then, unless Peaceful, one roll from 0 to
+  100 walks the difficulty's `SicknessTable` from worst to mildest (Poisoning, then Upset Stomach) and
+  gives at most one. The difficulty is read at the drink. Drinking again while ill: a worse result
+  adds its effects, the same one extends them up to twice their time and turns Upset Stomach I into
+  II, a milder one does nothing. The `classic` preset keeps the roll from before, Nausea and Poison by
+  grade alone. The original also applied Hunger; this mod never has. Salt water never reaches the
+  roll: it spends exhaustion, applies Nausea and Parched II (without particles), and returns false.
+  The design is `../../../../../../docs/dev/mechanics/WATER-SICKNESS.md`, and where its code goes
   `../../../../../../docs/dev/mechanics/WATER-SICKNESS-IMPLEMENTATION.md`.
 - **`purityKey` and `purityColor` own the lang key and the colour together**, and they are the only
   palette for water quality; the tooltip tiers in `src/main/java/com/thirstwastaken2/AGENTS.md` say

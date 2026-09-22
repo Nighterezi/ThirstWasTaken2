@@ -112,16 +112,16 @@ public final class HangingPotGameTest {
     }
 
     @GameTest
-    public void aWaterskinDrawsOneServingAndPoursWhenSneaking(GameTestHelper helper) {
+    public void aWaterskinDrawsWhatThePotHoldsAndPoursWhenSneaking(GameTestHelper helper) {
         BlockPos pos = pot(helper, Blocks.STONE.defaultBlockState(), 2, WaterQuality.fresh(2));
         ServerPlayer player = TestFixtures.survivalPlayer(helper);
         ItemStack skin = new ItemStack(ThirstItems.WATERSKIN);
         hold(player, skin);
 
         use(helper, player, pos);
-        TestFixtures.check(helper, WaterskinItem.servings(skin) == 1
-                        && helper.getLevel().getBlockState(pos).getValue(HangingPotBlock.LEVEL) == 1,
-                "a waterskin should draw one serving, it holds " + WaterskinItem.servings(skin));
+        TestFixtures.check(helper, WaterskinItem.servings(skin) == 2
+                        && helper.getLevel().getBlockState(pos).getValue(HangingPotBlock.LEVEL) == 0,
+                "a waterskin should draw all the pot holds, it holds " + WaterskinItem.servings(skin));
 
         player.setShiftKeyDown(true);
         player.setPose(Pose.CROUCHING);

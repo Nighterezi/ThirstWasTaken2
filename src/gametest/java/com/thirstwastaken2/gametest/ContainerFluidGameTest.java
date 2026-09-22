@@ -14,10 +14,9 @@ import net.minecraft.world.item.ItemStack;
 
 /**
  * The waterskin and the terracotta bowls as fluid containers, through the item capability other mods'
- * pipes and tanks use. NeoForge only: the mod has no Fabric Transfer API storage for them, and
- * {@code ContainerFluids} on Fabric says so. The same assertions run against 1.21.1's
- * {@code IFluidHandlerItem} and the transfer API from 1.21.11, which are two implementations of one set
- * of rules.
+ * pipes and tanks use. The same assertions run against NeoForge 1.21.1's {@code IFluidHandlerItem}, its
+ * transfer API from 1.21.11, and Fabric's Transfer API, three implementations of one set of rules.
+ * Amounts are in millibuckets on every loader.
  */
 public final class ContainerFluidGameTest {
     private static final int SERVING = 250;

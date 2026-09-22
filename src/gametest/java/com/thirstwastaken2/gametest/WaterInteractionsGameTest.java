@@ -48,7 +48,7 @@ public final class WaterInteractionsGameTest {
     }
 
     @GameTest
-    public void aWaterskinScoopsOneServing(GameTestHelper helper) {
+    public void aWaterskinFillsInOneScoop(GameTestHelper helper) {
         BlockPos water = TestFixtures.water(helper);
         ServerPlayer player = TestFixtures.playerAboveWater(helper);
         WaterQuality expected = WaterPurity.sampleAt(helper.getLevel(), water);
@@ -56,8 +56,8 @@ public final class WaterInteractionsGameTest {
         use(player, new ItemStack(ThirstItems.WATERSKIN));
 
         ItemStack held = player.getItemInHand(InteractionHand.MAIN_HAND);
-        TestFixtures.check(helper, WaterskinItem.servings(held) == 1,
-                "a waterskin used on water should hold one serving, got " + WaterskinItem.servings(held));
+        TestFixtures.check(helper, WaterskinItem.servings(held) == WaterskinItem.CAPACITY,
+                "a waterskin used on water should be filled, got " + WaterskinItem.servings(held));
         TestFixtures.check(helper, WaterPurity.quality(held).equals(expected),
                 "the waterskin should carry the sampled " + expected + ", got " + WaterPurity.quality(held));
         helper.succeed();
@@ -85,12 +85,29 @@ public final class WaterInteractionsGameTest {
         WaterInteractions.fillWaterskinFromCauldron(player, helper.getLevel(), InteractionHand.MAIN_HAND, aimAt(pos));
 
         ItemStack skin = player.getItemInHand(InteractionHand.MAIN_HAND);
-        TestFixtures.check(helper, WaterskinItem.servings(skin) == 1,
-                "drawing from a cauldron should add one serving, got " + WaterskinItem.servings(skin));
+        TestFixtures.check(helper, WaterskinItem.servings(skin) == WaterskinItem.CAPACITY,
+                "drawing from a full cauldron should fill the waterskin, got " + WaterskinItem.servings(skin));
         TestFixtures.check(helper, WaterPurity.quality(skin).equals(stored),
                 "the serving should carry the cauldron's " + stored + ", got " + WaterPurity.quality(skin));
-        TestFixtures.check(helper, helper.getLevel().getBlockState(pos).getValue(LayeredCauldronBlock.LEVEL) == 2,
-                "the cauldron should drop one level, got " + helper.getLevel().getBlockState(pos));
+        TestFixtures.check(helper, helper.getLevel().getBlockState(pos).is(Blocks.CAULDRON),
+                "the cauldron should drop a level per serving and be empty, got "
+                        + helper.getLevel().getBlockState(pos));
+        helper.succeed();
+    }
+
+    @GameTest
+    public void aWaterskinTakesOnlyWhatACauldronHolds(GameTestHelper helper) {
+        BlockPos pos = cauldron(helper, 2, WaterQuality.fresh(2));
+        ServerPlayer player = TestFixtures.mockPlayer(helper);
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ThirstItems.WATERSKIN));
+
+        WaterInteractions.fillWaterskinFromCauldron(player, helper.getLevel(), InteractionHand.MAIN_HAND, aimAt(pos));
+
+        TestFixtures.check(helper, WaterskinItem.servings(player.getItemInHand(InteractionHand.MAIN_HAND)) == 2,
+                "a cauldron two levels deep should give two servings, got "
+                        + WaterskinItem.servings(player.getItemInHand(InteractionHand.MAIN_HAND)));
+        TestFixtures.check(helper, helper.getLevel().getBlockState(pos).is(Blocks.CAULDRON),
+                "the cauldron should be empty, got " + helper.getLevel().getBlockState(pos));
         helper.succeed();
     }
 

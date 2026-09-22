@@ -11,9 +11,9 @@ This page is the design. How to build it is in
 | Step | What | Status |
 |---|---|---|
 | 1a-1d | No Hunger from bad water, the Parched effect, sea water makes you Parched, longer Nausea | done |
-| 2 | Upset Stomach | planned |
-| 3 | Poisoning | planned |
-| 4 | One roll per drink, by difficulty and grade | planned |
+| 2 | Upset Stomach | done |
+| 3 | Poisoning | done |
+| 4 | One roll per drink, by difficulty and grade | done, without Dysentery's range until step 5 |
 | 5 | Dysentery, deadly on Hard | planned |
 | 5b | Sick vision | planned |
 | 6 | Incubation: illness starts later, not on the sip | idea |
@@ -29,7 +29,7 @@ Pure water is always safe. Salt water is unchanged: no water, Nausea and Parched
 
 | | Peaceful | Easy | Normal | Hard |
 |---|---|---|---|---|
-| Taste (2 s Nausea, Dirty and Murky) | yes | yes | yes | yes |
+| Taste (7 s Nausea, Dirty and Murky) | yes | yes | yes | yes |
 | Upset Stomach | no | level I | level I or II | level I or II |
 | Poisoning | no | mild | yes | strong |
 | Dysentery | no | no | yes, stops at half a heart | yes, **can kill** |
@@ -59,7 +59,7 @@ Read as Dysentery / Poisoning / Upset Stomach.
 The common one. Icon: a red stomach with a green bubble and drop.
 
 - The thirst bar drains faster.
-- The screen warps now and then (3 s of Nausea).
+- The screen warps now and then (10 s of Nausea, whose drain Upset Stomach's own replaces).
 - Food gives less saturation, so you get hungry sooner. Not hungrier: the appetite goes.
 - Never hurts you directly.
 

@@ -64,8 +64,10 @@ public final class HangingPotInteractions {
             }
             if (servings == 0 || skin >= WaterskinItem.CAPACITY) return InteractionResult.PASS;
             if (level.isClientSide()) return InteractionResult.SUCCESS;
-            WaterskinItem.addWater(held, HangingPotBlock.quality(state), 1);
-            draw(player, level, pos, state, 1, SoundEvents.BOTTLE_FILL);
+            // Fills the skin in one draw, as far as the pot goes, like scooping from water.
+            int drawn = Math.min(WaterskinItem.CAPACITY - skin, servings);
+            WaterskinItem.addWater(held, HangingPotBlock.quality(state), drawn);
+            draw(player, level, pos, state, drawn, SoundEvents.BOTTLE_FILL);
             return InteractionResult.SUCCESS_SERVER;
         }
         if (sneaking) return InteractionResult.PASS;

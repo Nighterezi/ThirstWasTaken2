@@ -97,20 +97,31 @@ Default `4`, from 1 to 100. Seconds each serving takes to boil in a
 Default `6`, from 1 to 100. The same for the
 [Iron Hanging Pot](/docs/features/water-purity#iron-hanging-pot).
 
-### quenchWhenDebuffed
+### sicknessPreset
 
-Default `true`. Water that poisons still restores thirst. Turn it off to make bad water a pure loss.
+Default `REALISTIC`. How bad water makes players ill.
 
-### nauseaChance and poisonChance
+- `REALISTIC`: Upset Stomach or Poisoning, by difficulty and grade. See
+  [Drinking bad water](/docs/features/water-purity#drinking-bad-water).
+- `CLASSIC`: the Nausea and Poison from before, the same on every difficulty.
 
-Four percentages each, one per grade from Dirty to Pure. The defaults are in
-[Drinking bad water](/docs/features/water-purity#drinking-bad-water).
+| Grade | Nausea | Nausea lasts | Poison, 10 seconds |
+|---|---|---|---|
+| Dirty | 100% | 12 seconds | 30% |
+| Murky | 50% | 8 seconds | 10% |
+| Clean | 5% | 5 seconds | none |
 
-### nauseaSeconds
+### sicknessEasy, sicknessNormal and sicknessHard
 
-Four values in seconds, one per grade from Dirty to Pure, from 1 to 60. How long Nausea from water of
-that grade lasts. The defaults are in
-[Drinking bad water](/docs/features/water-purity#drinking-bad-water).
+The chances `REALISTIC` uses on each difficulty. Each has three lists with one value per grade, Dirty,
+Murky and Clean:
+
+- `poisoningChance`: percent, from 0 to 100.
+- `upsetStomachChance`: percent, from 0 to 100, for the drinks that did not poison.
+- `upsetStomachLevel`: 1 or 2.
+
+The defaults are in [Drinking bad water](/docs/features/water-purity#drinking-bad-water). Peaceful has
+no table: it only gives the taste.
 
 ## HUD
 

@@ -69,16 +69,15 @@ public final class ThirstConfig {
     public int copperPotSecondsPerServing = 4;
     /** The same for the iron hanging pot, which is slower: iron carries heat worse than copper. */
     public int ironPotSecondsPerServing = 6;
-    public boolean quenchWhenDebuffed = true;
-    public int[] nauseaChance = {100, 50, 5, 0};
-    public int[] poisonChance = {30, 10, 0, 0};
-    /**
-     * Seconds of Nausea from water of each grade, Dirty first. The original gave five for every grade,
-     * which ends before the screen has finished warping. Worse water lasts longer, and with
-     * {@link #depletesWhenNauseous} that is also what bad water costs in thirst, until the planned
-     * Upset Stomach (docs/dev/mechanics/WATER-SICKNESS.md) takes that over.
-     */
-    public int[] nauseaSeconds = {12, 8, 5, 5};
+
+    // ---- water sickness ---------------------------------------------------
+    // These replaced quenchWhenDebuffed, nauseaChance, poisonChance and nauseaSeconds in the sickness
+    // rework. The config has no migration: those keys are ignored, and every fresh drink now quenches.
+    public SicknessPreset sicknessPreset = SicknessPreset.REALISTIC;
+    /** Peaceful has no table: it only ever gives the taste. */
+    public SicknessTable sicknessEasy = SicknessTable.easy();
+    public SicknessTable sicknessNormal = SicknessTable.normal();
+    public SicknessTable sicknessHard = SicknessTable.hard();
 
     // ---- item values ------------------------------------------------------
     /**
@@ -200,18 +199,14 @@ public final class ThirstConfig {
         kaleidoscopeCookeryDrinks(drinks);
         kaleidoscopeCookeryFoods(foods);
         if (itemBlacklist == null) itemBlacklist = new LinkedHashSet<>();
-        if (nauseaChance == null || nauseaChance.length != 4) nauseaChance = new int[]{100, 50, 5, 0};
-        if (poisonChance == null || poisonChance.length != 4) poisonChance = new int[]{30, 10, 0, 0};
-        if (nauseaSeconds == null || nauseaSeconds.length != 4) nauseaSeconds = new int[]{12, 8, 5, 5};
+        if (sicknessPreset == null) sicknessPreset = SicknessPreset.REALISTIC;
+        sicknessEasy = SicknessTable.sanitize(sicknessEasy, SicknessTable.easy());
+        sicknessNormal = SicknessTable.sanitize(sicknessNormal, SicknessTable.normal());
+        sicknessHard = SicknessTable.sanitize(sicknessHard, SicknessTable.hard());
         if (drinkTagValue == null || drinkTagValue.length != 2) drinkTagValue = new int[]{6, 8};
         if (keywordDrinkValue == null || keywordDrinkValue.length != 2) keywordDrinkValue = new int[]{10, 14};
         if (keywordSoupValue == null || keywordSoupValue.length != 2) keywordSoupValue = new int[]{4, 5};
         if (keywordFruitValue == null || keywordFruitValue.length != 2) keywordFruitValue = new int[]{2, 3};
-        for (int i = 0; i < 4; i++) {
-            nauseaChance[i] = clamp(nauseaChance[i], 0, 100);
-            poisonChance[i] = clamp(poisonChance[i], 0, 100);
-            nauseaSeconds[i] = clamp(nauseaSeconds[i], 1, 60);
-        }
         defaultPurity = clamp(defaultPurity, 0, 3);
         rainwaterPurity = clamp(rainwaterPurity, 0, 3);
         dripstonePurity = clamp(dripstonePurity, 0, 3);

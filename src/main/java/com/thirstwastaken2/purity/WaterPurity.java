@@ -4,6 +4,7 @@ import com.thirstwastaken2.ThirstWasTaken2;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.data.ThirstManager;
 import com.thirstwastaken2.effect.ThirstEffects;
+import com.thirstwastaken2.effect.WaterSickness;
 import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.item.WaterskinItem;
 import com.thirstwastaken2.platform.Vanilla;
@@ -61,6 +62,11 @@ public final class WaterPurity {
      * the icon and the sandy thirst bar already show it.
      */
     private static final int PARCHED_TICKS = 20 * 30;
+    /**
+     * Nausea from sea water: 8 seconds. The original's 5 barely warped the screen, because vanilla fades
+     * Nausea in over 150 ticks and starts fading it out 60 ticks before it ends.
+     */
+    private static final int SALT_NAUSEA_TICKS = 20 * 8;
     private static final int SALT_PARCHED_LEVEL = 1;
 
     /** Bounds of the contamination score a sample is graded from. It is never stored on an item. */
@@ -211,14 +217,13 @@ public final class WaterPurity {
         return WaterQuality.fresh(grade(score));
     }
 
-    /** Applies the four-grade sickness table and returns whether thirst should still be restored. */
+    /** Makes the player ill, or not, from the water in {@code stack}, and returns whether it quenches. */
     public static boolean applyEffects(Player player, ItemStack stack) {
         if (!(player instanceof ServerPlayer) || !isWaterContainer(stack)) return true;
-        ThirstConfig config = ThirstConfig.get();
         switch (quality(stack)) {
             case WaterQuality.Salt ignored -> {
                 ThirstManager.addExhaustion(player, SALTY_EXHAUSTION);
-                player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 20 * 5));
+                player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, SALT_NAUSEA_TICKS));
                 // Not in the original. Salt makes you thirstier at once: the body spends more water
                 // getting rid of it than the drink brought in. Bad fresh water dries you out only
                 // later, once it makes you ill, so it does not make you Parched.
@@ -227,16 +232,10 @@ public final class WaterPurity {
                 return false;
             }
             case WaterQuality.Fresh fresh -> {
-                // A single roll drives both effects, exactly like the original mod.
-                float roll = player.getRandom().nextFloat() * 100.0F;
-                // The original also applied Hunger here. Bad water makes you ill, not hungry, and
-                // Nausea already costs thirst through depletesWhenNauseous.
-                if (roll < config.nauseaChance[fresh.purity()]) {
-                    player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 20 * config.nauseaSeconds[fresh.purity()]));
-                }
-                boolean poisoned = roll < config.poisonChance[fresh.purity()];
-                if (poisoned) player.addEffect(new MobEffectInstance(MobEffects.POISON, 20 * 10));
-                return config.quenchWhenDebuffed || !poisoned;
+                // Diverges from the original's single Nausea and Poison roll, which also applied Hunger:
+                // bad water now makes you ill by difficulty, and every fresh drink still quenches.
+                WaterSickness.drink(player, fresh);
+                return true;
             }
         }
     }

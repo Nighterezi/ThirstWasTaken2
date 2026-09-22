@@ -9,6 +9,8 @@
     "fabric-gametest": [
       "com.thirstwastaken2.gametest.WaterFillingGameTest",
       "com.thirstwastaken2.gametest.WaterEffectsGameTest",
+      "com.thirstwastaken2.gametest.UpsetStomachGameTest",
+      "com.thirstwastaken2.gametest.WaterSicknessGameTest",
       "com.thirstwastaken2.gametest.HealthRegenGameTest",
       "com.thirstwastaken2.gametest.WaterskinGameTest",
       "com.thirstwastaken2.gametest.TooltipGameTest",

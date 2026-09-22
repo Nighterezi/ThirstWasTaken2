@@ -1,8 +1,8 @@
 package com.thirstwastaken2.gametest;
 
-import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.data.ThirstManager;
 import com.thirstwastaken2.effect.ThirstEffects;
+import com.thirstwastaken2.effect.WaterSickness;
 import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.purity.ThirstComponents;
 import com.thirstwastaken2.purity.WaterPurity;
@@ -18,11 +18,9 @@ import net.minecraft.world.item.Items;
 import java.util.List;
 
 /**
- * What drinking water of a given quality does to the player.
- *
- * <p>The purity tiers the default config makes deterministic are the ones tested here: tier 0 has a
- * 100 percent nausea chance and tier 3 has none, so neither depends on a dice roll. The tiers in
- * between are deliberately left alone.
+ * What drinking water of a given quality does to the player, whatever the roll: the taste Dirty water
+ * always leaves, Pure water never doing anything, and salt water. The roll itself, forced into each
+ * range, is {@code WaterSicknessGameTest}.
  */
 public final class WaterEffectsGameTest {
     @GameTest
@@ -43,18 +41,15 @@ public final class WaterEffectsGameTest {
     }
 
     @GameTest
-    public void dirtyWaterCausesNauseaWithoutHungerOrParched(GameTestHelper helper) {
+    public void dirtyWaterGivesTheTasteWithoutHungerOrParched(GameTestHelper helper) {
         ServerPlayer player = TestFixtures.mockPlayer(helper);
 
-        WaterPurity.applyEffects(player, bowl(WaterQuality.fresh(0)));
+        boolean hydrates = WaterPurity.applyEffects(player, bowl(WaterQuality.fresh(0)));
 
+        TestFixtures.check(helper, hydrates, "every drink of fresh water quenches, dirty water included");
         MobEffectInstance nausea = player.getEffect(MobEffects.NAUSEA);
-        TestFixtures.check(helper, nausea != null,
-                "purity 0 has a 100 percent nausea chance in the default config");
-        int expected = 20 * ThirstConfig.get().nauseaSeconds[0];
-        TestFixtures.check(helper, nausea.getDuration() == expected,
-                "Nausea from dirty water should last nausea_seconds[0], " + expected + " ticks, got "
-                        + nausea.getDuration());
+        TestFixtures.check(helper, nausea != null && nausea.getDuration() == WaterSickness.TASTE_TICKS,
+                "dirty water should always leave the taste of Nausea, got " + nausea);
         TestFixtures.check(helper, !player.hasEffect(MobEffects.HUNGER),
                 "bad water makes the player ill, not hungry, so it must not apply hunger");
         TestFixtures.check(helper, !player.hasEffect(ThirstEffects.PARCHED),

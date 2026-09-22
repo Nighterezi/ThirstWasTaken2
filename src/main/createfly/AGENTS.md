@@ -113,9 +113,15 @@ until one tank drains. Unstamped water, from a creative tank or another mod, rea
 | Mixin | Target | Why |
 |---|---|---|
 | `GenericItemFillingMixin` | `fillItem` | Spout and hand filling. Reads the fluid first, because filling spends it |
-| `GenericItemEmptyingMixin` | `emptyItem` | Item Drain and hand pouring. Reads the item first, because emptying shrinks it; stamps a copy, because an emptying recipe hands out its own stack |
+| `GenericItemEmptyingMixin` | `emptyItem` | Item Drain and hand pouring. Reads the item first, because emptying shrinks it; stamps a copy, because an emptying recipe hands out its own stack. Empties the waterskin and the water bowl itself: Create Fly only drains an item holding a whole bucket and returns nothing for less, and the Item Drain then deleted the item |
 | `OpenEndedPipeMixin` | `removeFluidFromSpace` | A pump drawing from the world or a cauldron. Samples before draining, since a drained cauldron has lost its quality |
 | `FluidDrainingBehaviourMixin` | `getDrainableFluid` | A Hose Pulley, graded where the hose ends, as the original mod did |
+
+The waterskin and the terracotta bowls reach a Spout and an Item Drain without a mixin: they are Fabric
+Transfer API storage (`WaterContainerStorage` in `src/main/fabric`), which Create Fly asks for through
+its own bridge. That storage is a plain `Storage` with one view on purpose. Create Fly wraps a
+`SlottedStorage` item with a capacity of zero (its `init` compares the wrong way round), so a Spout
+takes any `SingleSlotStorage` item for full and never fills it.
 
 `OpenEndedPipeMixin` samples at `HEAD` into a field and stamps at `RETURN` instead of wrapping the
 method: Create calls it on every flow check, and a wrapper allocates its operation object each time.
@@ -143,6 +149,7 @@ node still loads without it. Check by hand with `./gradlew ":26.2.x:runClient"` 
 - pouring a graded bottle into an Item Drain;
 - a Spout over a Depot fills a glass bottle with the filtered grade. The Depot has to sit one block
   below the Spout, with a gap;
+- a Spout fills an empty waterskin on a Depot in one go, all three servings, with the Spout's grade;
 - Engineer's Goggles on the filter show both tanks with their grade.
 
 Keep pipes of the two networks apart: a pipe beside another pipe joins it, and the filter's input and

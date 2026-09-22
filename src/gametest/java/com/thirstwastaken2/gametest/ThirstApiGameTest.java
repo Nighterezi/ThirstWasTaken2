@@ -1,6 +1,8 @@
 package com.thirstwastaken2.gametest;
 
 import com.thirstwastaken2.api.ThirstApi;
+import com.thirstwastaken2.config.SicknessPreset;
+import com.thirstwastaken2.config.SicknessTable;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.item.WaterskinItem;
@@ -138,9 +140,11 @@ public final class ThirstApiGameTest {
             config.thirstDepletionModifier = 50.0;
             config.fireResistanceDehydrationPercent = 400;
             config.thirstBarYOffset = -9000;
-            config.nauseaChance = new int[] {1};
-            config.poisonChance = new int[] {150, -5, 0, 0};
-            config.nauseaSeconds = new int[] {0, 500, 5, 5};
+            config.sicknessPreset = null;
+            config.sicknessEasy = null;
+            config.sicknessNormal.upsetStomachChance = new int[] {1};
+            config.sicknessHard.poisoningChance = new int[] {150, -5, 0};
+            config.sicknessHard.upsetStomachLevel = new int[] {0, 9, 1};
             config.drinks.remove("minecraft:milk_bucket");
             config.drinks.remove("farmersdelight:milk_bottle");
             config.foods.remove("farmersdelight:bone_broth");
@@ -152,12 +156,20 @@ public final class ThirstApiGameTest {
             TestFixtures.check(helper, config.thirstDepletionModifier == 10.0, "thirst_depletion_modifier should clamp to 10");
             TestFixtures.check(helper, config.fireResistanceDehydrationPercent == 100, "the percentage should clamp to 100");
             TestFixtures.check(helper, config.thirstBarYOffset == -200, "the HUD offset should clamp to -200");
-            TestFixtures.check(helper, config.nauseaChance.length == 4,
-                    "a nausea table of the wrong length should be reset, got " + Arrays.toString(config.nauseaChance));
-            TestFixtures.check(helper, config.poisonChance[0] == 100 && config.poisonChance[1] == 0,
-                    "poison chances should clamp to 0-100, got " + Arrays.toString(config.poisonChance));
-            TestFixtures.check(helper, config.nauseaSeconds[0] == 1 && config.nauseaSeconds[1] == 60,
-                    "nausea seconds should clamp to 1-60, got " + Arrays.toString(config.nauseaSeconds));
+            TestFixtures.check(helper, config.sicknessPreset == SicknessPreset.REALISTIC,
+                    "an unknown sickness preset should fall back to realistic, got " + config.sicknessPreset);
+            TestFixtures.check(helper, config.sicknessEasy != null
+                            && Arrays.equals(config.sicknessEasy.upsetStomachChance, SicknessTable.easy().upsetStomachChance),
+                    "a missing Easy table should get the default one");
+            TestFixtures.check(helper, config.sicknessNormal.upsetStomachChance.length == SicknessTable.GRADES,
+                    "a chance list of the wrong length should be reset, got "
+                            + Arrays.toString(config.sicknessNormal.upsetStomachChance));
+            TestFixtures.check(helper, config.sicknessHard.poisoningChance[0] == 100
+                            && config.sicknessHard.poisoningChance[1] == 0,
+                    "chances should clamp to 0-100, got " + Arrays.toString(config.sicknessHard.poisoningChance));
+            TestFixtures.check(helper, config.sicknessHard.upsetStomachLevel[0] == 1
+                            && config.sicknessHard.upsetStomachLevel[1] == 2,
+                    "Upset Stomach levels should clamp to 1-2, got " + Arrays.toString(config.sicknessHard.upsetStomachLevel));
             TestFixtures.check(helper, config.drinks.containsKey("minecraft:milk_bucket"),
                     "a config file written before milk counted should have it merged back in");
             TestFixtures.check(helper, config.drinks.containsKey("farmersdelight:milk_bottle")
