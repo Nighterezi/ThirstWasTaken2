@@ -309,7 +309,10 @@ II drain.
       water bowl of the Spout's grade; a waterskin holding another grade passes through untouched. An
       Item Drain takes a full waterskin's 750 mB, and a water bowl's 250 mB, with their grade, and hands
       back the empty container. Checked on 2026-09-22 through the agent queue, the items dropped onto the
-      Depot and the Drain with `summon item`.
+      Depot and the Drain with `summon item`. [tools/agent/createfly-waterskin.jsonl](../../tools/agent/createfly-waterskin.jsonl)
+      repeats it on a copy of the Sand Filter Test pump line, two waterskins in a row, on 26.1.x and
+      26.2.x; both passed on 2026-09-22. The first check missed that a Spout adds
+      `create:fluid_max_capacity` to its water after one fill and refused every waterskin after that.
 
 ### 26.1.x
 

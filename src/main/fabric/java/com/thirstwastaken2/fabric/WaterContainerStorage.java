@@ -3,6 +3,7 @@ package com.thirstwastaken2.fabric;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.item.WaterContainers;
+import com.thirstwastaken2.platform.FabricTransfer;
 import com.thirstwastaken2.purity.ThirstComponents;
 import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.purity.WaterQuality;
@@ -34,9 +35,7 @@ import java.util.List;
  * </ul>
  *
  * <p>The grade travels on the fluid as one component, {@code water_purity} or {@code water_salty}, like
- * Create's fluid stacks. It is read by comparing against the five patches a grade can be rather than
- * reading the component, because the variant's component accessors were renamed between Fabric API
- * versions and {@code componentsMatch} was not. Water carrying anything else is refused.
+ * Create's fluid stacks. Any other component on the water is ignored.
  *
  * <p>A storage with one view rather than a {@code SingleSlotStorage}: Create Fly wraps a slotted item
  * storage with a capacity of zero, so its Spout would take every waterskin for full.
@@ -65,16 +64,18 @@ public final class WaterContainerStorage implements Storage<FluidVariant>, Stora
         return FluidVariant.of(Fluids.WATER, patch(quality));
     }
 
-    /** The grade {@code variant} carries, {@code defaultPurity} when none, or {@code null} for anything else. */
+    /**
+     * The grade {@code variant} carries, {@code defaultPurity} when none, or {@code null} for anything but
+     * water. Only this mod's two components are read: other mods add their own to the water they hold,
+     * as Create Fly's tanks add {@code create:fluid_max_capacity} after their first fill.
+     */
     public static WaterQuality quality(FluidVariant variant) {
         if (!variant.isOf(Fluids.WATER)) return null;
-        if (variant.componentsMatch(DataComponentPatch.EMPTY)) {
-            return WaterQuality.fresh(ThirstConfig.get().defaultPurity);
+        if (Boolean.TRUE.equals(FabricTransfer.component(variant, ThirstComponents.WATER_SALTY))) {
+            return WaterQuality.SALT;
         }
-        for (WaterQuality quality : QUALITIES) {
-            if (variant.componentsMatch(patch(quality))) return quality;
-        }
-        return null;
+        Integer purity = FabricTransfer.component(variant, ThirstComponents.WATER_PURITY);
+        return WaterQuality.fresh(purity != null ? purity : ThirstConfig.get().defaultPurity);
     }
 
     private static DataComponentPatch patch(WaterQuality quality) {
@@ -113,7 +114,10 @@ public final class WaterContainerStorage implements Storage<FluidVariant>, Stora
     public long extract(FluidVariant resource, long maxAmount, TransactionContext transaction) {
         ItemStack container = container();
         int held = WaterContainers.servings(container);
-        if (held == 0 || context.getAmount() == 0 || !resource.equals(getResource())) return 0;
+        if (held == 0 || context.getAmount() == 0
+                || !WaterPurity.quality(container).equals(quality(resource))) {
+            return 0;
+        }
         int servings = (int) Math.min(maxAmount / SERVING, held);
         if (servings <= 0) return 0;
         ItemStack emptied = WaterContainers.holding(container, WaterPurity.quality(container), held - servings);

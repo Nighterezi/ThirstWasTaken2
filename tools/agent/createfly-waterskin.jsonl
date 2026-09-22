@@ -1,0 +1,76 @@
+// A Create Fly Spout filling waterskins and terracotta bowls from real piped water, and an Item Drain
+// emptying a waterskin. Fabric nodes that set deps.create_fly: 26.1.x and 26.2.x.
+//
+// The build is the Sand Filter Test world's working flow (run/26.2.x/saves/Sand Filter Test, around
+// 0 -61 4), copied block for block and raised by 211 so it stands in the air of any world: a Creative
+// Motor at 32 RPM turns a Mechanical Pump that draws from a 3x3 pool, a second at 16 RPM lifts the water
+// through a glass pipe to a Spout, and a Depot sits in a trench two blocks below the Spout. Water that has
+// been through Create's pipes and tanks carries create:fluid_max_capacity, which is what broke filling
+// before: the waterskin's fluid storage compared all of a fluid's components, so any tank that had
+// filled once refused every waterskin after.
+//
+// Every "Check" line has to say "Test passed":
+// - "skin1Check" and "skin2Check": two empty waterskins in a row come out with three servings each,
+//   of the pool's grade, so the Spout still fills after its first fill;
+// - "bowlCheck": an empty terracotta bowl comes out a water bowl;
+// - "drainCheck": an Item Drain takes a full waterskin's 750 mB (60750 droplets) with its grade;
+//   "drainSkinCheck" finds the waterskin still on the Drain, which has nowhere to push it, and
+//   "drainSkinEmpty" that it holds no servings. Before, the Drain deleted it.
+//
+// Items are summoned just above the Depot's top, which is how a hopper or a player's drop reaches it.
+// Any world works; Sand Filter Test is the one this was taken from:
+//     ./gradlew ":26.2.x:runClient" -Pagent=tools/agent/createfly-waterskin.jsonl "-Pquickplay=Sand Filter Test"
+
+{"id": "load", "command": "wait", "args": {"ticks": 300}}
+{"id": "joined", "command": "client.state"}
+{"id": "peaceful", "command": "server.command", "args": {"command": "difficulty peaceful"}}
+{"id": "air", "command": "server.command", "args": {"command": "fill -6 148 -4 10 156 9 minecraft:air"}}
+{"id": "ground", "command": "server.command", "args": {"command": "fill -6 149 -4 10 150 9 minecraft:stone"}}
+{"id": "stand", "command": "server.command", "args": {"command": "tp @p 0.5 151 -2.5 0 30"}}
+{"id": "chunks", "command": "wait", "args": {"ticks": 40}}
+{"id": "pool", "command": "server.command", "args": {"command": "fill -3 150 3 -1 150 5 minecraft:water"}}
+{"id": "trench", "command": "server.command", "args": {"command": "setblock 6 150 4 minecraft:air"}}
+{"id": "depot", "command": "server.command", "args": {"command": "setblock 6 149 4 create:depot"}}
+{"id": "pipeA", "command": "server.command", "args": {"command": "setblock 0 150 4 create:fluid_pipe[east=true,west=true,north=false,south=false,up=false,down=false]"}}
+{"id": "pumpA", "command": "server.command", "args": {"command": "setblock 1 150 4 create:mechanical_pump[facing=east]"}}
+{"id": "pipeC", "command": "server.command", "args": {"command": "setblock 2 150 4 create:fluid_pipe[west=true,up=true,north=false,south=false,east=false,down=false]"}}
+{"id": "glass", "command": "server.command", "args": {"command": "setblock 2 151 4 create:glass_fluid_pipe[axis=y]"}}
+{"id": "pipeB", "command": "server.command", "args": {"command": "setblock 2 152 4 create:fluid_pipe[east=true,down=true,north=false,south=false,west=false,up=false]"}}
+{"id": "pipeD", "command": "server.command", "args": {"command": "setblock 3 152 4 create:fluid_pipe[east=true,west=true,north=false,south=false,up=false,down=false]"}}
+{"id": "pumpB", "command": "server.command", "args": {"command": "setblock 4 152 4 create:mechanical_pump[facing=east]"}}
+{"id": "pipeE", "command": "server.command", "args": {"command": "setblock 5 152 4 create:fluid_pipe[east=true,west=true,north=false,south=false,up=false,down=false]"}}
+{"id": "pipeF", "command": "server.command", "args": {"command": "setblock 6 152 4 create:fluid_pipe[west=true,down=true,north=false,south=false,east=false,up=false]"}}
+{"id": "spout", "command": "server.command", "args": {"command": "setblock 6 151 4 create:spout"}}
+{"id": "cogA", "command": "server.command", "args": {"command": "setblock 1 150 3 create:cogwheel[axis=x]"}}
+{"id": "cogB", "command": "server.command", "args": {"command": "setblock 4 152 3 create:cogwheel[axis=x]"}}
+{"id": "motorA", "command": "server.command", "args": {"command": "setblock 2 150 3 create:creative_motor[facing=west]{ScrollValue:-32}"}}
+{"id": "motorB", "command": "server.command", "args": {"command": "setblock 5 152 3 create:creative_motor[facing=west]{ScrollValue:16}"}}
+{"id": "flow", "command": "wait", "args": {"ticks": 300}}
+{"id": "spoutRead", "command": "server.command", "args": {"command": "data get block 6 151 4 Tanks[0].TankContent"}}
+
+{"id": "skin1", "command": "server.command", "args": {"command": "summon item 6.5 149.95 4.5 {Item:{id:\"thirstwastaken2:waterskin\",count:1},Motion:[0.0,0.0,0.0]}"}}
+{"id": "fill1", "command": "wait", "args": {"ticks": 160}}
+{"id": "skin1Read", "command": "server.command", "args": {"command": "data get block 6 149 4 HeldItem.Item"}}
+{"id": "skin1Check", "command": "server.command", "args": {"command": "execute if data block 6 149 4 HeldItem.Item.components{\"thirstwastaken2:water_servings\":3}"}}
+{"id": "take1", "command": "server.command", "args": {"command": "data remove block 6 149 4 HeldItem"}}
+{"id": "refill1", "command": "wait", "args": {"ticks": 100}}
+
+{"id": "skin2", "command": "server.command", "args": {"command": "summon item 6.5 149.95 4.5 {Item:{id:\"thirstwastaken2:waterskin\",count:1},Motion:[0.0,0.0,0.0]}"}}
+{"id": "fill2", "command": "wait", "args": {"ticks": 160}}
+{"id": "skin2Check", "command": "server.command", "args": {"command": "execute if data block 6 149 4 HeldItem.Item.components{\"thirstwastaken2:water_servings\":3}"}}
+{"id": "take2", "command": "server.command", "args": {"command": "data remove block 6 149 4 HeldItem"}}
+{"id": "refill2", "command": "wait", "args": {"ticks": 100}}
+
+{"id": "bowl", "command": "server.command", "args": {"command": "summon item 6.5 149.95 4.5 {Item:{id:\"thirstwastaken2:terracotta_bowl\",count:1},Motion:[0.0,0.0,0.0]}"}}
+{"id": "fill3", "command": "wait", "args": {"ticks": 160}}
+{"id": "bowlRead", "command": "server.command", "args": {"command": "data get block 6 149 4 HeldItem.Item"}}
+{"id": "bowlCheck", "command": "server.command", "args": {"command": "execute if data block 6 149 4 HeldItem.Item{id:\"thirstwastaken2:terracotta_water_bowl\"}"}}
+{"id": "take3", "command": "server.command", "args": {"command": "data remove block 6 149 4 HeldItem"}}
+
+{"id": "drain", "command": "server.command", "args": {"command": "setblock 8 150 7 create:item_drain"}}
+{"id": "full", "command": "server.command", "args": {"command": "summon item 8.5 151.1 7.5 {Item:{id:\"thirstwastaken2:waterskin\",count:1,components:{\"thirstwastaken2:water_servings\":3,\"thirstwastaken2:water_purity\":2,\"thirstwastaken2:water_salty\":false}},Motion:[0.0,0.0,0.0]}"}}
+{"id": "empty", "command": "wait", "args": {"ticks": 160}}
+{"id": "drainRead", "command": "server.command", "args": {"command": "data get block 8 150 7 Tanks[0].TankContent"}}
+{"id": "drainCheck", "command": "server.command", "args": {"command": "execute if data block 8 150 7 Tanks[0].TankContent{amount:60750,components:{\"thirstwastaken2:water_purity\":2}}"}}
+{"id": "drainSkinCheck", "command": "server.command", "args": {"command": "execute if data block 8 150 7 HeldItem.Item{id:\"thirstwastaken2:waterskin\"}"}}
+{"id": "drainSkinEmpty", "command": "server.command", "args": {"command": "execute unless data block 8 150 7 HeldItem.Item.components.\"thirstwastaken2:water_servings\""}}
