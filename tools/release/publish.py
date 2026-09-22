@@ -18,6 +18,7 @@ release needs is already written down in the repository, so it is read rather th
     python tools/release/publish.py --no-build              # publish the jars already in build/libs
     python tools/release/publish.py --only 26.2.x-neoforge  # one node only
     python tools/release/publish.py --description-only      # update the project page, upload nothing
+    python tools/release/publish.py --update-dependencies   # fix the mods published files list
 
 `publish_curseforge.py` takes the same flags and uploads the same jars to CurseForge; run it with
 `--no-build` after this one, since this one has just built them.
@@ -101,11 +102,17 @@ DEPENDENCIES = {
     # Sophisticated Core is left out: both mods below require it, so a player gets it through them.
     "sophisticated_backpacks": Dependency("sophisticated-backpacks", "TyCTlI4b", "sophisticated-backpacks"),
     "sophisticated_storage": Dependency("sophisticated-storage", "hMlaZH8f", "sophisticated-storage"),
+    # Moonlight Lib is left out for the same reason: Supplementaries requires it.
+    "supplementaries": Dependency("supplementaries", "fFEIiSDQ", "supplementaries"),
+    # The Fabric nodes pin Refabricated, the maintained Fabric port.
+    "kaleidoscope_cookery": Dependency("kaleidoscope-cookery-refabricated", "Ct11Kuii",
+                                       "kaleidoscope-cookery-refabricated"),
 }
 # The same keys where a NeoForge node's dependency is a different project: Farmer's Delight Refabricated
-# is the Fabric port, and the NeoForge nodes use vectorwing's original.
+# and Kaleidoscope Cookery Refabricated are Fabric ports, and the NeoForge nodes use the originals.
 NEOFORGE_DEPENDENCIES = {
     "farmersdelight": Dependency("farmers-delight", "R2OftAxM", "farmers-delight"),
+    "kaleidoscope_cookery": Dependency("kaleidoscope-cookery", "v17FatAc", "kaleidoscope-cookery"),
 }
 
 
@@ -269,8 +276,9 @@ class Modrinth:
         if not self.token:
             fail(f"no MODRINTH_TOKEN in the environment or in {ENV_FILE.name}")
         self.project = self.request(f"/project/{MODRINTH_PROJECT}")
-        self.published = {version["version_number"]
-                          for version in self.request(f"/project/{MODRINTH_PROJECT}/version")}
+        self.version_ids = {version["version_number"]: version["id"]
+                            for version in self.request(f"/project/{MODRINTH_PROJECT}/version")}
+        self.published = set(self.version_ids)
 
     def request(self, path: str, method: str = "GET", body: bytes | None = None,
                 content_type: str | None = None):
@@ -285,6 +293,23 @@ class Modrinth:
     def describe(self, node: Node) -> list[str]:
         return [f"loader    {node.loader}", f"minecraft {', '.join(node.game_versions)}"]
 
+    @staticmethod
+    def dependencies(node: Node) -> list[dict]:
+        return [{"project_id": dep.modrinth_id,
+                 "dependency_type": "required" if dep.required else "optional"}
+                for dep in node.dependencies]
+
+    def update_dependencies(self, node: Node, number: str) -> None:
+        """Replaces the mods an already published version lists with the ones the node resolves now."""
+        self.patch(f"/version/{self.version_ids[number]}", {"dependencies": self.dependencies(node)})
+
+    def patch(self, path: str, fields: dict) -> None:
+        # 204 No Content on success, so the answer is not read as JSON.
+        request = urllib.request.Request(
+            f"{MODRINTH}{path}", data=json.dumps(fields).encode("utf-8"), method="PATCH",
+            headers={"User-Agent": USER_AGENT, "Authorization": self.token, "Content-Type": "application/json"})
+        urllib.request.urlopen(request, timeout=60).close()
+
     def upload(self, node: Node, number: str, changelog: str) -> str:
         data = {
             "project_id": self.project["id"],
@@ -294,9 +319,7 @@ class Modrinth:
             "name": f"{self.project['title']} {number}",
             "version_number": number,
             "changelog": changelog,
-            "dependencies": [{"project_id": dep.modrinth_id,
-                              "dependency_type": "required" if dep.required else "optional"}
-                             for dep in node.dependencies],
+            "dependencies": self.dependencies(node),
             "game_versions": node.game_versions,
             "version_type": "release",
             "loaders": [node.loader],
@@ -320,14 +343,8 @@ class Modrinth:
         if dry_run:
             print(f"Description: would replace the project page's with {MODRINTH_DESCRIPTION.name}")
             return
-        body = json.dumps({"body": wanted}).encode("utf-8")
         try:
-            # 204 No Content on success, so the answer is not read as JSON.
-            request = urllib.request.Request(
-                f"{MODRINTH}/project/{self.project['id']}", data=body, method="PATCH",
-                headers={"User-Agent": USER_AGENT, "Authorization": self.token,
-                         "Content-Type": "application/json"})
-            urllib.request.urlopen(request, timeout=60).close()
+            self.patch(f"/project/{self.project['id']}", {"body": wanted})
         except urllib.error.HTTPError as error:
             detail = error.read().decode("utf-8", "replace")
             print(f"warning: Modrinth refused the description ({error.code}): {detail}")
@@ -380,6 +397,8 @@ def release(publisher_class, description: str) -> None:
     parser.add_argument("--only", action="append", metavar="NODE", help="publish this node only")
     parser.add_argument("--version", help="fail unless stonecutter.properties.toml says this version")
     parser.add_argument("--allow-dirty", action="store_true", help="release with uncommitted changes")
+    parser.add_argument("--update-dependencies", action="store_true",
+                        help="on files already published, replace the mods they list; upload nothing")
     parser.add_argument("--description-only", action="store_true",
                         help="only bring the project page's description up to date; upload no files")
     args = parser.parse_args()
@@ -399,6 +418,24 @@ def release(publisher_class, description: str) -> None:
         if unknown:
             fail(f"no such node: {', '.join(sorted(unknown))}")
         nodes = [node for node in nodes if node.name in args.only]
+
+    if args.update_dependencies:
+        publisher = publisher_class()
+        for node in nodes:
+            number = version_number(node, mod_version)
+            print(f"  {number}  mods {node.dependency_names()}")
+            if not publisher.is_published(node, number):
+                print(f"    -> not on {publisher.name}, skipped")
+            elif args.dry_run:
+                print("    -> would update")
+            else:
+                try:
+                    publisher.update_dependencies(node, number)
+                except urllib.error.HTTPError as error:
+                    detail = error.read().decode("utf-8", "replace")
+                    fail(f"{publisher.name} refused `{number}` ({error.code}): {detail}")
+                print("    -> updated")
+        return
 
     print(f"ThirstWasTaken2 {mod_version}, {len(nodes)} files to {publisher_class.name}\n")
     check_worktree(args.allow_dirty)

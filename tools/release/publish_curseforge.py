@@ -137,6 +137,11 @@ class CurseForge:
         print(f"Description: CurseForge has no API for it. If {DESCRIPTION.relative_to(ROOT).as_posix()} changed,")
         print(f"             paste it (Markdown) at https://authors.curseforge.com/#/projects/{self.project_id}/description")
 
+    def update_dependencies(self, node: Node, number: str) -> None:
+        # update-file answers 500 whenever `relations` is sent; see the module docstring.
+        fail("CurseForge cannot change the mods a published file lists through its API; "
+             "edit Related Projects on the file's page instead")
+
     def done_url(self) -> str:
         return f"https://authors.curseforge.com/#/projects/{self.project_id}/files"
 
