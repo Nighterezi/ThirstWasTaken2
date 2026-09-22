@@ -1,5 +1,8 @@
 name: Build
 
+# Nothing the Gradle build reads: tools/ holds the release, agent, benchmark and sprite scripts, run
+# by hand; the other workflows and .github/scripts have their own triggers. The two lists are written
+# out twice because GitHub Actions does not read YAML anchors; keep them the same.
 on:
   push:
     branches: [main]
@@ -7,13 +10,27 @@ on:
       - "**/*.md"
       - "docs/**"
       - ".claude/**"
+      - "tools/**"
       - ".github/assets/**"
+      - ".github/scripts/**"
+      - ".github/ISSUE_TEMPLATE/**"
+      - ".github/dependabot.yml"
+      - ".github/workflows/check-doc-versions.yml"
+      - ".github/workflows/deploy-docs.yml"
+      - ".github/workflows/update-mc-deps.yml"
   pull_request:
     paths-ignore:
       - "**/*.md"
       - "docs/**"
       - ".claude/**"
+      - "tools/**"
       - ".github/assets/**"
+      - ".github/scripts/**"
+      - ".github/ISSUE_TEMPLATE/**"
+      - ".github/dependabot.yml"
+      - ".github/workflows/check-doc-versions.yml"
+      - ".github/workflows/deploy-docs.yml"
+      - ".github/workflows/update-mc-deps.yml"
   workflow_dispatch:
 
 permissions:

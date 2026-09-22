@@ -31,6 +31,13 @@
   image-rendering: pixelated;
 }
 
+/* The effect icons are 18px pixel art drawn four times larger; show them at twice the in-game size. */
+.vp-doc img.effect-icon {
+  width: 36px;
+  height: 36px;
+  image-rendering: pixelated;
+}
+
 /* Config keys and command names read better slightly tighter than prose. */
 .vp-doc h3 > code {
   font-size: 0.95em;

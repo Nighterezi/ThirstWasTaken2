@@ -23,11 +23,24 @@ Water is graded based on where you collect it:
 
 | Grade | Common Sources | Effects |
 | :--- | :--- | :--- |
-| **Dirty** | Swamps, stagnant pools | Often causes Upset Stomach or Poisoning, worse on harder difficulties |
-| **Murky** | Standard rivers, lakes, caves | Can cause Upset Stomach or Poisoning |
+| **Dirty** | Swamps, stagnant pools | Often causes [Upset Stomach](https://nighterezi.github.io/ThirstWasTaken2/docs/features/water-purity#upset-stomach) or [Poisoning](https://nighterezi.github.io/ThirstWasTaken2/docs/features/water-purity#poisoning), worse on harder difficulties |
+| **Murky** | Standard rivers, lakes, caves | Can cause [Upset Stomach](https://nighterezi.github.io/ThirstWasTaken2/docs/features/water-purity#upset-stomach) or [Poisoning](https://nighterezi.github.io/ThirstWasTaken2/docs/features/water-purity#poisoning) |
 | **Clean** | Mountain rivers, deep aquifers, boiled water | Rarely makes you ill, high hydration |
 | **Pure** | Glaciers, rain cauldrons, refined drinks | Completely safe, maximum hydration |
-| **Salty** | Oceans and beaches | Cannot quench thirst; makes you Parched |
+| **Salty** | Oceans and beaches | Cannot quench thirst; makes you [Parched](https://nighterezi.github.io/ThirstWasTaken2/docs/features/water-purity#parched) |
+
+<div align="center">
+<table>
+  <tr>
+    <th align="center"><img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/icons/upset-stomach.png" alt="Upset Stomach effect icon" width="36" align="absmiddle"> <a href="https://nighterezi.github.io/ThirstWasTaken2/docs/features/water-purity#upset-stomach">Upset Stomach</a></th>
+    <th align="center"><img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/icons/parched.png" alt="Parched effect icon" width="36" align="absmiddle"> <a href="https://nighterezi.github.io/ThirstWasTaken2/docs/features/water-purity#parched">Parched</a></th>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/upset-stomach-hud.png" alt="The thirst bar in green while Upset Stomach" width="372"></td>
+    <td align="center"><img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/parched-hud.png" alt="The thirst bar in dry sand colours while Parched" width="372"></td>
+  </tr>
+</table>
+</div>
 
 * **Boiling:** Smelt water bottles, bowls, or buckets in a furnace or over a campfire to raise their purity grade.
 * **Hanging Pots:** Hang a Copper or Iron Hanging Pot over a lit campfire to boil a bucket of water into Pure water.

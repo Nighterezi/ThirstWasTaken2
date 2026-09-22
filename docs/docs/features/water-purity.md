@@ -42,6 +42,10 @@ Oceans and beaches give salt water. It has its own icon and tooltip line. On Min
 - It cannot be boiled clean.
 - One salty drink makes a whole waterskin, cauldron or hanging pot salty.
 
+### Parched
+
+![Parched effect icon](/icons/parched.png){.effect-icon}
+
 Parched makes thirst drain faster, the way Hunger does for food, and turns the thirst bar the colour
 of dry sand.
 
@@ -86,6 +90,8 @@ The chances can be changed per difficulty, or the old Nausea and Poison brought 
 [sicknessPreset](/docs/configuration#sicknesspreset).
 
 ### Upset Stomach
+
+![Upset Stomach effect icon](/icons/upset-stomach.png){.effect-icon}
 
 The common one. It never hurts on its own.
 
