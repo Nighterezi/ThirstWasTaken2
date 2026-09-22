@@ -7,7 +7,7 @@ be. Nothing here is committed to a release yet.
 
 **Today.** Water bottles are seeded into abandoned mineshafts, bastions, nether fortresses,
 shipwreck supply chests and simple dungeons, plus Piglin barters — see
-[LootIntegration.java](../../src/main/java/com/thirstwastaken2/compat/LootIntegration.java). Every one of
+[LootIntegration.java](../../../src/main/java/com/thirstwastaken2/compat/LootIntegration.java). Every one of
 those is an underground or hostile structure. The dry, surface biomes where thirst actually hurts
 have none.
 
@@ -22,7 +22,7 @@ have none.
 ## 2. Sea water is a dead end
 
 **Today.** Sea water is a kind of its own, not a grade of fresh water — see `WaterQuality.SALT` in
-[WaterPurity.java](../../src/main/java/com/thirstwastaken2/purity/WaterPurity.java). It never quenches
+[WaterPurity.java](../../../src/main/java/com/thirstwastaken2/purity/WaterPurity.java). It never quenches
 thirst, and boiling does not desalinate it: the purify recipes only move fresh water up a grade. A
 player who spawns on an island or a coastline is surrounded by water and has no way to use any of
 it.

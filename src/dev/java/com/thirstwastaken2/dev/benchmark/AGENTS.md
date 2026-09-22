@@ -225,7 +225,7 @@ python tools/benchmark/aggregate.py run/benchmark-sets/<before> --compare run/be
 outer loop and iterates nodes in the inner one, so a machine that warms up or gets busier over the hour
 biases every node the same way rather than only the ones at the end. It keeps every report.
 
-[docs/dev/BENCHMARK-BASELINE.md](../../../../../../../docs/dev/BENCHMARK-BASELINE.md) is what every node
+[docs/dev/BENCHMARK-BASELINE.md](../../../../../../../docs/dev/benchmark/BENCHMARK-BASELINE.md) is what every node
 measured on 2026-09-16, three runs each, and the machine it was measured on. That is the set to compare
 a new one against; take a fresh baseline on a different machine rather than comparing across two.
 

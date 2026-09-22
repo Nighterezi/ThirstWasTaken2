@@ -114,7 +114,8 @@ Fabric.
   Nausea and Parched II (without particles), and returns false. Only salt water makes the player
   Parched: salt makes you thirsty at once, while bad fresh water dries you out only once it makes
   you ill, which is the planned Upset Stomach. The plan behind these effects is
-  `docs/dev/WATER-SICKNESS.md`.
+  `../../../../../../docs/dev/mechanics/WATER-SICKNESS.md`, and where its code goes
+  `../../../../../../docs/dev/mechanics/WATER-SICKNESS-IMPLEMENTATION.md`.
 - **`purityKey` and `purityColor` own the lang key and the colour together**, and they are the only
   palette for water quality; the tooltip tiers in `src/main/java/com/thirstwastaken2/AGENTS.md` say
   where those colours sit among the other lines. Adding a grade means

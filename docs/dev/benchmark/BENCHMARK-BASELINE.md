@@ -83,7 +83,7 @@ operation. This is the table a change to the mod's own code shows up in first.
 
 Kept for order of magnitude only: the median spread here is 45% and the worst 222%, so a
 difference under about half is not a difference. See
-[the benchmark's own notes](../../src/dev/java/com/thirstwastaken2/dev/benchmark/AGENTS.md#comparing-two-versions-of-the-code).
+[the benchmark's own notes](../../../src/dev/java/com/thirstwastaken2/dev/benchmark/AGENTS.md#comparing-two-versions-of-the-code).
 
 | Operation | 1.21.1 | 1.21.11 | 26.1.x | 26.2.x | 1.21.1-nf | 1.21.11-nf | 26.1.x-nf | 26.2.x-nf |
 |---|---|---|---|---|---|---|---|---|

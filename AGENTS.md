@@ -180,11 +180,12 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | Datagen providers | [src/datagen/java/AGENTS.md](src/datagen/java/AGENTS.md) |
 | Automated in-game tests | [src/gametest/java/AGENTS.md](src/gametest/java/AGENTS.md) |
 | Dev-only tooling (agent client, benchmark) | [src/dev/java/AGENTS.md](src/dev/java/AGENTS.md) |
-| Benchmark baseline per node | [docs/dev/BENCHMARK-BASELINE.md](docs/dev/BENCHMARK-BASELINE.md) |
+| Benchmark baseline per node | [docs/dev/BENCHMARK-BASELINE.md](docs/dev/benchmark/BENCHMARK-BASELINE.md) |
 | Manual checks before a release | [docs/dev/MANUAL-TESTING.md](docs/dev/MANUAL-TESTING.md) |
-| Purification balance | [docs/dev/WATER-PURIFICATION-BALANCE.md](docs/dev/WATER-PURIFICATION-BALANCE.md) |
-| Sophisticated upgrades still to do | [docs/dev/SOPHISTICATED-INTEGRATION.md](docs/dev/SOPHISTICATED-INTEGRATION.md) |
-| Supplementaries work still to do | [docs/dev/SUPPLEMENTARIES-INTEGRATION.md](docs/dev/SUPPLEMENTARIES-INTEGRATION.md) |
-| Bad-water sickness rework, phase by phase | [docs/dev/WATER-SICKNESS.md](docs/dev/WATER-SICKNESS.md) |
+| Purification balance | [docs/dev/WATER-PURIFICATION-BALANCE.md](docs/dev/mechanics/WATER-PURIFICATION-BALANCE.md) |
+| Sophisticated upgrades still to do | [docs/dev/SOPHISTICATED-INTEGRATION.md](docs/dev/integration/SOPHISTICATED-INTEGRATION.md) |
+| Supplementaries work still to do | [docs/dev/SUPPLEMENTARIES-INTEGRATION.md](docs/dev/integration/SUPPLEMENTARIES-INTEGRATION.md) |
+| Bad-water sickness rework: the design | [docs/dev/WATER-SICKNESS.md](docs/dev/mechanics/WATER-SICKNESS.md) |
+| Bad-water sickness rework: where the code goes, step by step | [docs/dev/WATER-SICKNESS-IMPLEMENTATION.md](docs/dev/mechanics/WATER-SICKNESS-IMPLEMENTATION.md) |
 | Releasing | [tools/release/publish.py](tools/release/publish.py) and [publish_curseforge.py](tools/release/publish_curseforge.py) docstrings |
 | Documentation site, CHANGELOG, Modrinth and CurseForge pages | [docs/AGENTS.md](docs/AGENTS.md) and the `write-docs` skill |

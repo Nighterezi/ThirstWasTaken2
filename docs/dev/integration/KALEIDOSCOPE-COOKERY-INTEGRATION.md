@@ -107,7 +107,7 @@ of different Minecraft versions share one version number). Nothing in the other 
 deps.kaleidoscope_cookery = "98s363Gs"
 ```
 
-Add to `MODRINTH_DEPS` in `.github/scripts/update_mc_deps.py`, with `by_id=True`, **under two project
+Add to `MODRINTH_DEPS` in `../../../.github/scripts/update_mc_deps.py`, with `by_id=True`, **under two project
 slugs**: `kaleidoscope-cookery` for the NeoForge table and `kaleidoscope-cookery-refabricated` for the
 Fabric ones. If the script only takes one slug per key, it needs a per-loader slug. Leave `1.21.11` out
 of automatic updates, since that build will not change again.
@@ -134,7 +134,7 @@ src/main/kaleidoscope/resources/
   thirstwastaken2.kaleidoscope.mixins.json
 ```
 
-Like `src/main/supplementaries`, this is **one directory both loaders compile**. It names no loader and
+Like `../../../src/main/supplementaries`, this is **one directory both loaders compile**. It names no loader and
 no fluid API: every piece works on an `ItemStack` through `WaterPurity`, which is common code.
 `build.gradle.kts` and `build.neoforge.gradle.kts` add the directory and the mixin config to the
 manifest when `deps.kaleidoscope_cookery` is set.
@@ -144,12 +144,12 @@ manifest when `deps.kaleidoscope_cookery` is set.
 `StockpotBlockEntityMixin`. The one-line body passes on to `BrewedWaterQuality`, and if reading and
 writing one int differs between `CompoundTag` and `ValueOutput`, that difference goes in `Vanilla`, not
 in the integration. `ResourceLocation` → `Identifier` is already a replacement in
-`stonecutter.gradle.kts`. The dripstone mixin gets its own class, so the other nodes do not need
+`../../../stonecutter.gradle.kts`. The dripstone mixin gets its own class, so the other nodes do not need
 `require = 0`.
 
 ### How it stays optional
 
-The same three layers as `src/main/supplementaries`:
+The same three layers as `../../../src/main/supplementaries`:
 
 1. **Build.** Nothing is compiled unless `deps.kaleidoscope_cookery` is set, so the four NeoForge nodes
    past 1.21.1 are untouched.
@@ -185,7 +185,7 @@ Teacups are drunk through `TeacupItem.finishUsingItem`, which runs inside `ItemS
 where `ItemStackMixin` already hands out thirst. **No hook is needed.** Soups are `BowlFoodOnlyItem`,
 likewise.
 
-Suggested values (to be balanced against `docs/dev/WATER-PURIFICATION-BALANCE.md`; one bucket of water
+Suggested values (to be balanced against `../mechanics/WATER-PURIFICATION-BALANCE.md`; one bucket of water
 makes 4 cups):
 
 | Item | Thirst | Quenched |
@@ -266,7 +266,7 @@ with no grade and reads as `defaultPurity`, the same limitation as everywhere el
 **Tea is made from boiled water, so it is always safe**: a teacup restores its fixed value from item 2
 whatever the water's grade. That makes the teapot a purifier of sorts (1 bucket of Dirty water + 1 tea
 bag + 240 ticks on heat = 4 safe cups). It is fair, since it costs a tea bag and a heat source, but it
-has to be written into `WATER-PURIFICATION-BALANCE.md`.
+has to be written into `../mechanics/WATER-PURIFICATION-BALANCE.md`.
 
 **Checked with** the same script: a Dirty bucket in and out stays Dirty; break the teapot and place it
 again, and the water is still Dirty; on 1.21.1 dripstone gives `dripstonePurity`.
@@ -295,7 +295,7 @@ A CHANGELOG entry, the compatible-mods list on the installation page, a
 stockpot and teapot, tea is safe, sea water is refused by the teapot), and the Modrinth and CurseForge
 pages. Use the `write-docs` skill. State clearly: **on Fabric, install Refabricated; the official
 Fabric 1.0.1 only gets the drink values.** Add a row to the version support matrix in
-`docs/MODRINTH.md` and `docs/CURSEFORGE.md`.
+`../../MODRINTH.md` and `docs/CURSEFORGE.md`.
 
 ## Testing that nothing crashes without Kaleidoscope Cookery
 
@@ -311,7 +311,7 @@ NeoForge client without Sophisticated Core crashed on startup.
 2. **No run looked at a client without the mod.** `runClient` always has every optional mod
    (`clientRunMods` on NeoForge, `modLocalRuntime` on Fabric); `runGametest` and `runServer` are
    servers and never load a `Dist.CLIENT` entrypoint. The `### Without the optional mods` checks in
-   `MANUAL-TESTING.md` only remove Mod Menu, AppleSkin and Cloth Config.
+   `../MANUAL-TESTING.md` only remove Mod Menu, AppleSkin and Cloth Config.
 
 ### Which classes are loaded when Kaleidoscope Cookery is absent
 
@@ -338,14 +338,14 @@ reads the compiled classes, not the source, so lambdas and generics count, and f
 - a class that is always loaded (a mixin plugin, a `*Presence`, anything named in a manifest
   entrypoint or carrying `@Mod` / `@WailaPlugin`) references a package outside
   `com.thirstwastaken2`, `net.minecraft`, `java`, the loader, or the Jade API;
-- a class in `src/main/java` or `src/client/java` references `com.thirstwastaken2.kaleidoscope`.
+- a class in `../../../src/main/java` or `src/client/java` references `com.thirstwastaken2.kaleidoscope`.
 
 Write it once for **every** optional integration, Sophisticated, Supplementaries, Create and Create
 Fly included, and run it next to `checkLoaderSeam` in `build.yml`. It would have failed on 1.0.9.
 
 **B. A client without the mod, on every node that sets the key.** A new Gradle flag
 `-PwithoutOptional=<mod,...>` that leaves the named mods out of `clientRunMods` / `modLocalRuntime`,
-and an agent script `tools/agent/boot.jsonl` that opens a world, waits a few seconds, opens the
+and an agent script `../../../tools/agent/boot.jsonl` that opens a world, waits a few seconds, opens the
 inventory and quits. Run each combination on `1.21.1-neoforge`, `1.21.1` and `26.3.x`, and once on
 the other three before a release:
 
@@ -358,7 +358,7 @@ the other three before a release:
 | `runServer` with and without the mod | — | — | starts; the log has `ThirstWasTaken2 initialized` |
 
 The same flag lets the existing Sophisticated and Supplementaries integrations be checked the same way,
-which `MANUAL-TESTING.md` does not do today.
+which `../MANUAL-TESTING.md` does not do today.
 
 **C. The published jar, once per loader, before a release.** The dev run uses Mojang names on Fabric
 and the release uses intermediary, and a mixin plugin sees a different classpath in a launcher. Put
@@ -369,7 +369,7 @@ again.
 **D. Gametests, unchanged.** `runGametest` runs without the mod on every node and must keep passing
 without any edit to a test. That is the check that the server side is untouched when it is absent.
 
-### What goes into `MANUAL-TESTING.md`
+### What goes into `../MANUAL-TESTING.md`
 
 Under `### Without the optional mods`, one line per integration and not just for this one: "a client
 with Jade and without `<mod>` reaches a world", for Sophisticated Core (NeoForge), Supplementaries and
@@ -403,7 +403,7 @@ Moonlight, Create, Create Fly and Kaleidoscope Cookery. Tick them on the nodes t
 - **The NeoForge nodes past 1.21.1.** No build exists.
 - **Purifying water in the pot, the stockpot or the steamer.** The mod's purification is 27 recipes and
   one balance pass. Boiling plain water in the teapot to get Pure water is a new mechanic and belongs
-  with the distillation idea in `ROADMAP.md`.
+  with the distillation idea in `../mechanics/ROADMAP.md`.
 - **The bamboo tray's `wetting`, the enamel basin, the oil pot, lava and milk soup bases.** Not water, or
   they do not hold water.
 - **Dishes eaten off a placed block** (`FoodBiteBlock`). Solid food, no thirst.
