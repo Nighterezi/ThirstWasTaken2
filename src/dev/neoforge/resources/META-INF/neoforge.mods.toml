@@ -16,6 +16,11 @@ description = '''Development-only tooling for ThirstWasTaken2: the agent queue a
 [[mixins]]
 config = "thirstwastaken2.dev.mixins.json"
 
+# Stops an unattended -Pagent client that failed to load, instead of leaving it on the error screen.
+# NeoForge's own screen, so NeoForge's own config. See LoadingErrorScreenMixin.
+[[mixins]]
+config = "thirstwastaken2.dev.neoforge.mixins.json"
+
 [[dependencies.thirstwastaken2_dev]]
 modId = "thirstwastaken2"
 type = "required"

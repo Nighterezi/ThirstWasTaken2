@@ -94,8 +94,10 @@ jobs:
         # loader independent half starts naming Minecraft or a loader. checkLoaderSeam fails on a mod
         # loader import in loader independent code, which compiles fine against one loader.
         # checkVersionSeam fails on a version conditional in core code, which is where a missing
-        # seam shows up.
-        run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:devClasses" ":${{ matrix.version }}:checkAgentCore" ":${{ matrix.version }}:checkLoaderSeam" ":${{ matrix.version }}:checkVersionSeam" --stacktrace
+        # seam shows up. checkOptionalSeam fails when a class the game loads without an optional mod
+        # installed names that mod, which is how 1.0.9 crashed every NeoForge client without
+        # Sophisticated Core; it reads the compiled classes, so it needs no mod on the classpath.
+        run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:devClasses" ":${{ matrix.version }}:checkAgentCore" ":${{ matrix.version }}:checkLoaderSeam" ":${{ matrix.version }}:checkVersionSeam" ":${{ matrix.version }}:checkOptionalSeam" --stacktrace
 
       # The NeoForge node has the dev tools too, both the agent and the benchmark, and no
       # generators of its own; it reads what the 26.2 Fabric node generates. checkNeoForgeResources
@@ -103,7 +105,7 @@ jobs:
       # same files on every node and are cheap to repeat here.
       - name: Build (NeoForge)
         if: ${{ endsWith(matrix.version, '-neoforge') }}
-        run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:devClasses" ":${{ matrix.version }}:checkNeoForgeResources" ":${{ matrix.version }}:checkAgentCore" ":${{ matrix.version }}:checkLoaderSeam" ":${{ matrix.version }}:checkVersionSeam" --stacktrace
+        run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:devClasses" ":${{ matrix.version }}:checkNeoForgeResources" ":${{ matrix.version }}:checkAgentCore" ":${{ matrix.version }}:checkLoaderSeam" ":${{ matrix.version }}:checkVersionSeam" ":${{ matrix.version }}:checkOptionalSeam" --stacktrace
 
       # Regenerates every datapack and asset JSON and fails if the result differs from what is
       # committed, which is what catches a generator edited without regenerating and a generated

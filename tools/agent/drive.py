@@ -221,13 +221,30 @@ def drive(queue, requests, timeout):
     return failed
 
 
-def verify(queue, requests):
+def verify(queue, requests, max_age):
     """Checks a finished run's out.jsonl against the assertions written beside its requests.
 
     `-Pagent` answers a file without an agent at the other end, and nothing in the game reads an
     `expect` or a `checks`: they are drive.py's. This replays them over what that run recorded, so an
     unattended run is checked by the same lines an attended one is.
+
+    A run that crashed before it opened the queue leaves the previous run's files where they were, and
+    those would pass. `max_age`, in minutes, refuses a `ready.json` older than that.
     """
+    if max_age:
+        ready = queue / READY
+        started = None
+        if ready.is_file():
+            try:
+                started = json.loads(ready.read_text(encoding="utf-8")).get("startedAt")
+            except ValueError:
+                pass
+        age = None if started is None else (time.time() * 1000.0 - started) / 60000.0
+        if age is None or age > max_age:
+            print(json.dumps({"ok": False, "error": "%s is %s; the run being checked never opened the queue, "
+                              "so it probably crashed. Look in its logs and crash-reports" % (
+                                  READY, "missing" if age is None else "%.0f minutes old" % age)}))
+            return True
     recorded, _ = replies(queue, 0)
     answers = {answer.get("id"): answer for answer in recorded}
     failed = False
@@ -263,6 +280,9 @@ def main():
     parser.add_argument("--verify", action="store_true",
                         help="send nothing: check the queue's out.jsonl, as a -Pagent run left it, "
                              "against the assertions in the request file")
+    parser.add_argument("--max-age", type=float, default=0.0,
+                        help="with --verify: minutes; fail when the run being checked opened its queue longer "
+                             "ago than that, which is what a run that crashed on startup leaves behind")
     arguments = parser.parse_args()
 
     queue = pathlib.Path(arguments.queue)
@@ -270,7 +290,7 @@ def main():
         requests = load(arguments.requests)
         if not requests:
             raise SystemExit("no requests to check")
-        sys.exit(1 if verify(queue, requests) else 0)
+        sys.exit(1 if verify(queue, requests, arguments.max_age) else 0)
     if arguments.ready:
         about = wait_for_ready(queue, arguments.ready, started)
         print(json.dumps({"ready": about}))

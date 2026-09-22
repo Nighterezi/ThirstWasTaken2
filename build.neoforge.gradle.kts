@@ -202,6 +202,25 @@ val dev: SourceSet = sourceSets.create("dev") {
  * run/<node>/agent/<name>/.
  */
 val clientRunMods: Configuration = configurations.create("clientRunMods")
+
+/**
+ * `-PwithoutOptional=<name,...>` leaves those optional mods out of runClient and the two extra clients,
+ * `all` every one of them. The same flag and names as build.gradle.kts, which says why it exists.
+ */
+val withoutOptional: Set<String> = providers.gradleProperty("withoutOptional").orNull
+    ?.split(',')?.map { it.trim().lowercase() }?.filter(String::isNotEmpty)?.toSet().orEmpty()
+/** Every name `-PwithoutOptional` accepts on this node, filled in as the run mods are declared. */
+val optionalRunMods = mutableSetOf("all")
+
+/**
+ * Adds a mod to the clients' run only, unless `-PwithoutOptional` names it. A mod that needs a library
+ * lists the library's names too, so leaving the library out never leaves a mod that cannot load without it.
+ */
+fun runClientMod(names: List<String>, notation: String, configure: ExternalModuleDependency.() -> Unit = {}) {
+    optionalRunMods += names
+    if ("all" in withoutOptional || names.any(withoutOptional::contains)) return
+    dependencies.add(clientRunMods.name, notation, configure)
+}
 /*
  * Added to, never replaced. A source set's own runtime classpath is where ModDevGradle puts DevLaunch,
  * whose `Main` is the class every run is launched through, so a source set that assigns its classpath
@@ -370,34 +389,41 @@ dependencies {
     compileOnly("maven.modrinth:appleskin:${property("deps.appleskin")}")
     compileOnly("maven.modrinth:jade:${property("deps.jade")}")
 
-    clientRunMods("maven.modrinth:appleskin:${property("deps.appleskin")}")
-    clientRunMods("maven.modrinth:jade:${property("deps.jade")}")
+    runClientMod(listOf("appleskin"), "maven.modrinth:appleskin:${property("deps.appleskin")}")
+    runClientMod(listOf("jade"), "maven.modrinth:jade:${property("deps.jade")}")
     // AppleSkin's own config screen, on the nodes that set it. Nothing compiles against Cloth Config and
     // the mod never reaches for it, so a node whose Minecraft version has no NeoForge build of it yet
     // simply runs the dev client without it.
-    findProperty("deps.cloth_config")?.let { clientRunMods("maven.modrinth:cloth-config:$it") }
+    findProperty("deps.cloth_config")?.let {
+        runClientMod(listOf("cloth-config", "cloth_config"), "maven.modrinth:cloth-config:$it")
+    }
 
     // Farmer's Delight, on the nodes that set it: nothing compiles against it, since the mod reaches it
     // by registry id alone, so it is only here to test its drinks, the Cooking Pot and Nourishment.
-    findProperty("deps.farmersdelight")?.let { clientRunMods("maven.modrinth:farmers-delight:$it") }
+    findProperty("deps.farmersdelight")?.let {
+        runClientMod(listOf("farmers-delight", "farmersdelight"), "maven.modrinth:farmers-delight:$it")
+    }
 
     if (createVersion != null && createLibraries != null) {
         compileOnly("maven.modrinth:create:$createVersion") { isTransitive = false }
         compileOnly(files(createLibraries.map { it.destinationDir.listFiles().orEmpty().toList() })
             .builtBy(createLibraries))
         // Test the Sand Filter with pipes, pumps and spouts in runClient.
-        clientRunMods("maven.modrinth:create:$createVersion") { isTransitive = false }
+        runClientMod(listOf("create"), "maven.modrinth:create:$createVersion") { isTransitive = false }
     }
 
     if (sophisticatedCoreVersion != null) {
         compileOnly("maven.modrinth:sophisticated-core:$sophisticatedCoreVersion") { isTransitive = false }
         // Test the upgrades in runClient, inside a backpack.
-        clientRunMods("maven.modrinth:sophisticated-core:$sophisticatedCoreVersion") { isTransitive = false }
+        runClientMod(listOf("sophisticated-core", "sophisticatedcore"),
+            "maven.modrinth:sophisticated-core:$sophisticatedCoreVersion") { isTransitive = false }
         findProperty("deps.sophisticated_backpacks")?.let {
-            clientRunMods("maven.modrinth:sophisticated-backpacks:$it") { isTransitive = false }
+            runClientMod(listOf("sophisticated-backpacks", "sophisticatedbackpacks", "sophisticated-core", "sophisticatedcore"),
+                "maven.modrinth:sophisticated-backpacks:$it") { isTransitive = false }
         }
         findProperty("deps.sophisticated_storage")?.let {
-            clientRunMods("maven.modrinth:sophisticated-storage:$it") { isTransitive = false }
+            runClientMod(listOf("sophisticated-storage", "sophisticatedstorage", "sophisticated-core", "sophisticatedcore"),
+                "maven.modrinth:sophisticated-storage:$it") { isTransitive = false }
         }
     }
 
@@ -408,9 +434,12 @@ dependencies {
         compileOnly("maven.modrinth:moonlight:${property("deps.moonlight")}") { isTransitive = false }
         // Test jars, goblets and faucets in runClient. The gametests and runServer run without them, which
         // is what proves the mod is unchanged when they are absent.
-        clientRunMods("maven.modrinth:supplementaries:$supplementariesVersion") { isTransitive = false }
-        clientRunMods("maven.modrinth:moonlight:${property("deps.moonlight")}") { isTransitive = false }
+        runClientMod(listOf("supplementaries", "moonlight"), "maven.modrinth:supplementaries:$supplementariesVersion") { isTransitive = false }
+        runClientMod(listOf("moonlight"), "maven.modrinth:moonlight:${property("deps.moonlight")}") { isTransitive = false }
     }
+
+    // A name no node loads is refused in stonecutter.gradle.kts, once every node has said what it takes.
+    project.extra["thirst.optionalRunMods"] = optionalRunMods.toSet()
 }
 
 /*

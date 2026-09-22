@@ -117,3 +117,21 @@ stonecutter parameters {
         }
     }
 }
+
+// `-PwithoutOptional=<name,...>` leaves optional mods out of a node's dev clients (build.gradle.kts and
+// build.neoforge.gradle.kts). Every node sees the flag, and most names only mean something on some
+// nodes, Sophisticated Core on NeoForge for one, so a node quietly ignores a name it does not load. A
+// name no node loads is a typo, and would leave the mod in the run while claiming to test without it.
+gradle.projectsEvaluated {
+    val asked = providers.gradleProperty("withoutOptional").orNull
+        ?.split(',')?.map { it.trim().lowercase() }?.filter(String::isNotEmpty)?.toSet().orEmpty()
+    if (asked.isEmpty()) return@projectsEvaluated
+    val known = rootProject.subprojects.flatMap { node ->
+        (node.extensions.extraProperties.properties["thirst.optionalRunMods"] as Set<*>?).orEmpty().map(Any?::toString)
+    }.toSet()
+    val unknown = asked - known
+    if (unknown.isNotEmpty()) {
+        throw GradleException("-PwithoutOptional names $unknown, which no node's runClient loads. " +
+            "It takes: ${known.sorted().joinToString()}")
+    }
+}

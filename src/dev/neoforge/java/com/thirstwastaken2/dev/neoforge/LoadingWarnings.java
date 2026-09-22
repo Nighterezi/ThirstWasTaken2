@@ -25,10 +25,15 @@ import java.util.List;
  * written to the log. The screen stays when there is an error, when a warning names this mod, and when
  * a warning names no mod at all, since then nothing says it is someone else's.
  *
+ * <p>An unattended {@code -Pagent} run that hits a loading <em>error</em> is stopped instead, non-zero,
+ * through {@code LoadingErrorScreenMixin}: the screen would otherwise hold the Gradle task open with
+ * nobody to close it, which is how a client crashing without an optional mod once looked like a run
+ * still going. FML has written its crash report by then.
+ *
  * <p>The screen keeps its issues and its continuation private and has no event of its own, so they
  * are read by reflection. It is the same class, with the same fields, on every NeoForge node.
  */
-final class LoadingWarnings {
+public final class LoadingWarnings {
     private LoadingWarnings() { }
 
     static void register() {
@@ -36,6 +41,24 @@ final class LoadingWarnings {
         NeoForge.EVENT_BUS.addListener(ScreenEvent.Init.Post.class, event -> {
             if (event.getScreen() instanceof LoadingErrorScreen screen) passIfNotOurs(screen);
         });
+    }
+
+    /** Exits with the errors logged when this is an unattended run and the screen shows an error. */
+    public static void stopIfUnattendedError(LoadingErrorScreen screen) {
+        if (!Boolean.getBoolean("thirstwastaken2.agent.script.exit")) return;
+        try {
+            List<ModLoadingIssue> errors = issues(screen, "modLoadErrors");
+            if (errors.isEmpty()) return;
+            for (ModLoadingIssue error : errors) {
+                ThirstWasTaken2.LOGGER.error("[ThirstAgent] loading error: {} ({})", error.translationKey(), modId(error));
+            }
+        } catch (ReflectiveOperationException | ClassCastException e) {
+            // The same screen shows warnings alone, which a run gets past, so an unreadable one stays up.
+            ThirstWasTaken2.LOGGER.warn("[ThirstAgent] could not read the loading error screen; leaving it up", e);
+            return;
+        }
+        ThirstWasTaken2.LOGGER.error("[ThirstAgent] the game failed to load; stopping the unattended run");
+        System.exit(1);
     }
 
     private static void passIfNotOurs(LoadingErrorScreen screen) {

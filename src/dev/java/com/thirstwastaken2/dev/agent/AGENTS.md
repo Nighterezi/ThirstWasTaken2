@@ -103,6 +103,10 @@ afterwards against what it recorded:
 python tools/agent/drive.py run/1.21.11-neoforge/agent/server tools/agent/server-probe.jsonl --verify
 ```
 
+A run that crashed before it opened the queue leaves the previous run's files in place, and `--verify`
+would pass on them. `--max-age <minutes>` refuses a `ready.json` older than that; use it whenever the
+question is whether the run started at all.
+
 A client script that needs a world gets one with `-Pquickplay=<world>`, which opens that singleplayer
 world of `run/<node>/saves` straight from launch; server commands then reach its integrated server.
 [tools/agent/hanging-pot.jsonl](../../../../../../../tools/agent/hanging-pot.jsonl) runs that way, in a
@@ -140,6 +144,11 @@ of using the desktop it opened on, or of the run going anywhere at all. `-Pdrive
   `-Pquickplay` or `-Pagent` client before the world opens. It stays on the screen for an error, for a
   warning about this mod, and for a warning that names no mod. `LoadingWarnings` in
   `src/dev/neoforge`; the screen keeps its issues private, so it reads them by reflection.
+- **An unattended NeoForge run that fails to load stops**, non-zero, rather than sitting on the error
+  screen with the Gradle task open. That is what a client crashing without an optional mod looks like
+  (`tools/agent/boot.jsonl` exists for it). NeoForge posts no events until loading has finished, so
+  this one is a mixin, `LoadingErrorScreenMixin`, in a NeoForge dev config of its own; a Fabric client
+  exits on a loading crash by itself.
 
 `-Pagent=<file>` implies `-Pdriven`, because an unattended run has nobody at the keyboard. It is off
 by default otherwise, because it is the opposite of what a manual pass needs: with no grab there is

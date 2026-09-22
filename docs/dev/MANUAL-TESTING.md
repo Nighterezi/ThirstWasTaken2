@@ -201,6 +201,19 @@ config screen *read* well, which is the sections below.
       on the server too. `runServer` with Jade copied into `run/<node>/mods` is enough on both loaders:
       the Fabric dev server has the client classes on its classpath, as the released jar does.
       Checked on 26.2 on 2026-09-15 and on 1.21.11 NeoForge on 2026-09-16.
+- [ ] A client **with Jade and without** each integration's mod reaches the title screen and stays up,
+      on every node that builds that integration. This is the shape 1.0.9 crashed in: Jade loads every
+      plugin it is given, and FML every `@Mod` class, whether or not the mod it is for is there.
+      `./gradlew ":<node>:runClient" -Pagent=tools/agent/boot.jsonl -PwithoutOptional=<name>`, then
+      `python tools/agent/drive.py run/<node>/agent/client tools/agent/boot.jsonl --verify --max-age 10`
+      (without `--max-age` it reads the last run's answers if this one crashed). Leaving out
+      a library leaves out the mods that need it too.
+      - `sophisticated-core` on the NeoForge nodes up to 26.2
+      - `moonlight` (Supplementaries goes with it) on both 1.21.1 nodes
+      - `create` on `1.21.1-neoforge`, and on the Fabric nodes that build Create Fly
+- [ ] The same with `-PwithoutOptional=all`, on one node per loader.
+- [ ] `checkOptionalSeam` passes on every node. CI runs it; it is the static half of the two checks
+      above, and fails on the 1.0.9 entrypoint.
 
 ## Per version
 

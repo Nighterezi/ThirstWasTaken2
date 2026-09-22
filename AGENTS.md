@@ -28,6 +28,8 @@ One source tree, one jar per node. Nodes are the Gradle subprojects in `settings
 | `./gradlew ":<node>:checkDatagen"` | Fails if generated output differs from what is committed. CI runs it |
 | `./gradlew ":<node>:runBenchmark"` | Server cost in time and memory. See [benchmark/AGENTS.md](src/dev/java/com/thirstwastaken2/dev/benchmark/AGENTS.md) |
 | `./gradlew ":<node>:runServer" -Pagent=<file>.jsonl` | Script a running game and read numbers back. See [agent/AGENTS.md](src/dev/java/com/thirstwastaken2/dev/agent/AGENTS.md) |
+| `./gradlew ":<node>:runClient" -Pagent=tools/agent/boot.jsonl -PwithoutOptional=<name,...>\|all` | A dev client without those optional mods comes up and stays up. The check 1.0.9 lacked |
+| `./gradlew ":<node>:checkOptionalSeam"` | Fails when a class loaded without an optional mod names that mod. CI runs it |
 | `python tools/release/publish.py --dry-run` | Release to Modrinth, then `publish_curseforge.py --no-build`. Checklist and flags in the scripts' docstrings |
 
 - **Never hand-edit `src/main/generated/`.** Change the generator in `src/datagen`. NeoForge nodes
@@ -53,6 +55,10 @@ One source tree, one jar per node. Nodes are the Gradle subprojects in `settings
   `checkLoaderSeam` enforces it. See [platform/AGENTS.md](src/main/java/com/thirstwastaken2/platform/AGENTS.md).
 - **Optional integrations are soft.** No hard dependency, ever. Gate on `Loader.isModLoaded` (plus a
   marker-class probe when extending a foreign class) and keep integration classes off the load path.
+  Asking the gate is not enough on its own: the JVM verifies a class whole before any of it runs, so
+  an entrypoint, a `@Mod` class, a Jade plugin or a mixin plugin names no type of that mod anywhere,
+  lambdas included, and hands over through a static call into another class. `checkOptionalSeam`
+  enforces it; 1.0.9 crashed every NeoForge client without Sophisticated Core for want of it.
 - **Mixins**: in `com.thirstwastaken2.mixin`, package-private, `abstract`, every injected member
   prefixed `thirst$`, listed in `thirstwastaken2.mixins.json` or they silently do nothing. Client,
   Fabric-client, dev, Create, Create Fly, Sophisticated and Supplementaries mixins have their own

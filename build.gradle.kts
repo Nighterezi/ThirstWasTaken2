@@ -370,6 +370,28 @@ fun clientMod(configuration: String, notation: Any) {
     dependencies.add(target, notation)
 }
 
+/**
+ * `-PwithoutOptional=<name,...>` leaves those optional mods out of runClient, `all` every one of them, so
+ * a dev client can show the game loading without them. That is the check 1.0.9 lacked: runClient always
+ * had every optional mod, and runServer and runGametest never load a client entrypoint. A name is the
+ * mod's Modrinth slug or its mod id, as listed in [optionalRunMods]; a name no node loads fails the build
+ * (stonecutter.gradle.kts) rather than silently leaving the mod in. The twin in build.neoforge.gradle.kts takes the same names.
+ */
+val withoutOptional: Set<String> = providers.gradleProperty("withoutOptional").orNull
+    ?.split(',')?.map { it.trim().lowercase() }?.filter(String::isNotEmpty)?.toSet().orEmpty()
+/** Every name `-PwithoutOptional` accepts on this node, filled in as the run mods are declared. */
+val optionalRunMods = mutableSetOf("all")
+
+/**
+ * Adds a mod to runClient only, unless `-PwithoutOptional` names it. A mod that needs a library lists the
+ * library's names too, so leaving the library out never leaves a mod that cannot load without it.
+ */
+fun runClientMod(names: List<String>, notation: Any) {
+    optionalRunMods += names
+    if ("all" in withoutOptional || names.any(withoutOptional::contains)) return
+    clientMod("clientRuntimeOnly", notation)
+}
+
 dependencies {
     minecraft("com.mojang:minecraft:${sc.current.version}")
     // No-op from 26.1 on, which ships unobfuscated.
@@ -384,21 +406,22 @@ dependencies {
     clientMod("clientCompileOnly", "maven.modrinth:appleskin:${property("deps.appleskin")}")
     clientMod("clientCompileOnly", "maven.modrinth:jade:${property("deps.jade")}")
     // Test the client HUD and food tooltips alongside AppleSkin in runClient.
-    clientMod("clientRuntimeOnly", "maven.modrinth:appleskin:${property("deps.appleskin")}")
+    runClientMod(listOf("appleskin"), "maven.modrinth:appleskin:${property("deps.appleskin")}")
     // AppleSkin uses Cloth Config for its Mod Menu configuration screen.
-    clientMod("clientRuntimeOnly", "maven.modrinth:cloth-config:${property("deps.cloth_config")}")
-    clientMod("clientRuntimeOnly", "maven.modrinth:modmenu:${property("deps.modmenu")}")
+    runClientMod(listOf("cloth-config", "cloth_config"), "maven.modrinth:cloth-config:${property("deps.cloth_config")}")
+    runClientMod(listOf("modmenu"), "maven.modrinth:modmenu:${property("deps.modmenu")}")
     // Test the water purity line Jade shows when looking at water or a cauldron.
-    clientMod("clientRuntimeOnly", "maven.modrinth:jade:${property("deps.jade")}")
+    runClientMod(listOf("jade"), "maven.modrinth:jade:${property("deps.jade")}")
     // Test the drinks and meals Farmer's Delight adds, and the c:drinks tag it fills.
-    clientMod("clientRuntimeOnly", "maven.modrinth:farmers-delight-refabricated:${property("deps.farmersdelight")}")
+    runClientMod(listOf("farmers-delight-refabricated", "farmersdelight"),
+        "maven.modrinth:farmers-delight-refabricated:${property("deps.farmersdelight")}")
 
     if (createFlyClasses != null) {
         // The Sand Filter extends Create classes on both sides, so both source sets compile against it.
         compileOnly(files(createFlyClasses))
         "clientCompileOnly"(files(createFlyClasses))
         // Test the Sand Filter with pipes, pumps and spouts in runClient.
-        clientMod("clientRuntimeOnly", "maven.modrinth:create-fly:$createFly")
+        runClientMod(listOf("create-fly", "create"), "maven.modrinth:create-fly:$createFly")
         // `-Pcreate` puts Create Fly on runServer and runBenchmark too, to benchmark the mod with it
         // installed. Off by default, so the usual benchmark measures the mod alone.
         if (providers.gradleProperty("create").isPresent) {
@@ -415,10 +438,13 @@ dependencies {
         // Test jars, goblets and faucets in runClient. The gametests and runServer run without them, which
         // is what proves the mod is unchanged when they are absent. CodecUI comes out of Moonlight's own
         // jar, since Loom leaves a dependency's nested mods packed.
-        clientMod("clientRuntimeOnly", "maven.modrinth:supplementaries:$supplementaries")
-        clientMod("clientRuntimeOnly", "maven.modrinth:moonlight:$moonlight")
-        clientMod("clientRuntimeOnly", files(moonlightNestedMods(moonlight)))
+        runClientMod(listOf("supplementaries", "moonlight"), "maven.modrinth:supplementaries:$supplementaries")
+        runClientMod(listOf("moonlight"), "maven.modrinth:moonlight:$moonlight")
+        runClientMod(listOf("moonlight"), files(moonlightNestedMods(moonlight)))
     }
+
+    // A name no node loads is refused in stonecutter.gradle.kts, once every node has said what it takes.
+    project.extra["thirst.optionalRunMods"] = optionalRunMods.toSet()
 }
 
 tasks.processResources {

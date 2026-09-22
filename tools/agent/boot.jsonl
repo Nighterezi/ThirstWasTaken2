@@ -1,0 +1,22 @@
+// A client comes up, and stays up, with whatever optional mods it was started with. This is the check
+// 1.0.9 lacked: every NeoForge client without Sophisticated Core crashed on startup, and nothing saw it,
+// because runClient always has every optional mod. Leave mods out with -PwithoutOptional:
+//     ./gradlew ":<node>:runClient" -Pagent=tools/agent/boot.jsonl -PwithoutOptional=all
+//     ./gradlew ":<node>:runClient" -Pagent=tools/agent/boot.jsonl -PwithoutOptional=sophisticated-core
+// The second shape, one mod gone and Jade still there, is the one 1.0.9 crashed in: Jade loads every
+// plugin it is given whether or not the mod the plugin is for is installed.
+//
+// It asks for nothing a title screen cannot answer, so it runs as it is, and with -Pquickplay=<world>
+// it also opens that world, loads the chunks round the player and draws the HUD before it stops. Then
+// verify what it recorded:
+//     python tools/agent/drive.py run/<node>/agent/client tools/agent/boot.jsonl --verify --max-age 10
+// A crash fails the Gradle task: a Fabric client exits on its own, and a driven NeoForge client exits
+// from the loading error screen rather than waiting on it. It also leaves the previous run's queue
+// behind, which is what --max-age is for: without it, verify would read that run's answers and pass.
+
+{"id": "probe", "command": "probe", "expect": {"ok": true, "result.side": "client"}}
+{"id": "settle", "command": "wait", "args": {"ticks": 200}}
+{"id": "info", "command": "client.info", "expect": {"ok": true}}
+// Long enough for a quickplay world to finish joining and tick with the player in it.
+{"id": "play", "command": "wait", "args": {"ticks": 400}}
+{"id": "still", "command": "client.info", "expect": {"ok": true}}
