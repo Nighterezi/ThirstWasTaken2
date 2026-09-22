@@ -51,42 +51,57 @@ final class ConfigPreview {
     private static final int LINE_HEIGHT = 10;
     private static final int ICON_SIZE = 16;
     private static final int BAR_WIDTH = 81;
+    /** The caption, a gap, the thirst bar and the food bar below it. */
+    private static final int BLOCK_HEIGHT = LINE_HEIGHT + 4 + 10 + 9;
     private static final int WHITE = 0xFFFFFFFF;
-    /** One full sweep of the reserve, empty to full and back. */
-    private static final long SWEEP_MILLIS = 8000L;
-    private static final long EXHAUSTION_MILLIS = 2500L;
+    /**
+     * One full sweep of the reserve, empty to full and back: the same 3.2 seconds as the Modrinth page's
+     * hud-appleskin.gif, whose loop reads smoothly. Eight seconds stepped each droplet slowly enough to
+     * look like it stuck.
+     */
+    private static final long SWEEP_MILLIS = 3200L;
 
     private ConfigPreview() { }
 
     static AbstractWidget widget() {
         return ClientVanilla.canvas(WIDTH, HEIGHT, Component.translatable("thirstwastaken2.config.preview"),
-                ConfigPreview::paint);
+                (graphics, widget, mouseX, mouseY) ->
+                        paint(graphics, widget.getX(), widget.getY(), widget.getWidth(), widget.getHeight()));
     }
 
     private static void paint(GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
         Font font = Minecraft.getInstance().font;
         graphics.fill(x, y, x + width, y + height, 0x90000000);
-        border(graphics, x, y, width, height, 0x40FFFFFF);
+        ConfigTheme.border(graphics, x, y, width, height, 0x40FFFFFF);
 
-        paintTooltip(graphics, font, x + PADDING, y + PADDING);
+        int tooltipRight = paintTooltip(graphics, font, x + PADDING, y, height);
 
         long now = Util.getMillis();
-        int level = sweep(now);
-        float exhaustion = 4.0F * (now % EXHAUSTION_MILLIS) / EXHAUSTION_MILLIS;
-        int right = x + width - PADDING;
-        int foodTop = y + height - PADDING - 9;
-        int thirstTop = foodTop - 10;
+        float phase = (now % SWEEP_MILLIS) / (float) SWEEP_MILLIS;
+        int level = sweep(phase);
+        // The caption and both bars as one block, centred in the space the tooltip leaves.
+        int left = tooltipRight + Math.max(PADDING, (x + width - PADDING - tooltipRight - BAR_WIDTH) / 2);
+        int right = left + BAR_WIDTH;
+        int captionTop = y + (height - BLOCK_HEIGHT) / 2;
+        int thirstTop = captionTop + LINE_HEIGHT + 4;
+        int foodTop = thirstTop + 10;
 
-        ThirstHud.drawBar(graphics, right, thirstTop, 20, level, exhaustion, AppleSkin.quenchedOverlay(),
-                AppleSkinIntegration.shouldShowExhaustion(), false, false, false);
+        // As in the gif: the exhaustion strip fills once per sweep, in step with it, and the droplets are
+        // drawn without exhaustion, so none flickers half drained while the reserve passes empty.
+        if (AppleSkinIntegration.shouldShowExhaustion()) ThirstHud.renderExhaustion(graphics, right, thirstTop, 4.0F * phase);
+        ThirstHud.drawBar(graphics, right, thirstTop, 20, level, 0.0F, AppleSkin.quenchedOverlay(),
+                false, false, false, false);
         paintFood(graphics, right, foodTop, level);
 
         Component caption = Component.translatable("thirstwastaken2.config.preview");
-        ClientVanilla.text(graphics, font, caption, right - BAR_WIDTH, y + PADDING, 0xFFA0A0A0);
+        ClientVanilla.text(graphics, font, caption, left + (BAR_WIDTH - font.width(caption)) / 2, captionTop, 0xFFA0A0A0);
     }
 
-    /** The bowl's name and the lines the mod gives it, in a box shaped like a tooltip. */
-    private static void paintTooltip(GuiGraphicsExtractor graphics, Font font, int x, int y) {
+    /**
+     * The bowl's name and the lines the mod gives it, in a box shaped like a tooltip, centred between
+     * {@code top} and {@code top + height}. Returns the box's right edge.
+     */
+    private static int paintTooltip(GuiGraphicsExtractor graphics, Font font, int x, int top, int height) {
         List<Component> lines = new ArrayList<>();
         lines.add(SAMPLE_NAME);
         lines.add(WaterPurity.tooltip(SAMPLE_PURITY));
@@ -103,13 +118,15 @@ final class ConfigPreview {
         int boxX = x + ICON_SIZE + 4;
         int boxWidth = textWidth + 8;
         int boxHeight = lines.size() * LINE_HEIGHT + 4;
+        int y = top + (height - boxHeight) / 2;
 
         ClientVanilla.blit(graphics, SAMPLE_TEXTURE, x, y + 1, 0, 0, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE, WHITE);
         graphics.fill(boxX, y, boxX + boxWidth, y + boxHeight, 0xF0100010);
-        border(graphics, boxX, y, boxWidth, boxHeight, 0xFF3A1B6B);
+        ConfigTheme.border(graphics, boxX, y, boxWidth, boxHeight, 0xFF3A1B6B);
         for (int i = 0; i < lines.size(); i++) {
             ClientVanilla.text(graphics, font, lines.get(i), boxX + 4, y + 3 + i * LINE_HEIGHT, WHITE);
         }
+        return boxX + boxWidth;
     }
 
     /** The vanilla food bar, full, with AppleSkin's own saturation outline on it when AppleSkin is there. */
@@ -125,17 +142,9 @@ final class ConfigPreview {
         }
     }
 
-    /** 0 to 20 and back over {@link #SWEEP_MILLIS}, holding a moment at each end. */
-    private static int sweep(long now) {
-        float phase = (now % SWEEP_MILLIS) / (float) SWEEP_MILLIS;
+    /** 0 to 20 and back over one sweep, {@code phase} 0 to 1, holding a moment at each end. */
+    private static int sweep(float phase) {
         float triangle = phase < 0.5F ? phase * 2.0F : 2.0F - phase * 2.0F;
         return Math.round(Math.clamp(triangle * 1.2F - 0.1F, 0.0F, 1.0F) * 20.0F);
-    }
-
-    private static void border(GuiGraphicsExtractor graphics, int x, int y, int width, int height, int argb) {
-        graphics.fill(x, y, x + width, y + 1, argb);
-        graphics.fill(x, y + height - 1, x + width, y + height, argb);
-        graphics.fill(x, y + 1, x + 1, y + height - 1, argb);
-        graphics.fill(x + width - 1, y + 1, x + width, y + height - 1, argb);
     }
 }

@@ -16,8 +16,7 @@ Natural healing waits until thirst is nearly full. The food it would have used i
 ## I changed the config and nothing happened
 
 - A file edited by hand is read on the next start.
-- On someone else's server, only the HUD and AppleSkin settings apply. The rest comes from the
-  server.
+- On someone else's server, only the AppleSkin settings apply. The rest comes from the server.
 - The settings screen only saves on **Done**.
 
 ## Can thirst be turned off for one player?

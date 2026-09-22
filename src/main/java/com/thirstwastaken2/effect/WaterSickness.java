@@ -52,27 +52,17 @@ public final class WaterSickness {
     /** {@link #drink(Player, WaterQuality.Fresh)} with the difficulty and the roll, 0 to 100, given. */
     public static void drink(Player player, int purity, Difficulty difficulty, float roll) {
         if (purity <= 1) player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, TASTE_TICKS));
-        SicknessTable table = table(ThirstConfig.get(), difficulty);
+        SicknessTable table = SicknessTable.of(difficulty);
         if (table == null || purity >= SicknessTable.GRADES) return;
         Outcome outcome = outcome(table, purity, roll);
-        if (outcome != Outcome.NONE) catchIllness(player, difficulty, outcome, table.upsetStomachLevel[purity] - 1);
-    }
-
-    /** The difficulty's table, or {@code null} on Peaceful, which has none. */
-    public static SicknessTable table(ThirstConfig config, Difficulty difficulty) {
-        return switch (difficulty) {
-            case PEACEFUL -> null;
-            case EASY -> config.sicknessEasy;
-            case NORMAL -> config.sicknessNormal;
-            case HARD -> config.sicknessHard;
-        };
+        if (outcome != Outcome.NONE) catchIllness(player, difficulty, outcome, table.upsetStomachLevel()[purity] - 1);
     }
 
     /** Where {@code roll} lands in the ranges for {@code purity}, walked from worst to mildest. */
     public static Outcome outcome(SicknessTable table, int purity, float roll) {
-        float poisoning = table.poisoningChance[purity];
+        float poisoning = table.poisoningChance()[purity];
         if (roll < poisoning) return Outcome.POISONING;
-        if (roll < poisoning + table.upsetStomachChance[purity]) return Outcome.UPSET_STOMACH;
+        if (roll < poisoning + table.upsetStomachChance()[purity]) return Outcome.UPSET_STOMACH;
         return Outcome.NONE;
     }
 
@@ -97,12 +87,12 @@ public final class WaterSickness {
     }
 
     /**
-     * The illness the player has now. Poisoning always comes with Upset Stomach and Mining Fatigue, so
-     * both together read as Poisoning.
+     * The illness the player has now. Poisoning always comes with Upset Stomach and Poison, so both
+     * together read as Poisoning. Once the Poison wears off, what is left is Upset Stomach.
      */
     public static Outcome current(Player player) {
         if (!player.hasEffect(ThirstEffects.UPSET_STOMACH)) return Outcome.NONE;
-        return player.hasEffect(MobEffects.MINING_FATIGUE) ? Outcome.POISONING : Outcome.UPSET_STOMACH;
+        return player.hasEffect(MobEffects.POISON) ? Outcome.POISONING : Outcome.UPSET_STOMACH;
     }
 
     public static int upsetStomachTicks(Difficulty difficulty) {
@@ -116,21 +106,19 @@ public final class WaterSickness {
     /** One vanilla effect Poisoning gives. */
     public record PoisoningEffect(Holder<MobEffect> effect, int amplifier, int ticks) { }
 
-    /** What Poisoning gives on {@code difficulty}, on top of Upset Stomach. Vanilla Poison never kills. */
+    /**
+     * What Poisoning gives on {@code difficulty}, on top of Upset Stomach: Poison, longer the harder the
+     * difficulty. Vanilla Poison stops at half a heart, so it never kills. The design's Weakness, Mining
+     * Fatigue and Slowness were dropped: the illness should hurt, not stop the player working.
+     */
     public static PoisoningEffect[] poisoning(Difficulty difficulty) {
         return switch (difficulty) {
             case PEACEFUL, EASY -> new PoisoningEffect[]{
-                    new PoisoningEffect(MobEffects.WEAKNESS, 0, 30 * TICKS_PER_SECOND),
-                    new PoisoningEffect(MobEffects.MINING_FATIGUE, 0, 30 * TICKS_PER_SECOND)};
+                    new PoisoningEffect(MobEffects.POISON, 0, 10 * TICKS_PER_SECOND)};
             case NORMAL -> new PoisoningEffect[]{
-                    new PoisoningEffect(MobEffects.WEAKNESS, 0, 60 * TICKS_PER_SECOND),
-                    new PoisoningEffect(MobEffects.MINING_FATIGUE, 0, 60 * TICKS_PER_SECOND),
-                    new PoisoningEffect(MobEffects.POISON, 0, 8 * TICKS_PER_SECOND)};
+                    new PoisoningEffect(MobEffects.POISON, 0, 20 * TICKS_PER_SECOND)};
             case HARD -> new PoisoningEffect[]{
-                    new PoisoningEffect(MobEffects.WEAKNESS, 1, 90 * TICKS_PER_SECOND),
-                    new PoisoningEffect(MobEffects.MINING_FATIGUE, 1, 90 * TICKS_PER_SECOND),
-                    new PoisoningEffect(MobEffects.SLOWNESS, 0, 60 * TICKS_PER_SECOND),
-                    new PoisoningEffect(MobEffects.POISON, 0, 15 * TICKS_PER_SECOND)};
+                    new PoisoningEffect(MobEffects.POISON, 0, 30 * TICKS_PER_SECOND)};
         };
     }
 

@@ -46,8 +46,8 @@ public record ThirstData(int thirst, int quenched, float exhaustion, boolean ena
     }
 
     public ThirstData drink(int thirstAmount, int quenchedAmount) {
-        int overflow = ThirstConfig.get().extraThirstConvertsToQuenched
-                ? Math.max(thirst + thirstAmount - MAX, 0) : 0;
+        // Thirst past a full bar is not lost: it tops up quenched instead.
+        int overflow = Math.max(thirst + thirstAmount - MAX, 0);
         int newThirst = Math.min(MAX, thirst + thirstAmount);
         int newQuenched = Math.min(newThirst, quenched + quenchedAmount + overflow);
         return new ThirstData(newThirst, newQuenched, exhaustion, enabled);

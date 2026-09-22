@@ -77,10 +77,10 @@ A bad batch. Vanilla effects on top of Upset Stomach. Milk cures it.
 
 | | Easy | Normal | Hard |
 |---|---|---|---|
-| Weakness | I, 30 s | I, 60 s | II, 90 s |
-| Mining Fatigue | I, 30 s | I, 60 s | II, 90 s |
-| Slowness | | | I, 60 s |
-| Poison | | 8 s | 15 s |
+| Poison | 10 s | 20 s | 30 s |
+
+Weakness, Mining Fatigue and Slowness were in the first version and were dropped: the illness should hurt, not
+stop the player working.
 
 Vanilla Poison stops at half a heart, so Poisoning never kills.
 
@@ -163,7 +163,7 @@ for milk to remove.
 |---|---|
 | Bad water makes you ill, and the danger is losing water | illnesses drain the thirst bar |
 | An upset stomach kills the appetite | less saturation |
-| Illness leaves you weak and tired | Weakness, Mining Fatigue |
+| A bad batch makes you sick for a while | Poison, longer on harder difficulties |
 | Diarrhoeal disease from unsafe water kills hundreds of thousands a year, through dehydration | Dysentery hurts only while you are dry |
 | Replacing lost water is the treatment; oral rehydration salts save millions | Pure water keeps you alive, ORS cures faster |
 | The dirtier the water, the likelier the illness | chances rise from Clean to Dirty |

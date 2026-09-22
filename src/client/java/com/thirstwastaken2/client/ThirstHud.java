@@ -5,7 +5,6 @@ import com.thirstwastaken2.client.compat.AppleSkinIntegration;
 import com.thirstwastaken2.client.platform.ClientVanilla;
 import com.thirstwastaken2.compat.AppleSkin;
 import com.thirstwastaken2.config.QuenchedOverlay;
-import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.data.ThirstData;
 import com.thirstwastaken2.data.ThirstManager;
 import com.thirstwastaken2.effect.ThirstEffects;
@@ -70,13 +69,12 @@ public final class ThirstHud {
         Player player = Minecraft.getInstance().player;
         if (!shouldRender(player)) return;
 
-        ThirstConfig config = ThirstConfig.get();
         ThirstData data = ThirstManager.get(player);
         int thirst = data.thirst();
         int quenched = data.quenched();
 
-        int right = graphics.guiWidth() / 2 + 91 + config.thirstBarXOffset;
-        int top = stackTop + config.thirstBarYOffset;
+        int right = graphics.guiWidth() / 2 + 91;
+        int top = stackTop;
 
         // Vanilla shakes the hunger bar once saturation runs out; the thirst bar mirrors that.
         boolean shake = quenched <= 0 && player.tickCount % (thirst * 3 + 1) == 0;
@@ -134,8 +132,11 @@ public final class ThirstHud {
                 ICONS_TEXTURE_WIDTH, ICONS_TEXTURE_HEIGHT, OPAQUE);
     }
 
-    /** Draws AppleSkin's dithered exhaustion underlay beneath the thirst icons. */
-    private static void renderExhaustion(GuiGraphicsExtractor graphics, int right, int top, float exhaustion) {
+    /**
+     * Draws AppleSkin's dithered exhaustion underlay beneath the thirst icons. Public for the config
+     * preview, which draws it on the clock of its own sweep rather than from a player's exhaustion.
+     */
+    public static void renderExhaustion(GuiGraphicsExtractor graphics, int right, int top, float exhaustion) {
         float ratio = Math.min(1.0F, Math.max(0.0F, exhaustion / MAX_EXHAUSTION));
         int width = (int) (ratio * BAR_WIDTH);
         if (width <= 0) return;

@@ -1,8 +1,8 @@
 package com.thirstwastaken2.kaleidoscope.mixin;
 
 import com.github.ysbbbbbb.kaleidoscopecookery.blockentity.kitchen.TeapotBlockEntity;
-import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.kaleidoscope.BrewedWater;
+import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.purity.WaterQuality;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -21,6 +21,6 @@ abstract class TeapotDripstoneMixin {
     @Inject(method = "receiveDripstoneFluid", at = @At("RETURN"))
     private void thirst$gradeDripstone(Fluid fluid, CallbackInfoReturnable<Boolean> cir) {
         if (!cir.getReturnValueZ()) return;
-        ((BrewedWater) this).thirst$holdWater(fluid == Fluids.WATER ? WaterQuality.fresh(ThirstConfig.get().dripstonePurity) : null);
+        ((BrewedWater) this).thirst$holdWater(fluid == Fluids.WATER ? WaterQuality.fresh(WaterPurity.DRIPSTONE_PURITY) : null);
     }
 }

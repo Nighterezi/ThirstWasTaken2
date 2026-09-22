@@ -175,7 +175,7 @@ public final class WaterInteractions {
      * so it lands on its own configured grade rather than inheriting {@code defaultPurity}.
      */
     public static void filledByRain(BlockState before, Level level, BlockPos pos) {
-        naturallyFilled(before, level, pos, ThirstConfig.get().rainwaterPurity);
+        naturallyFilled(before, level, pos, WaterPurity.RAINWATER_PURITY);
     }
 
     /**
@@ -187,7 +187,7 @@ public final class WaterInteractions {
         // Identity, not the water tag: vanilla's own drip check compares against this instance, and
         // Fluid#is(TagKey) is deprecated.
         if (fluid == Fluids.WATER) {
-            naturallyFilled(before, level, pos, ThirstConfig.get().dripstonePurity);
+            naturallyFilled(before, level, pos, WaterPurity.DRIPSTONE_PURITY);
         }
     }
 

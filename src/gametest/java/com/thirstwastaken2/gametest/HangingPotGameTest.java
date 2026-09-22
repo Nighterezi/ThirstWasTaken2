@@ -263,7 +263,7 @@ public final class HangingPotGameTest {
         }
 
         BlockState after = level.getBlockState(pos);
-        WaterQuality expected = WaterQuality.fresh(ThirstConfig.get().rainwaterPurity);
+        WaterQuality expected = WaterQuality.fresh(WaterPurity.RAINWATER_PURITY);
         TestFixtures.check(helper, after.getValue(HangingPotBlock.LEVEL) == 1,
                 "rain should have added one serving in 500 tries, the pot holds " + after.getValue(HangingPotBlock.LEVEL));
         TestFixtures.check(helper, expected.equals(HangingPotBlock.quality(after)),
@@ -317,16 +317,12 @@ public final class HangingPotGameTest {
     }
 
     @GameTest
-    public void eachPotReadsItsOwnBoilTime(GameTestHelper helper) {
-        ThirstConfig config = ThirstConfig.get();
-        TestFixtures.check(helper,
-                ThirstBlocks.COPPER_HANGING_POT.secondsPerServing() == config.copperPotSecondsPerServing
-                        && ThirstBlocks.IRON_HANGING_POT.secondsPerServing() == config.ironPotSecondsPerServing,
-                "each pot should read its own boil time, got copper "
+    public void eachPotHasItsOwnBoilTime(GameTestHelper helper) {
+        TestFixtures.check(helper, ThirstBlocks.COPPER_HANGING_POT.secondsPerServing() == 4
+                        && ThirstBlocks.IRON_HANGING_POT.secondsPerServing() == 6,
+                "copper should boil a serving in 4 seconds and iron in 6, got copper "
                         + ThirstBlocks.COPPER_HANGING_POT.secondsPerServing() + ", iron "
                         + ThirstBlocks.IRON_HANGING_POT.secondsPerServing());
-        TestFixtures.check(helper, new ThirstConfig().ironPotSecondsPerServing > new ThirstConfig().copperPotSecondsPerServing,
-                "by default copper should boil faster than iron");
         helper.succeed();
     }
 

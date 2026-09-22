@@ -225,8 +225,6 @@ final class BenchmarkRun {
         ThirstConfig config = ThirstConfig.get();
         JsonObject json = new JsonObject();
         json.addProperty("thirstDepletionModifier", config.thirstDepletionModifier);
-        json.addProperty("netherThirstDepletionModifier", config.netherThirstDepletionModifier);
-        json.addProperty("depletesWhenNauseous", config.depletesWhenNauseous);
         json.addProperty("preventSprintingWhenThirsty", config.preventSprintingWhenThirsty);
         json.addProperty("dehydrationHaltsHealthRegen", config.dehydrationHaltsHealthRegen);
         json.addProperty("enableKeywordMatching", config.enableKeywordMatching);

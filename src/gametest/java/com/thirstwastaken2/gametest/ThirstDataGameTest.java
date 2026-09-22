@@ -44,20 +44,9 @@ public final class ThirstDataGameTest {
     }
 
     @GameTest
-    public void extraThirstTurnsIntoQuenchedOnlyWhenConfigured(GameTestHelper helper) {
-        ThirstConfig config = ThirstConfig.get();
-        boolean original = config.extraThirstConvertsToQuenched;
-        try {
-            config.extraThirstConvertsToQuenched = true;
-            levels(helper, new ThirstData(18, 0, 0.0F, true).drink(6, 0), ThirstData.MAX, 4,
-                    "4 thirst past a full bar becomes 4 quenched, so 18/0 plus 6/0");
-
-            config.extraThirstConvertsToQuenched = false;
-            levels(helper, new ThirstData(18, 0, 0.0F, true).drink(6, 0), ThirstData.MAX, 0,
-                    "with extra_thirst_converts_to_quenched off the overflow is lost, so 18/0 plus 6/0");
-        } finally {
-            config.extraThirstConvertsToQuenched = original;
-        }
+    public void extraThirstTurnsIntoQuenched(GameTestHelper helper) {
+        levels(helper, new ThirstData(18, 0, 0.0F, true).drink(6, 0), ThirstData.MAX, 4,
+                "4 thirst past a full bar becomes 4 quenched, so 18/0 plus 6/0");
         helper.succeed();
     }
 

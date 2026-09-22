@@ -2,7 +2,6 @@ package com.thirstwastaken2.gametest;
 
 import com.thirstwastaken2.config.SicknessPreset;
 import com.thirstwastaken2.config.SicknessTable;
-import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.effect.ThirstEffects;
 import com.thirstwastaken2.effect.WaterSickness;
 import com.thirstwastaken2.effect.WaterSickness.PoisoningEffect;
@@ -125,12 +124,12 @@ public final class WaterSicknessGameTest {
 
     /** Forces the roll into every range of every grade that has one, each on a fresh player. */
     private static void checkEveryOutcome(GameTestHelper helper, Difficulty difficulty) {
-        SicknessTable table = WaterSickness.table(ThirstConfig.get(), difficulty);
+        SicknessTable table = SicknessTable.of(difficulty);
         for (int grade = DIRTY; grade <= CLEAN; grade++) {
             String where = difficulty + ", grade " + grade;
-            int poisoning = table.poisoningChance[grade];
-            int upset = table.upsetStomachChance[grade];
-            int level = table.upsetStomachLevel[grade] - 1;
+            int poisoning = table.poisoningChance()[grade];
+            int upset = table.upsetStomachChance()[grade];
+            int level = table.upsetStomachLevel()[grade] - 1;
             if (poisoning > 0) {
                 ServerPlayer player = TestFixtures.mockPlayer(helper);
                 WaterSickness.drink(player, grade, difficulty, poisoning - INSIDE);

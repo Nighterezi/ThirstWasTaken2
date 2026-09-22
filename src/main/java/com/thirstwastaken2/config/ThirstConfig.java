@@ -31,25 +31,9 @@ public final class ThirstConfig {
     // ---- thirst depletion -------------------------------------------------
     public double thirstDepletionModifier = 1.2;
     public boolean thirstDepletionInPeaceful = false;
-    public double netherThirstDepletionModifier = 3.0;
-    public int fireResistanceDehydrationPercent = 50;
-    /** Mirrors the original DEPLETES_WHEN_NAUSEA: nausea adds extra exhaustion while active. */
-    public boolean depletesWhenNauseous = true;
     public boolean preventSprintingWhenThirsty = true;
     public boolean canDrinkByHand = true;
-    public boolean drinkByHandNeedsBothHandsEmpty = false;
-    /**
-     * Three rather than the original's one, so a click is worth a droplet and a half. The quenched a sip
-     * gives is cut by the water's grade, so bad water by hand still does not last.
-     */
-    public int handDrinkingThirst = 3;
-    public int handDrinkingQuenched = 2;
-    public boolean extraThirstConvertsToQuenched = true;
     public boolean dehydrationHaltsHealthRegen = true;
-
-    // ---- HUD --------------------------------------------------------------
-    public int thirstBarXOffset = 0;
-    public int thirstBarYOffset = 0;
 
     // ---- AppleSkin (client side, and only while AppleSkin is installed) ----
     public QuenchedOverlay appleskinQuenchedOverlay = QuenchedOverlay.DIAMOND;
@@ -57,36 +41,12 @@ public final class ThirstConfig {
 
     // ---- water purity -----------------------------------------------------
     public int defaultPurity = 2;
-    /**
-     * Grade a cauldron is given when rain fills it. Chosen here rather than left to
-     * {@link #defaultPurity}, so that collecting rain is a decision with a known outcome.
-     */
-    public int rainwaterPurity = 2;
-    /** Grade a cauldron is given when a pointed dripstone drips into it, having filtered it. */
-    public int dripstonePurity = 3;
-    /**
-     * Seconds each serving in a copper hanging pot over a lit campfire takes to boil pure, so a full pot
-     * takes three times as long as a bottle. A furnace takes 10 seconds a bucket and raises it two
-     * grades; see docs/dev/mechanics/WATER-PURIFICATION-BALANCE.md for how the numbers were chosen.
-     */
-    public int copperPotSecondsPerServing = 4;
-    /** The same for the iron hanging pot, which is slower: iron carries heat worse than copper. */
-    public int ironPotSecondsPerServing = 6;
-    /**
-     * Percent of a drink's quenched that water of each grade gives, Dirty first, by hand or from any
-     * container. Bad water fills the bar but not for long, the way rotten flesh gives almost no
-     * saturation; without it, sipping a swamp kept quenched full through any illness.
-     */
-    public int[] quenchedPercentByGrade = {0, 50, 100, 100};
 
     // ---- water sickness ---------------------------------------------------
-    // These replaced quenchWhenDebuffed, nauseaChance, poisonChance and nauseaSeconds in the sickness
-    // rework. The config has no migration: those keys are ignored, and every fresh drink now quenches.
+    // This replaced quenchWhenDebuffed, nauseaChance, poisonChance and nauseaSeconds in the sickness
+    // rework, and the chances are now fixed in SicknessTable. The config has no migration: dropped keys
+    // are ignored, and every fresh drink now quenches.
     public SicknessPreset sicknessPreset = SicknessPreset.REALISTIC;
-    /** Peaceful has no table: it only ever gives the taste. */
-    public SicknessTable sicknessEasy = SicknessTable.easy();
-    public SicknessTable sicknessNormal = SicknessTable.normal();
-    public SicknessTable sicknessHard = SicknessTable.hard();
 
     // ---- item values ------------------------------------------------------
     /**
@@ -209,31 +169,14 @@ public final class ThirstConfig {
         kaleidoscopeCookeryFoods(foods);
         if (itemBlacklist == null) itemBlacklist = new LinkedHashSet<>();
         if (sicknessPreset == null) sicknessPreset = SicknessPreset.REALISTIC;
-        sicknessEasy = SicknessTable.sanitize(sicknessEasy, SicknessTable.easy());
-        sicknessNormal = SicknessTable.sanitize(sicknessNormal, SicknessTable.normal());
-        sicknessHard = SicknessTable.sanitize(sicknessHard, SicknessTable.hard());
-        if (quenchedPercentByGrade == null || quenchedPercentByGrade.length != 4) {
-            quenchedPercentByGrade = new int[]{0, 50, 100, 100};
-        }
-        for (int i = 0; i < 4; i++) quenchedPercentByGrade[i] = clamp(quenchedPercentByGrade[i], 0, 100);
         if (drinkTagValue == null || drinkTagValue.length != 2) drinkTagValue = new int[]{6, 8};
         if (keywordDrinkValue == null || keywordDrinkValue.length != 2) keywordDrinkValue = new int[]{10, 14};
         if (keywordSoupValue == null || keywordSoupValue.length != 2) keywordSoupValue = new int[]{4, 5};
         if (keywordFruitValue == null || keywordFruitValue.length != 2) keywordFruitValue = new int[]{2, 3};
         defaultPurity = clamp(defaultPurity, 0, 3);
-        rainwaterPurity = clamp(rainwaterPurity, 0, 3);
-        dripstonePurity = clamp(dripstonePurity, 0, 3);
-        copperPotSecondsPerServing = clamp(copperPotSecondsPerServing, 1, 100);
-        ironPotSecondsPerServing = clamp(ironPotSecondsPerServing, 1, 100);
-        fireResistanceDehydrationPercent = clamp(fireResistanceDehydrationPercent, 0, 100);
-        handDrinkingThirst = clamp(handDrinkingThirst, 0, 20);
-        handDrinkingQuenched = clamp(handDrinkingQuenched, 0, 20);
-        thirstBarXOffset = clamp(thirstBarXOffset, -200, 200);
-        thirstBarYOffset = clamp(thirstBarYOffset, -200, 200);
         // Gson reads a name it does not know, including a hand typo, as null.
         if (appleskinQuenchedOverlay == null) appleskinQuenchedOverlay = QuenchedOverlay.DIAMOND;
         thirstDepletionModifier = clamp(thirstDepletionModifier, 0.0, 10.0);
-        netherThirstDepletionModifier = clamp(netherThirstDepletionModifier, 0.0, 10.0);
 
         keywordBlacklistPattern = compile(keywordBlacklist);
         drinkKeywordPattern = compile(drinkKeywords);

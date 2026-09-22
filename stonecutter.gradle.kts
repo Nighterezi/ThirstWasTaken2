@@ -94,12 +94,9 @@ stonecutter parameters {
                     "net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider")
         }
 
-        // 1.21.5 renamed the Confusion effect to Nausea, Dig Slowdown to Mining Fatigue, Movement
-        // Slowdown to Slowness, and Entity#moveTo to snapTo.
+        // 1.21.5 renamed the Confusion effect to Nausea and Entity#moveTo to snapTo.
         string(current.parsed < "1.21.5") {
             replace("MobEffects.NAUSEA", "MobEffects.CONFUSION")
-            replace("MobEffects.MINING_FATIGUE", "MobEffects.DIG_SLOWDOWN")
-            replace("MobEffects.SLOWNESS", "MobEffects.MOVEMENT_SLOWDOWN")
             replace(".snapTo(", ".moveTo(")
         }
 

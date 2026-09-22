@@ -1,33 +1,66 @@
 package com.thirstwastaken2.client.config;
 
+import com.thirstwastaken2.ThirstWasTaken2;
 import com.thirstwastaken2.client.platform.ClientVanilla;
 import com.thirstwastaken2.config.ThirstConfig;
-import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.layouts.GridLayout;
-import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
-import net.minecraft.client.gui.layouts.LayoutSettings;
-import net.minecraft.client.gui.layouts.LinearLayout;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /**
- * The editor for {@code config/thirstwastaken2.json}: a live preview of the display settings, a
- * button per {@link ConfigCategory}, and Cancel or Done.
+ * The editor for {@code config/thirstwastaken2.json}, opened from Mod Menu on Fabric and the mods list
+ * on NeoForge. A header with the mod's name and a search box, a sidebar with one tab per
+ * {@link ConfigCategory}, the selected page's settings as a scrolling list of rows, and Reset, Cancel
+ * and Done below. Typing in the search box lists matching settings from every page instead.
  *
- * <p>Pages write straight into the live config, so the HUD and tooltips follow every change while the
- * screen is open. Done (or Escape) saves; Cancel puts back the copy taken when the screen opened.
+ * <p>Everything is built from vanilla widgets and plain fills, so it looks at home next to the vanilla
+ * options screens on every supported version. Controls write straight into the live config, so the
+ * HUD, tooltips and the AppleSkin preview follow every change while the screen is open. Done (or
+ * Escape) saves; Cancel puts back the copy taken when the screen opened.
  */
 public final class ThirstConfigScreen extends Screen {
-    private static final int BUTTON_WIDTH = 150;
-    private static final int SPACING = 8;
+    private static final int HEADER_HEIGHT = 32;
+    private static final int FOOTER_HEIGHT = 32;
+    private static final int TAB_HEIGHT = 24;
+    /** Below this screen width the sidebar shows only the icons, and each tab names its page on hover. */
+    private static final int COMPACT_BELOW = 380;
+    private static final int COMPACT_SIDEBAR = 28;
+    /** Wider lists put a setting's name too far from its control to read across comfortably. */
+    private static final int MAX_LIST_WIDTH = 360;
+    private static final int LIST_MARGIN = 10;
+    private static final int ROW_GAP = 2;
+    private static final int SCROLLBAR_WIDTH = 3;
+    private static final int FOOTER_BUTTON_WIDTH = 90;
+    private static final int RESET_BUTTON_WIDTH = 110;
+
+    private static final Identifier THIRST_ICONS = ThirstWasTaken2.id("textures/gui/thirst_icons.png");
 
     private final Screen parent;
     private final ThirstConfig snapshot = ThirstConfig.snapshot();
-    private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
+    private final List<ConfigRow> rows = new ArrayList<>();
+    private ConfigCategory selected = ConfigCategory.values()[0];
+    private String query = "";
+    private int scroll;
+
+    private EditBox search;
+    private Button resetPage;
+    private boolean compact;
+    private int sidebarWidth;
+    private int listX;
+    private int listWidth;
+    private int listTop;
+    private int listBottom;
 
     public ThirstConfigScreen(Screen parent) {
         super(Component.translatable("thirstwastaken2.config.title"));
@@ -36,35 +69,236 @@ public final class ThirstConfigScreen extends Screen {
 
     @Override
     protected void init() {
-        layout.addTitleHeader(title, font);
+        compact = width < COMPACT_BELOW;
+        sidebarWidth = compact ? COMPACT_SIDEBAR : sidebarWidth();
+        int available = width - sidebarWidth - LIST_MARGIN * 2 - SCROLLBAR_WIDTH - 4;
+        listWidth = Math.min(MAX_LIST_WIDTH, available);
+        listX = sidebarWidth + LIST_MARGIN + (available - listWidth) / 2;
+        listTop = HEADER_HEIGHT + 8;
+        listBottom = height - FOOTER_HEIGHT - 6;
 
-        LinearLayout contents = layout.addToContents(LinearLayout.vertical().spacing(SPACING));
-        contents.addChild(ConfigPreview.widget(), LayoutSettings::alignHorizontallyCenter);
+        addRenderableOnly(ClientVanilla.canvas(width, height, title, (graphics, widget, mouseX, mouseY) -> paintFrame(graphics)));
+        addSearch();
+        addTabs();
+        addFooter();
+        rows.clear();
+        refreshRows();
+    }
 
-        GridLayout grid = new GridLayout().columnSpacing(SPACING).rowSpacing(4);
-        GridLayout.RowHelper rows = grid.createRowHelper(2);
-        for (ConfigCategory category : ConfigCategory.values()) {
-            String key = "thirstwastaken2.config.category." + category.key();
-            rows.addChild(Button.builder(Component.translatable(key),
-                            button -> ClientVanilla.setScreen(minecraft, new ThirstCategoryScreen(this, category)))
-                    .tooltip(Tooltip.create(Component.translatable(key + ".tooltip")))
-                    .width(BUTTON_WIDTH).build());
+    private int sidebarWidth() {
+        int widest = 0;
+        for (ConfigCategory category : ConfigCategory.values()) widest = Math.max(widest, font.width(category.title()));
+        return Math.clamp(widest + 40, 96, 140);
+    }
+
+    private void addSearch() {
+        int searchWidth = Math.min(150, width / 3);
+        if (search == null) {
+            Component hint = Component.translatable("thirstwastaken2.config.search");
+            search = new EditBox(font, 0, 0, searchWidth, 18, hint);
+            search.setHint(hint);
+            search.setMaxLength(64);
         }
-        contents.addChild(grid, LayoutSettings::alignHorizontallyCenter);
-        contents.addChild(new StringWidget(Component.translatable("thirstwastaken2.config.note")
-                .withStyle(ChatFormatting.GRAY), font), LayoutSettings::alignHorizontallyCenter);
+        search.setWidth(searchWidth);
+        search.setPosition(width - searchWidth - 8, (HEADER_HEIGHT - 18) / 2);
+        search.setResponder(this::onSearch);
+        addRenderableWidget(search);
+    }
 
-        LinearLayout footer = layout.addToFooter(LinearLayout.horizontal().spacing(SPACING));
-        footer.addChild(Button.builder(CommonComponents.GUI_CANCEL, button -> cancel()).width(BUTTON_WIDTH).build());
-        footer.addChild(Button.builder(CommonComponents.GUI_DONE, button -> onClose()).width(BUTTON_WIDTH).build());
+    private void addTabs() {
+        ConfigCategory[] categories = ConfigCategory.values();
+        for (int i = 0; i < categories.length; i++) {
+            ConfigCategory category = categories[i];
+            AbstractWidget tab = ClientVanilla.button(sidebarWidth - 8, TAB_HEIGHT - 2, category.title(),
+                    () -> select(category), (graphics, widget, mouseX, mouseY) -> {
+                        int x = widget.getX();
+                        int y = widget.getY();
+                        int right = x + widget.getWidth();
+                        int bottom = y + widget.getHeight();
+                        boolean current = query.isEmpty() && selected == category;
+                        if (current) {
+                            graphics.fill(x, y, right, bottom, ConfigTheme.SELECTED);
+                            graphics.fill(x, y, x + 2, bottom, ConfigTheme.ACCENT);
+                        } else if (widget.isHoveredOrFocused()) {
+                            graphics.fill(x, y, right, bottom, ConfigTheme.ROW_HOVER);
+                        }
+                        int iconX = compact ? x + (widget.getWidth() - 16) / 2 : x + 7;
+                        ConfigTheme.icon(graphics, category.icon(), iconX, y + (widget.getHeight() - 16) / 2);
+                        if (compact) return;
+                        ConfigTheme.clippedText(graphics, font, category.title(), x + 28, y + (widget.getHeight() - 8) / 2,
+                                widget.getWidth() - 32, current || widget.isHoveredOrFocused() ? ConfigTheme.TEXT : ConfigTheme.MUTED);
+                    });
+            tab.setPosition(4, HEADER_HEIGHT + 6 + i * TAB_HEIGHT);
+            // The tab shows its page's name, so only the icon-only tabs of a narrow screen name it on hover.
+            if (compact) tab.setTooltip(Tooltip.create(category.title()));
+            addRenderableWidget(tab);
+        }
+    }
 
-        layout.visitWidgets(this::addRenderableWidget);
-        repositionElements();
+    private void addFooter() {
+        int y = height - FOOTER_HEIGHT + (FOOTER_HEIGHT - 20) / 2;
+        resetPage = addRenderableWidget(Button.builder(Component.translatable("thirstwastaken2.config.reset"), button -> resetPage())
+                .tooltip(Tooltip.create(Component.translatable("thirstwastaken2.config.reset.tooltip")))
+                .bounds(8, y, RESET_BUTTON_WIDTH, 20).build());
+        addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, button -> cancel())
+                .bounds(width - 8 - FOOTER_BUTTON_WIDTH * 2 - 4, y, FOOTER_BUTTON_WIDTH, 20).build());
+        addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> onClose())
+                .bounds(width - 8 - FOOTER_BUTTON_WIDTH, y, FOOTER_BUTTON_WIDTH, 20).build());
+    }
+
+    /** The header, sidebar, list panel and footer behind every widget, and the list's scrollbar. */
+    private void paintFrame(GuiGraphicsExtractor graphics) {
+        int footerTop = height - FOOTER_HEIGHT;
+        graphics.fill(0, 0, width, HEADER_HEIGHT, ConfigTheme.BAR);
+        graphics.fill(0, HEADER_HEIGHT - 1, width, HEADER_HEIGHT, ConfigTheme.ACCENT);
+        graphics.fill(0, HEADER_HEIGHT, sidebarWidth, footerTop, ConfigTheme.SIDEBAR);
+        graphics.fill(sidebarWidth - 1, HEADER_HEIGHT, sidebarWidth, footerTop, ConfigTheme.LINE);
+        graphics.fill(sidebarWidth, HEADER_HEIGHT, width, footerTop, ConfigTheme.PANEL);
+        graphics.fill(0, footerTop, width, height, ConfigTheme.BAR);
+        graphics.fill(0, footerTop, width, footerTop + 1, ConfigTheme.LINE);
+
+        // The full droplet of the thirst bar, at twice its size: the 9px frame at u = 32 of the 41x9 sheet.
+        ClientVanilla.blit(graphics, THIRST_ICONS, 9, (HEADER_HEIGHT - 18) / 2, 64, 0, 18, 18, 82, 18, 0xFFFFFFFF);
+        ClientVanilla.text(graphics, font, title, 32, (HEADER_HEIGHT - 8) / 2, ConfigTheme.TEXT);
+        int subtitleX = 32 + font.width(title) + 6;
+        if (subtitleX + 60 < search.getX()) {
+            ClientVanilla.text(graphics, font, Component.translatable("thirstwastaken2.config.subtitle"),
+                    subtitleX, (HEADER_HEIGHT - 8) / 2, ConfigTheme.FAINT);
+        }
+
+        int maxScroll = maxScroll();
+        if (maxScroll > 0) {
+            int trackX = listX + listWidth + 4;
+            int trackHeight = listBottom - listTop;
+            int thumbHeight = Math.max(16, trackHeight * (rows.size() - maxScroll) / rows.size());
+            int thumbY = listTop + (trackHeight - thumbHeight) * scroll / maxScroll;
+            graphics.fill(trackX, listTop, trackX + SCROLLBAR_WIDTH, listBottom, ConfigTheme.ROW);
+            graphics.fill(trackX, thumbY, trackX + SCROLLBAR_WIDTH, thumbY + thumbHeight, ConfigTheme.MUTED);
+        }
+    }
+
+    /** Builds the rows for the selected page, or for the search, and lays them out from {@link #scroll}. */
+    private void refreshRows() {
+        List<AbstractWidget> removed = new ArrayList<>();
+        for (ConfigRow row : rows) removed.addAll(row.widgets());
+        for (AbstractWidget widget : removed) removeWidget(widget);
+        GuiEventListener focused = getFocused();
+        if (focused != null && removed.contains(focused)) setFocused(null);
+        rows.clear();
+
+        int controlWidth = Math.clamp(listWidth * 2 / 5, 80, 140);
+        if (query.isEmpty()) {
+            rows.add(ConfigRow.heading(selected.title(), selected.description(), selected.icon()));
+            selected.addLeadingRows(rows);
+            for (ConfigEntry<?> entry : selected.entries()) rows.add(ConfigRow.option(entry, controlWidth, this::refreshRows));
+            selected.addTrailingRows(rows);
+        } else {
+            List<ConfigRow> results = new ArrayList<>();
+            int count = 0;
+            for (ConfigCategory category : ConfigCategory.values()) {
+                List<ConfigEntry<?>> matches = matches(category);
+                if (matches.isEmpty()) continue;
+                results.add(ConfigRow.subheading(category.title(), category.icon()));
+                for (ConfigEntry<?> entry : matches) results.add(ConfigRow.option(entry, controlWidth, this::refreshRows));
+                count += matches.size();
+            }
+            rows.add(ConfigRow.heading(Component.translatable("thirstwastaken2.config.search_results"),
+                    Component.translatable("thirstwastaken2.config.search_results.count", count), null));
+            if (count == 0) rows.add(ConfigRow.note(Component.translatable("thirstwastaken2.config.no_results", search.getValue())));
+            rows.addAll(results);
+        }
+
+        for (ConfigRow row : rows) {
+            for (AbstractWidget widget : row.widgets()) addRenderableWidget(widget);
+        }
+        layoutRows();
+    }
+
+    private List<ConfigEntry<?>> matches(ConfigCategory category) {
+        List<ConfigEntry<?>> matches = new ArrayList<>();
+        for (ConfigEntry<?> entry : category.entries()) {
+            if (entry.matches(query)) matches.add(entry);
+        }
+        return matches;
+    }
+
+    /** The settings Reset acts on: the selected page's, or those the search found. */
+    private List<ConfigEntry<?>> resettable() {
+        if (query.isEmpty()) return selected.entries();
+        List<ConfigEntry<?>> all = new ArrayList<>();
+        for (ConfigCategory category : ConfigCategory.values()) all.addAll(matches(category));
+        return all;
+    }
+
+    /** Shows the rows from {@link #scroll} on that fit between the header and footer, and hides the rest. */
+    private void layoutRows() {
+        scroll = Math.clamp(scroll, 0, maxScroll());
+        int y = listTop;
+        boolean full = false;
+        for (int i = 0; i < rows.size(); i++) {
+            ConfigRow row = rows.get(i);
+            int rowHeight = row.height(listWidth);
+            boolean shown = i >= scroll && !full && y + rowHeight <= listBottom;
+            if (i >= scroll && !shown) full = true;
+            if (shown) {
+                row.place(listX, y, listWidth);
+                y += rowHeight + ROW_GAP;
+            }
+            row.setVisible(shown);
+        }
+    }
+
+    /** The first row index from which every remaining row fits in the list. */
+    private int maxScroll() {
+        int space = listBottom - listTop + ROW_GAP;
+        int used = 0;
+        for (int i = rows.size() - 1; i >= 0; i--) {
+            used += rows.get(i).height(listWidth) + ROW_GAP;
+            if (used > space) return i + 1;
+        }
+        return 0;
     }
 
     @Override
-    protected void repositionElements() {
-        layout.arrangeElements();
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (scrollY != 0 && mouseX >= sidebarWidth && mouseY >= HEADER_HEIGHT && mouseY < height - FOOTER_HEIGHT) {
+            int before = scroll;
+            scroll -= (int) Math.signum(scrollY);
+            layoutRows();
+            if (scroll != before) return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        for (ConfigRow row : rows) row.tick();
+        boolean anyChanged = false;
+        for (ConfigEntry<?> entry : resettable()) anyChanged |= !entry.isDefault();
+        resetPage.active = anyChanged;
+    }
+
+    private void select(ConfigCategory category) {
+        selected = category;
+        scroll = 0;
+        // Clearing the search runs onSearch, which rebuilds the rows itself.
+        if (!query.isEmpty()) search.setValue("");
+        else refreshRows();
+    }
+
+    private void onSearch(String value) {
+        String next = value.trim().toLowerCase(Locale.ROOT);
+        if (next.equals(query)) return;
+        query = next;
+        scroll = 0;
+        refreshRows();
+    }
+
+    private void resetPage() {
+        for (ConfigEntry<?> entry : resettable()) entry.reset();
+        // Controls hold the values they were built with, so rebuild them to show the defaults.
+        refreshRows();
     }
 
     /** Done and Escape both keep the edits. */

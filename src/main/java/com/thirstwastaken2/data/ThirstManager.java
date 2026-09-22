@@ -68,6 +68,16 @@ public final class ThirstManager {
     private static final int SPRINT_THIRST_THRESHOLD = 6;
     /** Droplets a sip by hand throws up, a few less than a bottle poured out. */
     private static final int HAND_DRINK_SPLASHES = 4;
+    /**
+     * Thirst a sip by hand restores: three, the original's one being worth less than the click. Its
+     * quenched is cut by the water's grade, so bad water by hand still does not last.
+     */
+    private static final int HAND_DRINK_THIRST = 3;
+    private static final int HAND_DRINK_QUENCHED = 2;
+    /** The original's default multiplier where water evaporates, the Nether and anywhere like it. */
+    private static final float SCORCHING_MODIFIER = 3.0F;
+    /** Fire Resistance halves dehydration, as the original's default did. */
+    private static final float FIRE_RESISTANCE_MODIFIER = 0.5F;
 
     private ThirstManager() { }
 
@@ -195,7 +205,7 @@ public final class ThirstManager {
         MobEffectInstance hunger = player.getEffect(MobEffects.HUNGER);
         if (hunger != null) raw -= HUNGER_EXHAUSTION * (hunger.getAmplifier() + 1);
         // Upset Stomach's own drain already pays for its bursts, so Nausea is not charged on top of it.
-        if (config.depletesWhenNauseous && upsetStomach == null && player.hasEffect(MobEffects.NAUSEA)) {
+        if (upsetStomach == null && player.hasEffect(MobEffects.NAUSEA)) {
             raw += NAUSEA_EXHAUSTION;
         }
         MobEffectInstance parched = player.getEffect(ThirstEffects.PARCHED);
@@ -255,8 +265,8 @@ public final class ThirstManager {
                 new ItemStack(ThirstItems.TERRACOTTA_WATER_BOWL), quality);
         if (WaterPurity.applyEffects(player, sample)) {
             // No item was drunk, so listeners get an empty stack rather than the sample bowl above.
-            drinkThroughEvent(player, ItemStack.EMPTY, config.handDrinkingThirst,
-                    WaterPurity.quenched(quality, config.handDrinkingQuenched));
+            drinkThroughEvent(player, ItemStack.EMPTY, HAND_DRINK_THIRST,
+                    WaterPurity.quenched(quality, HAND_DRINK_QUENCHED));
         }
         ThirstAdvancements.drank(player, quality);
         // Player#playSound routes through Level#playSound with itself as the excluded listener, so a
@@ -286,11 +296,6 @@ public final class ThirstManager {
         // A click the client does not handle itself is sent once per hand, main hand first, so with
         // both hands empty the off hand's copy would be a second sip from the same click.
         if (hand == InteractionHand.OFF_HAND && player.getMainHandItem().isEmpty()) return null;
-        if (config.drinkByHandNeedsBothHandsEmpty
-                && !player.getItemInHand(hand == InteractionHand.MAIN_HAND
-                        ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND).isEmpty()) {
-            return null;
-        }
 
         BlockPos pos = hit.getBlockPos();
         if (level.getFluidState(pos).is(FluidTags.WATER)) return pos;
@@ -331,11 +336,11 @@ public final class ThirstManager {
         ThirstConfig config = ThirstConfig.get();
         boolean scorching = Vanilla.waterEvaporates(player.level(), player.blockPosition());
         float modifier = scorching
-                ? (float) config.netherThirstDepletionModifier
+                ? SCORCHING_MODIFIER
                 : climateModifier(player, config);
 
         if (player.hasEffect(MobEffects.FIRE_RESISTANCE)) {
-            modifier *= config.fireResistanceDehydrationPercent / 100.0F;
+            modifier *= FIRE_RESISTANCE_MODIFIER;
         }
         if (player instanceof ServerPlayer serverPlayer) {
             // getDamageProtection returns twice the enchantment level total, and the original scales

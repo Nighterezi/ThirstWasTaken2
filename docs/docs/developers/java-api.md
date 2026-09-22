@@ -12,7 +12,7 @@ Everything public lives in the package `com.thirstwastaken2.api`, in two classes
 Nothing outside that package is API. It can change in any release.
 
 ::: warning Version
-The methods on this page need the first release after 1.0.9.1. Older releases only have
+The methods on this page need 1.1.0 or later. Older releases only have
 `ThirstApi.thirstValues` and `ThirstApi.restoresThirst`.
 :::
 
@@ -37,8 +37,8 @@ dependencies {
 }
 ```
 
-The version is the Modrinth version number, for example `1.0.9.1+26.3` on Fabric and
-`1.0.9.1+26.3-neoforge` on NeoForge. Each loader and Minecraft version has its own upload, listed on
+The version is the Modrinth version number, for example `1.1.0+26.3` on Fabric and
+`1.1.0+26.3-neoforge` on NeoForge. Each loader and Minecraft version has its own upload, listed on
 the [versions page](https://modrinth.com/mod/thirst-was-taken-2/versions).
 
 To try it in a development client, add the same coordinate to the run classpath: `modLocalRuntime` on

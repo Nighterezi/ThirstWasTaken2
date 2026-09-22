@@ -78,14 +78,14 @@ Useful commands while testing:
 - [x] With quenched at 0, sprinting makes the next droplet drain through the quarter and three-quarter
       frames before a point is spent, and the bar shakes the way hunger does at zero saturation.
 - [x] `/thirst set @s 20 20`: the quenched outline is drawn over every droplet, cyan by default.
-- [x] Mod Menu → ThirstWasTaken2 → HUD & AppleSkin: Quenched Outline reads "Quenched Outline: Diamond"
+- [x] Mod Menu → ThirstWasTaken2 → AppleSkin: Quenched Outline reads "Quenched Outline: Diamond"
       (the name once) and cycles Diamond, Ice, Gold, AppleSkin, Legacy and Off. The preview and the real bar
       change at once. Off removes the outline from the bar; the tooltip row falls back to the plain
       blue outline.
 - [x] The bar is hidden with F1, in creative and spectator, and while riding a horse, pig or strider
       (a living mount's hearts take its place). It stays while in a boat or minecart.
 - [x] Underwater, the air bubbles sit **above** the thirst bar, not on top of it.
-- [x] Mod Menu → ThirstWasTaken2 → HUD & AppleSkin: the X and Y offsets move the bar live.
+- [x] Mod Menu → ThirstWasTaken2 → AppleSkin: overlay and tooltip options update the preview live.
 - [x] With AppleSkin's exhaustion underlay on, a translucent strip grows under the thirst bar while
       sprinting; turning the AppleSkin option off removes it. Nothing drawn after it (air bubbles,
       the hotbar) is left tinted.

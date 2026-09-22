@@ -64,7 +64,6 @@ the rest of this page.
   model and custom model data overrides.
 - **The droplet shadow.** Later versions turn it off with `Style#withoutShadow`, which only exists
   from 1.21.4. On 1.21.1 the tooltip renderer decides, for all text at once.
-- **Headings.** `OptionsList#addHeader` does not exist on 1.21.1.
 
 One of these could still be closed: a sea-water **bottle** can be tinted through the potion's custom
 colour, since vanilla's potion model already tints by it. The cost is that sea-water bottles then carry
@@ -123,7 +122,6 @@ versions write `recipe`. Nothing else in the generated files moved.
 |---|---|
 | Whether the HUD is hidden (F1) moved from the options into the HUD object | `ClientVanilla.isHudHidden`; the agent client's `AgentClientVanilla.toggleHud` flips the same state |
 | Opening a screen moved from the client onto the GUI | `ClientVanilla.setScreen`, `AgentClientVanilla.screen` |
-| Options lists gained a full-width widget row | `ClientVanilla.addFullWidthRow` |
 | The right-hand status bar stack heights moved from `Gui` to `Hud` | NeoForge `ClientLoader.addRightStatusBar` |
 | The main render target moved from the client onto its game renderer | `AgentClientVanilla.screenshot` |
 | Entity type constants moved from `EntityType` to `EntityTypes` | `TestFixtures.mountType`, `piglinType` |
@@ -136,7 +134,7 @@ versions write `recipe`. Nothing else in the generated files moved.
 | The HUD draw target was renamed `GuiGraphicsExtractor` | replacement |
 | A block's render layer follows its textures, so a cut-out model needs no registration | `ClientLoader.renderCutout`; before it Fabric registers the layer and NeoForge reads `render_type` from the model |
 | Blockstate definitions became `BlockStateModelDispatcher` | `HangingPotModels` |
-| A widget draws in `extractWidgetRenderState` rather than `renderWidget`, and `drawString` became `text` | `ClientVanilla.canvas`, `ClientVanilla.text` |
+| A widget draws in `extractWidgetRenderState` rather than `renderWidget`, and `drawString` became `text` | `ClientVanilla.canvas`, `ClientVanilla.button`, `ClientVanilla.text` |
 | Fabric's creative tab builder was renamed `FabricCreativeModeTab` | `Loader.creativeTabBuilder` |
 | Fabric API renamed `ResourceLoader#registerReloader` to `registerReloadListener`, and its payload registries `playS2C` to `clientboundPlay` | Fabric `Loader.onServerDataReload`, `Loader.clientboundPayload` |
 | Fabric's data generation output and tag provider were renamed | replacement |
@@ -182,7 +180,7 @@ already has by default. The stack the furnace hands out is the same; see
 | Difference | Code |
 |---|---|
 | Item tooltips gained `addDetailsToTooltip` | `ItemStackMixin`; on 1.21.1 it wraps the hover-text call in `getTooltipLines` |
-| The Confusion effect was renamed Nausea, Dig Slowdown Mining Fatigue and Movement Slowdown Slowness; `Entity#moveTo` became `snapTo` | replacement |
+| The Confusion effect was renamed Nausea, `Entity#moveTo` became `snapTo` | replacement |
 | Fabric API gained its own `@GameTest` annotation | replacement; on 1.21.1 tests use vanilla's with Fabric's empty structure |
 | `GameTestHelper#assertTrue` takes a `Component` | `TestFixtures.check` |
 | Blockstate generators hand over a parsed definition rather than JSON | `HangingPotModels` |
@@ -229,7 +227,7 @@ it makes no difference to any jar.
 |---|---|
 | A block's description id is known inside its constructor (on 1.21.1 asking caches a wrong name) | `Vanilla.isWaterCauldron`; on 1.21.1 `BlocksMixin` marks the water cauldron's construction |
 | GUI blits take a render pipeline and a tint | `ClientVanilla.blit`, `ClientVanilla.blitSprite`; on 1.21.1 both are render state, set before the draw and reset after it |
-| Options lists gained section headings | `ClientVanilla.addHeader` (visible, see above) |
+| A button draws its contents through `renderContents`, and presses take the input that caused them | `ClientVanilla.button` |
 | `ServerPlayer#level` returns a `ServerLevel` | `Vanilla.level` |
 | The drinking sound became a registry holder | `Vanilla.drinkSound` |
 | Bucket pickup takes any living entity | `BucketItemMixin` |

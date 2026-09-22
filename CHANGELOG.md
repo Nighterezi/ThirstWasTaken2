@@ -2,7 +2,7 @@
 
 All notable changes to ThirstWasTaken2 are documented in this file.
 
-## [Unreleased]
+## [1.1.0] - 2026-09-23
 
 ### Added
 
@@ -22,8 +22,8 @@ All notable changes to ThirstWasTaken2 are documented in this file.
   - With Jade installed, looking at a Stockpot or a Teapot shows the grade of the water inside.
 - Upset Stomach, a new illness from bad water. Thirst drains faster, the screen warps now and then,
   and food gives less saturation. The thirst bar turns green while it lasts.
-- Poisoning, a worse illness from bad water. It brings Weakness and Mining Fatigue, and on Normal and
-  Hard also Poison and Slowness. Milk cures it.
+- Poisoning, a worse illness from bad water. It poisons for 10 seconds on Easy, 20 on Normal and 30 on
+  Hard. Milk cures it.
 - On Fabric, pipes and tanks from other mods can fill and empty waterskins and terracotta bowls, as
   they already could on NeoForge. The water keeps its grade.
 - Compatibility with Create Fly on Fabric 26.1 and 26.2:
@@ -44,26 +44,30 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 - Pouring out a waterskin splashes like pouring a water bottle on dirt.
 - Dirty water gives no quenched and Murky water half, from any container or by hand. Bad water no
   longer keeps the bar topped up, and Upset Stomach also cuts the quenched of every drink.
-- Drinking by hand restores 3 thirst a sip instead of 2, and splashes the water. Older config files
-  keep their own value of `handDrinkingThirst`.
+- Drinking by hand restores 3 thirst a sip instead of 2, and splashes the water.
+- A new config screen, with fewer settings. Each group of settings has a tab on the left, and a search
+  box finds a setting on any page. Changed settings are shown in amber, each with its own reset
+  button. The AppleSkin page keeps the live preview. Rarely changed values are now fixed. See the
+  details below.
 
 ### Notes
 
 - Data packs and the API change nothing until a data pack or another mod uses them.
 - On Fabric, Kaleidoscope Cookery's teas and soups restore thirst too, but its Stockpot and Teapot do
   not keep the water's grade yet. Kaleidoscope Cookery Refabricated is the supported Fabric build.
-- Sickness chances changed in an older config file are not carried over. The new defaults apply
-  until they are set again.
+- Settings removed from the config file are not carried over. Their old defaults apply.
 
 <details>
 <summary>Configuration file details</summary>
 
-- Removed `quenchWhenDebuffed`, `nauseaChance`, `poisonChance` and `nauseaSeconds`. They are ignored
-  if still in the file.
-- Added `sicknessPreset`, `REALISTIC` or `CLASSIC`.
-- Added `quenchedPercentByGrade`, the share of quenched each grade gives, Dirty first.
-- Added `sicknessEasy`, `sicknessNormal` and `sicknessHard`, each with `poisoningChance`,
-  `upsetStomachChance` and `upsetStomachLevel` for Dirty, Murky and Clean water.
+- Removed `quenchWhenDebuffed`, `nauseaChance`, `poisonChance` and `nauseaSeconds`, replaced by
+  `sicknessPreset`, `REALISTIC` or `CLASSIC`.
+- Removed, now fixed at their old defaults: `netherThirstDepletionModifier` (3.0),
+  `fireResistanceDehydrationPercent` (50), `depletesWhenNauseous` (on),
+  `drinkByHandNeedsBothHandsEmpty` (off), `extraThirstConvertsToQuenched` (on), `rainwaterPurity`
+  (Clean), `dripstonePurity` (Pure), `copperPotSecondsPerServing` (4) and `ironPotSecondsPerServing`
+  (6). `handDrinkingThirst` and `handDrinkingQuenched` are removed too, fixed at 3 and 2.
+- Removed keys are ignored if still in the file.
 
 </details>
 

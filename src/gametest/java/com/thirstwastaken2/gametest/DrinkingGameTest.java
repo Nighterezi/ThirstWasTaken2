@@ -142,8 +142,8 @@ public final class DrinkingGameTest {
         InteractionResult result = ThirstManager.drinkByHand(player, helper.getLevel(), InteractionHand.MAIN_HAND, aimAt(water));
 
         TestFixtures.check(helper, result != InteractionResult.PASS, "hand drinking should handle the click, got " + result);
-        TestFixtures.check(helper, ThirstManager.get(player).thirst() == 10 + ThirstConfig.get().handDrinkingThirst,
-                "a sip should restore hand_drinking_thirst, got " + ThirstManager.get(player));
+        TestFixtures.check(helper, ThirstManager.get(player).thirst() == 13,
+                "a sip should restore 3 thirst, got " + ThirstManager.get(player));
 
         // Looking down at water, the crosshair usually lands on the block under the surface; the water
         // on the face it hit still counts.
@@ -201,13 +201,6 @@ public final class DrinkingGameTest {
         TestFixtures.check(helper, ThirstManager.get(holding).thirst() > 10,
                 "an empty off hand should drink while the main hand holds something, got " + ThirstManager.get(holding));
 
-        TestFixtures.withConfig(config -> config.drinkByHandNeedsBothHandsEmpty = true, () -> {
-            ServerPlayer oneEmpty = thirstyPlayer(helper);
-            oneEmpty.setPose(Pose.CROUCHING);
-            oneEmpty.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.STONE));
-            refused(helper, oneEmpty, InteractionHand.OFF_HAND, water,
-                    "a player holding something with drink_by_hand_needs_both_hands_empty on");
-        });
         helper.succeed();
     }
 

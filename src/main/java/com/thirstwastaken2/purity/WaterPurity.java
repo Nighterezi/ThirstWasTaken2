@@ -67,6 +67,18 @@ public final class WaterPurity {
      * Nausea in over 150 ticks and starts fading it out 60 ticks before it ends.
      */
     private static final int SALT_NAUSEA_TICKS = 20 * 8;
+    /**
+     * Percent of a drink's quenched that water of each grade gives, Dirty first. Bad water fills the
+     * bar but not for long, the way rotten flesh gives almost no saturation.
+     */
+    private static final int[] QUENCHED_PERCENT = {0, 50, 100, 100};
+    /**
+     * The grade rain leaves in a cauldron or a hanging pot: Clean. Chosen rather than left to
+     * {@code defaultPurity}, so collecting rain is a decision with a known outcome.
+     */
+    public static final int RAINWATER_PURITY = 2;
+    /** The grade a pointed dripstone leaves in a cauldron, having filtered the water: Pure. */
+    public static final int DRIPSTONE_PURITY = 3;
     private static final int SALT_PARCHED_LEVEL = 1;
 
     /** Bounds of the contamination score a sample is graded from. It is never stored on an item. */
@@ -241,12 +253,12 @@ public final class WaterPurity {
     }
 
     /**
-     * The quenched a drink of {@code quality} gives out of {@code base}, by
-     * {@code quenchedPercentByGrade}, rounded down. Salt water quenches nothing anyway and is left alone.
+     * The quenched a drink of {@code quality} gives out of {@code base}, by {@link #QUENCHED_PERCENT},
+     * rounded down. Salt water quenches nothing anyway and is left alone.
      */
     public static int quenched(WaterQuality quality, int base) {
         if (!(quality instanceof WaterQuality.Fresh fresh)) return base;
-        return base * ThirstConfig.get().quenchedPercentByGrade[fresh.purity()] / 100;
+        return base * QUENCHED_PERCENT[fresh.purity()] / 100;
     }
 
     /** @return a fresh copy of the grade line, see {@link TooltipLines}. */

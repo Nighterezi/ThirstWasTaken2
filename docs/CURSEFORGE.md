@@ -150,7 +150,7 @@ Thirst Was Taken 2 integrates seamlessly with popular mods out of the box:
       Configure the mod in game with a live HUD preview. Fabric requires <a href="https://modrinth.com/mod/modmenu">Mod Menu</a>; NeoForge uses the Config button in its Mods list.
     </td>
     <td width="45%">
-      <img alt="The ThirstWasTaken2 settings screen with its live HUD preview" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/config-screen.png" width="100%">
+      <img alt="The ThirstWasTaken2 settings screen on its AppleSkin page, with the live preview" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/config-appleskin.png" width="100%">
     </td>
   </tr>
 </table>

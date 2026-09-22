@@ -4,11 +4,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.OptionsList;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.FormattedCharSequence;
 
 /**
  * The client-side half of {@code com.thirstwastaken2.platform.Vanilla}: every client vanilla call
@@ -37,47 +38,28 @@ public final class ClientVanilla {
         *///?}
     }
 
-    /** Adds a centred line of text to an options list, as a section heading. */
-    public static void addHeader(OptionsList list, net.minecraft.network.chat.Component text) {
-        //? if >1.21.1 {
-        list.addHeader(text);
-        //?} else {
-        /*// No headings before a later release: a centred text widget as its own row stands in for one.
-        addFullWidthRow(list, new net.minecraft.client.gui.components.StringWidget(
-                list.getRowWidth(), 20, text, Minecraft.getInstance().font).alignCenter());
-        *///?}
-    }
-
-    /** Adds a widget as its own full-width row of an options list. */
-    public static void addFullWidthRow(OptionsList list, AbstractWidget widget) {
-        //? if >=26.2 {
-        list.addBig(widget);
-        //?} else {
-        /*list.addSmall(java.util.List.of(widget));
-        *///?}
-    }
-
-    /** What a {@link #canvas} draws every frame, given its own bounds. */
+    /** What a {@link #canvas} or {@link #button} draws every frame, given the widget for its bounds and state. */
     @FunctionalInterface
     public interface Painter {
-        void paint(GuiGraphicsExtractor graphics, int x, int y, int width, int height);
+        void paint(GuiGraphicsExtractor graphics, AbstractWidget widget, int mouseX, int mouseY);
     }
 
     /**
      * A widget that only draws, for placing custom drawing in a layout. It takes no input and no
-     * focus, and a screen reader reads {@code narration}. 26.1 renamed the method a widget draws in.
+     * focus, and a screen reader reads {@code narration}. It still shows a tooltip on hover. 26.1
+     * renamed the method a widget draws in.
      */
     public static AbstractWidget canvas(int width, int height, Component narration, Painter painter) {
         AbstractWidget canvas = new AbstractWidget(0, 0, width, height, narration) {
             //? if >=26.1 {
             @Override
             protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-                painter.paint(graphics, getX(), getY(), getWidth(), getHeight());
+                painter.paint(graphics, this, mouseX, mouseY);
             }
             //?} else {
             /*@Override
             protected void renderWidget(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-                painter.paint(graphics, getX(), getY(), getWidth(), getHeight());
+                painter.paint(graphics, this, mouseX, mouseY);
             }
             *///?}
 
@@ -90,8 +72,45 @@ public final class ClientVanilla {
         return canvas;
     }
 
+    /**
+     * A button drawn entirely by {@code painter}: it clicks, focuses, narrates and plays the click sound
+     * like a vanilla button. 1.21.11 made the button draw its contents through a method of its own, and
+     * 26.1 renamed it.
+     */
+    public static AbstractWidget button(int width, int height, Component message, Runnable onPress, Painter painter) {
+        return new Button(0, 0, width, height, message, button -> onPress.run(), narration -> narration.get()) {
+            //? if >=26.1 {
+            @Override
+            protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+                painter.paint(graphics, this, mouseX, mouseY);
+            }
+            //?}
+            //? if >1.21.1 <26.1 {
+            /*@Override
+            protected void renderContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+                painter.paint(graphics, this, mouseX, mouseY);
+            }
+            *///?}
+            //? if <=1.21.1 {
+            /*@Override
+            protected void renderWidget(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+                painter.paint(graphics, this, mouseX, mouseY);
+            }
+            *///?}
+        };
+    }
+
     /** Draws a line of text with a shadow. {@code argb} needs its alpha, which later releases honour. */
     public static void text(GuiGraphicsExtractor graphics, Font font, Component text, int x, int y, int argb) {
+        //? if >=26.1 {
+        graphics.text(font, text, x, y, argb, true);
+        //?} else {
+        /*graphics.drawString(font, text, x, y, argb, true);
+        *///?}
+    }
+
+    /** Draws one wrapped line of text, as {@code Font.split} returns them, with a shadow. */
+    public static void text(GuiGraphicsExtractor graphics, Font font, FormattedCharSequence text, int x, int y, int argb) {
         //? if >=26.1 {
         graphics.text(font, text, x, y, argb, true);
         //?} else {

@@ -14,7 +14,9 @@ Files are uploaded from the oldest Minecraft version to the newest. CurseForge t
 as the project's main file, so the newest Minecraft version must come last.
 
 The upload API only adds files to a project that already exists: the project itself was created by hand
-at https://authors.curseforge.com, with `docs/CURSEFORGE.md` as its description. Its numeric id goes in
+at https://authors.curseforge.com, with `docs/CURSEFORGE.md` as its description. That API has no way to
+change the description either, so after the uploads the script only says where to paste the file;
+`--description-only` says the same without uploading anything. Its numeric id goes in
 `.env` as `CURSEFORGE_PROJECT_ID`, beside `CURSEFORGE_TOKEN`, an upload token from
 https://legacy.curseforge.com/account/api-tokens; both can come from the environment instead.
 
@@ -36,7 +38,9 @@ import urllib.error
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from publish import ENV_FILE, Node, env_value, fail, http, multipart, release  # noqa: E402
+from publish import ENV_FILE, ROOT, Node, env_value, fail, http, multipart, release  # noqa: E402
+
+DESCRIPTION = ROOT / "docs" / "CURSEFORGE.md"
 
 CURSEFORGE = "https://minecraft.curseforge.com/api"
 # The site's own API, which the file list on the project page is drawn from. Undocumented, but public
@@ -127,6 +131,11 @@ class CurseForge:
         body, content_type = multipart("metadata", metadata, node.jar)
         created = self.request(f"/projects/{self.project_id}/upload-file", body, content_type)
         return f"file id {created['id']}"
+
+    def sync_description(self, dry_run: bool) -> None:
+        """The upload API cannot touch the description, so this only points at where it is edited."""
+        print(f"Description: CurseForge has no API for it. If {DESCRIPTION.relative_to(ROOT).as_posix()} changed,")
+        print(f"             paste it (Markdown) at https://authors.curseforge.com/#/projects/{self.project_id}/description")
 
     def done_url(self) -> str:
         return f"https://authors.curseforge.com/#/projects/{self.project_id}/files"

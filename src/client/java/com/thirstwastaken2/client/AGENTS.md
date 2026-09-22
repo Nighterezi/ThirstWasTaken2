@@ -6,19 +6,19 @@ reference this package. The reverse is fine — this code reads `ThirstConfig`, 
 `ThirstData` directly.
 
 Nothing here is authoritative. The client renders the `ThirstData` the server synced to its owner
-alone (`ThirstData.STORAGE`), and the config screen edits a config the server ignores for everything
-except the HUD section.
+alone (`ThirstData.STORAGE`), and only the config screen's AppleSkin settings are client-side.
 
 | File | Owns |
 |---|---|
 | `ThirstWasTaken2Client` | `initialize`, called by the loader's client entrypoint: registers the HUD row |
 | `ThirstHud` | drawing the bar |
 | `HandDrinking` | hand drinking from water the crosshair misses: picks again with fluids and sends vanilla's use-on-block packet on the water |
-| `config/ThirstConfigScreen` | the root options screen: preview, a button per page, Cancel and Done |
-| `config/ThirstCategoryScreen` | one page as a vanilla options list, with Reset to Defaults |
-| `config/ConfigCategory` | every page: its widgets and what its reset puts back |
-| `config/ConfigOptions` | the widget factories (`toggle`, `slider`, `cycle`, ...) and their lang keys |
-| `config/ConfigPreview` | the live thirst bar, food bar and tooltip drawn at the top of the screen |
+| `config/ThirstConfigScreen` | the whole options screen: header with search, a sidebar tab per page, the scrolling rows, Reset, Cancel and Done |
+| `config/ConfigCategory` | every page: its icon, its `ConfigEntry` list and any extra rows (preview, note, open-file button) |
+| `config/ConfigEntry` | one setting: getter/setter on the live config, its default, its control (`toggle`, `choice`, `grade`, `percent`) and its lang keys |
+| `config/ConfigRow` | one row of the list: heading, setting, note, preview or action button |
+| `config/ConfigTheme` | the screen's colours and small drawing helpers |
+| `config/ConfigPreview` | the live thirst bar, food bar and tooltip on the AppleSkin page |
 | `platform/ClientVanilla` | client vanilla calls whose shape differs between Minecraft versions |
 | `platform/StatusBarRenderer` | the shape `ClientLoader` draws a HUD row through |
 | `compat/AppleSkinIntegration` | reads AppleSkin's own settings, only after `AppleSkin.isLoaded()` |
@@ -49,8 +49,7 @@ uses untouched, so `stonecutter.gradle.kts` renames the type back for older vers
 stack while `ThirstHud.shouldRender` holds, so vanilla stacks around it. On Fabric that is
 `HudElementRegistry.attachElementAfter(VanillaHudElements.FOOD_BAR, …)` plus
 `HudStatusBarHeightRegistry.addRight`, under the one `thirstwastaken2:thirst_bar` id. The loader
-reads the stack height back and hands `ThirstHud.render` the row's `top`; the Y offset setting is
-added on top of that.
+reads the stack height back and hands `ThirstHud.render` the row's `top`.
 
 Fabric API has neither registry before 1.21.6. On 1.21.1 `ClientLoader` keeps the rows itself and
 `GuiMixin` (in `src/client/fabric`) draws them where vanilla is about to draw the air bubbles, 49px up
@@ -102,47 +101,47 @@ fill thresholds change here, change them there too.
 
 ## Config screen
 
-`ThirstConfigScreen` is the page Mod Menu opens: `ConfigPreview` on top, a button per
-`ConfigCategory`, and Cancel and Done. Each button opens a `ThirstCategoryScreen`, a vanilla
-`OptionsSubScreen` whose list `ConfigCategory.addOptions` fills; the HUD page also puts the preview
-under its title, in a taller header.
+`ThirstConfigScreen` is the one screen Mod Menu (Fabric) and the mods list (NeoForge) open. It is built
+from vanilla widgets and plain fills only, no config library: a header with the mod's name and a search
+box, a sidebar with a tab per `ConfigCategory`, the page's rows, and Reset / Cancel / Done. Typing in
+the search box lists matching settings from every page, grouped by page. Below 380 GUI pixels wide the
+sidebar shows icons only. The HUD position is fixed to vanilla's right-hand status-bar stack; there is
+no offset setting because the preview cannot show screen position.
 
-`OptionInstance` widgets write **straight into the live `ThirstConfig` instance**, so the HUD, the
-tooltips and the preview follow every change at once. Leaving a page saves nothing. Done or Escape on
-the root screen calls `ThirstConfig.commit()`, which re-sanitises, bumps the generation and saves;
-Cancel calls `ThirstConfig.restore` with the snapshot the root screen took when it was constructed.
-So a widget's range must not be wider than the clamp in `ThirstConfig.sanitize()`, or the value
-silently snaps back.
+A setting row is its name (amber, with an amber bar, when it differs from the default), its control,
+and a reset button beside it; the row's tooltip is the description. Rows scroll a whole row at a time,
+so a row is either fully shown or hidden and nothing needs clipping. Tab painting and the reset button
+go through `ClientVanilla.button`, other drawing through `ClientVanilla.canvas`, because 1.21.11 and
+26.1 renamed the method a widget draws in.
 
-A vanilla screen's `init()` runs once; coming back from a page only repositions it. That is why the
-root screen can keep its layout in a final field. Reset to Defaults copies the page's fields from a
-`new ThirstConfig()` through `ConfigCategory.reset` and opens a fresh page, because widgets keep the
-value they were built with.
+Controls write **straight into the live `ThirstConfig` instance**, so the HUD, the tooltips and the
+preview follow every change at once. Done or Escape calls `ThirstConfig.commit()`, which re-sanitises,
+bumps the generation and saves; Cancel calls `ThirstConfig.restore` with the snapshot taken when the
+screen was constructed. So a control's range must not be wider than the clamp in
+`ThirstConfig.sanitize()`, or the value silently snaps back. `ConfigEntry` reads `ThirstConfig.get()`
+on every call, so it never holds a stale instance after Cancel.
 
-Adding a setting means: field in `ThirstConfig`, clamp in `sanitize()`, a widget and a reset line in
-its `ConfigCategory`, and `thirstwastaken2.config.<key>` plus `thirstwastaken2.config.<key>.tooltip`
-in `en_us.json` and `vi_vn.json` (the other seven locales are best-effort). `ConfigOptions` builds the
-key from the snake_case string passed to `toggle`/`slider`, so that string is the lang key — keep it
-matching the Java field name. A new page also needs `category.<key>` and `category.<key>.tooltip`.
+Reset (per row, or the footer's for the page or the search results) copies values from a
+`new ThirstConfig()` and rebuilds the rows, because controls show the value they were built with. The
+item maps are never reset from a button; they stay in the file, which Item Values opens.
 
-Enums use `cycle`, an `OptionInstance.Enum` labelled by `<key>.<value in lower case>`, so each value
-needs its own lang key as well. The cycle button writes the option's name in front of the value
-itself, so the label function returns the value alone; returning `caption: value` there prints the
-name twice. The AppleSkin section is always shown; without AppleSkin it adds a note saying the
-settings do nothing yet.
+`ConfigPreview` sweeps quenched and saturation over 3.2 seconds, and its exhaustion strip fills once
+per sweep, drawn separately from the bar so the droplets never show a drain: the same loop as
+`hud-appleskin.gif`, which `tools/generate_docs_images.py` draws. Keep the two in step. The tooltip
+and the bar block are each centred in the preview box.
 
-Doubles are edited as integer percentages (`percentSlider`, `PERCENT = 100`) because the vanilla
-slider is integer-only. Only scalars are exposed; maps and keyword patterns stay in the JSON, which
-the Item Values page opens with `Util.getPlatform().openPath`.
+Adding a setting means: field in `ThirstConfig`, clamp in `sanitize()`, a `ConfigEntry` in its
+`ConfigCategory`, and `thirstwastaken2.config.<key>` plus `thirstwastaken2.config.<key>.tooltip` in
+`en_us.json` and `vi_vn.json` (the other seven locales are best-effort). The key is the Java field name
+in snake_case. A new page also needs `section.<key>`, its tooltip and a 16x16 icon texture. Enums use
+`choice`, labelled by `<key>.<value in lower case>`, so each value needs its own lang key. Doubles are
+edited as integer percentages (`percent`) because the slider steps in whole numbers. The AppleSkin page
+is always shown; without AppleSkin it adds a note saying the settings do nothing yet.
 
-Not every version of `OptionsList` takes a plain widget, so that button goes through
-`ClientVanilla.addFullWidthRow`, and 1.21.1 has no section headings, so those go through
-`ClientVanilla.addHeader`, which stands a centred text row in for one. The preview draws through
-`ClientVanilla.canvas`, `text` and `blitSprite`, because 26.1 renamed the widget draw method and the
-text call, and 1.21.11 added the render pipeline to sprite draws. It never builds an `ItemStack`: Mod
-Menu opens the screen from the title screen, where 26.1 and later have not bound item components yet
-and constructing a stack crashes the game. 26.2 moved
-`setScreen` onto `Minecraft.gui`, hence `ClientVanilla.setScreen`.
+The preview never builds an `ItemStack`: Mod Menu opens the screen from the title screen, where 26.1
+and later have not bound item components yet and constructing a stack crashes the game. Page icons are
+drawn from textures for the same reason. 26.2 moved `setScreen` onto `Minecraft.gui`, hence
+`ClientVanilla.setScreen`.
 
 Mod Menu is `clientCompileOnly`. `ModMenuIntegration` (in `src/client/fabric/java`) is only ever
 class-loaded when Mod Menu itself resolves the entrypoint, so nothing else may reference it.

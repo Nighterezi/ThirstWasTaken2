@@ -56,8 +56,8 @@ A cauldron also fills on its own:
 
 | How it filled | Grade |
 |---|---|
-| Rain | Clean, set by [rainwaterPurity](/docs/configuration#rainwaterpurity) |
-| A pointed dripstone dripping into it | Pure, set by [dripstonePurity](/docs/configuration#dripstonepurity) |
+| Rain | Clean |
+| A pointed dripstone dripping into it | Pure |
 
 Neither improves water already in the cauldron.
 
@@ -104,10 +104,7 @@ A bad batch. It comes with Upset Stomach, and milk cures it.
 
 | | Easy | Normal | Hard |
 |---|---|---|---|
-| Weakness | I, 30 seconds | I, 60 seconds | II, 90 seconds |
-| Mining Fatigue | I, 30 seconds | I, 60 seconds | II, 90 seconds |
-| Slowness | | | I, 60 seconds |
-| Poison | | 8 seconds | 15 seconds |
+| Poison | 10 seconds | 20 seconds | 30 seconds |
 
 Poison stops at half a heart, so Poisoning never kills.
 
@@ -144,8 +141,7 @@ On Minecraft 1.21 and 1.21.1 the recipe uses a chain instead of an iron chain.
 - Holds three servings, like a cauldron. A bucket fills or empties it. A bottle or bowl adds or takes
   one.
 - A waterskin fills up from it in one go, as far as the pot has water. Sneak to pour all of it in.
-- Each serving takes 4 seconds, set by
-  [copperPotSecondsPerServing](/docs/configuration#copperpotsecondsperserving).
+- Each serving takes 4 seconds.
 - Adding water only adds that water's time. Putting the fire out pauses the boil.
 - The water changes colour with its grade.
 - It mixes like a cauldron, and salt water never boils clean.
@@ -157,7 +153,6 @@ On Minecraft 1.21 and 1.21.1 the recipe uses a chain instead of an iron chain.
 
 ![An Iron Hanging Pot of water boiling over a campfire](/screenshots/iron-hanging-pot.png)
 
-Works like the Copper Hanging Pot but boils slower: 6 seconds a serving, set by
-[ironPotSecondsPerServing](/docs/configuration#ironpotsecondsperserving).
+Works like the Copper Hanging Pot but boils slower: 6 seconds a serving.
 
 ![Two sticks and a chain across the top, five iron ingots in a U below, make an Iron Hanging Pot](/screenshots/iron-hanging-pot-recipe.png)

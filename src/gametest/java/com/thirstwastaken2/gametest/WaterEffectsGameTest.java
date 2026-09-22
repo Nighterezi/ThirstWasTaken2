@@ -75,7 +75,7 @@ public final class WaterEffectsGameTest {
     /** Bad water fills the bar but gives little quenched, the way rotten flesh gives little saturation. */
     @GameTest
     public void quenchedFollowsTheGrade(GameTestHelper helper) {
-        int[] percent = ThirstConfig.get().quenchedPercentByGrade;
+        int[] percent = {0, 50, 100, 100};
         for (int grade = WaterPurity.MIN; grade <= WaterPurity.MAX; grade++) {
             int expected = 8 * percent[grade] / 100;
             int got = WaterPurity.quenched(WaterQuality.fresh(grade), 8);

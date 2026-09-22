@@ -33,7 +33,7 @@ this one owns where the code goes. When they disagree, the design page wins and 
 | Thirst drain per tick | `ThirstManager.tickPlayer`: `NAUSEA_EXHAUSTION = 0.06`, `PARCHED_EXHAUSTION = 0.01`, Hunger refund |
 | Dehydration damage | `ThirstManager.tickPlayer`, every `DAMAGE_INTERVAL = 40` ticks at zero thirst |
 | Effects | `ThirstEffects.PARCHED`, `ThirstEffects.UPSET_STOMACH` |
-| Chance tables | `ThirstConfig.sicknessPreset`, `sicknessEasy`, `sicknessNormal`, `sicknessHard` (`config/SicknessTable`) |
+| Chance tables | `config/SicknessTable`, fixed; `ThirstConfig.sicknessPreset` picks Realistic or Classic |
 | Effect tests | `WaterEffectsGameTest`, `UpsetStomachGameTest`, `WaterSicknessGameTest` in `src/gametest/java/com/thirstwastaken2/gametest/` |
 | HUD | `client/ThirstHud`, registered per loader in `client/platform/ClientLoader` |
 | Icons | `textures/mob_effect/parched.png`; `upset_stomach.png` from `tools/generate_upset_stomach_icon.py` |
@@ -75,14 +75,16 @@ Note: `tools/generate_parched_icons.py` is referenced in `client/AGENTS.md` and
   Stomach. Its durations and levels are constants there, not config.
 - **4** `WaterPurity.applyEffects` hands fresh water to `effect/WaterSickness` and always quenches.
   `quenchWhenDebuffed`, `nauseaChance`, `poisonChance` and `nauseaSeconds` are gone; the config has
-  `sicknessPreset` (`REALISTIC`, `CLASSIC`) and `sicknessEasy`, `sicknessNormal`, `sicknessHard`, each a
-  `SicknessTable` of `poisoningChance`, `upsetStomachChance` and `upsetStomachLevel` for Dirty, Murky
-  and Clean. The chances are whole percents (`int[]`): nothing before Dysentery needs a fraction.
-  One config page per difficulty, a header per grade.
+  only `sicknessPreset` (`REALISTIC`, `CLASSIC`). The chances are fixed in `config/SicknessTable`, one
+  per difficulty, of `poisoningChance`, `upsetStomachChance` and `upsetStomachLevel` for Dirty, Murky
+  and Clean. They were config pages for a while and were fixed to keep the screen short. The chances
+  are whole percents: nothing before Dysentery needs a fraction.
 - **Choices made here:**
   - Dysentery has no range yet, so the walk is Poisoning then Upset Stomach, and a Dirty drink on
     Normal makes the player ill 75% of the time instead of 80%. Step 5 adds `dysenteryChance` in front.
-  - The current illness is read from the effects: Upset Stomach with Mining Fatigue is Poisoning.
+  - The current illness is read from the effects: Upset Stomach with Poison is Poisoning.
+  - Poisoning dropped Weakness, Mining Fatigue and Slowness after play testing; Poison lasts longer
+    instead (10 / 20 / 30 s).
   - Upset Stomach from a drink shows its particles; Parched from salt water does not.
   - `CLASSIC` is the roll from before the rework with its old defaults, not configurable.
 - Tests: `WaterSicknessGameTest` forces the roll into every range of every table.

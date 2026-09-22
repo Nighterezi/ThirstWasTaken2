@@ -10,12 +10,14 @@ release needs is already written down in the repository, so it is read rather th
 - the Minecraft releases an upload claims, from that node's `mod.mc_releases`;
 - the mods to list, from the `deps.*` keys the node resolves, so a dependency dropped from a node stops
   being listed for it;
-- the release notes, from the matching section of `CHANGELOG.md`.
+- the release notes, from the matching section of `CHANGELOG.md`;
+- the project page's description, from `docs/MODRINTH.md` (and `docs/CURSEFORGE.md` on CurseForge).
 
     python tools/release/publish.py --dry-run               # print every upload, send nothing
     python tools/release/publish.py                         # build, then upload to Modrinth
     python tools/release/publish.py --no-build              # publish the jars already in build/libs
     python tools/release/publish.py --only 26.2.x-neoforge  # one node only
+    python tools/release/publish.py --description-only      # update the project page, upload nothing
 
 `publish_curseforge.py` takes the same flags and uploads the same jars to CurseForge; run it with
 `--no-build` after this one, since this one has just built them.
@@ -27,7 +29,13 @@ commit. Modrinth and CurseForge are the only places a release is published: ther
 GitHub release.
 
 The token comes from `MODRINTH_TOKEN` in the environment or in `.env`, which is git-ignored; it needs
-Modrinth's create-version scope.
+Modrinth's create-version scope, and the write-projects scope to update the description.
+
+After the uploads the project page's description is compared with `docs/MODRINTH.md` and replaced when
+they differ, so the page follows the file the way the files follow `CHANGELOG.md`. `--dry-run` only
+says whether it would. A token without the write-projects scope leaves the description as it is and
+says so; the uploads before it still count. CurseForge has no API for the description at all, so
+`publish_curseforge.py` can only say where to paste `docs/CURSEFORGE.md` by hand.
 
 Re-running is safe, and is how a half-finished release is finished: a version already on Modrinth is
 skipped by its version number. Nothing already published is overwritten: a bad upload is deleted on
@@ -55,6 +63,7 @@ ROOT = Path(__file__).resolve().parents[2]
 PROPERTIES = ROOT / "stonecutter.properties.toml"
 SETTINGS = ROOT / "settings.gradle.kts"
 CHANGELOG = ROOT / "CHANGELOG.md"
+MODRINTH_DESCRIPTION = ROOT / "docs" / "MODRINTH.md"
 LIBS = ROOT / "build" / "libs"
 ENV_FILE = ROOT / ".env"
 
@@ -302,6 +311,31 @@ class Modrinth:
         created = self.request("/version", "POST", body, content_type)
         return created["id"]
 
+    def sync_description(self, dry_run: bool) -> None:
+        """Replaces the project page's description with `docs/MODRINTH.md` when the two differ."""
+        wanted = MODRINTH_DESCRIPTION.read_text(encoding="utf-8").strip()
+        if (self.project.get("body") or "").strip() == wanted:
+            print(f"Description: already matches {MODRINTH_DESCRIPTION.name}")
+            return
+        if dry_run:
+            print(f"Description: would replace the project page's with {MODRINTH_DESCRIPTION.name}")
+            return
+        body = json.dumps({"body": wanted}).encode("utf-8")
+        try:
+            # 204 No Content on success, so the answer is not read as JSON.
+            request = urllib.request.Request(
+                f"{MODRINTH}/project/{self.project['id']}", data=body, method="PATCH",
+                headers={"User-Agent": USER_AGENT, "Authorization": self.token,
+                         "Content-Type": "application/json"})
+            urllib.request.urlopen(request, timeout=60).close()
+        except urllib.error.HTTPError as error:
+            detail = error.read().decode("utf-8", "replace")
+            print(f"warning: Modrinth refused the description ({error.code}): {detail}")
+            if error.code in (401, 403):
+                print("         the token needs the write-projects scope; the files above are published")
+            return
+        print(f"Description: replaced with {MODRINTH_DESCRIPTION.name}")
+
     def done_url(self) -> str:
         return f"https://modrinth.com/mod/{MODRINTH_PROJECT}/versions"
 
@@ -346,7 +380,13 @@ def release(publisher_class, description: str) -> None:
     parser.add_argument("--only", action="append", metavar="NODE", help="publish this node only")
     parser.add_argument("--version", help="fail unless stonecutter.properties.toml says this version")
     parser.add_argument("--allow-dirty", action="store_true", help="release with uncommitted changes")
+    parser.add_argument("--description-only", action="store_true",
+                        help="only bring the project page's description up to date; upload no files")
     args = parser.parse_args()
+
+    if args.description_only:
+        publisher_class().sync_description(args.dry_run)
+        return
 
     props = tomllib.loads(PROPERTIES.read_text(encoding="utf-8"))
     mod_version = props["mod"]["version"]
@@ -392,6 +432,9 @@ def release(publisher_class, description: str) -> None:
                 fail(f"{publisher.name} refused `{number}` ({error.code}): {detail}")
             print(f"    -> uploaded, {created}")
         print()
+
+    publisher.sync_description(args.dry_run)
+    print()
 
     if args.dry_run:
         print("Dry run: nothing was published.")

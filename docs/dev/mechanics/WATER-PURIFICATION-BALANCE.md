@@ -47,7 +47,7 @@ The two pots differ in boil time only, based on the metals themselves:
 
 | | Copper | Iron |
 |---|---|---|
-| Boil time | 4 s a serving (`copperPotSecondsPerServing`) | 6 s a serving (`ironPotSecondsPerServing`) |
+| Boil time | 4 s a serving (`COPPER_SECONDS_PER_SERVING`) | 6 s a serving (`IRON_SECONDS_PER_SERVING`) |
 | Why | copper carries heat far better | iron carries heat worse |
 | Heat source | lit campfire or soul campfire | the same, for now |
 | Recipe | two sticks, a chain, five copper ingots | two sticks, a chain, five iron ingots |

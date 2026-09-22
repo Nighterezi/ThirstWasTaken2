@@ -1,252 +1,99 @@
 package com.thirstwastaken2.client.config;
 
+import com.thirstwastaken2.ThirstWasTaken2;
 import com.thirstwastaken2.client.platform.ClientVanilla;
 import com.thirstwastaken2.compat.AppleSkin;
 import com.thirstwastaken2.config.QuenchedOverlay;
 import com.thirstwastaken2.config.SicknessPreset;
-import com.thirstwastaken2.config.SicknessTable;
 import com.thirstwastaken2.config.ThirstConfig;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.OptionsList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
-import static com.thirstwastaken2.client.config.ConfigOptions.chanceSlider;
-import static com.thirstwastaken2.client.config.ConfigOptions.cycle;
-import static com.thirstwastaken2.client.config.ConfigOptions.percentSlider;
-import static com.thirstwastaken2.client.config.ConfigOptions.gradeName;
-import static com.thirstwastaken2.client.config.ConfigOptions.gradePercentSlider;
-import static com.thirstwastaken2.client.config.ConfigOptions.slider;
-import static com.thirstwastaken2.client.config.ConfigOptions.text;
-import static com.thirstwastaken2.client.config.ConfigOptions.toggle;
+import java.util.List;
 
 /**
- * One page of the config screen: its options, and what "Reset to Defaults" puts back. Every scalar in
- * {@link ThirstConfig} belongs to exactly one page; the per-item maps and keyword patterns stay in the
- * file, which the Item Values page opens.
+ * One page of the config screen: its icon in the sidebar, its settings, and any rows that are not a
+ * setting. Every scalar in {@link ThirstConfig} belongs to exactly one page; the per-item maps and the
+ * keyword patterns stay in the file, which Item Values opens. Reset puts back exactly the page's
+ * entries, so the maps are never reset from a button.
  */
 enum ConfigCategory {
-    DEPLETION("depletion", false) {
+    THIRST("thirst", ThirstWasTaken2.id("textures/item/waterskin_3.png"), List.of(
+            ConfigEntry.percent("thirst_depletion_modifier", 0, 1000,
+                    config -> config.thirstDepletionModifier, (config, value) -> config.thirstDepletionModifier = value),
+            ConfigEntry.toggle("thirst_depletion_in_peaceful",
+                    config -> config.thirstDepletionInPeaceful, (config, value) -> config.thirstDepletionInPeaceful = value),
+            ConfigEntry.toggle("prevent_sprinting_when_thirsty",
+                    config -> config.preventSprintingWhenThirsty, (config, value) -> config.preventSprintingWhenThirsty = value),
+            ConfigEntry.toggle("dehydration_halts_health_regen",
+                    config -> config.dehydrationHaltsHealthRegen, (config, value) -> config.dehydrationHaltsHealthRegen = value))),
+
+    WATER("water", ThirstWasTaken2.id("textures/item/terracotta_water_bowl_purity_3.png"), List.of(
+            ConfigEntry.choice("sickness_preset", SicknessPreset.values(),
+                    config -> config.sicknessPreset, (config, value) -> config.sicknessPreset = value),
+            ConfigEntry.grade("default_purity",
+                    config -> config.defaultPurity, (config, value) -> config.defaultPurity = value),
+            ConfigEntry.toggle("can_drink_by_hand",
+                    config -> config.canDrinkByHand, (config, value) -> config.canDrinkByHand = value))),
+
+    APPLESKIN("appleskin", Identifier.withDefaultNamespace("textures/item/apple.png"), List.of(
+            ConfigEntry.choice("appleskin_quenched_overlay", QuenchedOverlay.values(),
+                    config -> config.appleskinQuenchedOverlay, (config, value) -> config.appleskinQuenchedOverlay = value),
+            ConfigEntry.toggle("appleskin_tooltip_droplets",
+                    config -> config.appleskinTooltipDroplets, (config, value) -> config.appleskinTooltipDroplets = value))) {
         @Override
-        void addOptions(OptionsList list, ThirstConfig config) {
-            list.addSmall(
-                    percentSlider("thirst_depletion_modifier", config.thirstDepletionModifier, 0, 1000,
-                            value -> config.thirstDepletionModifier = value),
-                    percentSlider("nether_thirst_depletion_modifier", config.netherThirstDepletionModifier, 0, 1000,
-                            value -> config.netherThirstDepletionModifier = value),
-                    slider("fire_resistance_dehydration_percent", config.fireResistanceDehydrationPercent, 0, 100,
-                            value -> config.fireResistanceDehydrationPercent = value),
-                    toggle("thirst_depletion_in_peaceful", config.thirstDepletionInPeaceful,
-                            value -> config.thirstDepletionInPeaceful = value),
-                    toggle("depletes_when_nauseous", config.depletesWhenNauseous,
-                            value -> config.depletesWhenNauseous = value),
-                    toggle("dehydration_halts_health_regen", config.dehydrationHaltsHealthRegen,
-                            value -> config.dehydrationHaltsHealthRegen = value),
-                    toggle("prevent_sprinting_when_thirsty", config.preventSprintingWhenThirsty,
-                            value -> config.preventSprintingWhenThirsty = value));
-        }
-
-        @Override
-        void reset(ThirstConfig config, ThirstConfig defaults) {
-            config.thirstDepletionModifier = defaults.thirstDepletionModifier;
-            config.netherThirstDepletionModifier = defaults.netherThirstDepletionModifier;
-            config.fireResistanceDehydrationPercent = defaults.fireResistanceDehydrationPercent;
-            config.thirstDepletionInPeaceful = defaults.thirstDepletionInPeaceful;
-            config.depletesWhenNauseous = defaults.depletesWhenNauseous;
-            config.dehydrationHaltsHealthRegen = defaults.dehydrationHaltsHealthRegen;
-            config.preventSprintingWhenThirsty = defaults.preventSprintingWhenThirsty;
-        }
-    },
-
-    DRINKING("drinking", false) {
-        @Override
-        void addOptions(OptionsList list, ThirstConfig config) {
-            list.addSmall(
-                    toggle("can_drink_by_hand", config.canDrinkByHand, value -> config.canDrinkByHand = value),
-                    toggle("drink_by_hand_needs_both_hands_empty", config.drinkByHandNeedsBothHandsEmpty,
-                            value -> config.drinkByHandNeedsBothHandsEmpty = value),
-                    toggle("extra_thirst_converts_to_quenched", config.extraThirstConvertsToQuenched,
-                            value -> config.extraThirstConvertsToQuenched = value),
-                    slider("hand_drinking_thirst", config.handDrinkingThirst, 0, 20,
-                            value -> config.handDrinkingThirst = value),
-                    slider("hand_drinking_quenched", config.handDrinkingQuenched, 0, 20,
-                            value -> config.handDrinkingQuenched = value));
-        }
-
-        @Override
-        void reset(ThirstConfig config, ThirstConfig defaults) {
-            config.canDrinkByHand = defaults.canDrinkByHand;
-            config.drinkByHandNeedsBothHandsEmpty = defaults.drinkByHandNeedsBothHandsEmpty;
-            config.extraThirstConvertsToQuenched = defaults.extraThirstConvertsToQuenched;
-            config.handDrinkingThirst = defaults.handDrinkingThirst;
-            config.handDrinkingQuenched = defaults.handDrinkingQuenched;
-        }
-    },
-
-    PURITY("purity", false) {
-        @Override
-        void addOptions(OptionsList list, ThirstConfig config) {
-            list.addSmall(
-                    slider("default_purity", config.defaultPurity, 0, 3, value -> config.defaultPurity = value),
-                    slider("rainwater_purity", config.rainwaterPurity, 0, 3,
-                            value -> config.rainwaterPurity = value),
-                    slider("dripstone_purity", config.dripstonePurity, 0, 3,
-                            value -> config.dripstonePurity = value),
-                    slider("copper_pot_seconds_per_serving", config.copperPotSecondsPerServing, 1, 100,
-                            value -> config.copperPotSecondsPerServing = value),
-                    slider("iron_pot_seconds_per_serving", config.ironPotSecondsPerServing, 1, 100,
-                            value -> config.ironPotSecondsPerServing = value),
-                    cycle("sickness_preset", SicknessPreset.values(), config.sicknessPreset,
-                            value -> config.sicknessPreset = value));
-
-            ClientVanilla.addHeader(list, text("quenched_by_grade"));
-            for (int purity = 0; purity < 4; purity += 2) {
-                int first = purity;
-                int second = purity + 1;
-                list.addSmall(
-                        gradePercentSlider("quenched_percent", first, config.quenchedPercentByGrade[first],
-                                value -> config.quenchedPercentByGrade[first] = value),
-                        gradePercentSlider("quenched_percent", second, config.quenchedPercentByGrade[second],
-                                value -> config.quenchedPercentByGrade[second] = value));
-            }
-        }
-
-        @Override
-        void reset(ThirstConfig config, ThirstConfig defaults) {
-            config.defaultPurity = defaults.defaultPurity;
-            config.rainwaterPurity = defaults.rainwaterPurity;
-            config.dripstonePurity = defaults.dripstonePurity;
-            config.copperPotSecondsPerServing = defaults.copperPotSecondsPerServing;
-            config.ironPotSecondsPerServing = defaults.ironPotSecondsPerServing;
-            config.sicknessPreset = defaults.sicknessPreset;
-            config.quenchedPercentByGrade = defaults.quenchedPercentByGrade.clone();
-        }
-    },
-
-    SICKNESS_EASY("sickness_easy", false) {
-        @Override
-        void addOptions(OptionsList list, ThirstConfig config) {
-            sicknessOptions(list, config.sicknessEasy);
-        }
-
-        @Override
-        void reset(ThirstConfig config, ThirstConfig defaults) {
-            config.sicknessEasy = defaults.sicknessEasy.copy();
-        }
-    },
-
-    SICKNESS_NORMAL("sickness_normal", false) {
-        @Override
-        void addOptions(OptionsList list, ThirstConfig config) {
-            sicknessOptions(list, config.sicknessNormal);
-        }
-
-        @Override
-        void reset(ThirstConfig config, ThirstConfig defaults) {
-            config.sicknessNormal = defaults.sicknessNormal.copy();
-        }
-    },
-
-    SICKNESS_HARD("sickness_hard", false) {
-        @Override
-        void addOptions(OptionsList list, ThirstConfig config) {
-            sicknessOptions(list, config.sicknessHard);
-        }
-
-        @Override
-        void reset(ThirstConfig config, ThirstConfig defaults) {
-            config.sicknessHard = defaults.sicknessHard.copy();
-        }
-    },
-
-    HUD("hud", true) {
-        @Override
-        void addOptions(OptionsList list, ThirstConfig config) {
-            list.addSmall(
-                    slider("thirst_bar_x_offset", config.thirstBarXOffset, -200, 200,
-                            value -> config.thirstBarXOffset = value),
-                    slider("thirst_bar_y_offset", config.thirstBarYOffset, -200, 200,
-                            value -> config.thirstBarYOffset = value));
-
-            // Both settings only show anything alongside AppleSkin, so the section says so when it is
+        void addLeadingRows(List<ConfigRow> rows) {
+            rows.add(ConfigRow.preview());
+            // Both settings only show anything alongside AppleSkin, so the page says so when it is
             // missing rather than offering switches that appear to do nothing.
-            ClientVanilla.addHeader(list, text("category.appleskin"));
-            if (!AppleSkin.isLoaded()) ClientVanilla.addHeader(list, text("appleskin_missing"));
-            list.addSmall(
-                    cycle("appleskin_quenched_overlay", QuenchedOverlay.values(), config.appleskinQuenchedOverlay,
-                            value -> config.appleskinQuenchedOverlay = value),
-                    toggle("appleskin_tooltip_droplets", config.appleskinTooltipDroplets,
-                            value -> config.appleskinTooltipDroplets = value));
-        }
-
-        @Override
-        void reset(ThirstConfig config, ThirstConfig defaults) {
-            config.thirstBarXOffset = defaults.thirstBarXOffset;
-            config.thirstBarYOffset = defaults.thirstBarYOffset;
-            config.appleskinQuenchedOverlay = defaults.appleskinQuenchedOverlay;
-            config.appleskinTooltipDroplets = defaults.appleskinTooltipDroplets;
+            if (!AppleSkin.isLoaded()) rows.add(ConfigRow.note(Component.translatable("thirstwastaken2.config.appleskin_missing")));
         }
     },
 
-    ITEMS("items", false) {
+    ITEMS("items", Identifier.withDefaultNamespace("textures/item/honey_bottle.png"), List.of(
+            ConfigEntry.toggle("enable_drink_tag_matching",
+                    config -> config.enableDrinkTagMatching, (config, value) -> config.enableDrinkTagMatching = value),
+            ConfigEntry.toggle("enable_keyword_matching",
+                    config -> config.enableKeywordMatching, (config, value) -> config.enableKeywordMatching = value))) {
         @Override
-        void addOptions(OptionsList list, ThirstConfig config) {
-            list.addSmall(
-                    toggle("enable_drink_tag_matching", config.enableDrinkTagMatching,
-                            value -> config.enableDrinkTagMatching = value),
-                    toggle("enable_keyword_matching", config.enableKeywordMatching,
-                            value -> config.enableKeywordMatching = value));
-            ClientVanilla.addFullWidthRow(list, Button.builder(text("open_file"),
-                            button -> ClientVanilla.openPath(ThirstConfig.path()))
-                    .build());
-        }
-
-        @Override
-        void reset(ThirstConfig config, ThirstConfig defaults) {
-            // The item maps are edited in the file; resetting them from a button would lose a whole
-            // modpack's values in one click.
-            config.enableDrinkTagMatching = defaults.enableDrinkTagMatching;
-            config.enableKeywordMatching = defaults.enableKeywordMatching;
+        void addTrailingRows(List<ConfigRow> rows) {
+            rows.add(ConfigRow.action(Component.translatable("thirstwastaken2.config.open_file"),
+                    Component.translatable("thirstwastaken2.config.open_file.tooltip"),
+                    Component.translatable("thirstwastaken2.config.open_file.button"),
+                    () -> ClientVanilla.openPath(ThirstConfig.path())));
         }
     };
 
     private final String key;
-    private final boolean preview;
+    private final Identifier icon;
+    private final List<ConfigEntry<?>> entries;
 
-    ConfigCategory(String key, boolean preview) {
+    ConfigCategory(String key, Identifier icon, List<ConfigEntry<?>> entries) {
         this.key = key;
-        this.preview = preview;
+        this.icon = icon;
+        this.entries = entries;
     }
 
-    /** The lang key suffix: {@code category.<key>} names it and {@code category.<key>.tooltip} describes it. */
-    String key() {
-        return key;
+    Component title() {
+        return Component.translatable("thirstwastaken2.config.section." + key);
     }
 
-    boolean hasPreview() {
-        return preview;
+    Component description() {
+        return Component.translatable("thirstwastaken2.config.section." + key + ".tooltip");
     }
 
-    /**
-     * One difficulty's table: per grade, the chance of Poisoning, the chance of Upset Stomach and its
-     * level. Only used by the realistic preset, which the page says at the top.
-     */
-    private static void sicknessOptions(OptionsList list, SicknessTable table) {
-        ClientVanilla.addHeader(list, text("sickness_realistic_only"));
-        // One header per grade, so the slider labels stay short enough for a half-width button.
-        for (int grade = 0; grade < SicknessTable.GRADES; grade++) {
-            int index = grade;
-            ClientVanilla.addHeader(list, gradeName(index));
-            list.addSmall(
-                    chanceSlider("poisoning_chance", table.poisoningChance[index],
-                            value -> table.poisoningChance[index] = value),
-                    chanceSlider("upset_stomach_chance", table.upsetStomachChance[index],
-                            value -> table.upsetStomachChance[index] = value));
-            list.addSmall(slider("upset_stomach_level", table.upsetStomachLevel[index], 1,
-                    SicknessTable.MAX_UPSET_STOMACH_LEVEL, value -> table.upsetStomachLevel[index] = value));
-        }
+    /** A 16x16 texture drawn whole, beside the page's name in the sidebar. */
+    Identifier icon() {
+        return icon;
     }
 
-    abstract void addOptions(OptionsList list, ThirstConfig config);
+    List<ConfigEntry<?>> entries() {
+        return entries;
+    }
 
-    /** Copies this page's values from {@code defaults}, a freshly constructed config, into {@code config}. */
-    abstract void reset(ThirstConfig config, ThirstConfig defaults);
+    /** Rows placed between the page heading and its settings. */
+    void addLeadingRows(List<ConfigRow> rows) { }
+
+    /** Rows placed after the page's settings. */
+    void addTrailingRows(List<ConfigRow> rows) { }
 }
