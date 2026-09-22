@@ -1,5 +1,7 @@
 package com.thirstwastaken2.gametest;
 
+import com.thirstwastaken2.config.SicknessPreset;
+import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.data.ThirstManager;
 import com.thirstwastaken2.effect.ThirstEffects;
 import com.thirstwastaken2.effect.WaterSickness;
@@ -67,6 +69,46 @@ public final class WaterEffectsGameTest {
         TestFixtures.check(helper, !player.hasEffect(MobEffects.NAUSEA) && !player.hasEffect(MobEffects.POISON)
                         && !player.hasEffect(ThirstEffects.PARCHED),
                 "purity 3 has no nausea, parched or poison chance in the default config");
+        helper.succeed();
+    }
+
+    /** Bad water fills the bar but gives little quenched, the way rotten flesh gives little saturation. */
+    @GameTest
+    public void quenchedFollowsTheGrade(GameTestHelper helper) {
+        int[] percent = ThirstConfig.get().quenchedPercentByGrade;
+        for (int grade = WaterPurity.MIN; grade <= WaterPurity.MAX; grade++) {
+            int expected = 8 * percent[grade] / 100;
+            int got = WaterPurity.quenched(WaterQuality.fresh(grade), 8);
+            TestFixtures.check(helper, got == expected,
+                    "grade " + grade + " should give " + percent[grade] + "% of 8 quenched, " + expected + ", got " + got);
+        }
+        // Classic, so no illness is rolled that would cut the quenched a second time.
+        TestFixtures.withConfig(config -> config.sicknessPreset = SicknessPreset.CLASSIC, () -> {
+            ServerPlayer dirty = TestFixtures.mockPlayer(helper);
+            ThirstManager.set(dirty, ThirstManager.get(dirty).withLevels(4, 0));
+            ThirstManager.drinkItem(dirty, bowl(WaterQuality.fresh(0)));
+            TestFixtures.check(helper, ThirstManager.get(dirty).thirst() > 4
+                            && ThirstManager.get(dirty).quenched() == 0,
+                    "a dirty bowl should restore thirst but no quenched, got " + ThirstManager.get(dirty));
+        });
+        helper.succeed();
+    }
+
+    @GameTest
+    public void upsetStomachCutsQuenched(GameTestHelper helper) {
+        ServerPlayer healthy = TestFixtures.mockPlayer(helper);
+        ServerPlayer sick = TestFixtures.mockPlayer(helper);
+        ThirstManager.set(healthy, ThirstManager.get(healthy).withLevels(4, 0));
+        ThirstManager.set(sick, ThirstManager.get(sick).withLevels(4, 0));
+        sick.addEffect(new MobEffectInstance(ThirstEffects.UPSET_STOMACH, 200, 1));
+
+        ThirstManager.drinkItem(healthy, bowl(WaterQuality.fresh(WaterPurity.MAX)));
+        ThirstManager.drinkItem(sick, bowl(WaterQuality.fresh(WaterPurity.MAX)));
+
+        int full = ThirstManager.get(healthy).quenched();
+        int cut = ThirstManager.get(sick).quenched();
+        TestFixtures.check(helper, full > 0 && cut == full / 2,
+                "Upset Stomach II should halve the quenched of a pure drink, got " + cut + " against " + full);
         helper.succeed();
     }
 

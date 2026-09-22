@@ -13,6 +13,7 @@ import static com.thirstwastaken2.client.config.ConfigOptions.chanceSlider;
 import static com.thirstwastaken2.client.config.ConfigOptions.cycle;
 import static com.thirstwastaken2.client.config.ConfigOptions.percentSlider;
 import static com.thirstwastaken2.client.config.ConfigOptions.gradeName;
+import static com.thirstwastaken2.client.config.ConfigOptions.gradePercentSlider;
 import static com.thirstwastaken2.client.config.ConfigOptions.slider;
 import static com.thirstwastaken2.client.config.ConfigOptions.text;
 import static com.thirstwastaken2.client.config.ConfigOptions.toggle;
@@ -95,6 +96,17 @@ enum ConfigCategory {
                             value -> config.ironPotSecondsPerServing = value),
                     cycle("sickness_preset", SicknessPreset.values(), config.sicknessPreset,
                             value -> config.sicknessPreset = value));
+
+            ClientVanilla.addHeader(list, text("quenched_by_grade"));
+            for (int purity = 0; purity < 4; purity += 2) {
+                int first = purity;
+                int second = purity + 1;
+                list.addSmall(
+                        gradePercentSlider("quenched_percent", first, config.quenchedPercentByGrade[first],
+                                value -> config.quenchedPercentByGrade[first] = value),
+                        gradePercentSlider("quenched_percent", second, config.quenchedPercentByGrade[second],
+                                value -> config.quenchedPercentByGrade[second] = value));
+            }
         }
 
         @Override
@@ -105,6 +117,7 @@ enum ConfigCategory {
             config.copperPotSecondsPerServing = defaults.copperPotSecondsPerServing;
             config.ironPotSecondsPerServing = defaults.ironPotSecondsPerServing;
             config.sicknessPreset = defaults.sicknessPreset;
+            config.quenchedPercentByGrade = defaults.quenchedPercentByGrade.clone();
         }
     },
 

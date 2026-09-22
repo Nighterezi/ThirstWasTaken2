@@ -52,6 +52,14 @@ final class ConfigOptions {
                 new OptionInstance.IntRange(0, 100), initial, setter::accept);
     }
 
+    /** A percentage from 0 to 100 for water of one grade, labelled with the grade's name. */
+    static OptionInstance<Integer> gradePercentSlider(String key, int purity, int initial, IntConsumer setter) {
+        Component label = Component.translatable(translationKey(key), gradeName(purity));
+        return new OptionInstance<>(translationKey(key), tooltip(key),
+                (caption, value) -> Component.translatable("options.generic_value", label, value + "%"),
+                new OptionInstance.IntRange(0, 100), initial, setter::accept);
+    }
+
     /** The name the game gives water of {@code purity}, as its tooltip shows it. */
     static Component gradeName(int purity) {
         return Component.translatable("thirst.purity." + purityName(purity));

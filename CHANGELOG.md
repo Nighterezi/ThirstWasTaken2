@@ -42,6 +42,10 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 - A waterskin fills in one go from water, a cauldron or a hanging pot. From a cauldron or a pot it
   takes only as much as there is.
 - Pouring out a waterskin splashes like pouring a water bottle on dirt.
+- Dirty water gives no quenched and Murky water half, from any container or by hand. Bad water no
+  longer keeps the bar topped up, and Upset Stomach also cuts the quenched of every drink.
+- Drinking by hand restores 3 thirst a sip instead of 2, and splashes the water. Older config files
+  keep their own value of `handDrinkingThirst`.
 
 ### Notes
 
@@ -57,6 +61,7 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 - Removed `quenchWhenDebuffed`, `nauseaChance`, `poisonChance` and `nauseaSeconds`. They are ignored
   if still in the file.
 - Added `sicknessPreset`, `REALISTIC` or `CLASSIC`.
+- Added `quenchedPercentByGrade`, the share of quenched each grade gives, Dirty first.
 - Added `sicknessEasy`, `sicknessNormal` and `sicknessHard`, each with `poisoningChance`,
   `upsetStomachChance` and `upsetStomachLevel` for Dirty, Murky and Clean water.
 

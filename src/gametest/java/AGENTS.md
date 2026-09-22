@@ -118,7 +118,7 @@ cauldron bottle draw.
 | Class | Covers |
 |---|---|
 | `WaterFillingGameTest` | bottle and bucket filling, that each fill resamples the water, that an abandoned fill leaves nothing behind |
-| `WaterEffectsGameTest` | salt water, the taste dirty water always leaves and that it still quenches, purified water, drinking, boiling not desalinating |
+| `WaterEffectsGameTest` | salt water, the taste dirty water always leaves and that it still quenches, quenched cut by grade and by Upset Stomach, purified water, drinking, boiling not desalinating |
 | `WaterSicknessGameTest` | the one roll per drink, forced into every range of each difficulty's table: exactly Poisoning's effects with Upset Stomach, Upset Stomach alone, or only the taste; Peaceful giving only the taste, Pure giving nothing on Hard, drinking again (extend, I to II, twice the time at most, a milder illness changing nothing) and the classic preset |
 | `UpsetStomachGameTest` | Upset Stomach draining faster than nothing and faster at II, Nausea costing nothing on top of it, the saturation it cuts at I and II, and that it never hurts on its own |
 | `HealthRegenGameTest` | dehydration halting regeneration and the food refund that has to accompany it |

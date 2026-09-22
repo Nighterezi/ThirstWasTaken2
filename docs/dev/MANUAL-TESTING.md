@@ -185,6 +185,8 @@ holding `{"values": {"minecraft:bread": {"thirst": 1, "quenched": 0}}}`:
       at the end. Checked on `26.2.x` on 2026-09-22 by capturing frames through one burst against a
       still baseline. How often bursts come, about once a minute at level I and twice at II, is still
       to be watched in play.
+- [ ] Sneak and click water with an empty hand: each click is one sip of 3 thirst, and droplets
+      splash on the water.
 - [ ] Sneak and use a filled waterskin on a block: it empties with a splash sound, droplets and the
       bottle sound, like a water bottle poured on dirt.
 - [ ] One use of an empty waterskin on water fills all three drinks; on a full water cauldron it

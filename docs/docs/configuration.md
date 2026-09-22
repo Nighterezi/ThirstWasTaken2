@@ -62,11 +62,12 @@ Default `false`. When on, drinking by hand also needs the other hand empty.
 
 ### handDrinkingThirst
 
-Default `2`. Thirst restored by one drink by hand.
+Default `3`. Thirst restored by one drink by hand.
 
 ### handDrinkingQuenched
 
-Default `2`. Quenched restored by one drink by hand.
+Default `2`. Quenched restored by one drink by hand, before the grade cuts it. See
+[quenchedPercentByGrade](#quenchedpercentbygrade).
 
 ### extraThirstConvertsToQuenched
 
@@ -96,6 +97,12 @@ Default `4`, from 1 to 100. Seconds each serving takes to boil in a
 
 Default `6`, from 1 to 100. The same for the
 [Iron Hanging Pot](/docs/features/water-purity#iron-hanging-pot).
+
+### quenchedPercentByGrade
+
+Default `[0, 50, 100, 100]`, one percentage per grade from Dirty to Pure, from 0 to 100. How much of a
+drink's quenched water of that grade gives, from any container or by hand. See
+[Drinking bad water](/docs/features/water-purity#drinking-bad-water).
 
 ### sicknessPreset
 

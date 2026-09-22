@@ -13,6 +13,7 @@ import com.thirstwastaken2.platform.Vanilla;
 import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.purity.WaterQuality;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -65,6 +66,8 @@ public final class ThirstManager {
     private static final float SYNC_STEP = 0.25F;
     /** Vanilla's sprint gate is foodLevel > 6; the original mod applied the same cut-off to thirst. */
     private static final int SPRINT_THIRST_THRESHOLD = 6;
+    /** Droplets a sip by hand throws up, a few less than a bottle poured out. */
+    private static final int HAND_DRINK_SPLASHES = 4;
 
     private ThirstManager() { }
 
@@ -124,19 +127,24 @@ public final class ThirstManager {
         int[] value = ThirstApi.thirstValues(stack);
         if (value == null) return;
         boolean quenches = WaterPurity.applyEffects(player, stack);
+        int quenched = value[1];
         // Salt water is drunk without quenching anything, and still counts as having been drunk.
         if (WaterPurity.isWaterContainer(stack)) {
-            ThirstAdvancements.drank(player, WaterPurity.quality(stack));
+            WaterQuality quality = WaterPurity.quality(stack);
+            ThirstAdvancements.drank(player, quality);
+            quenched = WaterPurity.quenched(quality, quenched);
         }
-        if (quenches) drinkThroughEvent(player, stack, value[0], value[1]);
+        if (quenches) drinkThroughEvent(player, stack, value[0], quenched);
     }
 
     /**
      * Restores what a drink restores after {@link ThirstEvents#DRINK} has had its say. Every drink of an
-     * item or of water by hand ends here; with no listener it is {@link #drink} and nothing else.
+     * item or of water by hand ends here; with no listener it is {@link #drink} and nothing else. Upset
+     * Stomach cuts the quenched first, the way it cuts the saturation of food.
      */
     private static void drinkThroughEvent(Player player, ItemStack stack, int thirst, int quenched) {
         if (player.level().isClientSide()) return;
+        quenched = (int) (quenched * UpsetStomach.saturationScale(player));
         if (ThirstEvents.DRINK.hasListeners()) {
             ThirstEvents.DrinkAmounts amounts = new ThirstEvents.DrinkAmounts(thirst, quenched);
             ThirstEvents.DRINK.invoker().onDrink(player, stack, amounts);
@@ -235,36 +243,20 @@ public final class ThirstManager {
         }
     }
 
+    /** A sip of the water the player crouches at with an empty hand, one per click. Server only. */
     public static InteractionResult drinkByHand(Player player, Level level, InteractionHand hand, BlockHitResult hit) {
+        if (level.isClientSide()) return InteractionResult.PASS;
+        BlockPos pos = handDrinkingWater(player, level, hand, hit);
+        if (pos == null) return InteractionResult.PASS;
+
         ThirstConfig config = ThirstConfig.get();
-        if (!config.canDrinkByHand || level.isClientSide() || !player.isCrouching()
-                || player.getAbilities().invulnerable || !get(player).enabled()
-                || get(player).thirst() >= ThirstData.MAX) {
-            return InteractionResult.PASS;
-        }
-        if (!player.getItemInHand(hand).isEmpty()) return InteractionResult.PASS;
-        // A click the client does not handle itself is sent once per hand, main hand first, so with
-        // both hands empty the off hand's copy would be a second sip from the same click.
-        if (hand == InteractionHand.OFF_HAND && player.getMainHandItem().isEmpty()) return InteractionResult.PASS;
-        if (config.drinkByHandNeedsBothHandsEmpty
-                && !player.getItemInHand(hand == InteractionHand.MAIN_HAND
-                        ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND).isEmpty()) {
-            return InteractionResult.PASS;
-        }
-
-        BlockPos pos = hit.getBlockPos();
-        if (!level.getFluidState(pos).is(FluidTags.WATER)) {
-            // The crosshair usually lands on the block beneath the surface when looking at water.
-            pos = pos.relative(hit.getDirection());
-            if (!level.getFluidState(pos).is(FluidTags.WATER)) return InteractionResult.PASS;
-        }
-
         WaterQuality quality = WaterPurity.sampleAt(level, pos);
         ItemStack sample = WaterPurity.setQuality(
                 new ItemStack(ThirstItems.TERRACOTTA_WATER_BOWL), quality);
         if (WaterPurity.applyEffects(player, sample)) {
             // No item was drunk, so listeners get an empty stack rather than the sample bowl above.
-            drinkThroughEvent(player, ItemStack.EMPTY, config.handDrinkingThirst, config.handDrinkingQuenched);
+            drinkThroughEvent(player, ItemStack.EMPTY, config.handDrinkingThirst,
+                    WaterPurity.quenched(quality, config.handDrinkingQuenched));
         }
         ThirstAdvancements.drank(player, quality);
         // Player#playSound routes through Level#playSound with itself as the excluded listener, so a
@@ -275,7 +267,36 @@ public final class ThirstManager {
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
                 Vanilla.drinkSound(), SoundSource.PLAYERS,
                 0.5F, level.getRandom().nextFloat() * 0.1F + 0.9F);
+        if (level instanceof ServerLevel server) {
+            server.sendParticles(ParticleTypes.SPLASH, pos.getX() + 0.5, pos.getY() + 0.9, pos.getZ() + 0.5,
+                    HAND_DRINK_SPLASHES, 0.2, 0.0, 0.2, 0.0);
+        }
         return InteractionResult.SUCCESS_SERVER;
+    }
+
+    /** The water block a hand drink would take from, or {@code null} when this click is not one. */
+    private static BlockPos handDrinkingWater(Player player, Level level, InteractionHand hand, BlockHitResult hit) {
+        ThirstConfig config = ThirstConfig.get();
+        ThirstData data = get(player);
+        if (!config.canDrinkByHand || !player.isCrouching() || player.getAbilities().invulnerable
+                || !data.enabled() || data.thirst() >= ThirstData.MAX) {
+            return null;
+        }
+        if (!player.getItemInHand(hand).isEmpty()) return null;
+        // A click the client does not handle itself is sent once per hand, main hand first, so with
+        // both hands empty the off hand's copy would be a second sip from the same click.
+        if (hand == InteractionHand.OFF_HAND && player.getMainHandItem().isEmpty()) return null;
+        if (config.drinkByHandNeedsBothHandsEmpty
+                && !player.getItemInHand(hand == InteractionHand.MAIN_HAND
+                        ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND).isEmpty()) {
+            return null;
+        }
+
+        BlockPos pos = hit.getBlockPos();
+        if (level.getFluidState(pos).is(FluidTags.WATER)) return pos;
+        // The crosshair usually lands on the block beneath the surface when looking at water.
+        pos = pos.relative(hit.getDirection());
+        return level.getFluidState(pos).is(FluidTags.WATER) ? pos : null;
     }
 
     /** Whether two exhaustion values fall in the same {@link #SYNC_STEP}, so the client would draw them alike. */

@@ -121,6 +121,8 @@ checks all three implementations against one set of assertions, in millibuckets.
   II, a milder one does nothing. The `classic` preset keeps the roll from before, Nausea and Poison by
   grade alone. The original also applied Hunger; this mod never has. Salt water never reaches the
   roll: it spends exhaustion, applies Nausea and Parched II (without particles), and returns false.
+  `quenched` cuts what a drink of water quenches by `quenchedPercentByGrade` (Dirty none, Murky half),
+  and Upset Stomach cuts it again in `ThirstManager.drinkThroughEvent`; tooltips show the grade's cut.
   The design is `../../../../../../docs/dev/mechanics/WATER-SICKNESS.md`, and where its code goes
   `../../../../../../docs/dev/mechanics/WATER-SICKNESS-IMPLEMENTATION.md`.
 - **`purityKey` and `purityColor` own the lang key and the colour together**, and they are the only

@@ -38,8 +38,11 @@ public final class ThirstConfig {
     public boolean preventSprintingWhenThirsty = true;
     public boolean canDrinkByHand = true;
     public boolean drinkByHandNeedsBothHandsEmpty = false;
-    /** Two rather than the original's one, so a drink by hand is worth the click, bad water included. */
-    public int handDrinkingThirst = 2;
+    /**
+     * Three rather than the original's one, so a click is worth a droplet and a half. The quenched a sip
+     * gives is cut by the water's grade, so bad water by hand still does not last.
+     */
+    public int handDrinkingThirst = 3;
     public int handDrinkingQuenched = 2;
     public boolean extraThirstConvertsToQuenched = true;
     public boolean dehydrationHaltsHealthRegen = true;
@@ -69,6 +72,12 @@ public final class ThirstConfig {
     public int copperPotSecondsPerServing = 4;
     /** The same for the iron hanging pot, which is slower: iron carries heat worse than copper. */
     public int ironPotSecondsPerServing = 6;
+    /**
+     * Percent of a drink's quenched that water of each grade gives, Dirty first, by hand or from any
+     * container. Bad water fills the bar but not for long, the way rotten flesh gives almost no
+     * saturation; without it, sipping a swamp kept quenched full through any illness.
+     */
+    public int[] quenchedPercentByGrade = {0, 50, 100, 100};
 
     // ---- water sickness ---------------------------------------------------
     // These replaced quenchWhenDebuffed, nauseaChance, poisonChance and nauseaSeconds in the sickness
@@ -203,6 +212,10 @@ public final class ThirstConfig {
         sicknessEasy = SicknessTable.sanitize(sicknessEasy, SicknessTable.easy());
         sicknessNormal = SicknessTable.sanitize(sicknessNormal, SicknessTable.normal());
         sicknessHard = SicknessTable.sanitize(sicknessHard, SicknessTable.hard());
+        if (quenchedPercentByGrade == null || quenchedPercentByGrade.length != 4) {
+            quenchedPercentByGrade = new int[]{0, 50, 100, 100};
+        }
+        for (int i = 0; i < 4; i++) quenchedPercentByGrade[i] = clamp(quenchedPercentByGrade[i], 0, 100);
         if (drinkTagValue == null || drinkTagValue.length != 2) drinkTagValue = new int[]{6, 8};
         if (keywordDrinkValue == null || keywordDrinkValue.length != 2) keywordDrinkValue = new int[]{10, 14};
         if (keywordSoupValue == null || keywordSoupValue.length != 2) keywordSoupValue = new int[]{4, 5};

@@ -33,7 +33,10 @@ public final class UpsetStomach {
         return Math.min(1.0F, BURSTS_PER_MINUTE_PER_LEVEL * (amplifier + 1) * interval / TICKS_PER_MINUTE);
     }
 
-    /** What the saturation a food gives is multiplied by while {@code player} has the effect; 1 without it. */
+    /**
+     * What the saturation a food gives, and the quenched a drink gives, is multiplied by while
+     * {@code player} has the effect; 1 without it.
+     */
     public static float saturationScale(Player player) {
         MobEffectInstance effect = player.getEffect(ThirstEffects.UPSET_STOMACH);
         if (effect == null) return 1.0F;

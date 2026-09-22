@@ -54,8 +54,8 @@ but that water is always Dirty.
 
 ## Drinking by hand
 
-Sneak and use an empty hand on water. The water keeps its grade, so swamp water is still risky. It
-restores less than a bowl. It can be turned off with
+Sneak and use an empty hand on water. Each click is one sip. The water keeps its grade, so swamp
+water is still risky. It restores less than a bowl. It can be turned off with
 [canDrinkByHand](/docs/configuration#candrinkbyhand).
 
 ## Finding water

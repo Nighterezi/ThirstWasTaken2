@@ -240,6 +240,15 @@ public final class WaterPurity {
         }
     }
 
+    /**
+     * The quenched a drink of {@code quality} gives out of {@code base}, by
+     * {@code quenchedPercentByGrade}, rounded down. Salt water quenches nothing anyway and is left alone.
+     */
+    public static int quenched(WaterQuality quality, int base) {
+        if (!(quality instanceof WaterQuality.Fresh fresh)) return base;
+        return base * ThirstConfig.get().quenchedPercentByGrade[fresh.purity()] / 100;
+    }
+
     /** @return a fresh copy of the grade line, see {@link TooltipLines}. */
     public static Component tooltip(int purity) {
         return TooltipLines.PURITY[Math.clamp(purity, MIN, MAX)].copy();

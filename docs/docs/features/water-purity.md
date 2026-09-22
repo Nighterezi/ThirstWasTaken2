@@ -66,6 +66,9 @@ Neither improves water already in the cauldron.
 Fresh water always quenches thirst. The grade sets the risk, and harder difficulties make it worse.
 Pure water is always safe.
 
+Bad water fills the thirst bar but does not last. Dirty water gives no quenched and Murky water half,
+so thirst starts dropping again soon after, the way rotten flesh gives almost no saturation.
+
 Dirty and Murky water taste bad: every drink gives seven seconds of Nausea, even on Peaceful. Then each
 drink can make the player ill, with at most one illness at a time.
 
@@ -88,7 +91,7 @@ The common one. It never hurts on its own.
 
 - Thirst drains faster, twice as fast at level II.
 - The screen warps now and then, about once a minute at level I and twice at level II.
-- Food fills less saturation: three quarters at level I, half at level II.
+- Food fills less saturation, and drinks less quenched: three quarters at level I, half at level II.
 - The thirst bar turns green while it lasts.
 
 It lasts 45 seconds on Easy, 60 on Normal and 90 on Hard.

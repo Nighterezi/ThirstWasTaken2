@@ -98,7 +98,10 @@ public final class ThirstTooltip {
         int[] values = ThirstApi.thirstValues(stack);
         if (values == null) return;
         Component thirst = thirst(values[0]);
-        Component quenched = quenched(values[1], AppleSkin.quenchedOverlay());
+        // Bad water gives less quenched, so the row shows what this grade gives rather than the item's value.
+        int quenchedAmount = WaterPurity.isWaterContainer(stack)
+                ? WaterPurity.quenched(WaterPurity.quality(stack), values[1]) : values[1];
+        Component quenched = quenched(quenchedAmount, AppleSkin.quenchedOverlay());
         if (thirst != null) tooltip.accept(thirst);
         if (quenched != null) tooltip.accept(quenched);
     }
