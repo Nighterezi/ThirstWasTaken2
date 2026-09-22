@@ -33,8 +33,8 @@ deps.farmersdelight = "1.21.1-3.3.6"
 # Fabric and NeoForge uploads share a version number. See src/main/supplementaries/AGENTS.md.
 # 1.21.1-3.9.9, the Fabric upload.
 deps.supplementaries = "h8FyJ2as"
-# 1.21.1-3.6.6, the Fabric upload.
-deps.moonlight = "216OFjXQ"
+# 1.21.1-3.6.8, the Fabric upload.
+deps.moonlight = "lje3uEuU"
 # Kaleidoscope Cookery Refabricated, the unofficial Fabric port with the official team's permission:
 # the official Fabric build stopped at 1.0.1, before the teapot. Same mod id and package as the NeoForge
 # original, so one integration serves both. Pinned by Modrinth version id, since the Fabric uploads of
@@ -76,8 +76,8 @@ deps.sophisticated_storage = "H7wGZ8Sl"
 # Supplementaries and Moonlight Lib, the same integration the Fabric table builds; see there.
 # 1.21.1-3.9.9, the NeoForge upload.
 deps.supplementaries = "WrZWfRjP"
-# 1.21.1-3.6.6, the NeoForge upload.
-deps.moonlight = "21e1Amlo"
+# 1.21.1-3.6.8, the NeoForge upload.
+deps.moonlight = "HTfE7eCk"
 # Kaleidoscope Cookery, the official NeoForge build, which the Fabric tables' Refabricated is a port of.
 # It has no NeoForge build past 1.21.1, so no other NeoForge table sets this.
 # 1.5.1-neoforge+mc1.21.1, the NeoForge upload.
@@ -229,7 +229,7 @@ deps.kaleidoscope_cookery = "98s363Gs"
 mod.mc_compat = "[26.3,26.4)"
 
 # NeoForge has published only betas for 26.3. This is the newest, and the lower bound players need.
-deps.neoforge = "26.3.0.7-beta"
+deps.neoforge = "26.3.0.8-beta"
 # 3.0.10+mc26.3, the NeoForge upload. Pinned by Modrinth version id for the reason the 26.2 table gives.
 deps.appleskin = "6vok7cLb"
 deps.jade = "26.3.1+neoforge"
