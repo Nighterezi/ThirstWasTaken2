@@ -16,6 +16,7 @@ npm run docs:build    # must pass before you call a docs change done
 | `index.md` | The hero page. Feature cards link into the documentation. |
 | `docs/` | The manual: overview, features, installation, commands, configuration, FAQ. |
 | `docs/features/` | What the mod does and why, in prose. No config key listings. |
+| `docs/developers/` | For mod and data pack authors: the data pack format and the Java API. |
 | `.vitepress/config.mts` | Nav, sidebar and the GitHub, Modrinth and CurseForge icons. |
 | `.vitepress/theme/` | Default theme plus `custom.css` for the brand colour. |
 | `public/` | `logo.png` for the navbar and favicon, and `screenshots/`. The home hero is a slideshow of four screenshots, in `.vitepress/theme/HeroSlideshow.vue`. |
@@ -28,7 +29,9 @@ npm run docs:build    # must pass before you call a docs change done
 Written for a server owner who has never seen the code. That means:
 
 - Plain language. Say what a setting does to the game, not which class reads it.
-- No Java identifiers, no file paths inside `src/`, no mention of Mojang mappings.
+- No Java identifiers, no file paths inside `src/`, no mention of Mojang mappings. `docs/developers/`
+  is the exception: its readers write mods, so it names the API's classes and methods, but still never
+  the mod's internal ones.
 - Short sentences. A default and a one-line reason beats a paragraph.
 - Config keys as `### keyName` with the default in the first line, so the on-page outline becomes a
   usable index.
@@ -57,3 +60,4 @@ ones most likely to go stale:
 | Farmer's Delight values, Cooking Pot recipes or Nourishment | `docs/features/farmers-delight.md` |
 | The Drinking Upgrade or another Sophisticated upgrade | `docs/features/sophisticated-backpacks.md` |
 | Supported Minecraft, Loader or Fabric API version | `docs/installation.md` |
+| `com.thirstwastaken2.api`, the data pack format in `DataPackDrinks` | `docs/developers/java-api.md`, `docs/developers/data-packs.md` |

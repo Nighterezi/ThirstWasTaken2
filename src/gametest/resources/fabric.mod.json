@@ -24,6 +24,7 @@
       "com.thirstwastaken2.gametest.ThirstTickGameTest",
       "com.thirstwastaken2.gametest.DrinkingGameTest",
       "com.thirstwastaken2.gametest.ThirstApiGameTest",
+      "com.thirstwastaken2.gametest.IntegrationApiGameTest",
       "com.thirstwastaken2.gametest.CommandGameTest",
       "com.thirstwastaken2.gametest.WaterInteractionsGameTest",
       "com.thirstwastaken2.gametest.LootGameTest",

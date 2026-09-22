@@ -451,6 +451,113 @@ tasks.register("checkOptionalSeam") {
     }
 }
 
+/**
+ * The types one compiled class of `com.thirstwastaken2.api` shows other mods: its supertypes when it is
+ * public, and the types in the descriptor and generic signature of every public or protected field and
+ * method, each as `member: type`. Synthetic members, the lambdas and bridges the compiler adds, are left
+ * out; nobody can call them by name.
+ */
+fun apiSurface(file: File): List<String> = java.io.DataInputStream(file.inputStream().buffered()).use { input ->
+    check(input.readInt() == 0xCAFEBABE.toInt()) { "$file is not a class file" }
+    input.readUnsignedShort(); input.readUnsignedShort()
+    val count = input.readUnsignedShort()
+    val utf8 = arrayOfNulls<String>(count)
+    val classNameIndex = IntArray(count) { -1 }
+    var index = 1
+    while (index < count) {
+        when (input.readUnsignedByte()) {
+            1 -> utf8[index] = input.readUTF()
+            3, 4 -> input.readInt()
+            5, 6 -> { input.readLong(); index++ }
+            7 -> classNameIndex[index] = input.readUnsignedShort()
+            8, 16, 19, 20 -> input.readUnsignedShort()
+            9, 10, 11, 12, 17, 18 -> { input.readUnsignedShort(); input.readUnsignedShort() }
+            15 -> { input.readUnsignedByte(); input.readUnsignedShort() }
+            else -> error("$file: unknown constant pool tag")
+        }
+        index++
+    }
+    fun className(classIndex: Int): String = utf8[classNameIndex[classIndex]]!!
+    val publicOrProtected = 0x0001 or 0x0004
+    val synthetic = 0x1000
+
+    val classAccess = input.readUnsignedShort()
+    val self = className(input.readUnsignedShort())
+    val exposed = mutableListOf<String>()
+    val supertypes = mutableListOf<String>()
+    input.readUnsignedShort().takeIf { it != 0 }?.let { supertypes += className(it) }
+    repeat(input.readUnsignedShort()) { supertypes += className(input.readUnsignedShort()) }
+    val isPublic = classAccess and 0x0001 != 0
+    if (isPublic) supertypes.forEach { exposed += "$self extends: $it" }
+
+    /** Reads the attributes that follow a member or the class, returning its generic signature if any. */
+    fun signature(): String? {
+        var found: String? = null
+        repeat(input.readUnsignedShort()) {
+            val name = utf8[input.readUnsignedShort()]
+            val length = input.readInt().toLong() and 0xFFFFFFFFL
+            if (name == "Signature") found = utf8[input.readUnsignedShort()] else input.skipNBytes(length)
+        }
+        return found
+    }
+    repeat(2) {
+        repeat(input.readUnsignedShort()) {
+            val access = input.readUnsignedShort()
+            val name = utf8[input.readUnsignedShort()]!!
+            val descriptor = utf8[input.readUnsignedShort()]!!
+            val generic = signature()
+            if (isPublic && access and publicOrProtected != 0 && access and synthetic == 0) {
+                (descriptorTypes(descriptor) + descriptorTypes(generic.orEmpty())).distinct()
+                    .forEach { exposed += "$self.$name: $it" }
+            }
+        }
+    }
+    signature()?.takeIf { isPublic }?.let { generic -> descriptorTypes(generic).forEach { exposed += "$self<>: $it" } }
+    exposed
+}
+
+/**
+ * Fails when the public API names one of the mod's internal types.
+ *
+ * Everything in `com.thirstwastaken2.api` is a promise to other mods (docs/docs/developers/java-api.md): a signature
+ * there changes only after a deprecation. That promise is only worth something while the API is made of
+ * Minecraft's types, the JDK's and its own. A public method that takes a `ThirstData` or returns a
+ * `WaterQuality` would freeze that internal type's shape too, so this reads the compiled `api` classes
+ * and fails on any public or protected member, or public supertype, that names a `com.thirstwastaken2`
+ * type outside `api`. The body of a method may use anything; only what a caller sees counts.
+ *
+ * The API holds no version conditional either, so it looks the same on every node and a mod compiled
+ * against one node's jar links against every other's. `checkVersionSeam` already fails on a `//?` in
+ * `api/`, since it only lets `platform/` and `mixin/` have one.
+ */
+tasks.register("checkApiSurface") {
+    group = "verification"
+    description = "Fails when the public API in com.thirstwastaken2.api exposes an internal type"
+
+    val main = project.extensions.getByType<SourceSetContainer>().getByName("main")
+    dependsOn(main.classesTaskName)
+    val classDirs = main.output.classesDirs.files
+    inputs.files(classDirs)
+
+    doLast {
+        val apiClasses = classDirs.map { it.resolve("com/thirstwastaken2/api") }.filter(File::isDirectory)
+            .flatMap { dir -> dir.walk().filter { it.isFile && it.extension == "class" }.toList() }
+        check(apiClasses.isNotEmpty()) { "No compiled classes under com/thirstwastaken2/api; nothing was checked" }
+        val offenders = apiClasses.flatMap(::apiSurface)
+            .filter { entry ->
+                val type = entry.substringAfterLast(": ")
+                type.startsWith("com/thirstwastaken2/") && !type.startsWith("com/thirstwastaken2/api/")
+            }
+            .map { it.replace('/', '.') }
+            .sorted()
+        check(offenders.isEmpty()) {
+            "The public API names internal types, which would make them part of the API. Hand out a " +
+                "Minecraft, JDK or com.thirstwastaken2.api type instead:\n" + offenders.joinToString("\n")
+        }
+        logger.lifecycle("checkApiSurface: ${apiClasses.size} API classes, no internal type exposed")
+    }
+}
+
 /** Collects the jars every node produces into one directory, for `chiseledBuild`. */
 tasks.register<Copy>("buildAndCollect") {
     group = "build"

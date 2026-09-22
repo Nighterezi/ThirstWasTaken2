@@ -30,6 +30,7 @@ One source tree, one jar per node. Nodes are the Gradle subprojects in `settings
 | `./gradlew ":<node>:runServer" -Pagent=<file>.jsonl` | Script a running game and read numbers back. See [agent/AGENTS.md](src/dev/java/com/thirstwastaken2/dev/agent/AGENTS.md) |
 | `./gradlew ":<node>:runClient" -Pagent=tools/agent/boot.jsonl -PwithoutOptional=<name,...>\|all` | A dev client without those optional mods comes up and stays up. The check 1.0.9 lacked |
 | `./gradlew ":<node>:checkOptionalSeam"` | Fails when a class loaded without an optional mod names that mod. CI runs it |
+| `./gradlew ":<node>:checkApiSurface"` | Fails when a public signature in `com.thirstwastaken2.api` names an internal type. CI runs it |
 | `python tools/release/publish.py --dry-run` | Release to Modrinth, then `publish_curseforge.py --no-build`. Checklist and flags in the scripts' docstrings |
 
 - **Never hand-edit `src/main/generated/`.** Change the generator in `src/datagen`. NeoForge nodes
@@ -73,6 +74,10 @@ One source tree, one jar per node. Nodes are the Gradle subprojects in `settings
 - **Config** is the Gson POJO `ThirstConfig`. A new field: add it, clamp it in `sanitize()`, and if
   user-facing add a widget and reset line in `client/config/ConfigCategory` plus lang keys (`en_us`
   and `vi_vn` mandatory).
+- **`com.thirstwastaken2.api` is public API** for other mods: `ThirstApi`, `ThirstEvents`. A signature
+  there changes only after a deprecation, its public signatures name only Minecraft, JDK and `api` types
+  (`checkApiSurface`), and it holds no `//?`. An addition bumps `ThirstApi.API_VERSION`. See
+  [docs/docs/developers/](docs/docs/developers/java-api.md).
 - **Per-item lookups are cached** by `Item` identity (`ThirstApi.CACHE`, `WaterPurity.INFO`). No
   string building or regex on a per-call path; tooltips call these every frame.
 - **`ThirstWasTaken2.DEV`** is true under Loom run tasks, false in the published jar. Dev-only tooling
@@ -163,7 +168,7 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | Mod | Nodes | Where |
 |---|---|---|
 | AppleSkin, Jade, Mod Menu, Farmer's Delight, loot | all | [compat/AGENTS.md](src/main/java/com/thirstwastaken2/compat/AGENTS.md) |
-| Drinks from other mods | all | `c:drinks` tag and registry ids in `ThirstConfig`, no class references |
+| Drinks from other mods | all | their own data pack files (`data/<ns>/thirstwastaken2/drinks/`), the `c:drinks` tag, and registry ids in `ThirstConfig`; no class references. See [docs/docs/developers/data-packs.md](docs/docs/developers/data-packs.md) |
 | Create Fly | `deps.create_fly`: Fabric 26.1.x, 26.2.x (no 26.3 build) | [src/main/createfly/AGENTS.md](src/main/createfly/AGENTS.md) |
 | Create | `deps.create`: `1.21.1-neoforge` | [src/main/create/AGENTS.md](src/main/create/AGENTS.md) |
 | Sophisticated Backpacks and Storage | `deps.sophisticated_core`: every NeoForge node but `26.3.x-neoforge` | [src/main/sophisticated/AGENTS.md](src/main/sophisticated/AGENTS.md) |
@@ -199,6 +204,7 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | Dev-only tooling (agent client, benchmark) | [src/dev/java/AGENTS.md](src/dev/java/AGENTS.md) |
 | Benchmark baseline per node | [docs/dev/benchmark/BENCHMARK-BASELINE.md](docs/dev/benchmark/BENCHMARK-BASELINE.md) |
 | Manual checks before a release | [docs/dev/MANUAL-TESTING.md](docs/dev/MANUAL-TESTING.md) |
+| The API and data pack format other mods use | the site's developer pages, [docs/docs/developers/](docs/docs/developers/java-api.md) |
 | Purification balance | [docs/dev/mechanics/WATER-PURIFICATION-BALANCE.md](docs/dev/mechanics/WATER-PURIFICATION-BALANCE.md) |
 | Sophisticated upgrades still to do | [docs/dev/integration/SOPHISTICATED-INTEGRATION.md](docs/dev/integration/SOPHISTICATED-INTEGRATION.md) |
 | Supplementaries work still to do | [docs/dev/integration/SUPPLEMENTARIES-INTEGRATION.md](docs/dev/integration/SUPPLEMENTARIES-INTEGRATION.md) |

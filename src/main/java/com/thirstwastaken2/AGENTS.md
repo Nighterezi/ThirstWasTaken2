@@ -9,6 +9,8 @@ thirst, and the client only receives it through the `PlayerData` sync.
 | Want to change | Go to |
 |---|---|
 | What an item restores | `config/ThirstConfig.defaultDrinks()` / `defaultFoods()`, read through `api/ThirstApi` |
+| What data packs say an item restores, and syncing it to clients | `data/DataPackDrinks`, `data/DrinkValuesPayload` |
+| Anything another mod calls | `api/` only: `ThirstApi`, `ThirstEvents`. Public API; see `docs/docs/developers/`, the site's developer pages |
 | Drain rate, climate, damage, full-bar drinking rules, hand drinking | `data/ThirstManager` |
 | The state record itself (thirst, quenched, exhaustion) | `data/ThirstData` |
 | A new config key | `config/ThirstConfig` (field + `sanitize()`), then the client config screen |
@@ -58,8 +60,20 @@ Events registered there, in registration order per event:
 - `Loader.onRegisterCommands` → `ThirstCommands.register`.
 - `Loader.onTagsLoaded` → `ThirstApi.clearCache`, because an item's value can come from the `c:drinks`
   tag and tags are rebound on every reload and server join.
+- `Loader.onServerDataReload` → `DataPackDrinks.reload`, which parses the data pack files and drops the
+  `ThirstApi` cache itself when the values changed. `Loader.clientboundPayload` declares
+  `DrinkValuesPayload`, received by `DataPackDrinks.receive`, and `Loader.onDataPackSync` →
+  `DataPackDrinks.sync` sends it to each player on join and after `/reload`, because the tooltip
+  resolves on the client.
 
 ## Invariants worth not breaking
+
+- **`api/` is a promise to other mods.** Its public signatures name only Minecraft, JDK and `api` types
+  (`checkApiSurface` fails the build otherwise), a signature changes only after a deprecation, and an
+  addition bumps `ThirstApi.API_VERSION`. The code behind it forwards to the internal classes; keep the
+  behaviour in those.
+- **`ThirstEvents` costs nothing unless someone listens.** The tick and the drink ask `hasListeners()`
+  before building anything, and a new event on a hot path does the same.
 
 - **One write point for player state.** `ThirstManager.set` only. `ThirstData` is a record, so mutate
   by deriving (`drink`, `addExhaustion`, `consumeExhaustion`, `withLevels`, `withEnabled`) and write

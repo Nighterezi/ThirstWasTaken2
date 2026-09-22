@@ -87,6 +87,13 @@ Gameplay settings are controlled by the server. HUD settings are controlled by e
 
 These commands require game master permission.
 
+## For mod and data pack authors
+
+Your items can restore thirst without any code: list them in a data pack file under
+`data/<namespace>/thirstwastaken2/drinks/`. Mods that want more can use the Java API to read and change
+a player's thirst, react to drinking and read water purity. Both are described in
+the [developer pages](https://nighterezi.github.io/ThirstWasTaken2/docs/developers/data-packs) of the documentation.
+
 ## Languages
 
 English, French, Japanese, Korean, Polish, Russian, Vietnamese, Simplified Chinese and Traditional

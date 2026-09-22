@@ -7,9 +7,13 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Registry;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
@@ -22,10 +26,13 @@ import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.LootTableLoadEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
@@ -200,6 +207,54 @@ public final class Loader {
     public static void onLootTable(BiConsumer<ResourceKey<LootTable>, Consumer<LootPool.Builder>> handler) {
         NeoForge.EVENT_BUS.addListener((LootTableLoadEvent event) ->
                 handler.accept(event.getKey(), pool -> event.getTable().addPool(pool.build())));
+    }
+
+    /**
+     * Runs {@code handler} on every server data load, at startup and on {@code /reload}, with the
+     * resource manager of the packs being loaded. It runs on the server thread, after vanilla's own
+     * listeners have been handed the same packs; tags are bound only after it.
+     */
+    public static void onServerDataReload(Identifier id, Consumer<ResourceManager> handler) {
+        ResourceManagerReloadListener listener = handler::accept;
+        //? if >=1.21.11 {
+        NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.AddServerReloadListenersEvent event) ->
+                event.addListener(id, listener));
+        //?} else {
+        /*// NeoForge 21.1 takes listeners without a name; the id only matters to later versions' ordering.
+        NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.AddReloadListenerEvent event) ->
+                event.addListener(listener));
+        *///?}
+    }
+
+    /**
+     * Runs for each player the server sends its data pack contents to: one player as they join, and
+     * every player after {@code /reload}. It is the point to send what a data pack decided.
+     */
+    public static void onDataPackSync(Consumer<ServerPlayer> handler) {
+        NeoForge.EVENT_BUS.addListener((OnDatapackSyncEvent event) -> event.getRelevantPlayers().forEach(handler));
+    }
+
+    /**
+     * Declares a payload the server sends to clients, and what a client does with one. The handler
+     * runs on the client's main thread. Call it during {@code initialize}, on both sides.
+     *
+     * <p>Registered as optional, so a client without the mod may still join; {@link #send} skips it.
+     * The handler is common code, so it is safe to name on a dedicated server, where it never runs.
+     */
+    public static <T extends CustomPacketPayload> void clientboundPayload(
+            CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, Consumer<T> handler) {
+        modBus().addListener((RegisterPayloadHandlersEvent event) -> event.registrar("1").optional()
+                .playToClient(type, codec, (payload, context) -> handler.accept(payload)));
+    }
+
+    /**
+     * Sends {@code payload} to {@code player}, or nothing when their client cannot receive it. A fake
+     * player is turned away first, for the reason {@link #syncsTo} gives.
+     */
+    public static void send(ServerPlayer player, CustomPacketPayload payload) {
+        if (!player.isFakePlayer() && player.connection.hasChannel(payload.type())) {
+            PacketDistributor.sendToPlayer(player, payload);
+        }
     }
 
     private static IEventBus modBus() {

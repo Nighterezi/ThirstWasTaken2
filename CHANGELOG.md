@@ -2,6 +2,20 @@
 
 All notable changes to ThirstWasTaken2 are documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- Data packs can set what any item restores, in `data/<namespace>/thirstwastaken2/drinks/`. The
+  config still wins, and item tooltips show the same values the server uses.
+- Other mods can now read and change thirst, check water purity and adjust what drinking restores,
+  without needing a compatibility patch in this mod. See the
+  [developer pages](https://nighterezi.github.io/ThirstWasTaken2/docs/developers/data-packs).
+
+### Notes
+
+- Nothing changes without a data pack or another mod asking for it. No action required.
+
 ## [1.0.9.1] - 2026-09-21
 
 ### Fixed

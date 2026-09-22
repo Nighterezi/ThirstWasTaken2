@@ -9,6 +9,7 @@ public final class ThirstWasTaken2FabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ThirstWasTaken2Client.initialize();
+        ClientboundReceivers.register();
         // The Sand Filter's goggle tooltip, declared only by the builds that compile it.
         FabricLoader.getInstance().getEntrypoints("thirstwastaken2:createfly_client", ClientModInitializer.class)
                 .forEach(ClientModInitializer::onInitializeClient);

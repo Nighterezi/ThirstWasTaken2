@@ -6,6 +6,8 @@ import com.thirstwastaken2.block.ThirstBlocks;
 import com.thirstwastaken2.command.ThirstCommands;
 import com.thirstwastaken2.compat.LootIntegration;
 import com.thirstwastaken2.config.ThirstConfig;
+import com.thirstwastaken2.data.DataPackDrinks;
+import com.thirstwastaken2.data.DrinkValuesPayload;
 import com.thirstwastaken2.data.ThirstData;
 import com.thirstwastaken2.data.ThirstManager;
 import com.thirstwastaken2.effect.ThirstEffects;
@@ -61,6 +63,10 @@ public final class ThirstWasTaken2 {
         Loader.onUseItem(WaterInteractions::fillFromWater);
         Loader.onRegisterCommands(ThirstCommands::register);
         Loader.onTagsLoaded(ThirstApi::clearCache);
+        // Data pack thirst values: parsed by the server, handed to each client on join and after /reload.
+        Loader.onServerDataReload(DataPackDrinks.RELOAD_ID, DataPackDrinks::reload);
+        Loader.clientboundPayload(DrinkValuesPayload.TYPE, DrinkValuesPayload.STREAM_CODEC, DataPackDrinks::receive);
+        Loader.onDataPackSync(DataPackDrinks::sync);
 
         LOGGER.info("ThirstWasTaken2 initialized for Minecraft {}{}", MINECRAFT, DEV ? " (dev)" : "");
     }

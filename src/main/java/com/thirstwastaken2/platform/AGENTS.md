@@ -90,6 +90,8 @@ What does live here are the types those signatures need, because both copies hav
 | `creativeTabBuilder` | a tab builder that places itself in the tab list |
 | `onServerTickEnd`, `onUseBlock`, `onUseItem`, `onRegisterCommands`, `onTagsLoaded` | the event bus |
 | `onLootTable` | loot table modification, on every table whoever wrote it |
+| `onServerDataReload` | a server data reload listener, run at startup and on `/reload` |
+| `onDataPackSync`, `clientboundPayload`, `send` | telling each client what a data pack decided: when to, the payload's registration, and sending it only to a client that can take it |
 | `ClientLoader.addRightStatusBar` | HUD layer registration and the right-hand status bar height |
 | `ClientLoader.appleSkinShowsExhaustionUnderlay` | AppleSkin's own setting, which it keeps in a different class shape on each loader |
 | `ClientLoader.renderCutout` | drawing a block with its transparent pixels cut out |
@@ -107,6 +109,10 @@ What does live here are the types those signatures need, because both copies hav
 | `onTagsLoaded` | `CommonLifecycleEvents.TAGS_LOADED` | `TagsUpdatedEvent` |
 | `onRegisterCommands` | `CommandRegistrationCallback` | `RegisterCommandsEvent` |
 | `onLootTable` | `LootTableEvents.MODIFY` | `LootTableLoadEvent`, `getTable().addPool` |
+| `onServerDataReload` | `ResourceLoader.get(SERVER_DATA).registerReloadListener`, a `ResourceManagerReloadListener` | `AddServerReloadListenersEvent.addListener(id, ...)` |
+| `onDataPackSync` | `ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS` | `OnDatapackSyncEvent.getRelevantPlayers()` |
+| `clientboundPayload` | `PayloadTypeRegistry.clientboundPlay()`; the handler waits in `fabric/ClientboundPayloads` until the client entrypoint hands it to `ClientPlayNetworking`, which common code cannot see | `RegisterPayloadHandlersEvent`, `registrar("1").optional().playToClient` on the mod bus |
+| `send` | `ServerPlayNetworking.canSend`, then `send` | `hasChannel`, then `PacketDistributor.sendToPlayer`; never to a fake player, for the reason `syncsTo` gives |
 | `ClientLoader.addRightStatusBar` | `HudElementRegistry.attachElementAfter(FOOD_BAR)` plus `HudStatusBarHeightRegistry.addRight`; `GuiMixin` on 1.21.1 | a layer `registerAbove(VanillaGuiLayers.FOOD_LEVEL)` that draws at `guiHeight() - hud.rightHeight` and advances `Hud.rightHeight` only when it drew, and only when the player can be hurt, which is when vanilla draws the food bar |
 | `ClientLoader.renderCutout` | `BlockRenderLayerMap` before 26.1, nothing from 26.1, where the game reads the layer off the textures | nothing: the model's `render_type` before 26.1, the textures from 26.1. It runs during mod construction, so it never asks for the block |
 | `ClientLoader.appleSkinShowsExhaustionUnderlay` | `ModConfig.INSTANCE.showFoodExhaustionHudUnderlay` | `ModConfig.SPEC.isLoaded() && ModConfig.SHOW_FOOD_EXHAUSTION_UNDERLAY.get()`; reading a NeoForge config value before FML loads it throws |
@@ -122,6 +128,7 @@ difference is a version conditional inside the NeoForge loader directories:
 | `playerData` saving | 1.21.1 | `serialize(codec)` rather than a map codec under `value`, so the saved shape differs from later versions |
 | `playerData` syncing | before 26.1 (NeoForge 21.1 and 21.11) | the predicate, `Loader.syncsTo`, turns away a fake player and then asks `connection.hasChannel(SyncAttachmentsPayload.TYPE)`: those versions throw when they send the payload to a connection that never negotiated it, which is what a gametest mock player has, and a vanilla client too, and throw again from `hasChannel` itself for a fake player, whose connection has no channel to read the negotiation off |
 | `ClientLoader.addRightStatusBar` | before 26.2 | `Gui.rightHeight`; 26.2 moved it to `Hud` |
+| `onServerDataReload` | 1.21.1 | `AddReloadListenerEvent`, which takes a listener without an id |
 
 The resource translation in `build.neoforge.gradle.kts` also differs on 1.21.1: the ingredient type
 goes under vanilla's `type` key, and the components ingredient's `base`, a whole ingredient there, is

@@ -2,6 +2,7 @@ package com.thirstwastaken2.platform;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.serialization.Codec;
+import com.thirstwastaken2.fabric.ClientboundPayloads;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentSyncPredicate;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
@@ -10,15 +11,23 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.CommonLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Registry;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.storage.loot.LootPool;
@@ -128,6 +137,64 @@ public final class Loader {
      */
     public static void onLootTable(BiConsumer<ResourceKey<LootTable>, Consumer<LootPool.Builder>> handler) {
         LootTableEvents.MODIFY.register((key, table, source, registries) -> handler.accept(key, table::withPool));
+    }
+
+    /**
+     * Runs {@code handler} on every server data load, at startup and on {@code /reload}, with the
+     * resource manager of the packs being loaded. It runs on the server thread, after vanilla's own
+     * listeners have been handed the same packs; tags are bound only after it.
+     */
+    public static void onServerDataReload(Identifier id, Consumer<ResourceManager> handler) {
+        ResourceManagerReloadListener listener = handler::accept;
+        //? if >=26.1 {
+        net.fabricmc.fabric.api.resource.v1.ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(id, listener);
+        //?} elif >=1.21.11 {
+        /*net.fabricmc.fabric.api.resource.v1.ResourceLoader.get(PackType.SERVER_DATA).registerReloader(id, listener);
+        *///?} else {
+        /*// The v1 resource loader arrived with 1.21.9; before it a listener names itself.
+        net.fabricmc.fabric.api.resource.ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(
+                new net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener() {
+                    @Override
+                    public Identifier getFabricId() {
+                        return id;
+                    }
+
+                    @Override
+                    public void onResourceManagerReload(ResourceManager manager) {
+                        listener.onResourceManagerReload(manager);
+                    }
+                });
+        *///?}
+    }
+
+    /**
+     * Runs for each player the server sends its data pack contents to: one player as they join, and
+     * every player after {@code /reload}. It is the point to send what a data pack decided.
+     */
+    public static void onDataPackSync(Consumer<ServerPlayer> handler) {
+        ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) -> handler.accept(player));
+    }
+
+    /**
+     * Declares a payload the server sends to clients, and what a client does with one. The handler
+     * runs on the client's main thread. Call it during {@code initialize}, on both sides.
+     *
+     * <p>Fabric API keeps the client receiver in its client module, which common code cannot see, so the
+     * handler waits in {@link ClientboundPayloads} until the client entrypoint registers it.
+     */
+    public static <T extends CustomPacketPayload> void clientboundPayload(
+            CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, Consumer<T> handler) {
+        //? if >=26.1 {
+        PayloadTypeRegistry.clientboundPlay().register(type, codec);
+        //?} else {
+        /*PayloadTypeRegistry.playS2C().register(type, codec);
+        *///?}
+        ClientboundPayloads.add(type, handler);
+    }
+
+    /** Sends {@code payload} to {@code player}, or nothing when their client cannot receive it. */
+    public static void send(ServerPlayer player, CustomPacketPayload payload) {
+        if (ServerPlayNetworking.canSend(player, payload.type())) ServerPlayNetworking.send(player, payload);
     }
 
     private record AttachmentPlayerData<T>(AttachmentType<T> type) implements PlayerData<T> {

@@ -1,0 +1,9 @@
+{
+  "values": {
+    "minecraft:sugar": { "thirst": 3, "quenched": 2 },
+    "minecraft:dried_kelp": { "thirst": 5, "quenched": 1 },
+    "minecraft:apple": { "thirst": 9, "quenched": 9 },
+    "minecraft:glistering_melon_slice": { "thirst": 0 },
+    "thirstwastaken2_gametest:not_an_item": { "thirst": 7, "quenched": 7 }
+  }
+}

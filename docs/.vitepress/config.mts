@@ -36,6 +36,13 @@ const manualSidebar = [
       { text: 'Commands', link: '/docs/commands' },
       { text: 'Configuration', link: '/docs/configuration' }
     ]
+  },
+  {
+    text: 'For Developers',
+    items: [
+      { text: 'Data Packs', link: '/docs/developers/data-packs' },
+      { text: 'Java API', link: '/docs/developers/java-api' }
+    ]
   }
 ]
 

@@ -2,6 +2,7 @@ package com.thirstwastaken2.data;
 
 import com.thirstwastaken2.advancement.ThirstAdvancements;
 import com.thirstwastaken2.api.ThirstApi;
+import com.thirstwastaken2.api.ThirstEvents;
 import com.thirstwastaken2.compat.FarmersDelight;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.damage.ThirstDamageTypes;
@@ -126,7 +127,23 @@ public final class ThirstManager {
         if (WaterPurity.isWaterContainer(stack)) {
             ThirstAdvancements.drank(player, WaterPurity.quality(stack));
         }
-        if (quenches) drink(player, value[0], value[1]);
+        if (quenches) drinkThroughEvent(player, stack, value[0], value[1]);
+    }
+
+    /**
+     * Restores what a drink restores after {@link ThirstEvents#DRINK} has had its say. Every drink of an
+     * item or of water by hand ends here; with no listener it is {@link #drink} and nothing else.
+     */
+    private static void drinkThroughEvent(Player player, ItemStack stack, int thirst, int quenched) {
+        if (player.level().isClientSide()) return;
+        if (ThirstEvents.DRINK.hasListeners()) {
+            ThirstEvents.DrinkAmounts amounts = new ThirstEvents.DrinkAmounts(thirst, quenched);
+            ThirstEvents.DRINK.invoker().onDrink(player, stack, amounts);
+            if (amounts.isCancelled()) return;
+            thirst = amounts.thirst();
+            quenched = amounts.quenched();
+        }
+        drink(player, thirst, quenched);
     }
 
     public static void tick(MinecraftServer server) {
@@ -165,6 +182,11 @@ public final class ThirstManager {
         // is dropped, including the negative amounts Farmer's Delight uses to cancel food exhaustion from
         // 1.21.11 on, so the Hunger refund above cannot turn into a refill either.
         if (FarmersDelight.isNourished(player)) raw = 0.0F;
+        // Once per tick, on the raw total, so a listener sees what the player did rather than each of
+        // the several vanilla charges a tick can hold. Nothing is built for it unless someone listens.
+        if (raw != 0.0F && ThirstEvents.EXHAUSTION.hasListeners()) {
+            raw = ThirstEvents.EXHAUSTION.invoker().onExhaustion(player, raw);
+        }
 
         // On peaceful, exhaustion never reaches thirst, so once quenched is empty it has nothing left to
         // spend and is dropped. Kept, it would sit below a point forever, and the HUD draws that against
@@ -227,7 +249,8 @@ public final class ThirstManager {
         ItemStack sample = WaterPurity.setQuality(
                 new ItemStack(ThirstItems.TERRACOTTA_WATER_BOWL), quality);
         if (WaterPurity.applyEffects(player, sample)) {
-            drink(player, config.handDrinkingThirst, config.handDrinkingQuenched);
+            // No item was drunk, so listeners get an empty stack rather than the sample bowl above.
+            drinkThroughEvent(player, ItemStack.EMPTY, config.handDrinkingThirst, config.handDrinkingQuenched);
         }
         ThirstAdvancements.drank(player, quality);
         // Player#playSound routes through Level#playSound with itself as the excluded listener, so a

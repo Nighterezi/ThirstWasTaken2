@@ -119,7 +119,9 @@ jobs:
         # checkOptionalSeam fails when a class the game loads without an optional mod
         # installed names that mod, which is how 1.0.9 crashed every NeoForge client without
         # Sophisticated Core; it reads the compiled classes, so it needs no mod on the classpath.
-        run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:devClasses" ":${{ matrix.version }}:checkAgentCore" ":${{ matrix.version }}:checkLoaderSeam" ":${{ matrix.version }}:checkVersionSeam" ":${{ matrix.version }}:checkOptionalSeam" --stacktrace
+        # checkApiSurface fails when a public signature in com.thirstwastaken2.api names an internal
+        # type, which would make that type part of the API other mods compile against.
+        run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:devClasses" ":${{ matrix.version }}:checkAgentCore" ":${{ matrix.version }}:checkLoaderSeam" ":${{ matrix.version }}:checkVersionSeam" ":${{ matrix.version }}:checkOptionalSeam" ":${{ matrix.version }}:checkApiSurface" --stacktrace
 
       # The NeoForge node has the dev tools too, both the agent and the benchmark, and no
       # generators of its own; it reads what the Fabric node of the same Minecraft version
@@ -127,7 +129,7 @@ jobs:
       # that JSON. The seam checks read the same files on every node and are cheap to repeat here.
       - name: Build (NeoForge)
         if: ${{ endsWith(matrix.version, '-neoforge') }}
-        run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:devClasses" ":${{ matrix.version }}:checkNeoForgeResources" ":${{ matrix.version }}:checkAgentCore" ":${{ matrix.version }}:checkLoaderSeam" ":${{ matrix.version }}:checkVersionSeam" ":${{ matrix.version }}:checkOptionalSeam" --stacktrace
+        run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:devClasses" ":${{ matrix.version }}:checkNeoForgeResources" ":${{ matrix.version }}:checkAgentCore" ":${{ matrix.version }}:checkLoaderSeam" ":${{ matrix.version }}:checkVersionSeam" ":${{ matrix.version }}:checkOptionalSeam" ":${{ matrix.version }}:checkApiSurface" --stacktrace
 
       # Regenerates every datapack and asset JSON and fails if the result differs from what is
       # committed, which is what catches a generator edited without regenerating and a generated

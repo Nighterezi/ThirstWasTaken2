@@ -48,7 +48,8 @@ and config. The gametests hold every node to that. Only these differ:
 | Sea water in a bottle or bucket has its own sprite | yes | yes | yes | yes | **no**, it looks like ordinary water |
 | Droplets in item tooltips | no shadow | no shadow | no shadow | no shadow | **with a shadow** |
 | Config screen section headings | vanilla heading | vanilla heading | vanilla heading | vanilla heading | **a centred text row** |
-| The Sand Filter (Create Fly, Fabric only) | **no** | yes | yes | **no** | **no** |
+| The Sand Filter on Fabric, through Create Fly | **no** | yes | yes | **no** | **no** |
+| The Sand Filter on NeoForge, through Create | **no** | **no** | **no** | **no** | yes |
 
 Everything else a player sees, the thirst bar, the bowl and waterskin sprites, the Salty tooltip line,
 the drinking animation and sound, is the same. On some versions it is produced differently, which is
@@ -72,11 +73,19 @@ bucket has no tint layer, and the shadow has no per-text switch, so those two st
 
 ### Why the Sand Filter is missing
 
-Not a Minecraft difference: Create Fly has no release for 26.3, 1.21.11 or 1.21.1, and it is a Fabric port,
-so no NeoForge node has it either. A node compiles `src/main/createfly` only when it sets
-`deps.create_fly`; see [src/main/createfly/AGENTS.md](../../src/main/createfly/AGENTS.md). Farmer's
-Delight is absent from the NeoForge nodes for the same kind of reason, but nothing a player sees
-depends on it being there at build time: its recipes load or are skipped by their conditions.
+Not a Minecraft difference: it follows which version of Create exists for each loader. The same Sand
+Filter is built twice, on two different mods:
+
+- **Fabric, through Create Fly.** Create Fly has no release for 26.3, 1.21.11 or 1.21.1. A node compiles
+  `src/main/createfly` only when it sets `deps.create_fly`; see
+  [src/main/createfly/AGENTS.md](../../src/main/createfly/AGENTS.md).
+- **NeoForge, through Create.** Create 6 ships for NeoForge on 1.21.1 only, so `1.21.1-neoforge` is the
+  one NeoForge node that sets `deps.create` and compiles `src/main/create`; see
+  [src/main/create/AGENTS.md](../../src/main/create/AGENTS.md).
+
+Farmer's Delight is different: nothing a player sees depends on it being there at build time, because
+its recipes load or are skipped by their conditions. Only `1.21.1-neoforge` among the NeoForge nodes
+puts it on the dev client, since the others have no build to test against yet.
 
 ## What differs underneath
 
@@ -103,6 +112,7 @@ never see it.
 | The game moved from GLFW to SDL, so the window handle is an SDL one | the agent client's `ClientWindow` |
 | SDL numbers the mouse buttons from one, so left is 1 and right 3 where GLFW had 0 and 1, and a widget only takes the new left | the agent client's `AgentClientVanilla.click`, which reads the numbers out of `InputConstants` so that `client.click` means the same button on every node |
 | A gametest's `TestData` names the dimension it runs in | NeoForge `ThirstWasTaken2GameTests` |
+| `ResourceManager#listResources` filters with a `ResourceManager.Selector` rather than a `Predicate` | none needed: `DataPackDrinks` lists its files through `FileToIdConverter#listMatchingResources`, the same on every version |
 
 Result: 26.3 writes its recipe unlocks with a `recipes` key holding the recipe id, where earlier
 versions write `recipe`. Nothing else in the generated files moved.
@@ -128,6 +138,7 @@ versions write `recipe`. Nothing else in the generated files moved.
 | Blockstate definitions became `BlockStateModelDispatcher` | `HangingPotModels` |
 | A widget draws in `extractWidgetRenderState` rather than `renderWidget`, and `drawString` became `text` | `ClientVanilla.canvas`, `ClientVanilla.text` |
 | Fabric's creative tab builder was renamed `FabricCreativeModeTab` | `Loader.creativeTabBuilder` |
+| Fabric API renamed `ResourceLoader#registerReloader` to `registerReloadListener`, and its payload registries `playS2C` to `clientboundPlay` | Fabric `Loader.onServerDataReload`, `Loader.clientboundPayload` |
 | Fabric's data generation output and tag provider were renamed | replacement |
 | Recipe results became `ItemStackTemplate`, cooking recipes gained new constructors, and building a result no longer takes the registries | `ThirstRecipeProvider`, `FarmersDelightRecipeProvider`, `TestFixtures.assemble` |
 | Model texture mappings take a `Material` | `ThirstModelProvider` |
@@ -152,6 +163,7 @@ already has by default. The stack the furnace hands out is the same; see
 
 | Difference | Code |
 |---|---|
+| Fabric API's v1 resource loader replaced `ResourceManagerHelper`, which is gone by 1.21.11, and a reload listener no longer names itself | Fabric `Loader.onServerDataReload`, written `>=1.21.11` since no node sits between |
 | Fonts are named through `FontDescription` | `Vanilla.dropletFont` |
 | The chain became the iron chain, item and texture | `ThirstRecipeProvider`, `HangingPotModels` |
 | "Water evaporates here" moved from the dimension type to environment attributes | `Vanilla.waterEvaporates` |
@@ -223,6 +235,7 @@ it makes no difference to any jar.
 | Bucket pickup takes any living entity | `BucketItemMixin` |
 | The food check a sprint asks moved from the client's `LocalPlayer` onto `Player` | `PlayerMixin`; on 1.21.1 `LocalPlayerMixin` hooks the client's own copy, and `TestFixtures.canSprint` answers from vanilla's rule there, because a server test cannot reach it |
 | A NeoForge attachment saves through a map codec, so the value goes under a field | NeoForge `Loader.playerData`; a world carried from one to the other starts at full thirst |
+| NeoForge's `AddReloadListenerEvent` became `AddServerReloadListenersEvent`, which takes the listener's id | NeoForge `Loader.onServerDataReload` (written `>=1.21.11`) |
 | Advancement backgrounds are named by texture id | `ThirstAdvancementProvider` |
 | Fabric's tag builder was renamed `builder` | `ThirstBiomeTagProvider`, `ThirstDamageTypeTagProvider` |
 | NeoForge reads a custom ingredient's type from `neoforge:ingredient_type` rather than vanilla's `type` | `build.neoforge.gradle.kts` |

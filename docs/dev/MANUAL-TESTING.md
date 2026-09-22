@@ -110,6 +110,20 @@ through the Nether; and two clients each seeing their own bar and no one else's.
 here. What stays manual is only what a number cannot settle — whether the bar, the tooltips and the
 config screen *read* well, which is the sections below.
 
+**Data pack thirst values** are not covered by the agent yet, so this one is by hand. Use a dedicated
+server (`runServer`) with a client joined to it, not singleplayer, where the client shares the server's
+copy and would pass without any packet. Bread is in neither config nor any `c:drinks` tag, so a data
+pack is the only thing that can give it a value. Add one to the server's world,
+`world/datapacks/api-test/`, with a `pack.mcmeta` and `data/test/thirstwastaken2/drinks/test.json`
+holding `{"values": {"minecraft:bread": {"thirst": 1, "quenched": 0}}}`:
+
+- [ ] After `/reload`, bread's tooltip shows a single half-droplet (AppleSkin installed), and eating it
+      at 10 thirst leaves 11.
+- [ ] Change the file to `"thirst": 3`, `/reload` again: the tooltip follows without rejoining.
+- [ ] Quit and rejoin: the value is still there, so it is sent on join and not only on `/reload`.
+- [ ] The server log says `Loaded thirst values for 1 items from data packs` at startup and on each
+      `/reload`; the client log never says it.
+
 ### Tooltips
 
 - [x] A water bottle, a filled bowl and a filled waterskin show a coloured grade line (Dirty, Murky,

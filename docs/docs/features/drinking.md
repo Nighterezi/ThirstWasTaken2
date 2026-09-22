@@ -16,7 +16,8 @@
 
 - Thirst past a full bar becomes quenched.
 - Plain water cannot be drunk while the bar is full. Potions and food are not blocked.
-- Drinks from other mods restore thirst when their mod marks them as drinks.
+- Drinks from other mods restore thirst when their mod marks them as drinks, or when a mod or
+  [data pack](/docs/developers/data-packs) gives them a value.
 - [Farmer's Delight](/docs/features/farmers-delight) has its own values.
 - Any item can be given a value in the [config](/docs/configuration#drinks-and-foods).
 

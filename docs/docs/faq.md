@@ -29,6 +29,9 @@ Yes, with [/thirst enable](/docs/commands#thirst-enable). It is saved with the p
 Add it to `drinks` in the config file, or turn on
 [keyword matching](/docs/configuration#enablekeywordmatching).
 
+Mod and data pack authors can give their items a value themselves, with a
+[data pack file](/docs/developers/data-packs).
+
 ## Is Create required?
 
 No. With [Create](/docs/features/create) installed, the Sand Filter is added.

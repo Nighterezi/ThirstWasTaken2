@@ -54,12 +54,12 @@ Fabric's empty structure as its template, and `stonecutter.gradle.kts` rewrites 
 the annotation, so no test file changes for it. Write `@GameTest` with no arguments, or that
 replacement stops matching.
 
-The same 135 mod tests run on every node. The 1.21.1 runner reports 136 and later runners report 137
+The same 161 mod tests run on every node. The 1.21.1 runner reports 162 and later runners report 163
 because they also include vanilla smoke tests; those are not the mod's.
 
 ## The NeoForge harness
 
-The `-neoforge` nodes run the same 135 test methods, with no test body changed and no NeoForge-only
+The `-neoforge` nodes run the same 161 test methods, with no test body changed and no NeoForge-only
 branch in any of them. What stands in for Fabric API lives in `src/gametest/neoforge`:
 
 | | Fabric API | NeoForge node |
@@ -78,7 +78,7 @@ adds a vanilla `TestFunction` per method to `GameTestRegistry.getAllTestFunction
 NeoForge's own registration, which only accepts vanilla's annotation and takes the structure's
 namespace from a NeoForge annotation on the test class. That server has no `--report` option either,
 so the build passes the report path as `-Dthirstwastaken2.gametest.report` and the harness installs
-vanilla's `JUnitLikeTestReporter` itself. The report lists 136 tests there, without
+vanilla's `JUnitLikeTestReporter` itself. The report lists 162 tests there, without
 `minecraft:always_pass`, which the 26.2 and 26.3 nodes' reports do carry.
 
 On 1.21.11 `TestData` has no padding and `TestEnvironmentDefinition` takes no type parameter; the
@@ -132,6 +132,7 @@ cauldron bottle draw.
 | `ThirstTickGameTest` | the tick spending quenched before thirst, peaceful with and without depletion, disabled and invulnerable players, Fire Resistance and Fire Protection slowing the drain, salt water charging at once, the full-bar rule |
 | `DrinkingGameTest` | drinking a bowl and a waterskin through the real right-click path, what is left in the hand, the drink animation and duration, water refused on a full bar while honey is not, the advancements a drink earns, and drinking by hand with every way it is refused |
 | `ThirstApiGameTest` | what items restore from the config, the blacklist, the `c:drinks` tag fallback (the gametest mod tags a nautilus shell for it) and the magic drinks it leaves out, keyword matching and its blacklist, the per-item cache dropping on commit, and `sanitize` clamping a hand-edited config |
+| `IntegrationApiGameTest` | what another mod can use: data pack values loading, an unknown item skipped without losing its file, every step of the resolution order (config and blacklist over a data pack, a data pack over `c:drinks`, an entry of nothing over keywords), re-parsing the same packs, the sync payload round trip, the player and purity methods on `ThirstApi`, and `ThirstEvents` changing, cancelling and surviving a throwing listener. The gametest mod ships its data pack file and tags dried kelp `c:drinks` for it. Listeners cannot be unregistered, so each acts on its own test's players only |
 | `CommandGameTest` | `/thirst set` and `/thirst enable` through the dispatcher, the argument range, and the permission requirement |
 | `WaterInteractionsGameTest` | scooping with the bowl and the waterskin, the clay bowl holding nothing, drawing the waterskin from a cauldron, pouring it out, and a bottle drawn from a cauldron keeping its grade |
 | `LootGameTest` | graded water in each seeded chest and in piglin bartering, no water anywhere else, and a table a data pack replaced still getting it |
