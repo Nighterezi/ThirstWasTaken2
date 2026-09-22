@@ -85,6 +85,8 @@ class ModrinthDep:
     """The doc mirrors that print this dependency's version."""
     neoforge_project: str | None = None
     """Modrinth project slug on the NeoForge nodes, when that loader's build is a different project."""
+    frozen: tuple[str, ...] = ()
+    """Nodes whose pin is left alone, because the upstream build for that version will not change again."""
 
     def project_for(self, node: str) -> str:
         return self.neoforge_project if self.neoforge_project and node_loader(node) == "neoforge" else self.project
@@ -113,6 +115,13 @@ MODRINTH_DEPS = [
     # NeoForge uploads, like AppleSkin, so both are pinned by id.
     ModrinthDep("supplementaries", "supplementaries", by_id=True, mirrors=()),
     ModrinthDep("moonlight", "moonlight", by_id=True, mirrors=()),
+    # Refabricated is the Fabric port and the official mod is the NeoForge build, under one mod id. Its
+    # Fabric uploads of different Minecraft versions share one version number, so it is pinned by id.
+    # 1.21.11 is frozen upstream at 1.3.0.9.
+    ModrinthDep("kaleidoscope_cookery", "kaleidoscope-cookery-refabricated", by_id=True, mirrors=(),
+                neoforge_project="kaleidoscope-cookery", frozen=("1.21.11",)),
+    # Kaleidoscope Cookery's required library on the Fabric 1.21.x nodes, runClient only.
+    ModrinthDep("forge_config_api_port", "forge-config-api-port", by_id=True, mirrors=()),
 ]
 
 
@@ -210,12 +219,12 @@ class Properties:
         A Modrinth version id says nothing to a person, so every id-pinned value carries its number in a
         comment above it, and `replace_in_comment_above` keeps that comment in step with the id. Only a
         comment whose first word starts with a digit counts, so prose above a value is not mistaken for
-        one.
+        one. A leading `v` is allowed, since Forge Config API Port spells its versions `v21.1.6-1.21.1-Fabric`.
         """
         above = index - 1
         if above < 0:
             return None
-        match = re.match(r"^\s*#\s*(\d[^\s,]*)", self.lines[above])
+        match = re.match(r"^\s*#\s*(v?\d[^\s,]*)", self.lines[above])
         return match.group(1) if match else None
 
     def replace_in_comment_above(self, index: int, old: str, new: str) -> None:
@@ -255,7 +264,7 @@ def modrinth_candidates(project: str, minecraft: str, loader: str) -> list[dict]
 def check_modrinth(props: Properties, node: str, minecraft: str, dep: ModrinthDep, changes: list[Change],
                    warnings: list[str]) -> None:
     found = props.find(node, f"deps.{dep.key}")
-    if found is None:
+    if found is None or node in dep.frozen:
         return
     index, pinned = found
 

@@ -169,6 +169,55 @@ public final class ThirstApiGameTest {
         helper.succeed();
     }
 
+    /**
+     * Kaleidoscope Cookery is never installed here, so its items cannot be asked for: what is checked is
+     * that the config names them, which is all that decides their value once the mod is there.
+     */
+    @GameTest
+    public void kaleidoscopeCookeryTeasAndSoupsAreMergedIntoAnOlderConfig(GameTestHelper helper) {
+        ThirstConfig defaults = new ThirstConfig();
+        String[] drinks = {"barley_tea", "tieguanyin", "biluochun", "oolong", "sakura_fubuki", "flower_tea",
+                "butter_tea", "mystery_tea", "clay_pot_milk_tea"};
+        String[] foods = {"pork_bone_soup", "seafood_miso_soup", "borscht", "laba_congee", "donkey_soup",
+                "beef_noodle", "udon_noodle", "tomato"};
+        for (String drink : drinks) {
+            TestFixtures.check(helper, defaults.drinks.containsKey("kaleidoscope_cookery:" + drink),
+                    "the default drinks should list kaleidoscope_cookery:" + drink);
+        }
+        for (String food : foods) {
+            TestFixtures.check(helper, defaults.foods.containsKey("kaleidoscope_cookery:" + food),
+                    "the default foods should list kaleidoscope_cookery:" + food);
+        }
+        TestFixtures.check(helper, !defaults.foods.containsKey("kaleidoscope_cookery:tea_egg"),
+                "a tea egg is food, not tea, and should not be listed");
+
+        TestFixtures.withConfig(config -> {
+            for (String drink : drinks) config.drinks.remove("kaleidoscope_cookery:" + drink);
+            for (String food : foods) config.foods.remove("kaleidoscope_cookery:" + food);
+            // A player's own value, which merging must leave alone.
+            config.drinks.put("kaleidoscope_cookery:oolong", new int[]{1, 1});
+        }, () -> {
+            ThirstConfig config = ThirstConfig.get();
+            for (String drink : drinks) {
+                if (drink.equals("oolong")) continue;
+                String id = "kaleidoscope_cookery:" + drink;
+                TestFixtures.check(helper, Arrays.equals(config.drinks.get(id), defaults.drinks.get(id)),
+                        id + " should be merged back as " + Arrays.toString(defaults.drinks.get(id))
+                                + ", got " + Arrays.toString(config.drinks.get(id)));
+            }
+            for (String food : foods) {
+                String id = "kaleidoscope_cookery:" + food;
+                TestFixtures.check(helper, Arrays.equals(config.foods.get(id), defaults.foods.get(id)),
+                        id + " should be merged back as " + Arrays.toString(defaults.foods.get(id))
+                                + ", got " + Arrays.toString(config.foods.get(id)));
+            }
+            TestFixtures.check(helper, Arrays.equals(config.drinks.get("kaleidoscope_cookery:oolong"), new int[]{1, 1}),
+                    "a value the player set should survive the merge, got "
+                            + Arrays.toString(config.drinks.get("kaleidoscope_cookery:oolong")));
+        });
+        helper.succeed();
+    }
+
     @GameTest
     public void aBrokenKeywordPatternIsIgnoredRatherThanFatal(GameTestHelper helper) {
         TestFixtures.withConfig(config -> {

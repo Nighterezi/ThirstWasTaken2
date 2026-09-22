@@ -196,6 +196,9 @@ public final class ThirstConfig {
         foods.putIfAbsent("farmersdelight:onion_soup", new int[]{4, 5});
         foods.putIfAbsent("farmersdelight:glow_berry_custard", new int[]{2, 3});
         foods.putIfAbsent("farmersdelight:tomato", new int[]{2, 3});
+        // And for Kaleidoscope Cookery, added after both.
+        kaleidoscopeCookeryDrinks(drinks);
+        kaleidoscopeCookeryFoods(foods);
         if (itemBlacklist == null) itemBlacklist = new LinkedHashSet<>();
         if (nauseaChance == null || nauseaChance.length != 4) nauseaChance = new int[]{100, 50, 5, 0};
         if (poisonChance == null || poisonChance.length != 4) poisonChance = new int[]{30, 10, 0, 0};
@@ -255,6 +258,7 @@ public final class ThirstConfig {
         put(values, 4, 5, "thirstwastaken2:waterskin");
         put(values, 8, 13, "farmersdelight:apple_cider", "farmersdelight:melon_juice", "farmersdelight:hot_cocoa");
         put(values, 6, 8, "farmersdelight:milk_bottle");
+        kaleidoscopeCookeryDrinks(values);
         return values;
     }
 
@@ -271,10 +275,51 @@ public final class ThirstConfig {
         put(values, 7, 9, "farmersdelight:melon_popsicle");
         put(values, 6, 8, "farmersdelight:fruit_salad");
         put(values, 4, 5, "farmersdelight:tomato_sauce", "farmersdelight:mixed_salad", "farmersdelight:beef_stew", "farmersdelight:chicken_soup", "farmersdelight:vegetable_soup", "farmersdelight:fish_stew", "farmersdelight:pumpkin_soup", "farmersdelight:baked_cod_stew", "farmersdelight:noodle_soup", "farmersdelight:onion_soup");
+        kaleidoscopeCookeryFoods(values);
         return values;
+    }
+
+    /**
+     * Kaleidoscope Cookery's teas and soups, by id alone: the official build and Refabricated share one
+     * mod id, so these reach every node, one with no integration included, and an id a build lacks is
+     * never matched. Listed because keyword matching is off by default, and when on, {@code tea} matches
+     * {@code tea_egg}, a food, and misses {@code tieguanyin} and the other named teas.
+     *
+     * <p>A teacup is a cup of the four a bucket of water brews, a little above a bottle of water since
+     * it costs a tea bag and heat. Tea is brewed from boiled water, so it is safe whatever went into the
+     * teapot. Only what is eaten out of a bowl in hand is here: the pot soups are eaten off a placed
+     * block, which is solid food and restores no thirst. Merged with {@code putIfAbsent}, so the same
+     * call fills a fresh config and brings an older file up to date without overwriting a player's edit.
+     */
+    private static void kaleidoscopeCookeryDrinks(Map<String, int[]> drinks) {
+        putMissing(drinks, 6, 9, "kaleidoscope_cookery:barley_tea", "kaleidoscope_cookery:tieguanyin",
+                "kaleidoscope_cookery:biluochun", "kaleidoscope_cookery:oolong", "kaleidoscope_cookery:sakura_fubuki",
+                "kaleidoscope_cookery:flower_tea");
+        putMissing(drinks, 6, 10, "kaleidoscope_cookery:butter_tea");
+        // What a teapot brews from the wrong recipe.
+        putMissing(drinks, 3, 3, "kaleidoscope_cookery:mystery_tea");
+        putMissing(drinks, 8, 12, "kaleidoscope_cookery:clay_pot_milk_tea");
+    }
+
+    /** Kaleidoscope Cookery's soups and noodles; see {@link #kaleidoscopeCookeryDrinks}. */
+    private static void kaleidoscopeCookeryFoods(Map<String, int[]> foods) {
+        putMissing(foods, 5, 7, "kaleidoscope_cookery:pork_bone_soup");
+        putMissing(foods, 4, 5, "kaleidoscope_cookery:seafood_miso_soup", "kaleidoscope_cookery:fearsome_thick_soup",
+                "kaleidoscope_cookery:lamb_and_radish_soup", "kaleidoscope_cookery:wild_mushroom_rabbit_soup",
+                "kaleidoscope_cookery:pufferfish_soup", "kaleidoscope_cookery:borscht",
+                "kaleidoscope_cookery:beef_meatball_soup", "kaleidoscope_cookery:chicken_and_mushroom_stew",
+                "kaleidoscope_cookery:laba_congee", "kaleidoscope_cookery:donkey_soup",
+                "kaleidoscope_cookery:tomato_beef_brisket_soup");
+        putMissing(foods, 3, 4, "kaleidoscope_cookery:beef_noodle", "kaleidoscope_cookery:hui_noodle",
+                "kaleidoscope_cookery:udon_noodle");
+        putMissing(foods, 2, 3, "kaleidoscope_cookery:tomato");
     }
 
     private static void put(Map<String, int[]> values, int thirst, int quenched, String... ids) {
         for (String id : ids) values.put(id, new int[]{thirst, quenched});
+    }
+
+    private static void putMissing(Map<String, int[]> values, int thirst, int quenched, String... ids) {
+        for (String id : ids) values.putIfAbsent(id, new int[]{thirst, quenched});
     }
 }

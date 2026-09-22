@@ -24,7 +24,7 @@ NeoForge release.
 
 | Node | Mod | Version | Modrinth id | Teapot | Dripstone into teapot |
 |---|---|---|---|---|---|
-| `1.21.1-neoforge` | official | `1.5.0-neoforge+mc1.21.1` | `v62omIkI` | yes | yes |
+| `1.21.1-neoforge` | official | `1.5.1-neoforge+mc1.21.1` (published 2026-09-22, same targets as 1.5.0) | `7vH6mhde` | yes | yes |
 | `1.21.1` | Refabricated | `1.5.0-fabric+mc1.21.1` | `ySiz9jRk` | yes | yes |
 | `1.21.11` | Refabricated | `1.3.0.9-fabric+mc1.21.11`, **frozen** ("1.4+ no longer supported") | `Gns9Xmuq` | yes | no |
 | `26.1.x` | Refabricated | `1.5.0.1-fabric+mc26.1.2` | `TEzqGCda` | yes | no |
@@ -69,8 +69,8 @@ bucket poured in and taken back out comes out Clean, and sea water comes out fre
 
 | # | Item | Kind | Nodes | Status |
 |---|---|---|---|---|
-| 1 | Build dependency and gate | build | the six in the table | to do |
-| 2 | Thirst values for teas, milk tea, soups | data | all (config) | to do |
+| 1 | Build dependency and gate | build | the six in the table | **Done** (2026-09-22) |
+| 2 | Thirst values for teas, milk tea, soups | data | all (config) | **Done** (2026-09-22) |
 | 3 | Stockpot keeps the water's grade | bug | six | to do |
 | 4 | Teapot keeps the water's grade (bucket, picked up, dripstone) | bug | six (dripstone: 1.21.1 only) | to do |
 | 5 | Salt water in the teapot and the stockpot | decision | — | to decide |
@@ -92,6 +92,17 @@ difference at once. `26.1.x` and `26.2.x` then cost nothing more. `1.21.11` come
 frozen 1.3.0.9 answers the same way. Item 5 must be decided before items 3 and 4 are finished.
 
 ## 1. Build dependency and gate
+
+**Done.** What was built, and how it stays optional, is in
+[src/main/kaleidoscope/AGENTS.md](../../../src/main/kaleidoscope/AGENTS.md). Differences from the plan
+below: the mixin config ships with no mixins yet (items 3 and 4 add them); the plugin asks the gate for
+each mixin's own target by name, so no per-mixin table is needed; Forge Config API Port is
+`deps.forge_config_api_port` on `1.21.1` and `1.21.11`, and its nested Night Config is unpacked by the
+same `nestedMods` that unpacks Moonlight's CodecUI. `update_mc_deps.py` got a `frozen` list for the
+`1.21.11` pin, and accepts a version comment starting with `v`, as Forge Config API Port spells them.
+
+Checked: `build` and `checkOptionalSeam` on the six nodes; `runGametest` unchanged; `boot.jsonl` on
+`1.21.1` and `1.21.1-neoforge`, with the mod and with `-PwithoutOptional=kaleidoscope_cookery`.
 
 ### Dependencies
 
@@ -171,6 +182,18 @@ matter that the Fabric jar uses intermediary names for Minecraft types.
 `checkVersionSeam` pass.
 
 ## 2. Thirst values (data only, no class referenced)
+
+**Done**, in `ThirstConfig.kaleidoscopeCookeryDrinks` / `kaleidoscopeCookeryFoods`, called from the
+defaults and from `sanitize()`. The ids were read off the jars' item and lang files rather than `/give`:
+the teacups are block items with the ids below, `biluochun` included, on every build but 1.21.11's
+1.3.0.9, which has no `mystery_tea`, `butter_tea`, `clay_pot_milk_tea`, `laba_congee` or
+`hot_dry_noodles` (an id a build lacks is simply never matched). The Refabricated builds add two bowl
+soups the table did not have, `donkey_soup` and `tomato_beef_brisket_soup`, at 4 / 5. The `*_pot_soup`
+dishes, `dough_drop_soup`, `four_joy_meatball_soup`, `spicy_blood_stew` and
+`buddha_jumps_over_the_wall` are placed blocks, eaten off the block, so they are left out, as below.
+`hot_dry_noodles` is a dry dish and is left out too. The gametest
+`kaleidoscopeCookeryTeasAndSoupsAreMergedIntoAnOlderConfig` checks the defaults and the merge; drinking
+one tea in a dev client is still to do.
 
 Like Farmer's Delight: entries in `ThirstConfig.defaultDrinks()` / `defaultFoods()`, plus
 `putIfAbsent` in `sanitize()` so existing config files pick them up. It is common code and the item ids

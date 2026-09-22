@@ -248,23 +248,39 @@ if (supplementaries != null) {
 }
 
 /**
- * The mods Moonlight bundles inside its own jar, CodecUI, which it reads on its first line. Loom does
- * not unpack a dependency's nested jars into a run - which is why Cloth Config is named by hand for
- * AppleSkin below - so they are taken out of the jar the run already resolves, and are therefore always
- * the versions Moonlight ships. CodecUI is published nowhere else: Moonlight's own build reads it from
- * a local Maven. They go back on a mod configuration so that Loom remaps them, since a published nested
- * jar is in intermediary names and a run is not.
+ * Kaleidoscope Cookery's Modrinth version id: Refabricated, the Fabric port, on every Fabric node. Its
+ * NeoForge original is the same mod id and package, so like Supplementaries one source directory serves
+ * both loaders and this block has a twin in build.neoforge.gradle.kts.
+ * See docs/dev/integration/KALEIDOSCOPE-COOKERY-INTEGRATION.md.
+ */
+val kaleidoscopeCookery = findProperty("deps.kaleidoscope_cookery") as String?
+
+if (kaleidoscopeCookery != null) {
+    sourceSets.main {
+        java.srcDir("src/main/kaleidoscope/java")
+        resources.srcDir("src/main/kaleidoscope/resources")
+    }
+}
+
+/**
+ * The mods a Modrinth mod bundles inside its own jar: Moonlight's CodecUI, which it reads on its first
+ * line, and the Night Config that Forge Config API Port is built on. Loom does not unpack a dependency's
+ * nested jars into a run - which is why Cloth Config is named by hand for AppleSkin below - so they are
+ * taken out of the jar the run already resolves, and are therefore always the versions that mod ships.
+ * CodecUI is published nowhere else: Moonlight's own build reads it from a local Maven. They go back on
+ * a mod configuration so that Loom remaps them, since a published nested jar is in intermediary names
+ * and a run is not.
  *
  * Unpacked while the build is configured rather than by a task, because Loom resolves the mod
  * configurations then: a jar a task writes afterwards is not there to be remapped and the run starts
  * without it. The marker file makes this one directory listing on every build after the first.
  */
-fun moonlightNestedMods(version: String): List<File> {
-    val into = layout.buildDirectory.dir("moonlight/$version").get().asFile
+fun nestedMods(project: String, version: String): List<File> {
+    val into = layout.buildDirectory.dir("nested/$project/$version").get().asFile
     val unpacked = File(into, ".unpacked")
     if (!unpacked.isFile) {
         val jar = configurations.detachedConfiguration(
-            dependencies.create("maven.modrinth:moonlight:$version")
+            dependencies.create("maven.modrinth:$project:$version")
         ).apply { isTransitive = false }.singleFile
         copy {
             from(zipTree(jar)) {
@@ -440,7 +456,23 @@ dependencies {
         // jar, since Loom leaves a dependency's nested mods packed.
         runClientMod(listOf("supplementaries", "moonlight"), "maven.modrinth:supplementaries:$supplementaries")
         runClientMod(listOf("moonlight"), "maven.modrinth:moonlight:$moonlight")
-        runClientMod(listOf("moonlight"), files(moonlightNestedMods(moonlight)))
+        runClientMod(listOf("moonlight"), files(nestedMods("moonlight", moonlight)))
+    }
+
+    if (kaleidoscopeCookery != null) {
+        // Mixed into, so it has to be a remapped mod rather than a plain library, as Supplementaries is.
+        "modCompileOnly"("maven.modrinth:kaleidoscope-cookery-refabricated:$kaleidoscopeCookery") { isTransitive = false }
+        // Test the stockpot and the teapot in runClient. The gametests and runServer run without it, which
+        // is what proves the mod is unchanged when it is absent.
+        val names = listOf("kaleidoscope-cookery", "kaleidoscope-cookery-refabricated", "kaleidoscope_cookery")
+        runClientMod(names, "maven.modrinth:kaleidoscope-cookery-refabricated:$kaleidoscopeCookery")
+        // Required by it on the 1.21.x nodes, optional on 26.x, where no table names it. Its Night Config
+        // comes out of its own jar, since Loom leaves a dependency's nested mods packed.
+        findProperty("deps.forge_config_api_port")?.let { forgeConfigApiPort ->
+            val library = names + listOf("forge-config-api-port", "forgeconfigapiport")
+            runClientMod(library, "maven.modrinth:forge-config-api-port:$forgeConfigApiPort")
+            runClientMod(library, files(nestedMods("forge-config-api-port", forgeConfigApiPort.toString())))
+        }
     }
 
     // A name no node loads is refused in stonecutter.gradle.kts, once every node has said what it takes.
@@ -494,6 +526,19 @@ tasks.processResources {
             @Suppress("UNCHECKED_CAST")
             (entrypoints.getValue("jade") as MutableList<Any>)
                 .add("com.thirstwastaken2.client.supplementaries.SupplementariesJade")
+            manifest.writeText(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json)))
+        }
+    }
+
+    // The same for the Kaleidoscope Cookery integration, which has no entrypoint: only its mixin config.
+    inputs.property("kaleidoscopeCookery", kaleidoscopeCookery ?: "")
+    if (kaleidoscopeCookery != null) {
+        val manifest = destinationDir.resolve("fabric.mod.json")
+        doLast {
+            @Suppress("UNCHECKED_CAST")
+            val json = groovy.json.JsonSlurper().parse(manifest) as MutableMap<String, Any>
+            @Suppress("UNCHECKED_CAST")
+            (json.getValue("mixins") as MutableList<Any>).add("thirstwastaken2.kaleidoscope.mixins.json")
             manifest.writeText(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json)))
         }
     }

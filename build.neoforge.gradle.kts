@@ -163,6 +163,21 @@ if (supplementariesVersion != null) {
     }
 }
 
+/**
+ * Kaleidoscope Cookery's Modrinth version id, set on `1.21.1-neoforge` and nowhere else: the official
+ * mod has no NeoForge build past 1.21.1. The Fabric nodes build the same directory against Refabricated,
+ * its Fabric port, so this block has a twin in build.gradle.kts.
+ * See docs/dev/integration/KALEIDOSCOPE-COOKERY-INTEGRATION.md.
+ */
+val kaleidoscopeCookeryVersion = findProperty("deps.kaleidoscope_cookery") as String?
+
+if (kaleidoscopeCookeryVersion != null) {
+    sourceSets.main {
+        java.srcDir("src/main/kaleidoscope/java")
+        resources.srcDir("src/main/kaleidoscope/resources")
+    }
+}
+
 /*
  * The same gametests the Fabric nodes run, as their own small mod, so none of it reaches the jar.
  * `src/gametest/neoforge` holds the harness that finds and registers them, in place of Fabric API's;
@@ -438,6 +453,14 @@ dependencies {
         runClientMod(listOf("moonlight"), "maven.modrinth:moonlight:${property("deps.moonlight")}") { isTransitive = false }
     }
 
+    if (kaleidoscopeCookeryVersion != null) {
+        compileOnly("maven.modrinth:kaleidoscope-cookery:$kaleidoscopeCookeryVersion") { isTransitive = false }
+        // Test the stockpot and the teapot in runClient. The gametests and runServer run without it, which
+        // is what proves the mod is unchanged when it is absent.
+        runClientMod(listOf("kaleidoscope-cookery", "kaleidoscope-cookery-refabricated", "kaleidoscope_cookery"),
+            "maven.modrinth:kaleidoscope-cookery:$kaleidoscopeCookeryVersion") { isTransitive = false }
+    }
+
     // A name no node loads is refused in stonecutter.gradle.kts, once every node has said what it takes.
     project.extra["thirst.optionalRunMods"] = optionalRunMods.toSet()
 }
@@ -590,6 +613,24 @@ tasks.processResources {
                 |
                 |[[dependencies.thirstwastaken2]]
                 |modId = "moonlight"
+                |type = "optional"
+                |ordering = "NONE"
+                |side = "BOTH"
+                |""".trimMargin())
+        }
+    }
+    // The same for the Kaleidoscope Cookery integration.
+    inputs.property("kaleidoscopeCookery", kaleidoscopeCookeryVersion ?: "")
+    if (kaleidoscopeCookeryVersion != null) {
+        val manifest = destinationDir.resolve("META-INF/neoforge.mods.toml")
+        doLast {
+            manifest.appendText("""
+                |
+                |[[mixins]]
+                |config = "thirstwastaken2.kaleidoscope.mixins.json"
+                |
+                |[[dependencies.thirstwastaken2]]
+                |modId = "kaleidoscope_cookery"
                 |type = "optional"
                 |ordering = "NONE"
                 |side = "BOTH"

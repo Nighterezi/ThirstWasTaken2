@@ -61,8 +61,8 @@ One source tree, one jar per node. Nodes are the Gradle subprojects in `settings
   enforces it; 1.0.9 crashed every NeoForge client without Sophisticated Core for want of it.
 - **Mixins**: in `com.thirstwastaken2.mixin`, package-private, `abstract`, every injected member
   prefixed `thirst$`, listed in `thirstwastaken2.mixins.json` or they silently do nothing. Client,
-  Fabric-client, dev, Create, Create Fly, Sophisticated and Supplementaries mixins have their own
-  configs next to their sources. A new config goes in both loader manifests.
+  Fabric-client, dev, Create, Create Fly, Sophisticated, Supplementaries and Kaleidoscope Cookery mixins
+  have their own configs next to their sources. A new config goes in both loader manifests.
 - **Player state** is the immutable record `ThirstData`. Derive a new one and write through
   `ThirstManager.set` only when it changed; every write is a sync packet.
 - **Config** is the Gson POJO `ThirstConfig`. A new field: add it, clamp it in `sanitize()`, and if
@@ -150,6 +150,7 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | `src/main/create` | Where `deps.create` is set (`1.21.1-neoforge`) |
 | `src/main/sophisticated`, `src/client/sophisticated` | Where `deps.sophisticated_core` is set (every NeoForge node but `26.3.x-neoforge`) |
 | `src/main/supplementaries`, `src/client/supplementaries` | Where `deps.supplementaries` is set (both 1.21.1 nodes). The one optional integration both loaders compile |
+| `src/main/kaleidoscope` | Where `deps.kaleidoscope_cookery` is set (`1.21.1-neoforge` and every Fabric node). Both loaders compile it, like Supplementaries |
 | `src/main/sophisticated-fluidhandler` / `sophisticated-transfer` | The same nodes, 1.21.1 / 1.21.11+: Sophisticated's tank and pump code |
 | `src/main/resources` | Hand-written assets and lang, all nodes |
 | `src/main/generated/<mc version>` | Datagen output, never hand-edited |
@@ -166,6 +167,7 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | Create (NeoForge) | [src/main/create/AGENTS.md](src/main/create/AGENTS.md) |
 | Sophisticated Backpacks and Storage | [src/main/sophisticated/AGENTS.md](src/main/sophisticated/AGENTS.md) |
 | Supplementaries and Moonlight Lib (both loaders, 1.21.1) | [src/main/supplementaries/AGENTS.md](src/main/supplementaries/AGENTS.md) |
+| Kaleidoscope Cookery (NeoForge 1.21.1, Refabricated on Fabric) | [src/main/kaleidoscope/AGENTS.md](src/main/kaleidoscope/AGENTS.md) |
 
 ## Where to look
 
@@ -185,6 +187,7 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | Purification balance | [docs/dev/WATER-PURIFICATION-BALANCE.md](docs/dev/mechanics/WATER-PURIFICATION-BALANCE.md) |
 | Sophisticated upgrades still to do | [docs/dev/SOPHISTICATED-INTEGRATION.md](docs/dev/integration/SOPHISTICATED-INTEGRATION.md) |
 | Supplementaries work still to do | [docs/dev/SUPPLEMENTARIES-INTEGRATION.md](docs/dev/integration/SUPPLEMENTARIES-INTEGRATION.md) |
+| Kaleidoscope Cookery work still to do | [docs/dev/KALEIDOSCOPE-COOKERY-INTEGRATION.md](docs/dev/integration/KALEIDOSCOPE-COOKERY-INTEGRATION.md) |
 | Bad-water sickness rework: the design | [docs/dev/WATER-SICKNESS.md](docs/dev/mechanics/WATER-SICKNESS.md) |
 | Bad-water sickness rework: where the code goes, step by step | [docs/dev/WATER-SICKNESS-IMPLEMENTATION.md](docs/dev/mechanics/WATER-SICKNESS-IMPLEMENTATION.md) |
 | Releasing | [tools/release/publish.py](tools/release/publish.py) and [publish_curseforge.py](tools/release/publish_curseforge.py) docstrings |
