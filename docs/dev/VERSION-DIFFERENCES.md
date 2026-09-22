@@ -175,7 +175,7 @@ already has by default. The stack the furnace hands out is the same; see
 | `GameTestHelper#assertTrue` takes a `Component` | `TestFixtures.check` |
 | Blockstate generators hand over a parsed definition rather than JSON | `HangingPotModels` |
 | Tests register through the test function registry, and the server writes its own JUnit report with `--report` | NeoForge `ThirstWasTaken2GameTests` and `build.neoforge.gradle.kts`; before it the harness registers and reports itself |
-| A `CompoundTag`'s getters answer with an `Optional` or a fallback | `DrinkingUpgradeContainer.handlePacket` (Sophisticated, NeoForge only) |
+| A `CompoundTag`'s getters answer with an `Optional` or a fallback | `Vanilla.getString`, `getInt`, which `DrinkingUpgradeContainer.handlePacket` (Sophisticated) calls |
 
 ### 1.21.4 (affects 1.21.1)
 
@@ -190,7 +190,7 @@ already has by default. The stack the furnace hands out is the same; see
 
 | Difference | Code |
 |---|---|
-| Items and blocks are given their id before construction, and a block item names itself after the block only when asked | `Vanilla.registerItem`, `registerBlock`, `registerBlockItem`; `DrinkingUpgradeItem` (Sophisticated) |
+| Items and blocks are given their id before construction, and a block item names itself after the block only when asked | `Vanilla.registerItem`, `registerBlock`, `registerBlockItem`; `SophisticatedUpgradeItem` (Sophisticated's `platform/`) |
 | `Block#updateShape` reordered its parameters and schedules ticks through its own argument | `SupportedBlock` |
 | Drinking became the consumable component | `DrinkItem`; on 1.21.1 it overrides use, animation, duration and finishing |
 | The `item_model` component | `Vanilla.swapItemModel` (visible, see above); `ItemAppearanceGameTest` only asserts the swap where the component exists |
@@ -205,7 +205,7 @@ already has by default. The stack the furnace hands out is the same; see
 | A potion's crafting remainder is a glass bottle, so the Cooking Pot serves boiled water into one | `FarmersDelightRecipeProvider` names no container either way (visible in game only) |
 | Recipes are registry entries with keys, built by a separate recipe provider | `ThirstRecipeProvider`, `ThirstAdvancementProvider`, `AdvancementGameTest` |
 | The shapeless recipe builder can give its result components | `ThirstRecipeProvider`; on 1.21.1 the filled-bowl recipe is written out by hand |
-| Use animations became `ItemUseAnimation` | `DrinkingUpgradeWrapper.canFilter`, `AlchemyUpgradeWrapperMixin` (Sophisticated, NeoForge only) |
+| Use animations became `ItemUseAnimation` | `Vanilla.isDrinkAnimation`, which `DrinkingUpgradeWrapper.canFilter` calls; `AlchemyUpgradeWrapperMixin` (Sophisticated, NeoForge only) |
 | A recipe names an ingredient by id or `#tag` rather than as an object | the Drinking upgrade's recipes, one copy per generation in `src/main/sophisticated-fluidhandler` and `-transfer` |
 
 ### Somewhere between 1.21.1 and 1.21.11
@@ -228,7 +228,7 @@ it makes no difference to any jar.
 | NeoForge reads a custom ingredient's type from `neoforge:ingredient_type` rather than vanilla's `type` | `build.neoforge.gradle.kts` |
 | NeoForge's fluid API became the transfer API (`ResourceHandler`, `ItemAccess`, transactions), and Sophisticated Core followed it | `src/main/neoforge-fluidhandler` / `-transfer` and `src/main/sophisticated-fluidhandler` / `-transfer`, chosen in `build.neoforge.gradle.kts` (written `>=1.21.2`) |
 | NeoForge's `item_exists` recipe condition became `registered` | the Drinking upgrade's recipes, per generation as above |
-| FML hands a mod file's contents out through `getContents`, where `findResource` gave a path | `SophisticatedPresence` (written `>=1.21.2`) |
+| FML hands a mod file's contents out through `getContents`, where `findResource` gave a path | `ModFiles.contains` in Sophisticated's `platform/`, for `SophisticatedPresence` (written `>=1.21.2`) |
 | `Entity#startRiding` gained a second flag | `PlayerStateGameTest` |
 | Levels expose their highest buildable y | `BenchmarkWorld` |
 

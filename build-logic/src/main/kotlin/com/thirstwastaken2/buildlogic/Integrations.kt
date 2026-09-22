@@ -1,0 +1,155 @@
+package com.thirstwastaken2.buildlogic
+
+/** A mod loader a node builds for, by the name its source directories use: `src/main/<id>`. */
+enum class Loader(val id: String) {
+    FABRIC("fabric"),
+    NEOFORGE("neoforge"),
+}
+
+/**
+ * One optional integration: its own source directories, compiled only on a node that sets [depsKey] in
+ * stonecutter.properties.toml, and what the built manifest must say on such a node and only there.
+ *
+ * What is specific to one mod stays in the loader script that needs it, with its own comment: the
+ * dependencies themselves, the `runClientMod` names, Create Fly's classes without its class tweaker,
+ * the libraries Create bundles, the nested jars Loom does not unpack. If a new integration needs
+ * something this cannot say, add a block for it there rather than a field only one row uses.
+ */
+data class Integration(
+    /** `src/main/<dir>`, `src/client/<dir>`, `src/dev/<dir>`, and the Java package `com.thirstwastaken2.<dir>`. */
+    val dir: String,
+    /** The property whose presence says this node builds it, e.g. `deps.sophisticated_core`. */
+    val depsKey: String,
+    /** What may compile it. One naming both must not name either loader's API; `checkLoaderSeam` checks. */
+    val loaders: Set<Loader>,
+    /** Has `src/client/<dir>/java`. */
+    val client: Boolean = false,
+    /** Has `src/dev/<dir>/java`, for the benchmark. Fabric only today. */
+    val dev: Boolean = false,
+    /** Also has `src/main/<dir>-transfer` or `src/main/<dir>-fluidhandler`, by NeoForge's fluid API generation. */
+    val fluidApiSplit: Boolean = false,
+    /** Its mixin config, named in the built manifest on a node that builds it. */
+    val mixinConfig: String,
+    /** Where the mixin config goes in `fabric.mod.json`'s `mixins`; appended when null. */
+    val fabricMixinIndex: Int? = null,
+    /** Entrypoints added to `fabric.mod.json`, appended to a key that already has some. */
+    val fabricEntrypoints: Map<String, List<String>> = emptyMap(),
+    /** Mod ids named as optional dependencies in `neoforge.mods.toml`. */
+    val neoForgeDependencies: List<String> = emptyList(),
+) {
+    /** Whether the integration is compiled by every loader, so that none of its code may name one. */
+    val loaderIndependent: Boolean get() = loaders == Loader.entries.toSet()
+
+    /**
+     * The roots under `src/main` it adds, each with a `java` and a `resources` directory, relative to the
+     * project. [transferApi] is NeoForge's fluid API generation: the transfer API from 1.21.2, or
+     * `IFluidHandler` before it.
+     */
+    fun mainRoots(transferApi: Boolean): List<String> {
+        val generation = if (transferApi) "transfer" else "fluidhandler"
+        return listOfNotNull("src/main/$dir", if (fluidApiSplit) "src/main/$dir-$generation" else null)
+    }
+
+    /** The Java directory it adds to the client sources, relative to their root, or null. */
+    val clientJava: String? get() = if (client) "$dir/java" else null
+
+    /** The Java directory it adds to the dev tools, relative to the project, or null. */
+    val devJava: String? get() = if (dev) "src/dev/$dir/java" else null
+
+    /** What is appended to `neoforge.mods.toml`: the mixin config, then one optional dependency per mod. */
+    fun neoForgeManifest(modId: String): String = buildString {
+        append("\n[[mixins]]\nconfig = \"$mixinConfig\"\n")
+        neoForgeDependencies.forEach { dependency ->
+            append("\n[[dependencies.$modId]]\nmodId = \"$dependency\"\ntype = \"optional\"\nordering = \"NONE\"\nside = \"BOTH\"\n")
+        }
+    }
+
+    /** Adds the mixin config and the entrypoints to a parsed `fabric.mod.json`. */
+    fun patchFabricManifest(json: MutableMap<String, Any?>) {
+        @Suppress("UNCHECKED_CAST")
+        val mixins = json.getValue("mixins") as MutableList<Any?>
+        if (fabricMixinIndex != null) mixins.add(fabricMixinIndex, mixinConfig) else mixins.add(mixinConfig)
+        if (fabricEntrypoints.isEmpty()) return
+        @Suppress("UNCHECKED_CAST")
+        val entrypoints = json.getValue("entrypoints") as MutableMap<String, Any?>
+        fabricEntrypoints.forEach { (key, classes) ->
+            @Suppress("UNCHECKED_CAST")
+            val existing = entrypoints[key] as MutableList<Any?>?
+            if (existing != null) existing.addAll(classes) else entrypoints[key] = classes.toMutableList()
+        }
+    }
+}
+
+/**
+ * Every optional integration with source directories of its own. The order is the order they are
+ * written into a manifest, so keep a new row at the end.
+ *
+ * Each integration's own `AGENTS.md` says what it does; this says only how it is built.
+ */
+val integrations: List<Integration> = listOf(
+    // Fabric only: a port of Create with no release for every Minecraft version. See src/main/createfly/AGENTS.md.
+    Integration(
+        dir = "createfly",
+        depsKey = "deps.create_fly",
+        loaders = setOf(Loader.FABRIC),
+        client = true,
+        dev = true,
+        mixinConfig = "thirstwastaken2.createfly.mixins.json",
+        // Straight after the mod's own config, ahead of the client one.
+        fabricMixinIndex = 1,
+        fabricEntrypoints = mapOf(
+            "thirstwastaken2:createfly" to listOf("com.thirstwastaken2.createfly.CreateFlyEntrypoint"),
+            "thirstwastaken2:createfly_client" to listOf("com.thirstwastaken2.client.createfly.CreateFlyClientEntrypoint"),
+        ),
+    ),
+    // NeoForge only. See src/main/create/AGENTS.md.
+    Integration(
+        dir = "create",
+        depsKey = "deps.create",
+        loaders = setOf(Loader.NEOFORGE),
+        mixinConfig = "thirstwastaken2.create.mixins.json",
+        neoForgeDependencies = listOf("create"),
+    ),
+    // NeoForge only; Core's tanks move fluid through the fluid API of their NeoForge generation.
+    // See src/main/sophisticated/AGENTS.md.
+    Integration(
+        dir = "sophisticated",
+        depsKey = "deps.sophisticated_core",
+        loaders = setOf(Loader.NEOFORGE),
+        client = true,
+        fluidApiSplit = true,
+        mixinConfig = "thirstwastaken2.sophisticated.mixins.json",
+        neoForgeDependencies = listOf("sophisticatedcore"),
+    ),
+    // Both loaders: everything it touches is in Moonlight Lib, which is multi loader. Moonlight is a
+    // dependency of its own because three of the four mixins are its, and other mods ship it. The
+    // second Jade plugin is a Fabric entrypoint; NeoForge finds it by its annotation. Jade reads that
+    // entrypoint whether or not Supplementaries is installed, so the class it names asks the gate before
+    // it loads anything of Moonlight's.
+    // See src/main/supplementaries/AGENTS.md.
+    Integration(
+        dir = "supplementaries",
+        depsKey = "deps.supplementaries",
+        loaders = setOf(Loader.FABRIC, Loader.NEOFORGE),
+        client = true,
+        mixinConfig = "thirstwastaken2.supplementaries.mixins.json",
+        fabricEntrypoints = mapOf("jade" to listOf("com.thirstwastaken2.client.supplementaries.SupplementariesJade")),
+        neoForgeDependencies = listOf("supplementaries", "moonlight"),
+    ),
+    // Both loaders: Refabricated, the Fabric port, keeps the original's mod id and package.
+    // See src/main/kaleidoscope/AGENTS.md.
+    Integration(
+        dir = "kaleidoscope",
+        depsKey = "deps.kaleidoscope_cookery",
+        loaders = setOf(Loader.FABRIC, Loader.NEOFORGE),
+        mixinConfig = "thirstwastaken2.kaleidoscope.mixins.json",
+        neoForgeDependencies = listOf("kaleidoscope_cookery"),
+    ),
+)
+
+/**
+ * The integrations a node builds: those its loader may compile whose deps key the node sets.
+ * [isSet] is the node's `findProperty(key) != null`.
+ */
+fun integrationsFor(loader: Loader, isSet: (String) -> Boolean): List<Integration> =
+    integrations.filter { loader in it.loaders && isSet(it.depsKey) }

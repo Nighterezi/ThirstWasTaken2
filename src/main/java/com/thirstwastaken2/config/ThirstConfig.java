@@ -64,7 +64,7 @@ public final class ThirstConfig {
     /**
      * Seconds each serving in a copper hanging pot over a lit campfire takes to boil pure, so a full pot
      * takes three times as long as a bottle. A furnace takes 10 seconds a bucket and raises it two
-     * grades; see docs/dev/WATER-PURIFICATION-BALANCE.md for how the numbers were chosen.
+     * grades; see docs/dev/mechanics/WATER-PURIFICATION-BALANCE.md for how the numbers were chosen.
      */
     public int copperPotSecondsPerServing = 4;
     /** The same for the iron hanging pot, which is slower: iron carries heat worse than copper. */
@@ -76,7 +76,7 @@ public final class ThirstConfig {
      * Seconds of Nausea from water of each grade, Dirty first. The original gave five for every grade,
      * which ends before the screen has finished warping. Worse water lasts longer, and with
      * {@link #depletesWhenNauseous} that is also what bad water costs in thirst, until the planned
-     * Upset Stomach (docs/dev/WATER-SICKNESS.md) takes that over.
+     * Upset Stomach (docs/dev/mechanics/WATER-SICKNESS.md) takes that over.
      */
     public int[] nauseaSeconds = {12, 8, 5, 5};
 

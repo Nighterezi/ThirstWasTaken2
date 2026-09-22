@@ -34,9 +34,10 @@ resources/
 
 Three layers, all required:
 
-1. **Build.** `build.gradle.kts` adds these source directories, and adds the two entrypoints and the
-   mixin config to the built `fabric.mod.json`, only when `deps.create_fly` is set. The source
-   manifest never names them, so every other node ships a jar that knows nothing about Create.
+1. **Build.** Only when `deps.create_fly` is set, `build.gradle.kts` adds these source directories and
+   adds the two entrypoints and the mixin config to the built `fabric.mod.json`, as
+   [its row in the integration table](../../../build-logic/src/main/kotlin/com/thirstwastaken2/buildlogic/Integrations.kt) says. The source manifest never names them, so every other node ships a jar that knows
+   nothing about Create.
 2. **Runtime gate.** `ThirstWasTaken2Fabric` runs every `thirstwastaken2:createfly` entrypoint, and
    `CreateFlyEntrypoint` touches `SandFilter` only after `CreateFlyPresence.isPresent()`. The mod id
    alone is not enough, since any mod may claim `create`. `CreateFlyPresence` names no Create class

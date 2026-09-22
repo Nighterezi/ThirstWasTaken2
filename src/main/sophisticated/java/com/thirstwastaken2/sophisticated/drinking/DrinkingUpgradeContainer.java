@@ -1,5 +1,6 @@
 package com.thirstwastaken2.sophisticated.drinking;
 
+import com.thirstwastaken2.platform.Vanilla;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.UpgradeContainerBase;
@@ -22,17 +23,10 @@ public final class DrinkingUpgradeContainer extends UpgradeContainerBase<Drinkin
 
     @Override
     public void handlePacket(CompoundTag data) {
-        // From 1.21.5 a tag's getters answer with an Optional, or a fallback.
         if (data.contains(DATA_DRINK_AT)) {
-            //? if >=1.21.5 {
-            setDrinkAt(DrinkAt.byName(data.getStringOr(DATA_DRINK_AT, "")));
-            //?} else
-            /*setDrinkAt(DrinkAt.byName(data.getString(DATA_DRINK_AT)));*/
+            setDrinkAt(DrinkAt.byName(Vanilla.getString(data, DATA_DRINK_AT, "")));
         } else if (data.contains(DATA_MIN_PURITY)) {
-            //? if >=1.21.5 {
-            setMinPurity(data.getIntOr(DATA_MIN_PURITY, DrinkingUpgradeWrapper.DEFAULT_MIN_PURITY));
-            //?} else
-            /*setMinPurity(data.getInt(DATA_MIN_PURITY));*/
+            setMinPurity(Vanilla.getInt(data, DATA_MIN_PURITY, DrinkingUpgradeWrapper.DEFAULT_MIN_PURITY));
         }
         filterLogicContainer.handlePacket(data);
     }

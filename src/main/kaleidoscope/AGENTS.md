@@ -45,9 +45,10 @@ kaleidoscope/resources/
 
 The same three layers as Supplementaries.
 
-1. **Build.** `build.gradle.kts` and `build.neoforge.gradle.kts` add this directory, and append the mixin
-   config to the built manifest (on NeoForge with `kaleidoscope_cookery` as an optional dependency),
-   only when `deps.kaleidoscope_cookery` is set. Fabric needs it remapped, since it is mixed into, so it
+1. **Build.** Only when `deps.kaleidoscope_cookery` is set, both loader scripts add this directory and
+   append the mixin config to the built manifest (on NeoForge with `kaleidoscope_cookery` as an optional
+   dependency), from [its row in the integration table](../../../build-logic/src/main/kotlin/com/thirstwastaken2/buildlogic/Integrations.kt). Both loaders compile it, so `checkLoaderSeam` keeps it free of either loader's
+   API. Fabric needs it remapped, since it is mixed into, so it
    is `modCompileOnly`; NeoForge takes it as `compileOnly`. Both put it on `runClient` only, so
    `runServer` and the gametests run without it, and `-PwithoutOptional=kaleidoscope_cookery` (or
    `kaleidoscope-cookery`, `kaleidoscope-cookery-refabricated`) leaves it out of `runClient` as well.

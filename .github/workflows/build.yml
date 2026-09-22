@@ -53,6 +53,27 @@ jobs:
           echo "$names"
           echo "versions=$(echo "$names" | jq -R . | jq -cs .)" >> "$GITHUB_OUTPUT"
 
+  build-logic:
+    # The integration table and the rest of build-logic are plain Kotlin with tests of their own. Every
+    # node compiles build-logic, but none runs its tests, so they run once here.
+    name: Build logic tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Test
+        run: ./gradlew -p build-logic test --stacktrace
+
   build:
     name: Build ${{ matrix.version }}
     needs: discover
@@ -93,16 +114,17 @@ jobs:
         # nothing else would notice them breaking on one version. checkAgentCore fails when the agent's
         # loader independent half starts naming Minecraft or a loader. checkLoaderSeam fails on a mod
         # loader import in loader independent code, which compiles fine against one loader.
-        # checkVersionSeam fails on a version conditional in core code, which is where a missing
-        # seam shows up. checkOptionalSeam fails when a class the game loads without an optional mod
+        # checkVersionSeam fails on a version conditional outside a platform/ or mixin/ package, in
+        # core, loader and integration code alike, which is where a missing seam shows up.
+        # checkOptionalSeam fails when a class the game loads without an optional mod
         # installed names that mod, which is how 1.0.9 crashed every NeoForge client without
         # Sophisticated Core; it reads the compiled classes, so it needs no mod on the classpath.
         run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:devClasses" ":${{ matrix.version }}:checkAgentCore" ":${{ matrix.version }}:checkLoaderSeam" ":${{ matrix.version }}:checkVersionSeam" ":${{ matrix.version }}:checkOptionalSeam" --stacktrace
 
       # The NeoForge node has the dev tools too, both the agent and the benchmark, and no
-      # generators of its own; it reads what the 26.2 Fabric node generates. checkNeoForgeResources
-      # fails when a Fabric-only key survives the translation of that JSON. The seam checks read the
-      # same files on every node and are cheap to repeat here.
+      # generators of its own; it reads what the Fabric node of the same Minecraft version
+      # generates. checkNeoForgeResources fails when a Fabric-only key survives the translation of
+      # that JSON. The seam checks read the same files on every node and are cheap to repeat here.
       - name: Build (NeoForge)
         if: ${{ endsWith(matrix.version, '-neoforge') }}
         run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:devClasses" ":${{ matrix.version }}:checkNeoForgeResources" ":${{ matrix.version }}:checkAgentCore" ":${{ matrix.version }}:checkLoaderSeam" ":${{ matrix.version }}:checkVersionSeam" ":${{ matrix.version }}:checkOptionalSeam" --stacktrace

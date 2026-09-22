@@ -113,7 +113,7 @@ of different Minecraft versions share one version number). Nothing in the other 
 ```toml
 # [fabric."26.3.x"]
 # Kaleidoscope Cookery Refabricated, the unofficial Fabric port with the official team's permission:
-# the official Fabric build stopped at 1.0.1. See docs/dev/KALEIDOSCOPE-COOKERY-INTEGRATION.md.
+# the official Fabric build stopped at 1.0.1. See docs/dev/integration/KALEIDOSCOPE-COOKERY-INTEGRATION.md.
 # 1.5.0.1-fabric+mc26.3, the Fabric upload.
 deps.kaleidoscope_cookery = "98s363Gs"
 ```

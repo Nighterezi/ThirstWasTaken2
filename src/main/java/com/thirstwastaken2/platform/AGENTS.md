@@ -23,10 +23,16 @@ are identical on every version.
 - **Only vanilla-facing plumbing.** No thirst logic, no config reads, no caching. If a method here
   needs to know what the mod is doing, it is in the wrong package.
 - **Same signature on every version.** A caller must never need to know which branch is live.
-- **Add to `Vanilla` rather than to the caller.** A `//?` block anywhere outside this package and
-  `mixin/` is a signal the seam is missing, and in `src/main/java` or `src/client/java`
-  `checkVersionSeam` fails the build on it. That check is the exit ramp; the number of blocks in
-  here is not.
+- **Add to `Vanilla` rather than to the caller.** A `//?` block outside a `platform/` package and
+  `mixin/` is a signal the seam is missing, and `checkVersionSeam` fails the build on it in every
+  hand-written root: `src/main/java`, `src/client/java` and every `src/main/<name>/java` and
+  `src/client/<name>/java`, the loader, fluid API and integration directories included. That check is
+  the exit ramp; the number of blocks in here is not.
+- **An integration has a `platform/` of its own** for what only it sees: a difference in the other
+  mod's API, or in the loader API it alone calls, such as `com.thirstwastaken2.sophisticated.platform`.
+  A vanilla difference still goes here, in `Vanilla`, where every integration can use it
+  (`getString`, `getInt` and `isDrinkAnimation` came from Sophisticated that way). An integration's
+  `platform/` classes are loaded only after its gate, like the rest of it.
 - Mixins are the documented exception: their `@Inject` signatures track the target method and cannot
   be abstracted away. Keep their bodies one line regardless.
 
@@ -48,6 +54,8 @@ seam gets a row there too.
 | a block's id inside its constructor | `isWaterCauldron` | `BlocksMixin` marks the water cauldron's construction |
 | `hurtServer`, `level()` as `ServerLevel`, permission sets, environment attributes | `hurt`, `level`, `isGameMaster`, `isOwner`, `waterEvaporates` | the older call, same meaning |
 | `Registry#get(id)` returning a holder | `mobEffect` | `getHolder(id)`, same meaning |
+| `CompoundTag#getStringOr`, `getIntOr` (1.21.5) | `getString`, `getInt` | the older getter, when the tag holds that type |
+| `ItemUseAnimation` (1.21.2) | `isDrinkAnimation` | `UseAnim`, same meaning |
 
 Pure renames (`ResourceLocation`, `CONSUME`, `moveTo`, `CONFUSION` and the rest) are replacements in
 `stonecutter.gradle.kts`, not branches. A threshold written `>1.21.1` rather than a release number

@@ -29,7 +29,7 @@ and shows the grade wherever a player would look for it:
   water in a placed jar or goblet, and in Jade's overlay.
 
 What is still to do is in
-[docs/dev/SUPPLEMENTARIES-INTEGRATION.md](../../../docs/dev/integration/SUPPLEMENTARIES-INTEGRATION.md).
+[docs/dev/integration/SUPPLEMENTARIES-INTEGRATION.md](../../../docs/dev/integration/SUPPLEMENTARIES-INTEGRATION.md).
 
 This directory is **only compiled by nodes that set `deps.supplementaries`** in
 `stonecutter.properties.toml`, which is `1.21.1` and `1.21.1-neoforge` and nothing else:
@@ -176,9 +176,9 @@ in the Fabric manifest and nothing at all on NeoForge, which finds it by its ann
 The same three layers as [src/main/create](../create/AGENTS.md) and
 [src/main/sophisticated](../sophisticated/AGENTS.md).
 
-1. **Build.** `build.gradle.kts` and `build.neoforge.gradle.kts` each add this directory, and append
-   the mixin config to the built manifest with the two mods as optional dependencies, only when
-   `deps.supplementaries` is set. Fabric needs Loom to remap both mods, so they are `modCompileOnly`
+1. **Build.** Only when `deps.supplementaries` is set, both loader scripts add this directory and
+   append the mixin config to the built manifest with the two mods as optional dependencies, from
+   [its row in the integration table](../../../build-logic/src/main/kotlin/com/thirstwastaken2/buildlogic/Integrations.kt). Both loaders compile it, so `checkLoaderSeam` keeps it free of either loader's API. Fabric needs Loom to remap both mods, so they are `modCompileOnly`
    rather than plain libraries; Loom does not unpack a dependency's nested jars into a run, so
    Moonlight's own CodecUI is taken out of its jar while the build configures. It has to be done then
    and not by a task: Loom resolves the mod configurations while configuring, and a jar written

@@ -1,18 +1,15 @@
 package com.thirstwastaken2.sophisticated.drinking;
 
-import net.minecraft.core.registries.Registries;
+import com.thirstwastaken2.sophisticated.platform.SophisticatedUpgradeItem;
 import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.Item;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.IUpgradeCountLimitConfig;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeGroup;
-import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeItemBase;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public final class DrinkingUpgradeItem extends UpgradeItemBase<DrinkingUpgradeWrapper> {
+public final class DrinkingUpgradeItem extends SophisticatedUpgradeItem<DrinkingUpgradeWrapper> {
     public static final UpgradeType<DrinkingUpgradeWrapper> TYPE = new UpgradeType<>(DrinkingUpgradeWrapper::new);
 
     /**
@@ -36,10 +33,7 @@ public final class DrinkingUpgradeItem extends UpgradeItemBase<DrinkingUpgradeWr
 
     /** {@code id} is what the item registers under, which from 1.21.2 it has to know before it is built. */
     DrinkingUpgradeItem(Identifier id, int filterSlotCount, boolean advanced) {
-        //? if >=1.21.2 {
-        super(UNLIMITED, new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id)));
-        //?} else
-        /*super(UNLIMITED);*/
+        super(UNLIMITED, id);
         this.filterSlotCount = filterSlotCount;
         this.advanced = advanced;
     }

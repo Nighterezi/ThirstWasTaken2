@@ -27,9 +27,9 @@ resources/
 
 ## How it stays optional
 
-1. **Build.** `build.neoforge.gradle.kts` adds these directories, and appends the mixin config and an
-   optional `create` dependency to the built `neoforge.mods.toml`, only when `deps.create` is set. The
-   source manifest, shared by every NeoForge node, never names them.
+1. **Build.** Only when `deps.create` is set, `build.neoforge.gradle.kts` adds these directories and
+   appends the mixin config and an optional `create` dependency to the built `neoforge.mods.toml`, as
+   [its row in the integration table](../../../build-logic/src/main/kotlin/com/thirstwastaken2/buildlogic/Integrations.kt) says. The source manifest, shared by every NeoForge node, never names them.
 2. **Runtime gate.** `CreateEntrypoint` touches `SandFilter` only after `CreatePresence.isPresent()`.
    The gate reads `LoadingModList`, which is complete before any mixin config is read, and looks the
    marker class up inside Create's own jar, so it loads no Create or Minecraft class.

@@ -17,16 +17,18 @@ both. Today it fixes four of Sophisticated's upgrades and adds one of its own:
   cleanest water first, bottles and other drinks as well as water from a Tank upgrade.
 
 What is still to do across Sophisticated's upgrades is in
-[docs/dev/SOPHISTICATED-INTEGRATION.md](../../../docs/dev/integration/SOPHISTICATED-INTEGRATION.md).
+[docs/dev/integration/SOPHISTICATED-INTEGRATION.md](../../../docs/dev/integration/SOPHISTICATED-INTEGRATION.md).
 
 This directory is **only compiled by nodes that set `deps.sophisticated_core`** in
 `stonecutter.properties.toml`: every NeoForge node but `26.3.x-neoforge`, which has no Sophisticated
 Core build to compile against yet. Sophisticated Core comes in two generations, the
 same split as NeoForge's own fluid API. On 1.21.1 its tanks move fluid through `IFluidHandler`; from
 1.21.11 through the transfer API (`ResourceHandler<FluidResource>`, `ItemAccess`, transactions). What
-does not touch fluid is one copy for both, here, with a Stonecutter branch where Minecraft itself
-changed. The tank and pump code is written once per generation, in a directory of its own beside this
-one, and `build.neoforge.gradle.kts` adds the one that fits the node. Both use the same class names, so
+does not touch fluid is one copy for both, here. Where Minecraft itself changed it calls core
+`platform/Vanilla`; where Core's API or FML changed, `sophisticated/platform` (`SophisticatedUpgradeItem`,
+`ModFiles`). `checkVersionSeam` fails on a `//?` anywhere else. The tank and pump code is written once
+per generation, in a directory of its own beside this one, and `build.neoforge.gradle.kts` adds the one
+that fits the node. Both use the same class names, so
 the mixin config is shared.
 
 ```
@@ -70,9 +72,10 @@ sophisticated-<generation>/resources/data/…               the recipes and thei
 
 The same three layers as [src/main/create](../create/AGENTS.md).
 
-1. **Build.** `build.neoforge.gradle.kts` adds this directory, the generation's directory and
-   `src/client/sophisticated`, and appends the mixin config and an optional `sophisticatedcore`
-   dependency to the built `neoforge.mods.toml`, only when `deps.sophisticated_core` is set.
+1. **Build.** Only when `deps.sophisticated_core` is set, `build.neoforge.gradle.kts` adds this
+   directory, the generation's directory and `src/client/sophisticated`, and appends the mixin config
+   and an optional `sophisticatedcore` dependency to the built `neoforge.mods.toml`, as
+   [its row in the integration table](../../../build-logic/src/main/kotlin/com/thirstwastaken2/buildlogic/Integrations.kt) says.
 2. **Runtime gate.** `SophisticatedPresence` looks inside Core's own jar for
    `SophisticatedGeneration.MARKER`, a class only the generation this node was written for has:
    `ITrackedContentsItemHandler` on 1.21.1, `MutableStackItemAccess` from 1.21.11. A Core of the other

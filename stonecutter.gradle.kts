@@ -1,5 +1,9 @@
+import com.thirstwastaken2.buildlogic.parseWithoutOptional
+
 plugins {
     id("dev.kikugie.stonecutter")
+    // parseWithoutOptional, below. See settings.gradle.kts.
+    id("thirstwastaken2.build-logic")
 }
 
 // The version the source tree is currently checked out for. Switch it with
@@ -123,8 +127,7 @@ stonecutter parameters {
 // nodes, Sophisticated Core on NeoForge for one, so a node quietly ignores a name it does not load. A
 // name no node loads is a typo, and would leave the mod in the run while claiming to test without it.
 gradle.projectsEvaluated {
-    val asked = providers.gradleProperty("withoutOptional").orNull
-        ?.split(',')?.map { it.trim().lowercase() }?.filter(String::isNotEmpty)?.toSet().orEmpty()
+    val asked = parseWithoutOptional(providers.gradleProperty("withoutOptional").orNull)
     if (asked.isEmpty()) return@projectsEvaluated
     val known = rootProject.subprojects.flatMap { node ->
         (node.extensions.extraProperties.properties["thirst.optionalRunMods"] as Set<*>?).orEmpty().map(Any?::toString)

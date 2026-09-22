@@ -44,10 +44,11 @@ an entry in both manifests. FML has no per-side mixin config, so a client config
 its own `"client"` list, which is what `thirstwastaken2.client.mixins.json` in `src/client/resources`
 does; Fabric also marks it `"environment": "client"`.
 
-The Create Fly Sand Filter is the exception to both of the above. Its assets, data files and mixin
-config are hand-written and live in `src/main/createfly/resources`, and `processResources` adds its
-entrypoints and mixin config to the built manifest, because only the builds that compile it may name
-them. See [src/main/createfly/AGENTS.md](../createfly/AGENTS.md).
+The optional integrations are the exception to both of the above. Their assets, data files and
+mixin configs are hand-written and live in `src/main/<integration>/resources`, and `processResources`
+adds their mixin configs, entrypoints and optional dependencies to the built manifest, because only
+the builds that compile an integration may name it. What each adds is its row in
+[the integration table](../../../build-logic/src/main/kotlin/com/thirstwastaken2/buildlogic/Integrations.kt).
 
 ## Recipes
 

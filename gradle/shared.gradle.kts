@@ -1,16 +1,20 @@
 /*
- * The part of the build every node shares, whatever mod loader it builds for: the Java toolchain,
- * the two seam checks, what never belongs in a jar, and the task that collects the jars.
+ * The tasks every node shares, whatever mod loader it builds for: the Java toolchain, the seam
+ * checks, what never belongs in a jar, and the task that collects the jars.
  *
  * Applied by both `build.gradle.kts` (the Fabric nodes) and `build.neoforge.gradle.kts`. Each of
- * those sets the `thirst.requiredJava` extra property first, because the Java version a node needs
- * follows from its Minecraft version and only the node's own script can read that.
+ * those sets three extra properties first: `thirst.requiredJava`, because the Java version a node
+ * needs follows from its Minecraft version and only the node's own script can read that, and
+ * `thirst.integrations` and `thirst.loaderIndependentIntegrations`, from the integration table in
+ * build-logic. A script applied with `apply(from)` cannot see build-logic's classes, so it is handed
+ * what it needs as plain lists.
  *
  * Two things are deliberately not here:
  *
  * - **The source directory wiring.** Loom splits `main` and `client`; ModDevGradle has no split, so
  *   the NeoForge node compiles the client sources into `main`. The two scripts wire their source
- *   sets differently on purpose, as build.neoforge.gradle.kts explains.
+ *   sets differently on purpose, as build.neoforge.gradle.kts explains. Which directories an
+ *   integration adds is the table's to say, in build-logic; each script makes the calls itself.
  * - **What `buildAndCollect` copies.** The jar a node ships is Loom's remapped jar on Fabric and the
  *   plain `jar` on NeoForge, so each script adds its own inputs to the task registered below.
  */
@@ -39,6 +43,13 @@ configure<JavaPluginExtension> {
 // files they describe, not in the jars.
 tasks.withType<ProcessResources>().configureEach {
     exclude("**/AGENTS.md", "**/*.bak")
+}
+
+// The same for the sources jar, which reads the source directories themselves rather than the processed
+// resources, plus `.cache`, datagen's hash cache beside the generated resources, which Loom keeps out of
+// the Fabric mod jar and build.neoforge.gradle.kts out of the NeoForge one, but nothing out of this one.
+tasks.withType<Jar>().matching { it.name.endsWith("sourcesJar") }.configureEach {
+    exclude("**/AGENTS.md", "**/*.bak", "**/.cache/**")
 }
 
 /**
@@ -96,16 +107,31 @@ tasks.matching { it.name == "runBenchmark" }.configureEach { dependsOn("benchmar
 // translation of datagen's Fabric-only JSON it guards.
 
 /**
- * Fails when loader independent code names a mod loader. `src/main/java` and `src/client/java` are
- * compiled against Fabric API today, so the compiler cannot catch a Fabric import there; this can.
- * It cannot see the methods Fabric API injects into vanilla classes, such as `getAttachedOrCreate`,
- * which only the first NeoForge build will report.
+ * The integration directories both loaders compile, which must not name a loader any more than core
+ * code may. Set by the applying script, from the integration table; see [checkLoaderSeam].
+ */
+@Suppress("UNCHECKED_CAST")
+val loaderIndependentIntegrations: List<String> =
+    project.extensions.extraProperties.get("thirst.loaderIndependentIntegrations") as List<String>
+
+/** Every integration's package, `com.thirstwastaken2.<dir>`, from the same table; see [checkOptionalSeam]. */
+@Suppress("UNCHECKED_CAST")
+val integrationPackages: List<String> =
+    project.extensions.extraProperties.get("thirst.integrations") as List<String>
+
+/**
+ * Fails when loader independent code names a mod loader: core code, and every integration both loaders
+ * compile. `src/main/java` and `src/client/java` are compiled against Fabric API on a Fabric node, so the
+ * compiler cannot catch a Fabric import there; this can. It cannot see the methods Fabric API injects
+ * into vanilla classes, such as `getAttachedOrCreate`, which only a NeoForge build will report.
  */
 tasks.register("checkLoaderSeam") {
     group = "verification"
     description = "Fails when loader independent sources import a mod loader's API"
 
-    val roots = listOf("src/main/java", "src/client/java").map(rootProject::file)
+    val roots = (listOf("src/main/java", "src/client/java") + loaderIndependentIntegrations.flatMap { dir ->
+        listOf("src/main/$dir/java", "src/client/$dir/java")
+    }).map(rootProject::file).filter(File::isDirectory)
     val forbidden = Regex("""\b(net\.fabricmc|net\.neoforged)\.""")
     inputs.files(roots.map { fileTree(it) { include("**/*.java") } })
 
@@ -127,16 +153,25 @@ tasks.register("checkLoaderSeam") {
 }
 
 /**
- * Fails when core code carries a Stonecutter version conditional. Minecraft version differences belong
- * in `platform/` and, for injection signatures, `mixin/`; a `//?` block anywhere else in `src/main/java`
- * or `src/client/java` means a seam is missing. This replaced counting blocks as the exit ramp.
- * Loader directories, datagen, gametests and dev tools are outside it.
+ * Fails when mod code carries a Stonecutter version conditional. Minecraft version differences belong
+ * in a `platform/` package and, for injection signatures, `mixin/`; a `//?` block anywhere else means a
+ * seam is missing. This replaced counting blocks as the exit ramp.
+ *
+ * It reads every hand-written root of the mod, found by directory: `src/main/java`, `src/client/java`
+ * and every `src/main/<name>/java` and `src/client/<name>/java`, which are the loader, fluid API and
+ * integration directories. A new one is covered the day it is created. An integration keeps the
+ * differences of its own mod's API in its own `platform/` package; a vanilla difference goes into core
+ * `platform/Vanilla`, where every integration can use it. Datagen, gametests and dev tools are outside it.
  */
 tasks.register("checkVersionSeam") {
     group = "verification"
-    description = "Fails when core sources outside platform/ and mixin/ contain a version conditional"
+    description = "Fails when mod sources outside platform/ and mixin/ contain a version conditional"
 
-    val roots = listOf("src/main/java", "src/client/java").map(rootProject::file)
+    val roots = listOf("main", "client").flatMap { set ->
+        val dir = rootProject.file("src/$set")
+        listOf(dir.resolve("java")) + dir.listFiles().orEmpty()
+            .filter { it.isDirectory && it.name != "generated" }.map { it.resolve("java") }
+    }.filter(File::isDirectory)
     val allowed = setOf("platform", "mixin")
     inputs.files(roots.map { fileTree(it) { include("**/*.java") } })
 
@@ -154,8 +189,9 @@ tasks.register("checkVersionSeam") {
                 }
         }
         check(offenders.isEmpty()) {
-            "Version conditional in core code. Put the difference behind platform/Vanilla or " +
-                "client/platform/ClientVanilla instead:\n" + offenders.joinToString("\n")
+            "Version conditional outside platform/ and mixin/. Put the difference behind platform/Vanilla, " +
+                "client/platform/ClientVanilla or the integration's own platform package instead:\n" +
+                offenders.joinToString("\n")
         }
     }
 }
@@ -294,6 +330,7 @@ fun summarise(file: File): ClassSummary = java.io.DataInputStream(file.inputStre
  *
  * It also fails when core code, `src/main/java` and `src/client/java` and the loader directories, refers
  * to an integration package at all, since those are only compiled on some nodes and name other mods.
+ * The packages are every row of the integration table, so a new integration is covered by its row.
  */
 tasks.register("checkOptionalSeam") {
     group = "verification"
@@ -393,7 +430,7 @@ tasks.register("checkOptionalSeam") {
             }
         }
 
-        val integration = Regex("""\bcom\.thirstwastaken2\.(client\.)?(create|createfly|sophisticated|supplementaries|kaleidoscope)\b""")
+        val integration = Regex("""\bcom\.thirstwastaken2\.(client\.)?(${integrationPackages.joinToString("|")})\b""")
         coreRoots.filter(File::isDirectory).forEach { dir ->
             dir.walk().filter { it.extension == "java" }.forEach { file ->
                 file.readLines().forEachIndexed { index, line ->

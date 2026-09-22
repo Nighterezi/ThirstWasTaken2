@@ -1,5 +1,6 @@
 package com.thirstwastaken2.sophisticated;
 
+import com.thirstwastaken2.sophisticated.platform.ModFiles;
 import net.neoforged.fml.loading.LoadingModList;
 import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
 import org.slf4j.Logger;
@@ -28,10 +29,7 @@ public final class SophisticatedPresence {
             // A class only the generation of Core this node's fluid code targets has, IFluidHandler on
             // 1.21.1 or the transfer API from 1.21.11. Looked up in the mod's own jar, so asking does not
             // load it.
-            //? if >=1.21.2 {
-            known = core != null && core.getFile().getContents().containsFile(SophisticatedGeneration.MARKER);
-            //?} else
-            /*known = core != null && java.nio.file.Files.exists(core.getFile().findResource(SophisticatedGeneration.MARKER));*/
+            known = core != null && ModFiles.contains(core, SophisticatedGeneration.MARKER);
             if (core != null && !known) {
                 LOGGER.warn("Sophisticated Core is installed but is not a version ThirstWasTaken2 supports; "
                         + "water quality through its upgrades is disabled");

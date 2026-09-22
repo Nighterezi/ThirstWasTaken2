@@ -1,6 +1,14 @@
+import com.thirstwastaken2.buildlogic.Loader
+import com.thirstwastaken2.buildlogic.OptionalRunMods
+import com.thirstwastaken2.buildlogic.flightRecorder
+import com.thirstwastaken2.buildlogic.integrations
+import com.thirstwastaken2.buildlogic.integrationsFor
+
 plugins {
     // Picks the Loom variant the active Minecraft version needs. See settings.gradle.kts.
     id("dev.kikugie.loom-back-compat")
+    // The integration table and the rest of what both loader scripts share. See settings.gradle.kts.
+    id("thirstwastaken2.build-logic")
     `maven-publish`
 }
 
@@ -38,23 +46,6 @@ val gametest: SourceSet = sourceSets.create("gametest")
 // set and its own small mod, loaded by runServer and runBenchmark, never packaged. See
 // src/dev/java/AGENTS.md.
 val dev: SourceSet = sourceSets.create("dev")
-
-/**
- * The JVM arguments that record a run with JFR, which `-Pprofile` adds to runBenchmark.
- *
- * `settings=profile` is the heavier of JFR's two built-in configurations, and the recording is dumped
- * when the server stops, which is what an unattended benchmark does on its own. The other three are
- * what make the recording worth opening: a stack depth far past JFR's default of 64, because a
- * Minecraft stack is deeper than that and a truncated one merges call sites that are not the same,
- * and the two diagnostic flags that let a sample land where the code actually was instead of at the
- * nearest safepoint.
- */
-fun flightRecorder(file: File): List<String> = listOf(
-    "-XX:StartFlightRecording=settings=profile,dumponexit=true,filename=${file.absolutePath}",
-    "-XX:FlightRecorderOptions:stackdepth=1024",
-    "-XX:+UnlockDiagnosticVMOptions",
-    "-XX:+DebugNonSafepoints",
-)
 
 loom {
     splitEnvironmentSourceSets()
@@ -184,11 +175,30 @@ dev.resources.srcDir("src/dev/$loader/resources")
 gametest.java.srcDir("src/gametest/$loader/java")
 
 /**
- * The Create Fly version this node compiles the Sand Filter against, or null where it does not. Create
- * Fly is a Fabric-only port with no release for every Minecraft version the mod supports, so the
- * integration is its own pair of source directories that only such a node compiles, and the
- * manifest only names its entrypoints and mixin config there. See src/main/createfly/AGENTS.md.
+ * The optional integrations this node builds: each is a set of source directories only a node that sets
+ * its deps key compiles, and only there does the manifest name its mixin config and entrypoints. What
+ * each one adds is a row of the table in build-logic/src/main/kotlin/com/thirstwastaken2/buildlogic/Integrations.kt,
+ * which build.neoforge.gradle.kts reads too; what is specific to one mod, such as its dependencies,
+ * stays below with its own comment.
  */
+val nodeIntegrations = integrationsFor(Loader.FABRIC) { findProperty(it) != null }
+
+nodeIntegrations.forEach { integration ->
+    // Fabric has one fluid API, so no integration here has a directory per generation.
+    sourceSets.main {
+        integration.mainRoots(transferApi = false).forEach { root ->
+            java.srcDir("$root/java")
+            resources.srcDir("$root/resources")
+        }
+    }
+    // A client-only dependency such as Jade compiles with the rest of the client rather than with `main`.
+    integration.clientJava?.let { dir -> sourceSets.named("client") { java.srcDir("src/client/$dir") } }
+    // The benchmark's own operations for the integration. They run only when the mod is on the
+    // benchmark's classpath, which `-Pcreate` asks for below for Create Fly.
+    integration.devJava?.let(dev.java::srcDir)
+}
+
+/** The Create Fly version this node compiles the Sand Filter against, or null. See src/main/createfly/AGENTS.md. */
 val createFly = findProperty("deps.create_fly") as String?
 
 /**
@@ -213,54 +223,17 @@ val createFlyClasses = createFly?.let { version ->
     }
 }
 
-if (createFly != null) {
-    sourceSets.main {
-        java.srcDir("src/main/createfly/java")
-        resources.srcDir("src/main/createfly/resources")
-    }
-    sourceSets.named("client") {
-        java.srcDir("src/client/createfly/java")
-    }
-    // The benchmark's Create Fly operations. They run only when Create Fly is on the benchmark's classpath,
-    // which `-Pcreate` asks for below.
-    dev.java.srcDir("src/dev/createfly/java")
-}
-
 /**
  * Supplementaries' Modrinth version id, set on the two 1.21.1 nodes and nowhere else, since
- * Supplementaries has no release for a newer Minecraft version. Everything the integration touches is in
- * Moonlight Lib, which is multi loader, so unlike Create Fly and Sophisticated one source directory
- * serves both loaders and this block has a twin in build.neoforge.gradle.kts.
- * See src/main/supplementaries/AGENTS.md.
+ * Supplementaries has no release for a newer Minecraft version. See src/main/supplementaries/AGENTS.md.
  */
 val supplementaries = findProperty("deps.supplementaries") as String?
 
-if (supplementaries != null) {
-    sourceSets.main {
-        java.srcDir("src/main/supplementaries/java")
-        resources.srcDir("src/main/supplementaries/resources")
-    }
-    // The Jade plugin for a jar and a goblet. Jade is a client-only dependency here, so it compiles
-    // with the rest of the client rather than with `main` like everything else the integration has.
-    sourceSets.named("client") {
-        java.srcDir("src/client/supplementaries/java")
-    }
-}
-
 /**
- * Kaleidoscope Cookery's Modrinth version id: Refabricated, the Fabric port, on every Fabric node. Its
- * NeoForge original is the same mod id and package, so like Supplementaries one source directory serves
- * both loaders and this block has a twin in build.neoforge.gradle.kts.
+ * Kaleidoscope Cookery's Modrinth version id: Refabricated, the Fabric port, on every Fabric node.
  * See docs/dev/integration/KALEIDOSCOPE-COOKERY-INTEGRATION.md.
  */
 val kaleidoscopeCookery = findProperty("deps.kaleidoscope_cookery") as String?
-
-if (kaleidoscopeCookery != null) {
-    sourceSets.main {
-        java.srcDir("src/main/kaleidoscope/java")
-        resources.srcDir("src/main/kaleidoscope/resources")
-    }
-}
 
 /**
  * The mods a Modrinth mod bundles inside its own jar: Moonlight's CodecUI, which it reads on its first
@@ -386,26 +359,12 @@ fun clientMod(configuration: String, notation: Any) {
     dependencies.add(target, notation)
 }
 
-/**
- * `-PwithoutOptional=<name,...>` leaves those optional mods out of runClient, `all` every one of them, so
- * a dev client can show the game loading without them. That is the check 1.0.9 lacked: runClient always
- * had every optional mod, and runServer and runGametest never load a client entrypoint. A name is the
- * mod's Modrinth slug or its mod id, as listed in [optionalRunMods]; a name no node loads fails the build
- * (stonecutter.gradle.kts) rather than silently leaving the mod in. The twin in build.neoforge.gradle.kts takes the same names.
- */
-val withoutOptional: Set<String> = providers.gradleProperty("withoutOptional").orNull
-    ?.split(',')?.map { it.trim().lowercase() }?.filter(String::isNotEmpty)?.toSet().orEmpty()
-/** Every name `-PwithoutOptional` accepts on this node, filled in as the run mods are declared. */
-val optionalRunMods = mutableSetOf("all")
+/** `-PwithoutOptional=<name,...>`, which leaves optional mods out of runClient. See build-logic's OptionalRunMods. */
+val optionalRunMods = OptionalRunMods(providers.gradleProperty("withoutOptional").orNull)
 
-/**
- * Adds a mod to runClient only, unless `-PwithoutOptional` names it. A mod that needs a library lists the
- * library's names too, so leaving the library out never leaves a mod that cannot load without it.
- */
+/** Adds a mod to runClient only, unless `-PwithoutOptional` names it or one of the libraries it lists. */
 fun runClientMod(names: List<String>, notation: Any) {
-    optionalRunMods += names
-    if ("all" in withoutOptional || names.any(withoutOptional::contains)) return
-    clientMod("clientRuntimeOnly", notation)
+    if (optionalRunMods.include(names)) clientMod("clientRuntimeOnly", notation)
 }
 
 dependencies {
@@ -476,7 +435,7 @@ dependencies {
     }
 
     // A name no node loads is refused in stonecutter.gradle.kts, once every node has said what it takes.
-    project.extra["thirst.optionalRunMods"] = optionalRunMods.toSet()
+    project.extra["thirst.optionalRunMods"] = optionalRunMods.offered
 }
 
 tasks.processResources {
@@ -487,58 +446,22 @@ tasks.processResources {
         "java" to requiredJava.majorVersion,
     )
     inputs.properties(props)
-    inputs.property("createFly", createFly ?: "")
     filesMatching("fabric.mod.json") { expand(props) }
     filesMatching("*.mixins.json") { expand("java" to "JAVA_${requiredJava.majorVersion}") }
 
-    // Only a node that compiles the Sand Filter may name its entrypoints and mixin config, or Fabric
-    // Loader would fail to find them on every other one. They are added to the built manifest rather
-    // than templated into the source, which has to stay valid JSON for Loom to read.
-    if (createFly != null) {
-        val manifest = destinationDir.resolve("fabric.mod.json")
-        doLast {
-            @Suppress("UNCHECKED_CAST")
-            val json = groovy.json.JsonSlurper().parse(manifest) as MutableMap<String, Any>
-            @Suppress("UNCHECKED_CAST")
-            val entrypoints = json.getValue("entrypoints") as MutableMap<String, Any>
-            entrypoints["thirstwastaken2:createfly"] = listOf("com.thirstwastaken2.createfly.CreateFlyEntrypoint")
-            entrypoints["thirstwastaken2:createfly_client"] =
-                listOf("com.thirstwastaken2.client.createfly.CreateFlyClientEntrypoint")
-            @Suppress("UNCHECKED_CAST")
-            (json.getValue("mixins") as MutableList<Any>).add(1, "thirstwastaken2.createfly.mixins.json")
-            manifest.writeText(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json)))
-        }
+    // Only a node that builds an integration may name its mixin config and entrypoints, or Fabric Loader
+    // would fail to find them on every other one. They are added to the built manifest rather than
+    // templated into the source, which has to stay valid JSON for Loom to read. One input per
+    // integration, so a change of its version reruns this.
+    integrations.filter { Loader.FABRIC in it.loaders }.forEach { integration ->
+        inputs.property(integration.dir, findProperty(integration.depsKey)?.toString() ?: "")
     }
-
-    // The same for the Supplementaries integration: its mixin config, and the one entrypoint it has,
-    // the second Jade plugin. Jade reads that entrypoint whether or not Supplementaries is installed,
-    // so the class it names asks the gate before it loads anything of Moonlight's.
-    inputs.property("supplementaries", supplementaries ?: "")
-    if (supplementaries != null) {
+    if (nodeIntegrations.isNotEmpty()) {
         val manifest = destinationDir.resolve("fabric.mod.json")
         doLast {
             @Suppress("UNCHECKED_CAST")
-            val json = groovy.json.JsonSlurper().parse(manifest) as MutableMap<String, Any>
-            @Suppress("UNCHECKED_CAST")
-            (json.getValue("mixins") as MutableList<Any>).add("thirstwastaken2.supplementaries.mixins.json")
-            @Suppress("UNCHECKED_CAST")
-            val entrypoints = json.getValue("entrypoints") as MutableMap<String, Any>
-            @Suppress("UNCHECKED_CAST")
-            (entrypoints.getValue("jade") as MutableList<Any>)
-                .add("com.thirstwastaken2.client.supplementaries.SupplementariesJade")
-            manifest.writeText(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json)))
-        }
-    }
-
-    // The same for the Kaleidoscope Cookery integration, which has no entrypoint: only its mixin config.
-    inputs.property("kaleidoscopeCookery", kaleidoscopeCookery ?: "")
-    if (kaleidoscopeCookery != null) {
-        val manifest = destinationDir.resolve("fabric.mod.json")
-        doLast {
-            @Suppress("UNCHECKED_CAST")
-            val json = groovy.json.JsonSlurper().parse(manifest) as MutableMap<String, Any>
-            @Suppress("UNCHECKED_CAST")
-            (json.getValue("mixins") as MutableList<Any>).add("thirstwastaken2.kaleidoscope.mixins.json")
+            val json = groovy.json.JsonSlurper().parse(manifest) as MutableMap<String, Any?>
+            nodeIntegrations.forEach { it.patchFabricManifest(json) }
             manifest.writeText(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json)))
         }
     }
@@ -569,18 +492,20 @@ tasks.named("runClient") {
 
 // Registered lazily: withSourcesJar(), in gradle/shared.gradle.kts below, adds the task after this
 // block is evaluated. The dependency is the one described above, which the sources jar needs for the
-// same reason processResources does; `.cache` is datagen's hash cache, which Loom keeps out of the mod
-// jar but not out of this one.
+// same reason processResources does. What the sources jar leaves out is in gradle/shared.gradle.kts.
 tasks.withType<Jar>().matching { it.name.endsWith("sourcesJar") }.configureEach {
     dependsOn("stonecutterGenerate")
     mustRunAfter("runDatagen")
-    exclude("**/AGENTS.md", "**/*.bak", "**/.cache/**")
 }
 
 // The toolchain, the seam checks, the jar excludes and `buildAndCollect` are shared with the
 // NeoForge node, which cannot apply this script. The Java version is passed in because it follows
 // from the node's Minecraft version, which only this script can read.
 extra["thirst.requiredJava"] = requiredJava.majorVersion
+// And the integration table, as far as the seam checks need it: a script applied with `apply(from)`
+// cannot see the classes of build-logic, so it cannot read the table itself.
+extra["thirst.integrations"] = integrations.map { it.dir }
+extra["thirst.loaderIndependentIntegrations"] = integrations.filter { it.loaderIndependent }.map { it.dir }
 apply(from = rootProject.file("gradle/shared.gradle.kts"))
 
 tasks.jar {

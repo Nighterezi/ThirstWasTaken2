@@ -1,4 +1,9 @@
 pluginManagement {
+    // The build code both loader scripts and stonecutter.gradle.kts share: the integration table, the
+    // `-PwithoutOptional` bookkeeping, the JFR arguments. Data and pure functions only, never Loom or
+    // ModDevGradle; see build-logic/settings.gradle.kts. A script puts it on its classpath with
+    // `id("thirstwastaken2.build-logic")`.
+    includeBuild("build-logic")
     repositories {
         mavenCentral()
         gradlePluginPortal()

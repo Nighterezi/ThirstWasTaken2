@@ -1,14 +1,22 @@
+import com.thirstwastaken2.buildlogic.Loader
+import com.thirstwastaken2.buildlogic.OptionalRunMods
+import com.thirstwastaken2.buildlogic.flightRecorder
+import com.thirstwastaken2.buildlogic.integrations
+import com.thirstwastaken2.buildlogic.integrationsFor
+
 plugins {
     // NeoForge's build plugin. Its version is on the plugin classpath from settings.gradle.kts,
     // which resolves it without applying it.
     id("net.neoforged.moddev")
+    // The integration table and the rest of what both loader scripts share. See settings.gradle.kts.
+    id("thirstwastaken2.build-logic")
     `maven-publish`
 }
 
 /*
- * The NeoForge node, `26.2.x-neoforge`. One Minecraft version, one loader, the same sources as
- * `26.2.x`. Everything both this and the Fabric nodes need is in gradle/shared.gradle.kts, applied
- * below. See src/main/java/com/thirstwastaken2/platform/AGENTS.md.
+ * The NeoForge nodes, `<version>-neoforge`. Each is one Minecraft version and one loader, with the same
+ * sources as the Fabric node of that version. Everything both this and the Fabric nodes need is in
+ * gradle/shared.gradle.kts, applied below. See src/main/java/com/thirstwastaken2/platform/AGENTS.md.
  */
 
 // Stonecutter supplies `mod.*` and `deps.*` for this node from stonecutter.properties.toml.
@@ -60,8 +68,8 @@ val loader = "neoforge"
  * so the compiler still catches client code reached from common code on four nodes out of five.
  *
  * `src/datagen` is absent on purpose: the generators stay Fabric only, and this node reads the
- * datapack and asset JSON that the 26.2 Fabric node writes. `src/gametest` and `src/dev` are both
- * here, each as a mod of its own, below.
+ * datapack and asset JSON that the Fabric node of the same Minecraft version writes. `src/gametest`
+ * and `src/dev` are both here, each as a mod of its own, below.
  *
  * `src/client` cannot simply be listed as a directory of `main`. Stonecutter preprocesses
  * `src/<name>` only for a source set called `<name>`, so without a `client` source set nothing
@@ -76,26 +84,49 @@ val clientSources: File =
     if (sc.current.isActive) rootProject.file("src/client")
     else layout.buildDirectory.dir("generated/stonecutter/client").get().asFile
 
+/**
+ * NeoForge's two fluid APIs: IFluidHandler on 21.1, the transfer API (ResourceHandler) from 21.9. Code
+ * that implements one of them lives in the directory of its generation, here and in an integration whose
+ * other mod moved with NeoForge.
+ */
+val transferApi = sc.current.parsed >= "1.21.2"
+
 sourceSets.main {
     java.srcDir("src/main/$loader/java")
     resources.srcDir("src/main/$loader/resources")
-    // NeoForge's two fluid APIs: IFluidHandler on 21.1, the transfer API (ResourceHandler) from 21.9. Code
-    // that implements one of them lives in the directory of its generation.
-    java.srcDir(if (sc.current.parsed >= "1.21.2") "src/main/$loader-transfer/java" else "src/main/$loader-fluidhandler/java")
+    java.srcDir(if (transferApi) "src/main/$loader-transfer/java" else "src/main/$loader-fluidhandler/java")
     java.srcDir(files(clientSources.resolve("java"), clientSources.resolve("$loader/java"))
         .builtBy("stonecutterGenerateClient"))
     resources.srcDir(files(clientSources.resolve("resources"), clientSources.resolve("$loader/resources"))
         .builtBy("stonecutterGenerateClient"))
-    // Written by `:26.2.x:runDatagen`, keyed by Minecraft version rather than by node so both
+    // Written by the Fabric node's `runDatagen`, keyed by Minecraft version rather than by node so both
     // nodes of a Minecraft version share one directory. See src/datagen/java/AGENTS.md.
     resources.srcDir(rootProject.file("src/main/generated/${sc.current.version}"))
 }
 
 /**
- * Create's Modrinth version id, set only on the nodes that build the Sand Filter, today `1.21.1-neoforge`.
- * The integration is its own source directory that only such a node compiles, and only there does the
- * manifest name its mixin config. See src/main/create/AGENTS.md.
+ * The optional integrations this node builds: each is a set of source directories only a node that sets
+ * its deps key compiles, and only there does the manifest name its mixin config. What each one adds is a
+ * row of the table in build-logic/src/main/kotlin/com/thirstwastaken2/buildlogic/Integrations.kt, which
+ * build.gradle.kts reads too; what is specific to one mod, such as its dependencies, stays below with its
+ * own comment.
  */
+val nodeIntegrations = integrationsFor(Loader.NEOFORGE) { findProperty(it) != null }
+
+sourceSets.main {
+    nodeIntegrations.forEach { integration ->
+        integration.mainRoots(transferApi).forEach { root ->
+            java.srcDir("$root/java")
+            resources.srcDir("$root/resources")
+        }
+        // From the preprocessed client sources like the rest of them.
+        integration.clientJava?.let { dir ->
+            java.srcDir(files(clientSources.resolve(dir)).builtBy("stonecutterGenerateClient"))
+        }
+    }
+}
+
+/** Create's Modrinth version id, set only on the nodes that build the Sand Filter. See src/main/create/AGENTS.md. */
 val createVersion = findProperty("deps.create") as String?
 
 /**
@@ -117,66 +148,17 @@ val createLibraries = createVersion?.let { version ->
     }
 }
 
-if (createVersion != null) {
-    sourceSets.main {
-        java.srcDir("src/main/create/java")
-        resources.srcDir("src/main/create/resources")
-    }
-}
-
-/**
- * Sophisticated Core's Modrinth version id, set on every NeoForge node Sophisticated has a release for.
- * Like Create, the integration is a source directory only such a node compiles, plus one for the fluid
- * API generation: Core's tanks move fluid through `IFluidHandler` on 1.21.1 and through the transfer API
- * from 1.21.11, like NeoForge's own. See src/main/sophisticated/AGENTS.md.
- */
+/** Sophisticated Core's Modrinth version id, where it has a release. See src/main/sophisticated/AGENTS.md. */
 val sophisticatedCoreVersion = findProperty("deps.sophisticated_core") as String?
 
-if (sophisticatedCoreVersion != null) {
-    sourceSets.main {
-        val generation = if (sc.current.parsed >= "1.21.2") "transfer" else "fluidhandler"
-        java.srcDir("src/main/sophisticated/java")
-        resources.srcDir("src/main/sophisticated/resources")
-        // The tank and pump code, and the recipes, whose format changed at the same time.
-        java.srcDir("src/main/sophisticated-$generation/java")
-        resources.srcDir("src/main/sophisticated-$generation/resources")
-        // The Drinking upgrade's settings tab, from the preprocessed client sources like the rest of them.
-        java.srcDir(files(clientSources.resolve("sophisticated/java")).builtBy("stonecutterGenerateClient"))
-    }
-}
-
-/**
- * Supplementaries' Modrinth version id, set on the two 1.21.1 nodes and nowhere else, since
- * Supplementaries has no release for a newer Minecraft version. Everything the integration touches is in
- * Moonlight Lib, which is multi loader, so unlike Create and Sophisticated one source directory serves
- * both loaders and this block has a twin in build.gradle.kts. See src/main/supplementaries/AGENTS.md.
- */
+/** Supplementaries' Modrinth version id, on `1.21.1-neoforge` only. See src/main/supplementaries/AGENTS.md. */
 val supplementariesVersion = findProperty("deps.supplementaries") as String?
-
-if (supplementariesVersion != null) {
-    sourceSets.main {
-        java.srcDir("src/main/supplementaries/java")
-        resources.srcDir("src/main/supplementaries/resources")
-        // The Jade plugin for a jar and a goblet, from the preprocessed client sources like the rest
-        // of the client. NeoForge finds it by its annotation and needs no entrypoint.
-        java.srcDir(files(clientSources.resolve("supplementaries/java")).builtBy("stonecutterGenerateClient"))
-    }
-}
 
 /**
  * Kaleidoscope Cookery's Modrinth version id, set on `1.21.1-neoforge` and nowhere else: the official
- * mod has no NeoForge build past 1.21.1. The Fabric nodes build the same directory against Refabricated,
- * its Fabric port, so this block has a twin in build.gradle.kts.
- * See docs/dev/integration/KALEIDOSCOPE-COOKERY-INTEGRATION.md.
+ * mod has no NeoForge build past 1.21.1. See docs/dev/integration/KALEIDOSCOPE-COOKERY-INTEGRATION.md.
  */
 val kaleidoscopeCookeryVersion = findProperty("deps.kaleidoscope_cookery") as String?
-
-if (kaleidoscopeCookeryVersion != null) {
-    sourceSets.main {
-        java.srcDir("src/main/kaleidoscope/java")
-        resources.srcDir("src/main/kaleidoscope/resources")
-    }
-}
 
 /*
  * The same gametests the Fabric nodes run, as their own small mod, so none of it reaches the jar.
@@ -219,22 +201,14 @@ val dev: SourceSet = sourceSets.create("dev") {
 val clientRunMods: Configuration = configurations.create("clientRunMods")
 
 /**
- * `-PwithoutOptional=<name,...>` leaves those optional mods out of runClient and the two extra clients,
- * `all` every one of them. The same flag and names as build.gradle.kts, which says why it exists.
+ * `-PwithoutOptional=<name,...>`, which leaves optional mods out of runClient and the two extra clients.
+ * The same flag and names as build.gradle.kts; see build-logic's OptionalRunMods.
  */
-val withoutOptional: Set<String> = providers.gradleProperty("withoutOptional").orNull
-    ?.split(',')?.map { it.trim().lowercase() }?.filter(String::isNotEmpty)?.toSet().orEmpty()
-/** Every name `-PwithoutOptional` accepts on this node, filled in as the run mods are declared. */
-val optionalRunMods = mutableSetOf("all")
+val optionalRunMods = OptionalRunMods(providers.gradleProperty("withoutOptional").orNull)
 
-/**
- * Adds a mod to the clients' run only, unless `-PwithoutOptional` names it. A mod that needs a library
- * lists the library's names too, so leaving the library out never leaves a mod that cannot load without it.
- */
+/** Adds a mod to the clients' run only, unless `-PwithoutOptional` names it or one of the libraries it lists. */
 fun runClientMod(names: List<String>, notation: String, configure: ExternalModuleDependency.() -> Unit = {}) {
-    optionalRunMods += names
-    if ("all" in withoutOptional || names.any(withoutOptional::contains)) return
-    dependencies.add(clientRunMods.name, notation, configure)
+    if (optionalRunMods.include(names)) dependencies.add(clientRunMods.name, notation, configure)
 }
 /*
  * Added to, never replaced. A source set's own runtime classpath is where ModDevGradle puts DevLaunch,
@@ -248,23 +222,6 @@ val clientRun: SourceSet = sourceSets.create("clientRun") {
 val serverRun: SourceSet = sourceSets.create("serverRun") {
     runtimeClasspath += dev.output + sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
 }
-
-/**
- * The JVM arguments that record a run with JFR, which `-Pprofile` adds to runBenchmark.
- *
- * `settings=profile` is the heavier of JFR's two built-in configurations, and the recording is dumped
- * when the server stops, which is what an unattended benchmark does on its own. The other three are
- * what make the recording worth opening: a stack depth far past JFR's default of 64, because a
- * Minecraft stack is deeper than that and a truncated one merges call sites that are not the same,
- * and the two diagnostic flags that let a sample land where the code actually was instead of at the
- * nearest safepoint.
- */
-fun flightRecorder(file: File): List<String> = listOf(
-    "-XX:StartFlightRecording=settings=profile,dumponexit=true,filename=${file.absolutePath}",
-    "-XX:FlightRecorderOptions:stackdepth=1024",
-    "-XX:+UnlockDiagnosticVMOptions",
-    "-XX:+DebugNonSafepoints",
-)
 
 neoForge {
     version = neoForgeVersion
@@ -462,7 +419,7 @@ dependencies {
     }
 
     // A name no node loads is refused in stonecutter.gradle.kts, once every node has said what it takes.
-    project.extra["thirst.optionalRunMods"] = optionalRunMods.toSet()
+    project.extra["thirst.optionalRunMods"] = optionalRunMods.offered
 }
 
 /*
@@ -539,7 +496,7 @@ fun requireKeys(node: Map<*, *>, keys: Set<String>, file: String) {
     if (unknown.isNotEmpty()) throw GradleException("$file: no NeoForge translation for $unknown in ${node["fabric:type"]}")
 }
 
-/** Written by `:26.2.x:runDatagen`; the only files whose Fabric spellings are translated. */
+/** Written by the Fabric node's `runDatagen`; the only files whose Fabric spellings are translated. */
 val generatedResources = rootProject.file("src/main/generated/${sc.current.version}")
 
 tasks.processResources {
@@ -556,86 +513,17 @@ tasks.processResources {
     // this one.
     exclude("**/.cache/**")
 
-    // Only a node that compiles the Sand Filter may name its mixin config, or FML would fail to find it
-    // on every other one. It is appended to the built manifest, with Create as an optional dependency,
-    // rather than templated into the source manifest every NeoForge node shares.
-    inputs.property("create", createVersion ?: "")
-    if (createVersion != null) {
-        val manifest = destinationDir.resolve("META-INF/neoforge.mods.toml")
-        doLast {
-            manifest.appendText("""
-                |
-                |[[mixins]]
-                |config = "thirstwastaken2.create.mixins.json"
-                |
-                |[[dependencies.thirstwastaken2]]
-                |modId = "create"
-                |type = "optional"
-                |ordering = "NONE"
-                |side = "BOTH"
-                |""".trimMargin())
-        }
+    // Only a node that builds an integration may name its mixin config, or FML would fail to find it on
+    // every other one. It is appended to the built manifest, with the integration's mods as optional
+    // dependencies, rather than templated into the source manifest every NeoForge node shares. One input
+    // per integration, so a change of its version reruns this.
+    integrations.filter { Loader.NEOFORGE in it.loaders }.forEach { integration ->
+        inputs.property(integration.dir, findProperty(integration.depsKey)?.toString() ?: "")
     }
-    // The same for the Sophisticated Core integration.
-    inputs.property("sophisticatedCore", sophisticatedCoreVersion ?: "")
-    if (sophisticatedCoreVersion != null) {
+    if (nodeIntegrations.isNotEmpty()) {
         val manifest = destinationDir.resolve("META-INF/neoforge.mods.toml")
-        doLast {
-            manifest.appendText("""
-                |
-                |[[mixins]]
-                |config = "thirstwastaken2.sophisticated.mixins.json"
-                |
-                |[[dependencies.thirstwastaken2]]
-                |modId = "sophisticatedcore"
-                |type = "optional"
-                |ordering = "NONE"
-                |side = "BOTH"
-                |""".trimMargin())
-        }
-    }
-    // The same for the Supplementaries integration. Moonlight is named as well as Supplementaries: three
-    // of the four mixins are its, and other mods ship it.
-    inputs.property("supplementaries", supplementariesVersion ?: "")
-    if (supplementariesVersion != null) {
-        val manifest = destinationDir.resolve("META-INF/neoforge.mods.toml")
-        doLast {
-            manifest.appendText("""
-                |
-                |[[mixins]]
-                |config = "thirstwastaken2.supplementaries.mixins.json"
-                |
-                |[[dependencies.thirstwastaken2]]
-                |modId = "supplementaries"
-                |type = "optional"
-                |ordering = "NONE"
-                |side = "BOTH"
-                |
-                |[[dependencies.thirstwastaken2]]
-                |modId = "moonlight"
-                |type = "optional"
-                |ordering = "NONE"
-                |side = "BOTH"
-                |""".trimMargin())
-        }
-    }
-    // The same for the Kaleidoscope Cookery integration.
-    inputs.property("kaleidoscopeCookery", kaleidoscopeCookeryVersion ?: "")
-    if (kaleidoscopeCookeryVersion != null) {
-        val manifest = destinationDir.resolve("META-INF/neoforge.mods.toml")
-        doLast {
-            manifest.appendText("""
-                |
-                |[[mixins]]
-                |config = "thirstwastaken2.kaleidoscope.mixins.json"
-                |
-                |[[dependencies.thirstwastaken2]]
-                |modId = "kaleidoscope_cookery"
-                |type = "optional"
-                |ordering = "NONE"
-                |side = "BOTH"
-                |""".trimMargin())
-        }
+        val appended = nodeIntegrations.joinToString("") { it.neoForgeManifest(modId) }
+        doLast { manifest.appendText(appended) }
     }
 
     // Translates the generated JSON in place, once it is copied. Only files that came from the
@@ -721,6 +609,10 @@ tasks.named("runGametest") {
 // nodes. The Java version is passed in because it follows from the node's Minecraft version, which
 // only this script can read.
 extra["thirst.requiredJava"] = requiredJava.majorVersion
+// And the integration table, as far as the seam checks need it: a script applied with `apply(from)`
+// cannot see the classes of build-logic, so it cannot read the table itself.
+extra["thirst.integrations"] = integrations.map { it.dir }
+extra["thirst.loaderIndependentIntegrations"] = integrations.filter { it.loaderIndependent }.map { it.dir }
 apply(from = rootProject.file("gradle/shared.gradle.kts"))
 
 tasks.jar {

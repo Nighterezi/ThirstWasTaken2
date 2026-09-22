@@ -47,7 +47,11 @@ One source tree, one jar per node. Nodes are the Gradle subprojects in `settings
 - **Multi-version via [Stonecutter](https://stonecutter.kikugie.dev)**. Per-node values (dependency
   versions, compat ranges) live only in `stonecutter.properties.toml`; there is no version catalog.
   `stonecutter.gradle.kts` is the controller, `build.gradle.kts` is the Fabric script (Loom),
-  `build.neoforge.gradle.kts` the NeoForge one (ModDevGradle), `gradle/shared.gradle.kts` what both share.
+  `build.neoforge.gradle.kts` the NeoForge one (ModDevGradle), `gradle/shared.gradle.kts` the tasks both
+  share. `build-logic` is an included build of plain Kotlin both scripts call: the integration table,
+  `-PwithoutOptional`, the JFR arguments. It is data and pure functions only and never depends on Loom,
+  ModDevGradle or Stonecutter; the loader scripts make every `sourceSets`, `loom` and `neoForge` call
+  themselves. `./gradlew -p build-logic test` runs its tests.
 - **Split source sets.** Anything touching `net.minecraft.client` goes in `src/client/java`, never
   `src/main/java`. NeoForge compiles both together, so only the Fabric nodes catch a mistake.
 - **Common code never names a mod loader.** `src/main/java` and `src/client/java` call
@@ -62,7 +66,8 @@ One source tree, one jar per node. Nodes are the Gradle subprojects in `settings
 - **Mixins**: in `com.thirstwastaken2.mixin`, package-private, `abstract`, every injected member
   prefixed `thirst$`, listed in `thirstwastaken2.mixins.json` or they silently do nothing. Client,
   Fabric-client, dev, Create, Create Fly, Sophisticated, Supplementaries and Kaleidoscope Cookery mixins
-  have their own configs next to their sources. A new config goes in both loader manifests.
+  have their own configs next to their sources. A new core config goes in both loader manifests; an
+  integration's goes in its row of the integration table.
 - **Player state** is the immutable record `ThirstData`. Derive a new one and write through
   `ThirstManager.set` only when it changed; every write is a sync packet.
 - **Config** is the Gson POJO `ThirstConfig`. A new field: add it, clamp it in `sanitize()`, and if
@@ -146,12 +151,8 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | `src/main/fabric`, `src/client/fabric` | Fabric nodes |
 | `src/main/neoforge`, `src/client/neoforge` | NeoForge nodes (client compiled into main) |
 | `src/main/neoforge-fluidhandler` / `neoforge-transfer` | NeoForge 1.21.1 / 1.21.11+, the fluid container API |
-| `src/main/createfly`, `src/client/createfly` | Where `deps.create_fly` is set (Fabric 26.1.x, 26.2.x; Create Fly has no 26.3 build) |
-| `src/main/create` | Where `deps.create` is set (`1.21.1-neoforge`) |
-| `src/main/sophisticated`, `src/client/sophisticated` | Where `deps.sophisticated_core` is set (every NeoForge node but `26.3.x-neoforge`) |
-| `src/main/supplementaries`, `src/client/supplementaries` | Where `deps.supplementaries` is set (both 1.21.1 nodes). The one optional integration both loaders compile |
-| `src/main/kaleidoscope` | Where `deps.kaleidoscope_cookery` is set (`1.21.1-neoforge` and every Fabric node). Both loaders compile it, like Supplementaries |
-| `src/main/sophisticated-fluidhandler` / `sophisticated-transfer` | The same nodes, 1.21.1 / 1.21.11+: Sophisticated's tank and pump code |
+| `src/main/<integration>`, `src/client/<integration>`, `src/dev/<integration>` | Where the integration's deps key is set, on the loaders its row allows. Wired from [the integration table](build-logic/src/main/kotlin/com/thirstwastaken2/buildlogic/Integrations.kt); which nodes, below |
+| `src/main/sophisticated-fluidhandler` / `sophisticated-transfer` | Sophisticated's nodes, 1.21.1 / 1.21.11+: its tank and pump code |
 | `src/main/resources` | Hand-written assets and lang, all nodes |
 | `src/main/generated/<mc version>` | Datagen output, never hand-edited |
 | `src/datagen`, `src/gametest`, `src/dev` | Separate mods, never packaged |
@@ -159,15 +160,29 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 
 ### Optional integrations
 
-| Mod | Where |
-|---|---|
-| AppleSkin, Jade, Mod Menu, Farmer's Delight, loot | [compat/AGENTS.md](src/main/java/com/thirstwastaken2/compat/AGENTS.md) |
-| Drinks from other mods | `c:drinks` tag and registry ids in `ThirstConfig`, no class references |
-| Create Fly (Fabric) | [src/main/createfly/AGENTS.md](src/main/createfly/AGENTS.md) |
-| Create (NeoForge) | [src/main/create/AGENTS.md](src/main/create/AGENTS.md) |
-| Sophisticated Backpacks and Storage | [src/main/sophisticated/AGENTS.md](src/main/sophisticated/AGENTS.md) |
-| Supplementaries and Moonlight Lib (both loaders, 1.21.1) | [src/main/supplementaries/AGENTS.md](src/main/supplementaries/AGENTS.md) |
-| Kaleidoscope Cookery (NeoForge 1.21.1, Refabricated on Fabric) | [src/main/kaleidoscope/AGENTS.md](src/main/kaleidoscope/AGENTS.md) |
+| Mod | Nodes | Where |
+|---|---|---|
+| AppleSkin, Jade, Mod Menu, Farmer's Delight, loot | all | [compat/AGENTS.md](src/main/java/com/thirstwastaken2/compat/AGENTS.md) |
+| Drinks from other mods | all | `c:drinks` tag and registry ids in `ThirstConfig`, no class references |
+| Create Fly | `deps.create_fly`: Fabric 26.1.x, 26.2.x (no 26.3 build) | [src/main/createfly/AGENTS.md](src/main/createfly/AGENTS.md) |
+| Create | `deps.create`: `1.21.1-neoforge` | [src/main/create/AGENTS.md](src/main/create/AGENTS.md) |
+| Sophisticated Backpacks and Storage | `deps.sophisticated_core`: every NeoForge node but `26.3.x-neoforge` | [src/main/sophisticated/AGENTS.md](src/main/sophisticated/AGENTS.md) |
+| Supplementaries and Moonlight Lib | `deps.supplementaries`: both 1.21.1 nodes | [src/main/supplementaries/AGENTS.md](src/main/supplementaries/AGENTS.md) |
+| Kaleidoscope Cookery | `deps.kaleidoscope_cookery`: `1.21.1-neoforge`, Refabricated on every Fabric node | [src/main/kaleidoscope/AGENTS.md](src/main/kaleidoscope/AGENTS.md) |
+
+### Adding an integration
+
+1. Add a row to [the integration table](build-logic/src/main/kotlin/com/thirstwastaken2/buildlogic/Integrations.kt): its directory, deps key,
+   loaders, and what the manifest names. Both loader scripts wire its directories and patch the built
+   manifest from that row; neither needs a block of its own unless the mod needs something the row
+   cannot say.
+2. Add the deps key to the nodes that build it in `stonecutter.properties.toml`, and the mod to
+   `MODRINTH_DEPS` in `.github/scripts/update_mc_deps.py`.
+3. Add its `compileOnly` and `runClientMod` lines to the loader scripts it builds on.
+4. Put its version differences in `com.thirstwastaken2.<integration>.platform`, or in core
+   `platform/Vanilla` when the difference is vanilla's. `checkVersionSeam` fails on a `//?` anywhere else.
+5. Gate it at runtime and keep it off the load path. `checkOptionalSeam` checks that, and that core
+   code never names its package, which it reads from the table.
 
 ## Where to look
 
@@ -182,13 +197,13 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | Datagen providers | [src/datagen/java/AGENTS.md](src/datagen/java/AGENTS.md) |
 | Automated in-game tests | [src/gametest/java/AGENTS.md](src/gametest/java/AGENTS.md) |
 | Dev-only tooling (agent client, benchmark) | [src/dev/java/AGENTS.md](src/dev/java/AGENTS.md) |
-| Benchmark baseline per node | [docs/dev/BENCHMARK-BASELINE.md](docs/dev/benchmark/BENCHMARK-BASELINE.md) |
+| Benchmark baseline per node | [docs/dev/benchmark/BENCHMARK-BASELINE.md](docs/dev/benchmark/BENCHMARK-BASELINE.md) |
 | Manual checks before a release | [docs/dev/MANUAL-TESTING.md](docs/dev/MANUAL-TESTING.md) |
-| Purification balance | [docs/dev/WATER-PURIFICATION-BALANCE.md](docs/dev/mechanics/WATER-PURIFICATION-BALANCE.md) |
-| Sophisticated upgrades still to do | [docs/dev/SOPHISTICATED-INTEGRATION.md](docs/dev/integration/SOPHISTICATED-INTEGRATION.md) |
-| Supplementaries work still to do | [docs/dev/SUPPLEMENTARIES-INTEGRATION.md](docs/dev/integration/SUPPLEMENTARIES-INTEGRATION.md) |
-| Kaleidoscope Cookery work still to do | [docs/dev/KALEIDOSCOPE-COOKERY-INTEGRATION.md](docs/dev/integration/KALEIDOSCOPE-COOKERY-INTEGRATION.md) |
-| Bad-water sickness rework: the design | [docs/dev/WATER-SICKNESS.md](docs/dev/mechanics/WATER-SICKNESS.md) |
-| Bad-water sickness rework: where the code goes, step by step | [docs/dev/WATER-SICKNESS-IMPLEMENTATION.md](docs/dev/mechanics/WATER-SICKNESS-IMPLEMENTATION.md) |
+| Purification balance | [docs/dev/mechanics/WATER-PURIFICATION-BALANCE.md](docs/dev/mechanics/WATER-PURIFICATION-BALANCE.md) |
+| Sophisticated upgrades still to do | [docs/dev/integration/SOPHISTICATED-INTEGRATION.md](docs/dev/integration/SOPHISTICATED-INTEGRATION.md) |
+| Supplementaries work still to do | [docs/dev/integration/SUPPLEMENTARIES-INTEGRATION.md](docs/dev/integration/SUPPLEMENTARIES-INTEGRATION.md) |
+| Kaleidoscope Cookery work still to do | [docs/dev/integration/KALEIDOSCOPE-COOKERY-INTEGRATION.md](docs/dev/integration/KALEIDOSCOPE-COOKERY-INTEGRATION.md) |
+| Bad-water sickness rework: the design | [docs/dev/mechanics/WATER-SICKNESS.md](docs/dev/mechanics/WATER-SICKNESS.md) |
+| Bad-water sickness rework: where the code goes, step by step | [docs/dev/mechanics/WATER-SICKNESS-IMPLEMENTATION.md](docs/dev/mechanics/WATER-SICKNESS-IMPLEMENTATION.md) |
 | Releasing | [tools/release/publish.py](tools/release/publish.py) and [publish_curseforge.py](tools/release/publish_curseforge.py) docstrings |
 | Documentation site, CHANGELOG, Modrinth and CurseForge pages | [docs/AGENTS.md](docs/AGENTS.md) and the `write-docs` skill |

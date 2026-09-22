@@ -1,5 +1,8 @@
 .gradle/
 build/
+# Kotlin's per-project data, which build-logic's `kotlin-dsl` writes: compiler daemon error reports and
+# incremental caches.
+.kotlin/
 versions/
 run/
 out/

@@ -219,6 +219,33 @@ public final class Vanilla {
     }
 
     /**
+     * A tag's string, or {@code fallback} when it has none. From 1.21.5 a tag's getters answer with a
+     * fallback of their own; before it they answered with an empty value.
+     */
+    public static String getString(net.minecraft.nbt.CompoundTag tag, String key, String fallback) {
+        //? if >=1.21.5 {
+        return tag.getStringOr(key, fallback);
+        //?} else
+        /*return tag.contains(key, net.minecraft.nbt.Tag.TAG_STRING) ? tag.getString(key) : fallback;*/
+    }
+
+    /** A tag's number as an int, or {@code fallback} when it has none. See {@link #getString}. */
+    public static int getInt(net.minecraft.nbt.CompoundTag tag, String key, int fallback) {
+        //? if >=1.21.5 {
+        return tag.getIntOr(key, fallback);
+        //?} else
+        /*return tag.contains(key, net.minecraft.nbt.Tag.TAG_ANY_NUMERIC) ? tag.getInt(key) : fallback;*/
+    }
+
+    /** Whether a stack is used with the drinking animation. 1.21.2 renamed {@code UseAnim} to {@code ItemUseAnimation}. */
+    public static boolean isDrinkAnimation(ItemStack stack) {
+        //? if >=1.21.2 {
+        return stack.getUseAnimation() == net.minecraft.world.item.ItemUseAnimation.DRINK;
+        //?} else
+        /*return stack.getUseAnimation() == net.minecraft.world.item.UseAnim.DRINK;*/
+    }
+
+    /**
      * Gives a player an item the inventory has no room for in hand, dropping what does not fit. 26.3
      * asks every such call whether the client already predicted it; the mod's only caller runs on the
      * server alone, which is what the older signature meant anyway.

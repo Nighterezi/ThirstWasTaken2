@@ -5,6 +5,7 @@ import com.thirstwastaken2.data.ThirstData;
 import com.thirstwastaken2.data.ThirstManager;
 import com.thirstwastaken2.neoforge.WaterContainerFluids;
 import com.thirstwastaken2.neoforge.WaterFluids;
+import com.thirstwastaken2.platform.Vanilla;
 import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.purity.WaterQuality;
 import net.minecraft.core.BlockPos;
@@ -19,10 +20,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-//? if >=1.21.2 {
-import net.minecraft.world.item.ItemUseAnimation;
-//?} else
-/*import net.minecraft.world.item.UseAnim;*/
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
@@ -214,11 +211,7 @@ public final class DrinkingUpgradeWrapper extends UpgradeWrapperBase<DrinkingUpg
         PotionContents potion = stack.get(DataComponents.POTION_CONTENTS);
         if (potion != null && !potion.is(Potions.WATER)) return false;
         if (ThirstApi.thirstValues(stack.getItem()) == null) return false;
-        //? if >=1.21.2 {
-        boolean drunk = stack.getUseAnimation() == ItemUseAnimation.DRINK;
-        //?} else
-        /*boolean drunk = stack.getUseAnimation() == UseAnim.DRINK;*/
-        return drunk || WaterPurity.isPlainWaterDrink(stack);
+        return Vanilla.isDrinkAnimation(stack) || WaterPurity.isPlainWaterDrink(stack);
     }
 
     @Override
