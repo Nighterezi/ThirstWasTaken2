@@ -18,7 +18,7 @@ Your body requires water just like food. The system mirrors vanilla hunger:
 </table>
 </div>
 
-## Water Quality and Purification
+## Water Quality
 Water is graded based on where you collect it:
 
 | Grade | Common Sources | Effects |
@@ -42,6 +42,8 @@ Water is graded based on where you collect it:
 </table>
 </div>
 
+## Purification
+Raise the grade of your water before drinking it:
 * **Boiling:** Smelt water bottles, bowls, or buckets in a furnace or over a campfire to raise their purity grade.
 * **Hanging Pots:** Hang a Copper or Iron Hanging Pot over a lit campfire to boil a bucket of water into Pure water.
 * **Rain and Dripstone:** Cauldrons placed under open rain or pointed dripstone automatically fill with clean water.
