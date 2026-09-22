@@ -225,6 +225,8 @@ holding `{"values": {"minecraft:bread": {"thirst": 1, "quenched": 0}}}`:
       - `sophisticated-core` on the NeoForge nodes up to 26.2
       - `moonlight` (Supplementaries goes with it) on both 1.21.1 nodes
       - `create` on `1.21.1-neoforge`, and on the Fabric nodes that build Create Fly
+      - `kaleidoscope_cookery` on `1.21.1-neoforge`, the only node that builds it for now. Passed
+        there on 2026-09-22, with Jade and without it
 - [ ] The same with `-PwithoutOptional=all`, on one node per loader.
 - [ ] `checkOptionalSeam` passes on every node. CI runs it; it is the static half of the two checks
       above, and fails on the 1.0.9 entrypoint.

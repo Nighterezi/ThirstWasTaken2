@@ -6,15 +6,26 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 
 ### Added
 
-- Data packs can set what any item restores, in `data/<namespace>/thirstwastaken2/drinks/`. The
-  config still wins, and item tooltips show the same values the server uses.
+- Data packs can set what any item restores, in `data/<namespace>/thirstwastaken2/drinks/`. When
+  the config also lists an item, its config value takes priority. Item tooltips show the values the
+  server uses.
 - Other mods can now read and change thirst, check water purity and adjust what drinking restores,
   without needing a compatibility patch in this mod. See the
   [developer pages](https://nighterezi.github.io/ThirstWasTaken2/docs/developers/data-packs).
+- Compatibility with Kaleidoscope Cookery on NeoForge 1.21.1:
+  - Its teas, milk tea and soups restore thirst.
+  - The Stockpot and the Teapot keep the grade of the water poured into them, including a Teapot
+    picked up and placed again, dipped into water, or filled by dripstone. Before, both handed back
+    Clean water whatever went in.
+  - The Teapot refuses sea water, so the sea cannot be brewed into safe tea. The Stockpot takes it and
+    hands it back still salty.
+  - With Jade installed, looking at a Stockpot or a Teapot shows the grade of the water inside.
 
 ### Notes
 
 - Nothing changes without a data pack or another mod asking for it. No action required.
+- On Fabric, Kaleidoscope Cookery's teas and soups restore thirst too, but its Stockpot and Teapot do
+  not keep the water's grade yet. Kaleidoscope Cookery Refabricated is the supported Fabric build.
 
 ## [1.0.9.1] - 2026-09-21
 

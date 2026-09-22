@@ -40,11 +40,11 @@ class BuildLogicTest {
     @Test
     fun nodesGetOnlyWhatTheirLoaderCompiles() {
         val everything: (String) -> Boolean = { true }
-        assertEquals(listOf("createfly", "supplementaries", "kaleidoscope"),
+        assertEquals(listOf("createfly", "supplementaries"),
             integrationsFor(Loader.FABRIC, everything).map { it.dir })
         assertEquals(listOf("create", "sophisticated", "supplementaries", "kaleidoscope"),
             integrationsFor(Loader.NEOFORGE, everything).map { it.dir })
-        assertEquals(listOf("supplementaries", "kaleidoscope"), integrations.filter { it.loaderIndependent }.map { it.dir })
+        assertEquals(listOf("supplementaries"), integrations.filter { it.loaderIndependent }.map { it.dir })
     }
 
     @Test
@@ -76,8 +76,7 @@ class BuildLogicTest {
         )
         integrationsFor(Loader.FABRIC) { true }.forEach { it.patchFabricManifest(json) }
         assertEquals(listOf("thirstwastaken2.mixins.json", "thirstwastaken2.createfly.mixins.json",
-            "thirstwastaken2.client.mixins.json", "thirstwastaken2.supplementaries.mixins.json",
-            "thirstwastaken2.kaleidoscope.mixins.json"), json["mixins"])
+            "thirstwastaken2.client.mixins.json", "thirstwastaken2.supplementaries.mixins.json"), json["mixins"])
         @Suppress("UNCHECKED_CAST")
         val entrypoints = json["entrypoints"] as Map<String, Any?>
         assertEquals(listOf("a.Jade", "com.thirstwastaken2.client.supplementaries.SupplementariesJade"), entrypoints["jade"])

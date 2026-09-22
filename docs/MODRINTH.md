@@ -140,6 +140,17 @@ Thirst Was Taken 2 integrates seamlessly with popular mods out of the box:
   </tr>
   <tr>
     <td width="55%">
+      <b><a href="https://nighterezi.github.io/ThirstWasTaken2/docs/features/kaleidoscope-cookery">Kaleidoscope Cookery</a></b><br>
+      <i>NeoForge: <a href="https://modrinth.com/mod/kaleidoscope-cookery">Kaleidoscope Cookery</a> on 1.21.1<br>
+      Fabric: <a href="https://modrinth.com/mod/kaleidoscope-cookery-refabricated">Kaleidoscope Cookery Refabricated</a>, teas and soups only</i><br><br>
+      Teas, milk tea and soups restore thirst. Water keeps its purity grade in the Stockpot and the Teapot, and the Teapot refuses sea water.
+    </td>
+    <td width="45%">
+      <img alt="A Teapot on a lit Stove among teacups in a cherry grove, with Jade naming its water Clean" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/kaleidoscope-teapot.png" width="100%"><br><img alt="Kaleidoscope Cookery teas in the hotbar, with the Sakura Fubuki tooltip showing its thirst and quenched droplets" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/kaleidoscope-teas.png" width="100%">
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
       <b><a href="https://nighterezi.github.io/ThirstWasTaken2/docs/configuration">Settings screen</a></b><br>
       <i>Fabric and NeoForge</i><br><br>
       Configure the mod in game with a live HUD preview. Fabric requires <a href="https://modrinth.com/mod/modmenu">Mod Menu</a>; NeoForge uses the Config button in its Mods list.

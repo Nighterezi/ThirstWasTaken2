@@ -27,7 +27,8 @@ const manualSidebar = [
       { text: "Farmer's Delight", link: '/docs/features/farmers-delight' },
       { text: 'Create', link: '/docs/features/create' },
       { text: 'Sophisticated Backpacks', link: '/docs/features/sophisticated-backpacks' },
-      { text: 'Supplementaries', link: '/docs/features/supplementaries' }
+      { text: 'Supplementaries', link: '/docs/features/supplementaries' },
+      { text: 'Kaleidoscope Cookery', link: '/docs/features/kaleidoscope-cookery' }
     ]
   },
   {

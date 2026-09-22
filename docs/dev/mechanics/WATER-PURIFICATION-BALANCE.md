@@ -18,6 +18,7 @@ servings, the same rate a cauldron uses.
 | Smoker, one item | 5 s | 1 or 3 | up two grades | yes | `SMOKING_TIME`; half the furnace, as a smoker is for food. Also Sophisticated's Smoking upgrades |
 | Campfire, four slots | 30 s | up to 12 (four buckets) | up two grades | no | `CAMPFIRE_TIME`; highest throughput of anything |
 | Cooking Pot (Farmer's Delight) | 10 s | 1 | Pure | heat source below | only with Farmer's Delight installed |
+| Teapot (Kaleidoscope Cookery) | 12 s | 4 teacups | safe tea, not water | heat source below, one tea bag | a teacup restores its fixed value whatever the water's grade, so Dirty water becomes four safe drinks. Fair for a tea bag and heat. Sea water is refused, so it never desalinates |
 | **Copper Hanging Pot** | **4 s a serving, 12 s full** | **3** | **Pure** | no | needs a lit campfire below |
 | **Iron Hanging Pot** | **6 s a serving, 18 s full** | **3** | **Pure** | no | needs a lit campfire below |
 

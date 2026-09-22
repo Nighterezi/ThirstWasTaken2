@@ -173,7 +173,7 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | Create | `deps.create`: `1.21.1-neoforge` | [src/main/create/AGENTS.md](src/main/create/AGENTS.md) |
 | Sophisticated Backpacks and Storage | `deps.sophisticated_core`: every NeoForge node but `26.3.x-neoforge` | [src/main/sophisticated/AGENTS.md](src/main/sophisticated/AGENTS.md) |
 | Supplementaries and Moonlight Lib | `deps.supplementaries`: both 1.21.1 nodes | [src/main/supplementaries/AGENTS.md](src/main/supplementaries/AGENTS.md) |
-| Kaleidoscope Cookery | `deps.kaleidoscope_cookery`: `1.21.1-neoforge`, Refabricated on every Fabric node | [src/main/kaleidoscope/AGENTS.md](src/main/kaleidoscope/AGENTS.md) |
+| Kaleidoscope Cookery | `deps.kaleidoscope_cookery`: `1.21.1-neoforge`; the Fabric nodes pin Refabricated but do not build the integration yet | [src/main/kaleidoscope/AGENTS.md](src/main/kaleidoscope/AGENTS.md) |
 
 ### Adding an integration
 

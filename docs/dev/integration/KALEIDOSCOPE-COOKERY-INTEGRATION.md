@@ -71,11 +71,11 @@ bucket poured in and taken back out comes out Clean, and sea water comes out fre
 |---|---|---|---|---|
 | 1 | Build dependency and gate | build | the six in the table | **Done** (2026-09-22) |
 | 2 | Thirst values for teas, milk tea, soups | data | all (config) | **Done** (2026-09-22) |
-| 3 | Stockpot keeps the water's grade | bug | six | to do |
-| 4 | Teapot keeps the water's grade (bucket, picked up, dripstone) | bug | six (dripstone: 1.21.1 only) | to do |
-| 5 | Salt water in the teapot and the stockpot | decision | — | to decide |
-| 6 | The grade is visible: Jade line on the stockpot and the teapot | feature | six | optional |
-| 7 | Changelog and player docs | docs | — | to do |
+| 3 | Stockpot keeps the water's grade | bug | six | **Done on `1.21.1-neoforge`** (2026-09-22); Fabric to do |
+| 4 | Teapot keeps the water's grade (bucket, picked up, dripstone, scooped) | bug | six (dripstone: 1.21.1 only) | **Done on `1.21.1-neoforge`** (2026-09-22); Fabric to do |
+| 5 | Salt water in the teapot and the stockpot | decision | — | **Decided** (2026-09-22): as recommended |
+| 6 | The grade is visible: Jade line on the stockpot and the teapot | feature | six | **Done on `1.21.1-neoforge`** (2026-09-22) |
+| 7 | Changelog and player docs | docs | — | **Done** (2026-09-22) |
 | 8 | Nothing crashes without the mod: `checkOptionalSeam`, `-PwithoutOptional`, `boot.jsonl` | test | all | **Done** (2026-09-22), for every integration |
 
 Item 8 came **first** and is in: the static check and the flag exist before a single line of the
@@ -85,6 +85,13 @@ passes on all ten nodes as they are. When item 1 adds the dependency, its `runCl
 names `kaleidoscope-cookery`, `kaleidoscope-cookery-refabricated` and `kaleidoscope_cookery`, and
 `KaleidoscopeMixinPlugin` and the Jade reader are roots the check already finds by themselves. See
 [Testing that nothing crashes without Kaleidoscope Cookery](#testing-that-nothing-crashes-without-kaleidoscope-cookery).
+
+**Items 3 to 7 were built on `1.21.1-neoforge` only.** The integration's row in `Integrations.kt` names
+NeoForge alone for now, so no Fabric node compiles `src/main/kaleidoscope` and the Fabric nodes get only
+the thirst values of item 2. Turning Fabric on is adding `Loader.FABRIC` back to that row, a version
+branch in the stockpot and teapot mixins for the 26.x `saveAdditional` / `loadAdditional` and
+`getDrops`, a Stonecutter comment or its own mixin for `receiveDripstoneFluid`, `giveItemToPlayer` in
+`ItemUtilsMixin` if Refabricated routes a bucket through it, and the agent script on each node.
 
 Order of work: **build `1.21.1-neoforge` and `1.21.1` first** (one Minecraft version, both loaders, no
 version branch), and get items 1–4 working there. Then widen to `26.3.x`, which has every version
@@ -234,6 +241,12 @@ gametest does not need the mod to be installed), plus drinking one tea in the de
 
 ## 3. The stockpot keeps the water's grade (bug)
 
+**Done on `1.21.1-neoforge`.** Built as below, except that `addSoupBase` and `removeSoupBase` are
+wrapped whole with `@WrapMethod`, which is the `try/finally` the risks section asks for, and nothing
+has to be cleared in `takeOutProduct`: the grade is only read while the pot is in `PUT_INGREDIENT`
+with water as its soup base, and every way into that state writes it again. `ItemUtilsMixin` is a
+`@ModifyVariable` at the head of both overloads, matched by name.
+
 `StockpotBlockEntityMixin`:
 
 - `addSoupBase`, `@Inject(HEAD)`: if the bucket is water, read `WaterPurity` from the stack **before**
@@ -258,6 +271,14 @@ pour a Dirty bucket in and take it out, and it is still Dirty; salty stays salty
 holds the key.
 
 ## 4. The teapot keeps the water's grade (bug)
+
+**Done on `1.21.1-neoforge`**, with a fourth way the plan below missed: an empty teapot **item**
+scoops water straight out of the world (`TeapotItem.use`, `BucketPickup.pickupBlock` then
+`fillFluid`), writing only the fluid id, so a teapot dipped in the sea and emptied into a bucket
+turned sea water fresh. `TeapotItemMixin` samples the water before it is picked up, on both sides so
+the client agrees about a refusal, refuses sea water and adds the grade to the item's block entity
+data. `getDrops` is a `@ModifyArg` on both `setBlockEntityData` calls; a finished teapot holds no
+water, so the second one writes nothing.
 
 Three ways water gets laundered:
 
@@ -296,6 +317,10 @@ again, and the water is still Dirty; on 1.21.1 dripstone gives `dripstonePurity`
 
 ## 5. Salt water (to decide before items 3 and 4)
 
+**Decided as recommended**, and built: the teapot refuses a salty bucket only where it would otherwise
+take one, so a full or busy teapot still answers in its own words. The message is
+`thirstwastaken2.message.salt_water_refused`.
+
 - **Teapot**: recommend **refusing** a salty bucket in `addTeaFluid` (`@Inject(HEAD)`, cancellable,
   return false), with a message in the action bar using the mod's own lang key
   (`thirstwastaken2.message.salt_water_refused`, with `en_us` and `vi_vn`). The Cooking Pot refuses salt
@@ -305,6 +330,10 @@ again, and the water is still Dirty; on 1.21.1 dripstone gives `dripstonePurity`
 
 ## 6. The grade is visible (optional)
 
+**Done on `1.21.1-neoforge`**: `KaleidoscopeJade` in `src/client/kaleidoscope`. It names only the
+mod's own `BrewedWater` interface, which the two block entities carry once their mixins apply, so it
+needs no class of Kaleidoscope Cookery's and no hand-off class.
+
 Both builds have their own Jade plugin for the stockpot and the teapot. Add a reader through
 `JadeIntegration.addContainer`, the way `SupplementariesJade` does, from a class in
 `src/client/kaleidoscope`, named in the Fabric manifest's `jade` entrypoint and found by its annotation
@@ -312,6 +341,10 @@ on NeoForge. It shows `Dirty` / `Sea water` under the stockpot and the teapot. L
 4 are what matter.
 
 ## 7. Changelog and player docs
+
+**Done**: the CHANGELOG, `docs/docs/features/kaleidoscope-cookery.md`, both rows on the installation
+page, and a card on the Modrinth and CurseForge pages. The Version Support table there is by Minecraft
+version, not by mod, so it got no row; the card says where each part works.
 
 A CHANGELOG entry, the compatible-mods list on the installation page, a
 `docs/docs/features/kaleidoscope-cookery.md` page (thirst value table, water keeps its grade in the

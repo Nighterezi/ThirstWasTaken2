@@ -136,12 +136,15 @@ val integrations: List<Integration> = listOf(
         fabricEntrypoints = mapOf("jade" to listOf("com.thirstwastaken2.client.supplementaries.SupplementariesJade")),
         neoForgeDependencies = listOf("supplementaries", "moonlight"),
     ),
-    // Both loaders: Refabricated, the Fabric port, keeps the original's mod id and package.
-    // See src/main/kaleidoscope/AGENTS.md.
+    // NeoForge only for now: the code names no loader, and Refabricated, the Fabric port, keeps the
+    // original's mod id and package, but the Fabric nodes have not been checked against it yet and the
+    // 26.x ones need their own save and load hooks. Adding Loader.FABRIC back is the whole of turning
+    // them on. See src/main/kaleidoscope/AGENTS.md.
     Integration(
         dir = "kaleidoscope",
         depsKey = "deps.kaleidoscope_cookery",
-        loaders = setOf(Loader.FABRIC, Loader.NEOFORGE),
+        loaders = setOf(Loader.NEOFORGE),
+        client = true,
         mixinConfig = "thirstwastaken2.kaleidoscope.mixins.json",
         neoForgeDependencies = listOf("kaleidoscope_cookery"),
     ),

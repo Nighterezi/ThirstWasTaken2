@@ -133,5 +133,6 @@
   "thirstwastaken2.config.enable_drink_tag_matching.tooltip": "Items their own mod tags as drinks restore thirst even when the config does not list them.",
   "thirstwastaken2.config.enable_keyword_matching": "Keyword Matching",
   "thirstwastaken2.config.enable_keyword_matching.tooltip": "Guesses thirst values for unknown modded items from their registry name.",
+  "thirstwastaken2.message.salt_water_refused": "Sea water would brew salty tea; use fresh water",
   "thirstwastaken2.config.note": "Only HUD and AppleSkin settings are client-side; the rest apply on the server."
 }

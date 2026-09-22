@@ -4,6 +4,11 @@
   "plugin": "com.thirstwastaken2.kaleidoscope.KaleidoscopeMixinPlugin",
   "compatibilityLevel": "${java}",
   "mixins": [
+    "ItemUtilsMixin",
+    "StockpotBlockEntityMixin",
+    "TeapotBlockEntityMixin",
+    "TeapotDripstoneMixin",
+    "TeapotItemMixin"
   ],
   "injectors": {
     "defaultRequire": 1
