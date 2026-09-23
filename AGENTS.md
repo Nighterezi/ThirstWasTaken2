@@ -114,9 +114,9 @@ Every difference between versions is listed in [docs/dev/VERSION-DIFFERENCES.md]
 
 ### Version policy
 
-- At most four Minecraft versions; adding one retires one. A NeoForge node on an existing version
-  does not count. **26.3 arrived and 26.1.x is still here, so there are five**: retiring 26.1.x is
-  the next version's job, and nothing else should be added before it is done.
+- No fixed limit on Minecraft versions or loaders, and adding one does not retire another. Every
+  node still costs a CI job and a fork in `platform/` wherever vanilla differs, so a node is
+  retired only when it is no longer worth that.
 - 1.21.1 is kept for modpacks. If a feature needs a core-code fork for it, retire 1.21.1 instead.
 
 ### Adding a Minecraft version
@@ -173,7 +173,7 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | Create | `deps.create`: `1.21.1-neoforge` | [src/main/create/AGENTS.md](src/main/create/AGENTS.md) |
 | Sophisticated Backpacks and Storage | `deps.sophisticated_core`: every NeoForge node but `26.3.x-neoforge` | [src/main/sophisticated/AGENTS.md](src/main/sophisticated/AGENTS.md) |
 | Supplementaries and Moonlight Lib | `deps.supplementaries`: both 1.21.1 nodes | [src/main/supplementaries/AGENTS.md](src/main/supplementaries/AGENTS.md) |
-| Kaleidoscope Cookery | `deps.kaleidoscope_cookery`: `1.21.1-neoforge`; the Fabric nodes pin Refabricated but do not build the integration yet | [src/main/kaleidoscope/AGENTS.md](src/main/kaleidoscope/AGENTS.md) |
+| Kaleidoscope Cookery | `deps.kaleidoscope_cookery`: `1.21.1-neoforge` and every Fabric node (Refabricated) | [src/main/kaleidoscope/AGENTS.md](src/main/kaleidoscope/AGENTS.md) |
 
 ### Adding an integration
 

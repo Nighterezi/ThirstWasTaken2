@@ -8,8 +8,6 @@ import com.thirstwastaken2.kaleidoscope.BrewedWater;
 import com.thirstwastaken2.kaleidoscope.BrewedWaterQuality;
 import com.thirstwastaken2.kaleidoscope.ReturnedWater;
 import com.thirstwastaken2.purity.WaterQuality;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -61,13 +59,27 @@ abstract class StockpotBlockEntityMixin implements BrewedWater {
         return removed;
     }
 
-    @Inject(method = "saveAdditional", at = @At("TAIL"))
-    private void thirst$saveGrade(CompoundTag tag, HolderLookup.Provider registries, CallbackInfo ci) {
-        BrewedWaterQuality.save(tag, thirst$heldWater());
+    // Minecraft's own methods, so remapped: the Fabric 1.21.x jars name them in intermediary. From
+    // 1.21.6 they take a ValueOutput / ValueInput rather than a tag.
+    //? if >=1.21.6 {
+    @Inject(method = "saveAdditional", at = @At("TAIL"), remap = true)
+    private void thirst$saveGrade(net.minecraft.world.level.storage.ValueOutput output, CallbackInfo ci) {
+        BrewedWaterQuality.save(output::putInt, thirst$heldWater());
     }
 
-    @Inject(method = "loadAdditional", at = @At("TAIL"))
-    private void thirst$loadGrade(CompoundTag tag, HolderLookup.Provider registries, CallbackInfo ci) {
-        thirst$quality = BrewedWaterQuality.load(tag);
+    @Inject(method = "loadAdditional", at = @At("TAIL"), remap = true)
+    private void thirst$loadGrade(net.minecraft.world.level.storage.ValueInput input, CallbackInfo ci) {
+        thirst$quality = BrewedWaterQuality.load(input::getIntOr);
     }
+    //?} else {
+    /*@Inject(method = "saveAdditional", at = @At("TAIL"), remap = true)
+    private void thirst$saveGrade(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries, CallbackInfo ci) {
+        BrewedWaterQuality.save(tag::putInt, thirst$heldWater());
+    }
+
+    @Inject(method = "loadAdditional", at = @At("TAIL"), remap = true)
+    private void thirst$loadGrade(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries, CallbackInfo ci) {
+        thirst$quality = BrewedWaterQuality.load((key, fallback) -> com.thirstwastaken2.platform.Vanilla.getInt(tag, key, fallback));
+    }
+    *///?}
 }

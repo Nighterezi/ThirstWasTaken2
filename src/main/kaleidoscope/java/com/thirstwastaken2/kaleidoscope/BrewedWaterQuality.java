@@ -3,19 +3,21 @@ package com.thirstwastaken2.kaleidoscope;
 import com.thirstwastaken2.ThirstWasTaken2;
 import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.purity.WaterQuality;
+import com.thirstwastaken2.platform.Vanilla;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
+
+import java.util.function.Consumer;
+import java.util.function.ObjIntConsumer;
+import java.util.function.Supplier;
 
 /**
  * The only place that reads a grade off what goes into a stockpot or a teapot, and reads and writes it on
@@ -48,25 +50,55 @@ public final class BrewedWaterQuality {
         return WaterPurity.sampleAt(world, pos);
     }
 
+    /**
+     * An empty teapot item about to scoop the water at {@code pos} out of the world: hands the water's
+     * grade to {@code scooped} and lets {@code pickup} take it, or refuses sea water and takes nothing.
+     * Sampled before the pickup, which takes the source block away.
+     */
+    public static ItemStack scoop(LivingEntity user, LevelAccessor level, BlockPos pos, BlockState state,
+                                  Consumer<WaterQuality> scooped, Supplier<ItemStack> pickup) {
+        WaterQuality quality = sample(level, pos, state);
+        if (quality != null && quality.salty()) {
+            refuseSalt(user);
+            return ItemStack.EMPTY;
+        }
+        scooped.accept(quality);
+        return pickup.get();
+    }
+
     /** Adds {@code quality} to the block entity data a teapot item carries, which the teapot loads once placed. */
     public static void stampItem(ItemStack teapot, WaterQuality quality) {
-        CustomData data = teapot.get(DataComponents.BLOCK_ENTITY_DATA);
-        if (quality == null || data == null) return;
-        CompoundTag tag = data.copyTag();
-        save(tag, quality);
-        teapot.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(tag));
+        if (quality != null) Vanilla.putBlockEntityInt(teapot, KEY, WaterPurity.storedValue(quality));
     }
 
-    public static void save(CompoundTag tag, WaterQuality quality) {
-        if (quality != null) tag.putInt(KEY, WaterPurity.storedValue(quality));
+    /**
+     * Writes {@code quality} through {@code putInt}, a {@code CompoundTag}'s on 1.21.1 or a
+     * {@code ValueOutput}'s from 1.21.6, so the mixins' version forks differ only in their signature.
+     */
+    public static void save(ObjIntConsumer<String> putInt, WaterQuality quality) {
+        if (quality != null) putInt.accept(KEY, WaterPurity.storedValue(quality));
     }
 
-    /** What {@link #save} wrote, or {@code null}: a block filled before the integration existed has no grade to keep. */
-    public static WaterQuality load(CompoundTag tag) {
-        if (!tag.contains(KEY)) return null;
-        int stored = tag.getInt(KEY);
+    /** {@link #save}, handing {@code data} back, for a {@code @ModifyArg} on what a teapot item is given. */
+    public static <T> T saved(T data, ObjIntConsumer<String> putInt, WaterQuality quality) {
+        save(putInt, quality);
+        return data;
+    }
+
+    /**
+     * What {@link #save} wrote, or {@code null}: a block filled before the integration existed has no
+     * grade to keep. {@code getIntOr} is a {@code ValueInput}'s, or {@code Vanilla.getInt} over a tag.
+     */
+    public static WaterQuality load(IntReader getIntOr) {
+        int stored = getIntOr.read(KEY, WaterPurity.BLOCK_UNSET);
         if (stored == WaterPurity.BLOCK_SALT) return WaterQuality.SALT;
         return stored > WaterPurity.BLOCK_UNSET ? WaterQuality.fresh(stored - 1) : null;
+    }
+
+    /** An int under a key, or the fallback when there is none. */
+    @FunctionalInterface
+    public interface IntReader {
+        int read(String key, int fallback);
     }
 
     /**
@@ -74,6 +106,6 @@ public final class BrewedWaterQuality {
      * own refusals are. The teapot runs on both sides, so only the server says it, once.
      */
     public static void refuseSalt(LivingEntity user) {
-        if (user instanceof ServerPlayer player) player.displayClientMessage(Component.translatable(SALT_REFUSED), true);
+        if (user instanceof ServerPlayer player) Vanilla.sendOverlayMessage(player, Component.translatable(SALT_REFUSED));
     }
 }

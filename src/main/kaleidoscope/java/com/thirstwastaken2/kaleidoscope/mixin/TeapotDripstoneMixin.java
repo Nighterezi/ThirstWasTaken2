@@ -13,8 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Water dripping into a teapot from pointed dripstone is graded as it is for a cauldron. A class of its
- * own because {@code receiveDripstoneFluid} is only in the 1.21.1 builds, so a node without it leaves
- * this out of the config rather than making the teapot's other hooks optional.
+ * own because {@code receiveDripstoneFluid} is only in the 1.21.1 builds, so the plugin skips this
+ * class where the teapot has no such method, rather than making the teapot's other hooks optional.
  */
 @Mixin(value = TeapotBlockEntity.class, remap = false)
 abstract class TeapotDripstoneMixin {

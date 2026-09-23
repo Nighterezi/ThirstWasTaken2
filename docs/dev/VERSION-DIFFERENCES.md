@@ -131,6 +131,7 @@ versions write `recipe`. Nothing else in the generated files moved.
 
 | Difference | Code |
 |---|---|
+| A player's action bar message has its own method, `sendOverlayMessage` | `Vanilla.sendOverlayMessage`, which the Kaleidoscope Cookery Teapot's sea water refusal calls |
 | The HUD draw target was renamed `GuiGraphicsExtractor` | replacement |
 | A block's render layer follows its textures, so a cut-out model needs no registration | `ClientLoader.renderCutout`; before it Fabric registers the layer and NeoForge reads `render_type` from the model |
 | Blockstate definitions became `BlockStateModelDispatcher` | `HangingPotModels` |
@@ -161,6 +162,7 @@ already has by default. The stack the furnace hands out is the same; see
 
 | Difference | Code |
 |---|---|
+| A block item's block entity data became `TypedEntityData`, naming its type rather than keeping it under `id` | `Vanilla.putBlockEntityInt`, which a Kaleidoscope Cookery teapot item scooping water calls |
 | Fabric API's v1 resource loader replaced `ResourceManagerHelper`, which is gone by 1.21.11, and a reload listener no longer names itself | Fabric `Loader.onServerDataReload`, written `>=1.21.11` since no node sits between |
 | Fonts are named through `FontDescription` | `Vanilla.dropletFont` |
 | The chain became the iron chain, item and texture | `ThirstRecipeProvider`, `HangingPotModels` |
@@ -171,6 +173,7 @@ already has by default. The stack the furnace hands out is the same; see
 
 | Difference | Code |
 |---|---|
+| A block entity saves and loads through `ValueOutput` / `ValueInput` | `StockpotBlockEntityMixin`, `TeapotBlockEntityMixin` (Kaleidoscope Cookery) |
 | Fabric API gained the HUD element and status bar height registries | `ClientLoader.addRightStatusBar`; on 1.21.1 `GuiMixin` draws the bar after the food bar and moves the air bubbles up |
 | Fabric's block render layer map moved into its rendering module and takes a chunk section layer | Fabric `ClientLoader.renderCutout` |
 | Saving and loading an entity take a `ValueOutput` / `ValueInput` rather than a `CompoundTag` | `TestFixtures.savePlayer`, `loadPlayer` |
@@ -225,12 +228,13 @@ it makes no difference to any jar.
 
 | Difference | Code |
 |---|---|
+| `BlockItem.setBlockEntityData` takes a `TagValueOutput` | `TeapotBlockEntityMixin` (Kaleidoscope Cookery) |
 | A block's description id is known inside its constructor (on 1.21.1 asking caches a wrong name) | `Vanilla.isWaterCauldron`; on 1.21.1 `BlocksMixin` marks the water cauldron's construction |
 | GUI blits take a render pipeline and a tint | `ClientVanilla.blit`, `ClientVanilla.blitSprite`; on 1.21.1 both are render state, set before the draw and reset after it |
 | A button draws its contents through `renderContents`, and presses take the input that caused them | `ClientVanilla.button` |
 | `ServerPlayer#level` returns a `ServerLevel` | `Vanilla.level` |
 | The drinking sound became a registry holder | `Vanilla.drinkSound` |
-| Bucket pickup takes any living entity | `BucketItemMixin` |
+| Bucket pickup takes any living entity | `BucketItemMixin`, `TeapotItemMixin` (Kaleidoscope Cookery) |
 | The food check a sprint asks moved from the client's `LocalPlayer` onto `Player` | `PlayerMixin`; on 1.21.1 `LocalPlayerMixin` hooks the client's own copy, and `TestFixtures.canSprint` answers from vanilla's rule there, because a server test cannot reach it |
 | A NeoForge attachment saves through a map codec, so the value goes under a field | NeoForge `Loader.playerData`; a world carried from one to the other starts at full thirst |
 | NeoForge's `AddReloadListenerEvent` became `AddServerReloadListenersEvent`, which takes the listener's id | NeoForge `Loader.onServerDataReload` (written `>=1.21.11`) |

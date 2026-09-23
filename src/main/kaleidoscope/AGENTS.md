@@ -6,15 +6,15 @@ bucket had is lost on the way in. This directory is where that gets fixed. The p
 and what is still to do are in
 [docs/dev/integration/KALEIDOSCOPE-COOKERY-INTEGRATION.md](../../../docs/dev/integration/KALEIDOSCOPE-COOKERY-INTEGRATION.md).
 
-**Built on `1.21.1-neoforge` only, for now.** Its row in the integration table names NeoForge alone,
-so no Fabric node compiles this directory, although nothing here names a loader. What turning Fabric
-on takes is in the plan. What it does there:
+**Built on the six nodes that set the key**: `1.21.1-neoforge` and the five Fabric nodes. What it
+does there:
 
 - **the stockpot and the teapot keep the grade** of the water poured in, and hand it back on the
   bucket taken out;
 - **a teapot picked up and placed again** keeps it, in the item's block entity data;
 - **an empty teapot item dipped into water** samples it where it lies, as a bucket does;
-- **dripstone** fills a teapot with `dripstonePurity` water, as it does a cauldron;
+- **dripstone** fills a teapot with `dripstonePurity` water, as it does a cauldron (the 1.21.1 builds
+  only: the others do not let dripstone fill a teapot at all);
 - **sea water**: the teapot refuses it, from a bucket or from the world, since tea brewed from it
   comes out safe; the stockpot takes it and hands it back salty;
 - and **Jade** names the grade under the crosshair.
@@ -30,14 +30,12 @@ on the unsupported official Fabric build.
 | `1.21.1-neoforge` | the official mod | `kaleidoscope-cookery` |
 | `1.21.1`, `1.21.11`, `26.1.x`, `26.2.x`, `26.3.x` | Refabricated, the Fabric port | `kaleidoscope-cookery-refabricated` |
 
-The Fabric nodes pin it and run it in `runClient`, but do not compile this directory yet.
-
 The official mod has no NeoForge build past 1.21.1, so the other NeoForge nodes do not set the key and
 do not compile this directory. The official Fabric build stopped at 1.0.1, before the teapot, and is not
 supported. Refabricated has the same mod id and the same package, so one directory serves both, and
-since it names no loader and no fluid API, **both loaders are meant to compile it**, as with
-[src/main/supplementaries](../supplementaries/AGENTS.md). Keep it that way while only NeoForge does:
-`checkLoaderSeam` does not hold it to that until Fabric is back in its row. Each key is pinned by Modrinth version id; the
+since it names no loader and no fluid API, **both loaders compile it**, as with
+[src/main/supplementaries](../supplementaries/AGENTS.md), and `checkLoaderSeam` keeps it that way.
+Each key is pinned by Modrinth version id; the
 Fabric uploads of different Minecraft versions share one version number. `1.21.11` is frozen upstream at
 1.3.0.9, and `update_mc_deps.py` leaves it alone.
 
@@ -48,7 +46,8 @@ is optional and no table names it.
 
 ```
 kaleidoscope/java/com/thirstwastaken2/kaleidoscope/
-  KaleidoscopePresence       the gate: a classpath probe for the teapot, then one per mixin target
+  KaleidoscopePresence       the gate: a classpath probe for the teapot, then one per mixin target,
+                             and a read of the class file for a method only some builds have
   KaleidoscopeMixinPlugin    applies each mixin only where the gate allows it
   BrewedWater                the mod's own interface on both block entities: the grade they hold now
   BrewedWaterQuality         the only place that reads a grade off what goes in, and stores it
@@ -57,7 +56,9 @@ kaleidoscope/java/com/thirstwastaken2/kaleidoscope/
   mixin/TeapotBlockEntityMixin     addTeaFluid (and the salt refusal), removeTeaFluid, getDrops, save and load
   mixin/TeapotDripstoneMixin       receiveDripstoneFluid, which only the 1.21.1 builds have
   mixin/TeapotItemMixin            an empty teapot scooping world water
-  mixin/ItemUtilsMixin             stamps the bucket both blocks hand back
+  mixin/ItemUtilsMixin             stamps the bucket both blocks hand back through ItemUtils
+  mixin/ItemUtilsPlayerMixin       the same through giveItemToPlayer, which only Refabricated has
+  mixin/InventoryMixin             the same where Refabricated's teapot fills a bucket in the slot
 kaleidoscope/resources/
   thirstwastaken2.kaleidoscope.mixins.json
 ../../client/kaleidoscope/java/com/thirstwastaken2/client/kaleidoscope/
@@ -77,10 +78,20 @@ so the grade lives in a `@Unique` field on the block entity, saved as one int un
   `thirst$heldWater` answers null otherwise, which is what is saved, what Jade shows and what a remove
   call stamps. Every way into that state writes the field again, so a stale value is never read and
   nothing needs clearing when the soup is served.
-- **Out through `ItemUtils.getItemToLivingEntity`.** Both remove calls end there, the teapot's
-  through `FluidUtils.fillItem`. `ReturnedWater.during` holds the grade for the length of the call and
-  restores what was there however it ends. It is a `ThreadLocal` because both blocks run their calls
-  on the client too, and in single player the two threads run them at once.
+- **Out wherever the bucket lands while a remove call runs.** `ReturnedWater.during` holds the grade
+  for the length of the call and restores what was there however it ends. It is a `ThreadLocal`
+  because both blocks run their calls on the client too, and in single player the two threads run them
+  at once. The stockpot hands its bucket over through `ItemUtils.getItemToLivingEntity` on both
+  loaders, and so does the teapot on NeoForge, through `FluidUtils.fillItem`. Refabricated's `fillItem`
+  goes through the Fabric Transfer API instead, which swaps the empty bucket for a full one **in the
+  player's inventory slot**, through `Inventory.setItem`, and names `ItemUtils` only for a creative
+  player's extra bucket (`giveItemToPlayer`). So three mixins stamp: `ItemUtilsMixin`,
+  `ItemUtilsPlayerMixin` and `InventoryMixin`. A second stamp of the same grade changes nothing, and no
+  other water enters an inventory during a remove call.
+- **The Transfer API keeps an empty bucket's components.** On Fabric a Dirty bucket poured into a
+  teapot leaves an empty bucket that still says Dirty, and filling that same bucket again brings the
+  grade back with no help from this mod. A test has to draw with a fresh bucket, or it passes for the
+  wrong reason.
 - **Stamped through `WaterPurity.setQuality`**, so fresh water gets `water_salty: false` and sea water
   its sprite. A block filled before the integration existed has no grade and hands back a plain
   bucket, which reads as `defaultPurity`.
@@ -100,13 +111,39 @@ The same three layers as Supplementaries.
    loads a class, and names no class of the mod's, no Minecraft class and no loader. The teapot's class
    is the version check: the official Fabric 1.0.1 has the same mod id and package but no teapot, so
    without it the whole integration is off and one warning says to install Refabricated. Past that,
-   each target is probed by name, and a missing one logs once and is skipped.
+   each target is probed by name, and a missing one logs once and is skipped. A mixin on a method only
+   some builds have (`receiveDripstoneFluid`, `giveItemToPlayer`) is applied only where `hasMethod`
+   finds it in the target's class file, read with ASM, so a build without it skips that mixin rather
+   than fails it.
 3. **Mixin plugin.** `KaleidoscopeMixinPlugin.shouldApplyMixin` asks the gate for the mixin's own
-   target, so a class renamed upstream only takes its own mixins down. `onLoad` asks too, so the warning
-   about an unsupported build is logged at startup whatever the config lists.
+   target, so a class renamed upstream only takes its own mixins down, and `NEEDS_METHOD` for the two
+   that need a method. `onLoad` asks too, so the warning about an unsupported build is logged at
+   startup whatever the config lists.
 
-Mixins here match their targets **by name alone, with no descriptor**, as in Supplementaries, so it
-does not matter that the Fabric jar uses intermediary names for Minecraft types.
+## Names on Fabric
+
+The mod's own methods and fields are matched **by name alone, with no descriptor**, and the mixins say
+`remap = false`, as in Supplementaries: the Fabric jars keep the mod's own names. But Refabricated's
+1.21.1 and 1.21.11 jars are in intermediary for Minecraft's names, so a Minecraft method the mod
+overrides is `method_11007` there, not `saveAdditional`. Every injection on a Minecraft name says
+`remap = true` on itself: `saveAdditional`, `loadAdditional`, `TeapotItem.use`, the `setBlockEntityData`
+and `pickupBlock` calls, and `InventoryMixin`. Loom rewrites those strings in the built jar; NeoForge
+and 26.x have nothing to rewrite. `fillFluid` is the mod's own, so its `@At` says `remap = false` and
+has no descriptor. Check a change here in the built `1.21.1` jar with `javap -v`, not only in a dev
+run, which uses Mojang names throughout.
+
+## Version forks
+
+Only in the mixins, each body one line:
+
+| Difference | Where |
+|---|---|
+| `saveAdditional` / `loadAdditional` take a `ValueOutput` / `ValueInput` from 1.21.6 | both block entity mixins; `BrewedWaterQuality.save` / `load` take `putInt` / `getIntOr`, so each branch makes the same call |
+| `getDrops` hands `setBlockEntityData` a `TagValueOutput` after 1.21.1 | `TeapotBlockEntityMixin` |
+| `pickupBlock` takes any `LivingEntity` after 1.21.1 | `TeapotItemMixin`, whose body is `BrewedWaterQuality.scoop` |
+
+Vanilla's own differences go through `Vanilla`: the item's block entity data (`putBlockEntityInt`,
+`TypedEntityData` from 1.21.9) and the action bar (`sendOverlayMessage`, from 26.1).
 
 ## Checking it
 
@@ -121,4 +158,8 @@ does not matter that the Fabric jar uses intermediary names for Minecraft types.
   header says how to run and verify it. Every `execute` line asserts its own "Test passed". It covers
   a Dirty bucket through each block, sea water through the stockpot and refused by the teapot, a
   teapot of Murky water picked up, placed and emptied, a teapot item dipped in a swamp and in the sea,
-  and dripstone, and leaves two Jade screenshots. It passed on `1.21.1-neoforge` on 2026-09-22.
+  and dripstone, and leaves two Jade screenshots. It passed whole on `1.21.1-neoforge` and `1.21.1`
+  on 2026-09-23, and on `1.21.11`, `26.1.x`, `26.2.x` and `26.3.x` with only the two dripstone lines
+  failing, as they must there. Run again on the four Fabric nodes after the pins moved to
+  Refabricated 1.5.1, with the same result. A 26.x world needs its `data/minecraft` folder next to `level.dat`,
+  where those versions keep the world generation settings.

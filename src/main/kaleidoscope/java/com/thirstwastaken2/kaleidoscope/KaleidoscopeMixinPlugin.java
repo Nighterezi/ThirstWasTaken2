@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -13,6 +14,15 @@ import java.util.Set;
  * does not take the stockpot down with it.
  */
 public final class KaleidoscopeMixinPlugin implements IMixinConfigPlugin {
+    /**
+     * Mixins on a method only some builds have, by simple name, with that method: applied only where the
+     * target declares it. Dripstone fills a teapot only on the 1.21.1 builds; only Refabricated hands a
+     * player a bucket through {@code giveItemToPlayer}.
+     */
+    private static final Map<String, String> NEEDS_METHOD = Map.of(
+            "TeapotDripstoneMixin", "receiveDripstoneFluid",
+            "ItemUtilsPlayerMixin", "giveItemToPlayer");
+
     @Override
     public void onLoad(String mixinPackage) {
         // Asked here as well as per mixin, so the warning about an unsupported build is logged at startup
@@ -27,7 +37,10 @@ public final class KaleidoscopeMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        return KaleidoscopePresence.hasTarget(targetClassName);
+        String method = NEEDS_METHOD.get(mixinClassName.substring(mixinClassName.lastIndexOf('.') + 1));
+        return method == null
+                ? KaleidoscopePresence.hasTarget(targetClassName)
+                : KaleidoscopePresence.hasMethod(targetClassName, method);
     }
 
     @Override

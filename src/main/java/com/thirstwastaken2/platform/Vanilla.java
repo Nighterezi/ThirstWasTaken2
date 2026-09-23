@@ -237,6 +237,34 @@ public final class Vanilla {
         /*return tag.contains(key, net.minecraft.nbt.Tag.TAG_ANY_NUMERIC) ? tag.getInt(key) : fallback;*/
     }
 
+    /**
+     * Adds one int to the block entity data a block item carries, and does nothing when it carries
+     * none. From 1.21.9 that data names its block entity type rather than keeping it under {@code id}.
+     */
+    public static void putBlockEntityInt(ItemStack stack, String key, int value) {
+        //? if >=1.21.9 {
+        net.minecraft.world.item.component.TypedEntityData<net.minecraft.world.level.block.entity.BlockEntityType<?>> data =
+                stack.get(net.minecraft.core.component.DataComponents.BLOCK_ENTITY_DATA);
+        if (data == null) return;
+        net.minecraft.nbt.CompoundTag tag = data.copyTagWithoutId();
+        tag.putInt(key, value);
+        stack.set(net.minecraft.core.component.DataComponents.BLOCK_ENTITY_DATA,
+                net.minecraft.world.item.component.TypedEntityData.of(data.type(), tag));
+        //?} else {
+        /*if (!stack.has(net.minecraft.core.component.DataComponents.BLOCK_ENTITY_DATA)) return;
+        net.minecraft.world.item.component.CustomData.update(net.minecraft.core.component.DataComponents.BLOCK_ENTITY_DATA,
+                stack, tag -> tag.putInt(key, value));
+        *///?}
+    }
+
+    /** Shows {@code message} in a player's action bar. 26.1 gave it a method of its own. */
+    public static void sendOverlayMessage(net.minecraft.world.entity.player.Player player, net.minecraft.network.chat.Component message) {
+        //? if >=26.1 {
+        player.sendOverlayMessage(message);
+        //?} else
+        /*player.displayClientMessage(message, true);*/
+    }
+
     /** Whether a stack is used with the drinking animation. 1.21.2 renamed {@code UseAnim} to {@code ItemUseAnimation}. */
     public static boolean isDrinkAnimation(ItemStack stack) {
         //? if >=1.21.2 {

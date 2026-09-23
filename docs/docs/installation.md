@@ -59,7 +59,7 @@ All optional except Fabric API. Versions are listed in the order 26.3, 26.2, 26.
 | [Create Fly](https://modrinth.com/mod/create-fly) | 26.2-rc-2-6.0.9-1, 26.1.2-6.0.9-4 | The [Sand Filter](/docs/features/create). 26.2 and 26.1.2 only. |
 | [Jade](https://modrinth.com/mod/jade) | 26.3.1, 26.2.11, 26.1.11, 21.1.6, 15.10.6 | The [grade of the water](/docs/features/water-purity#checking-water-with-jade) under the crosshair. Client only. |
 | [Supplementaries](https://modrinth.com/mod/supplementaries) | 1.21.1-3.9.9 | [Water that keeps its grade](/docs/features/supplementaries) in Jars, Goblets and Faucets, and a Jar or Goblet of water that can be drunk. 1.21.1 only. |
-| [Kaleidoscope Cookery Refabricated](https://modrinth.com/mod/kaleidoscope-cookery-refabricated) | 1.5.1-fabric+mc26.3, 1.5.1-fabric+mc26.2, 1.5.1-fabric+mc26.1.2, 1.3.0.9-fabric+mc1.21.11, 1.5.1-fabric+mc1.21.1 | Thirst from its [teas and soups](/docs/features/kaleidoscope-cookery). The official Fabric build stopped at 1.0.1 and only gets the thirst values. |
+| [Kaleidoscope Cookery Refabricated](https://modrinth.com/mod/kaleidoscope-cookery-refabricated) | 1.5.1-fabric+mc26.3, 1.5.1-fabric+mc26.2, 1.5.1-fabric+mc26.1.2, 1.3.0.9-fabric+mc1.21.11, 1.5.1-fabric+mc1.21.1 | Thirst from its [teas and soups](/docs/features/kaleidoscope-cookery), and water that keeps its grade in the Stockpot and the Teapot. The official Fabric build stopped at 1.0.1 and only gets the thirst values. |
 
 ### NeoForge
 

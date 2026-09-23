@@ -9,7 +9,6 @@ import com.thirstwastaken2.kaleidoscope.BrewedWaterQuality;
 import com.thirstwastaken2.purity.WaterQuality;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.BucketPickup;
@@ -28,22 +27,28 @@ import org.spongepowered.asm.mixin.injection.At;
 abstract class TeapotItemMixin {
     // Sampled before the call: it takes the source block away. Both sides sample, so the client agrees
     // with the server about a refusal rather than showing a teapot that fills and then empties again.
-    @WrapOperation(method = "use", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/world/level/block/BucketPickup;pickupBlock(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/level/LevelAccessor;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Lnet/minecraft/world/item/ItemStack;"))
-    private ItemStack thirst$sampleScooped(BucketPickup pickup, Player player, LevelAccessor level, BlockPos pos,
+    // Item.use and pickupBlock are Minecraft's, so remapped; pickupBlock took the Player itself on 1.21.1.
+    //? if >1.21.1 {
+    @WrapOperation(method = "use", remap = true, at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/world/level/block/BucketPickup;pickupBlock(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/level/LevelAccessor;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Lnet/minecraft/world/item/ItemStack;"))
+    private ItemStack thirst$sampleScooped(BucketPickup pickup, LivingEntity user, LevelAccessor level, BlockPos pos,
                                           BlockState state, Operation<ItemStack> original,
                                           @Share("scooped") LocalRef<WaterQuality> scooped) {
-        WaterQuality quality = BrewedWaterQuality.sample(level, pos, state);
-        if (quality != null && quality.salty()) {
-            BrewedWaterQuality.refuseSalt(player);
-            return ItemStack.EMPTY;
-        }
-        scooped.set(quality);
-        return original.call(pickup, player, level, pos, state);
+        return BrewedWaterQuality.scoop(user, level, pos, state, scooped::set, () -> original.call(pickup, user, level, pos, state));
     }
+    //?} else {
+    /*@WrapOperation(method = "use", remap = true, at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/world/level/block/BucketPickup;pickupBlock(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/level/LevelAccessor;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Lnet/minecraft/world/item/ItemStack;"))
+    private ItemStack thirst$sampleScooped(BucketPickup pickup, net.minecraft.world.entity.player.Player user, LevelAccessor level, BlockPos pos,
+                                          BlockState state, Operation<ItemStack> original,
+                                          @Share("scooped") LocalRef<WaterQuality> scooped) {
+        return BrewedWaterQuality.scoop(user, level, pos, state, scooped::set, () -> original.call(pickup, user, level, pos, state));
+    }
+    *///?}
 
-    @WrapOperation(method = "use", at = @At(value = "INVOKE",
-            target = "Lcom/github/ysbbbbbb/kaleidoscopecookery/item/TeapotItem;fillFluid(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/material/Fluid;Lnet/minecraft/world/entity/LivingEntity;)Z"))
+    // fillFluid is the mod's own, matched by name alone so its descriptor needs no remapping.
+    @WrapOperation(method = "use", remap = true, at = @At(value = "INVOKE", remap = false,
+            target = "Lcom/github/ysbbbbbb/kaleidoscopecookery/item/TeapotItem;fillFluid"))
     private boolean thirst$stampScooped(ItemStack teapot, Fluid fluid, LivingEntity user, Operation<Boolean> original,
                                         @Share("scooped") LocalRef<WaterQuality> scooped) {
         boolean filled = original.call(teapot, fluid, user);

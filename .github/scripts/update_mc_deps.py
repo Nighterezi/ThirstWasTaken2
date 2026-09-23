@@ -30,9 +30,14 @@ Rules:
   people to read, so a bump rewrites them too, and only there: CHANGELOG.md says what a past release was
   built against and has to keep saying it. All three print Fabric API and NeoForge; the first two print
   Fabric Loader; only the installation page prints the optional mods, and only their Fabric builds.
+  An integration's own page under docs/dev/integration may print its pins too, ids included, as the
+  Kaleidoscope Cookery one does; a dependency lists every such page in `mirrors` (Fabric nodes) and
+  `neoforge_mirrors` (NeoForge nodes), and a bump rewrites the number and, when pinned by id, the id.
+  Pages that say what a version was written or tested against (`Written on ... from ...`, manual test
+  logs) are records like CHANGELOG.md and stay out of those lists.
 - `--check` goes the other way: it reports a version the properties file pins that those pages do
-  not name, which is what a bump made by hand leaves behind. It reads those three files and nothing
-  else, so it needs no network and gates a pull request in well under a second. What lets it work
+  not name, which is what a bump made by hand leaves behind. It reads the properties file and those
+  pages and nothing else, so it needs no network and gates a pull request in well under a second. What lets it work
   offline is that an id-pinned version carries its number in a comment above it, so `--check` also
   fails when one of those comments is missing, on every node rather than only the Fabric ones.
 
@@ -61,6 +66,9 @@ VERSION_DIFFERENCES = ROOT / "docs" / "dev" / "VERSION-DIFFERENCES.md"
 # because most other mentions must not move: CHANGELOG.md records what a past release was built against
 # and has to keep saying so, and docs/dev names versions inside prose no rewrite can follow.
 DOC_MIRRORS = (README, INSTALLATION, VERSION_DIFFERENCES)
+KALEIDOSCOPE_DOC = ROOT / "docs" / "dev" / "integration" / "KALEIDOSCOPE-COOKERY-INTEGRATION.md"
+# Every page some dependency mirrors, in the order they are rewritten and reported.
+ALL_MIRRORS = DOC_MIRRORS + (KALEIDOSCOPE_DOC,)
 # The pages that print Fabric Loader. VERSION-DIFFERENCES.md lists each node's loader API only.
 LOADER_MIRRORS = (README, INSTALLATION)
 # Modrinth puts the loader on some version numbers. The docs leave it off.
@@ -82,7 +90,9 @@ class ModrinthDep:
     by_id: bool = False
     """Pinned by Modrinth version id instead of version number."""
     mirrors: tuple[Path, ...] = (INSTALLATION,)
-    """The doc mirrors that print this dependency's version."""
+    """The doc mirrors that print this dependency's version on the Fabric nodes."""
+    neoforge_mirrors: tuple[Path, ...] = ()
+    """The doc mirrors that print its version on the NeoForge nodes. No user page names a NeoForge build."""
     neoforge_project: str | None = None
     """Modrinth project slug on the NeoForge nodes, when that loader's build is a different project."""
     frozen: tuple[str, ...] = ()
@@ -90,6 +100,9 @@ class ModrinthDep:
 
     def project_for(self, node: str) -> str:
         return self.neoforge_project if self.neoforge_project and node_loader(node) == "neoforge" else self.project
+
+    def mirrors_for(self, node: str) -> tuple[Path, ...]:
+        return self.neoforge_mirrors if node_loader(node) == "neoforge" else self.mirrors
 
 
 # Every per-node dependency the build resolves from Modrinth or from a Maven that publishes the same
@@ -117,8 +130,10 @@ MODRINTH_DEPS = [
     ModrinthDep("moonlight", "moonlight", by_id=True, mirrors=()),
     # Refabricated is the Fabric port and the official mod is the NeoForge build, under one mod id. Its
     # Fabric uploads of different Minecraft versions share one version number, so it is pinned by id.
-    # 1.21.11 is frozen upstream at 1.3.0.9.
-    ModrinthDep("kaleidoscope_cookery", "kaleidoscope-cookery-refabricated", by_id=True, mirrors=(),
+    # 1.21.11 is frozen upstream at 1.3.0.9. The installation page prints the Fabric builds; the
+    # integration page's table prints every build and its id.
+    ModrinthDep("kaleidoscope_cookery", "kaleidoscope-cookery-refabricated", by_id=True,
+                mirrors=(INSTALLATION, KALEIDOSCOPE_DOC), neoforge_mirrors=(KALEIDOSCOPE_DOC,),
                 neoforge_project="kaleidoscope-cookery", frozen=("1.21.11",)),
     # Kaleidoscope Cookery's required library on the Fabric 1.21.x nodes, runClient only.
     ModrinthDep("forge_config_api_port", "forge-config-api-port", by_id=True, mirrors=()),
@@ -137,7 +152,9 @@ class Change:
     new_label: str
     url: str
     mirrors: tuple[Path, ...] = ()
-    """The doc mirrors to rewrite; empty when no page names this version, as for every NeoForge one."""
+    """The doc mirrors to rewrite; empty when no page names this version."""
+    by_id: bool = False
+    """`old` and `new` are Modrinth version ids, which a mirror may print beside the number."""
 
 
 def get_json(url: str):
@@ -294,7 +311,8 @@ def check_modrinth(props: Properties, node: str, minecraft: str, dep: ModrinthDe
         old_label=current["version_number"],
         new_label=newest["version_number"],
         url=f"https://modrinth.com/mod/{project}/version/{newest['id']}",
-        mirrors=dep.mirrors if node_loader(node) == "fabric" else (),
+        mirrors=dep.mirrors_for(node),
+        by_id=dep.by_id,
     ))
 
 
@@ -374,7 +392,7 @@ def update_docs(changes: list[Change], dry_run: bool) -> dict[Path, list[str]]:
     Returns the swaps made, per file, for the pull request body.
     """
     updated: dict[Path, list[str]] = {}
-    for path in DOC_MIRRORS:
+    for path in ALL_MIRRORS:
         swaps: dict[str, str] = {}
         for change in changes:
             if path not in change.mirrors:
@@ -382,6 +400,9 @@ def update_docs(changes: list[Change], dry_run: bool) -> dict[Path, list[str]]:
             for old, new in zip(forms(change.old_label), forms(change.new_label)):
                 if old != new:
                     swaps[old] = new
+            # A page that prints the id beside the number, as the integration pages do, keeps it in step.
+            if change.by_id:
+                swaps[change.old] = change.new
         if not swaps:
             continue
 
@@ -411,7 +432,7 @@ def check_docs(props: Properties) -> list[str]:
     reads the properties file and those pages and nothing else, so it needs no network and is cheap
     enough to gate a pull request.
     """
-    pages = {path: read(path) for path in DOC_MIRRORS}
+    pages = {path: read(path) for path in ALL_MIRRORS}
 
     def names(path: Path, version: str) -> bool:
         return any(version_pattern(form).search(pages[path]) for form in forms(version))
@@ -449,9 +470,7 @@ def check_docs(props: Properties) -> list[str]:
                                     f"with no version above it. Put the number in a comment, as "
                                     f"`# 3.0.10+mc26.2, the Fabric upload.` does.")
                     continue
-            # Only the Fabric nodes reach the pages: neither of them names a NeoForge build of a mod.
-            if node_loader(node) == "fabric":
-                problems += missing(dep.key, label, dep.mirrors, node)
+            problems += missing(dep.key, label, dep.mirrors_for(node), node)
     return problems
 
 

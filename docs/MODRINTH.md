@@ -147,7 +147,7 @@ Thirst Was Taken 2 integrates seamlessly with popular mods out of the box:
     <td width="55%">
       <b><a href="https://nighterezi.github.io/ThirstWasTaken2/docs/features/supplementaries">Supplementaries</a></b><br>
       <i>Fabric and NeoForge: <a href="https://modrinth.com/mod/supplementaries">Supplementaries</a> on 1.21.1</i><br><br>
-      Water keeps its purity grade in Jars, Goblets and Faucets, and sea water stays sea water. A Jar or a Goblet of water can be drunk straight from the block, and the water inside is coloured by its grade. Faucets fill and empty hanging pots and grade the water they draw from a lake.
+      Water keeps its purity grade in Jars, Goblets and Faucets, and sea water stays sea water. A Jar or a Goblet of water can be drunk straight from the block. Faucets fill and empty hanging pots and grade the water they draw from a lake.
     </td>
     <td width="45%">
       <img alt="Five jars of water side by side, brown, grey blue, blue, cyan and turquoise, with Jade naming the middle one Clean" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/supplementaries-jars.png" width="100%">
@@ -157,7 +157,7 @@ Thirst Was Taken 2 integrates seamlessly with popular mods out of the box:
     <td width="55%">
       <b><a href="https://nighterezi.github.io/ThirstWasTaken2/docs/features/kaleidoscope-cookery">Kaleidoscope Cookery</a></b><br>
       <i>NeoForge: <a href="https://modrinth.com/mod/kaleidoscope-cookery">Kaleidoscope Cookery</a> on 1.21.1<br>
-      Fabric: <a href="https://modrinth.com/mod/kaleidoscope-cookery-refabricated">Kaleidoscope Cookery Refabricated</a>, teas and soups only</i><br><br>
+      Fabric: <a href="https://modrinth.com/mod/kaleidoscope-cookery-refabricated">Kaleidoscope Cookery Refabricated</a>, every version</i><br><br>
       Teas, milk tea and soups restore thirst. Water keeps its purity grade in the Stockpot and the Teapot, and the Teapot refuses sea water.
     </td>
     <td width="45%">

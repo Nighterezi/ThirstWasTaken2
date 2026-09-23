@@ -2,6 +2,20 @@
 
 All notable changes to ThirstWasTaken2 are documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- Compatibility with Kaleidoscope Cookery Refabricated on Fabric:
+  - The Stockpot and the Teapot keep the grade of the water poured into them, including a Teapot
+    picked up and placed again or dipped into water.
+  - The Teapot refuses sea water. The Stockpot takes it and hands it back still salty.
+  - With Jade installed, looking at a Stockpot or a Teapot shows the grade of the water inside.
+
+### Notes
+
+- The Teapot fills from dripstone only on Minecraft 1.21.1, where the water it gets is Pure.
+
 ## [1.1.0] - 2026-09-23
 
 ### Added

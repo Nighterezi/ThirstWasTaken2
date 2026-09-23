@@ -71,10 +71,10 @@ bucket poured in and taken back out comes out Clean, and sea water comes out fre
 |---|---|---|---|---|
 | 1 | Build dependency and gate | build | the six in the table | **Done** (2026-09-22) |
 | 2 | Thirst values for teas, milk tea, soups | data | all (config) | **Done** (2026-09-22) |
-| 3 | Stockpot keeps the water's grade | bug | six | **Done on `1.21.1-neoforge`** (2026-09-22); Fabric to do |
-| 4 | Teapot keeps the water's grade (bucket, picked up, dripstone, scooped) | bug | six (dripstone: 1.21.1 only) | **Done on `1.21.1-neoforge`** (2026-09-22); Fabric to do |
+| 3 | Stockpot keeps the water's grade | bug | six | **Done** (NeoForge 2026-09-22, Fabric 2026-09-23) |
+| 4 | Teapot keeps the water's grade (bucket, picked up, dripstone, scooped) | bug | six (dripstone: 1.21.1 only) | **Done** (NeoForge 2026-09-22, Fabric 2026-09-23) |
 | 5 | Salt water in the teapot and the stockpot | decision | — | **Decided** (2026-09-22): as recommended |
-| 6 | The grade is visible: Jade line on the stockpot and the teapot | feature | six | **Done on `1.21.1-neoforge`** (2026-09-22) |
+| 6 | The grade is visible: Jade line on the stockpot and the teapot | feature | six | **Done** (NeoForge 2026-09-22, Fabric 2026-09-23) |
 | 7 | Changelog and player docs | docs | — | **Done** (2026-09-22) |
 | 8 | Nothing crashes without the mod: `checkOptionalSeam`, `-PwithoutOptional`, `boot.jsonl` | test | all | **Done** (2026-09-22), for every integration |
 
@@ -86,12 +86,14 @@ names `kaleidoscope-cookery`, `kaleidoscope-cookery-refabricated` and `kaleidosc
 `KaleidoscopeMixinPlugin` and the Jade reader are roots the check already finds by themselves. See
 [Testing that nothing crashes without Kaleidoscope Cookery](#testing-that-nothing-crashes-without-kaleidoscope-cookery).
 
-**Items 3 to 7 were built on `1.21.1-neoforge` only.** The integration's row in `Integrations.kt` names
-NeoForge alone for now, so no Fabric node compiles `src/main/kaleidoscope` and the Fabric nodes get only
-the thirst values of item 2. Turning Fabric on is adding `Loader.FABRIC` back to that row, a version
-branch in the stockpot and teapot mixins for the 26.x `saveAdditional` / `loadAdditional` and
-`getDrops`, a Stonecutter comment or its own mixin for `receiveDripstoneFluid`, `giveItemToPlayer` in
-`ItemUtilsMixin` if Refabricated routes a bucket through it, and the agent script on each node.
+**Items 3 to 6 were built on `1.21.1-neoforge` first, then turned on for the five Fabric nodes** on
+2026-09-23. What Fabric needed beyond adding `Loader.FABRIC` to the row, and why, is in
+[src/main/kaleidoscope/AGENTS.md](../../../src/main/kaleidoscope/AGENTS.md): `remap = true` on every
+injection that names Minecraft (Refabricated's 1.21.x jars are in intermediary), version forks for
+`saveAdditional` / `loadAdditional`, `getDrops` and `pickupBlock`, a plugin check for methods only some
+builds have (`receiveDripstoneFluid`, `giveItemToPlayer`), and `InventoryMixin`, because Refabricated's
+teapot fills a bucket through the Fabric Transfer API, in the player's slot, and never through
+`ItemUtils`. The agent script passes on all six nodes, the dripstone lines only on the two 1.21.1 ones.
 
 Order of work: **build `1.21.1-neoforge` and `1.21.1` first** (one Minecraft version, both loaders, no
 version branch), and get items 1–4 working there. Then widen to `26.3.x`, which has every version
@@ -439,8 +441,8 @@ Moonlight, Create, Create Fly and Kaleidoscope Cookery. Tick them on the nodes t
 - **Refabricated is an unofficial port.** If it stops, the Fabric nodes keep the last build and nothing
   breaks. If the official team starts shipping Fabric again, compare the two and pick one; do not
   support both.
-- **26.1.x is due for retirement** under the version policy. This integration does not change that:
-  drop the key from the table along with the node.
+- **If a node is retired**, this integration does not hold it back: drop the key from the table along
+  with the node.
 - **Frozen 1.21.11.** 1.3.0.9 is older than the others. If its methods differ at all, leave `1.21.11`
   out, rather than write a separate branch for it.
 - **`ReturnedWater` is state across calls.** It must be cleared at RETURN every time, even when the call

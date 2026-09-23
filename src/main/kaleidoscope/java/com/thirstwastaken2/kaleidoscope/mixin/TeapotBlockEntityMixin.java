@@ -9,8 +9,6 @@ import com.thirstwastaken2.kaleidoscope.BrewedWater;
 import com.thirstwastaken2.kaleidoscope.BrewedWaterQuality;
 import com.thirstwastaken2.kaleidoscope.ReturnedWater;
 import com.thirstwastaken2.purity.WaterQuality;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -75,22 +73,45 @@ abstract class TeapotBlockEntityMixin implements BrewedWater {
     /**
      * The teapot picked up with water in it: {@code getDrops} builds the item's tag from nothing, holding
      * only the fluid id. A finished teapot writes a tag too, but holds no water, so nothing is added there.
+     * The call is Minecraft's, so its target is remapped; from 1.21.11 it is handed a {@code TagValueOutput}.
      */
-    @ModifyArg(method = "getDrops", at = @At(value = "INVOKE",
+    //? if >1.21.1 {
+    @ModifyArg(method = "getDrops", at = @At(value = "INVOKE", remap = true,
+            target = "Lnet/minecraft/world/item/BlockItem;setBlockEntityData(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/block/entity/BlockEntityType;Lnet/minecraft/world/level/storage/TagValueOutput;)V"),
+            index = 2)
+    private net.minecraft.world.level.storage.TagValueOutput thirst$keepGradeInItem(net.minecraft.world.level.storage.TagValueOutput output) {
+        return BrewedWaterQuality.saved(output, output::putInt, thirst$heldWater());
+    }
+    //?} else {
+    /*@ModifyArg(method = "getDrops", at = @At(value = "INVOKE", remap = true,
             target = "Lnet/minecraft/world/item/BlockItem;setBlockEntityData(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/block/entity/BlockEntityType;Lnet/minecraft/nbt/CompoundTag;)V"),
             index = 2)
-    private CompoundTag thirst$keepGradeInItem(CompoundTag tag) {
-        BrewedWaterQuality.save(tag, thirst$heldWater());
-        return tag;
+    private net.minecraft.nbt.CompoundTag thirst$keepGradeInItem(net.minecraft.nbt.CompoundTag tag) {
+        return BrewedWaterQuality.saved(tag, tag::putInt, thirst$heldWater());
+    }
+    *///?}
+
+    // Minecraft's own methods, so remapped: the Fabric 1.21.x jars name them in intermediary. From
+    // 1.21.6 they take a ValueOutput / ValueInput rather than a tag.
+    //? if >=1.21.6 {
+    @Inject(method = "saveAdditional", at = @At("TAIL"), remap = true)
+    private void thirst$saveGrade(net.minecraft.world.level.storage.ValueOutput output, CallbackInfo ci) {
+        BrewedWaterQuality.save(output::putInt, thirst$heldWater());
     }
 
-    @Inject(method = "saveAdditional", at = @At("TAIL"))
-    private void thirst$saveGrade(CompoundTag tag, HolderLookup.Provider registries, CallbackInfo ci) {
-        BrewedWaterQuality.save(tag, thirst$heldWater());
+    @Inject(method = "loadAdditional", at = @At("TAIL"), remap = true)
+    private void thirst$loadGrade(net.minecraft.world.level.storage.ValueInput input, CallbackInfo ci) {
+        thirst$quality = BrewedWaterQuality.load(input::getIntOr);
+    }
+    //?} else {
+    /*@Inject(method = "saveAdditional", at = @At("TAIL"), remap = true)
+    private void thirst$saveGrade(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries, CallbackInfo ci) {
+        BrewedWaterQuality.save(tag::putInt, thirst$heldWater());
     }
 
-    @Inject(method = "loadAdditional", at = @At("TAIL"))
-    private void thirst$loadGrade(CompoundTag tag, HolderLookup.Provider registries, CallbackInfo ci) {
-        thirst$quality = BrewedWaterQuality.load(tag);
+    @Inject(method = "loadAdditional", at = @At("TAIL"), remap = true)
+    private void thirst$loadGrade(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries, CallbackInfo ci) {
+        thirst$quality = BrewedWaterQuality.load((key, fallback) -> com.thirstwastaken2.platform.Vanilla.getInt(tag, key, fallback));
     }
+    *///?}
 }

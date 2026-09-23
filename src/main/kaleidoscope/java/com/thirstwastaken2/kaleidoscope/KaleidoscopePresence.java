@@ -1,8 +1,14 @@
 package com.thirstwastaken2.kaleidoscope;
 
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,7 +24,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p>The teapot is the version check. The official Fabric build stopped at 1.0.1, under the same mod id
  * and package as Refabricated but without a teapot, so a Kaleidoscope Cookery with no teapot is that
  * build, and the whole integration stays off. Past that, each target is probed on its own, so a class
- * renamed upstream skips the mixins on it and leaves the rest working.
+ * renamed upstream skips the mixins on it and leaves the rest working. A mixin whose method only some
+ * builds have asks {@link #hasMethod}, which reads the target's bytes the same way.
  */
 public final class KaleidoscopePresence {
     private static final String MOD = "com/github/ysbbbbbb/kaleidoscopecookery/KaleidoscopeCookery.class";
@@ -62,6 +69,32 @@ public final class KaleidoscopePresence {
             }
             return found;
         });
+    }
+
+    /**
+     * Whether {@code targetClassName}, a binary name, declares a method called {@code method}: read off
+     * the class file, which never loads the class. For a mixin on a method only some builds have, such
+     * as the teapot's dripstone hook (the 1.21.1 builds) or {@code giveItemToPlayer} (Refabricated), so
+     * the builds without it skip that mixin rather than fail it. Asked once per mixin, at startup.
+     */
+    public static boolean hasMethod(String targetClassName, String method) {
+        if (!hasTarget(targetClassName)) return false;
+        String resource = targetClassName.replace('.', '/') + ".class";
+        try (InputStream in = KaleidoscopePresence.class.getClassLoader().getResourceAsStream(resource)) {
+            if (in == null) return false;
+            boolean[] found = {false};
+            new ClassReader(in).accept(new ClassVisitor(Opcodes.ASM9) {
+                @Override
+                public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+                    if (name.equals(method)) found[0] = true;
+                    return null;
+                }
+            }, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+            return found[0];
+        } catch (IOException e) {
+            LOGGER.warn("Could not read {} to look for {}; leaving that part of the integration off", targetClassName, method, e);
+            return false;
+        }
     }
 
     private static boolean has(String resource) {
