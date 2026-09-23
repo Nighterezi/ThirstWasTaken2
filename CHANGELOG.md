@@ -6,6 +6,9 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 
 ### Added
 
+- Copper Canteen and Iron Flask, metal water containers that hold more than a waterskin. Holding use
+  on a lit campfire boils the water inside Pure. The canteen boils faster, the flask holds more and
+  can also go in a furnace.
 - Compatibility with Kaleidoscope Cookery Refabricated on Fabric:
   - The Stockpot and the Teapot keep the grade of the water poured into them, including a Teapot
     picked up and placed again or dipped into water.

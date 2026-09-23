@@ -4,7 +4,6 @@ import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.data.DataPackDrinks;
 import com.thirstwastaken2.data.ThirstData;
 import com.thirstwastaken2.data.ThirstManager;
-import com.thirstwastaken2.item.ThirstItems;
 import com.thirstwastaken2.item.WaterskinItem;
 import com.thirstwastaken2.platform.Vanilla;
 import com.thirstwastaken2.purity.WaterPurity;
@@ -77,7 +76,7 @@ public final class ThirstApi {
      */
     public static int[] thirstValues(ItemStack stack) {
         if (stack.isEmpty()) return null;
-        if (stack.is(ThirstItems.WATERSKIN) && WaterskinItem.servings(stack) == 0) return null;
+        if (WaterskinItem.is(stack) && WaterskinItem.servings(stack) == 0) return null;
         return thirstValues(stack.getItem());
     }
 

@@ -56,7 +56,8 @@ public final class WaterContainerStorage implements Storage<FluidVariant>, Stora
     /** Called once by {@link ThirstWasTaken2Fabric}, after the items are registered. */
     public static void register() {
         FluidStorage.ITEM.registerForItems((stack, context) -> new WaterContainerStorage(context),
-                ThirstItems.WATERSKIN, ThirstItems.TERRACOTTA_BOWL, ThirstItems.TERRACOTTA_WATER_BOWL);
+                ThirstItems.WATERSKIN, ThirstItems.COPPER_CANTEEN, ThirstItems.IRON_FLASK,
+                ThirstItems.TERRACOTTA_BOWL, ThirstItems.TERRACOTTA_WATER_BOWL);
     }
 
     /** Water of {@code quality} as a variant. */

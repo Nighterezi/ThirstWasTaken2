@@ -54,12 +54,12 @@ Fabric's empty structure as its template, and `stonecutter.gradle.kts` rewrites 
 the annotation, so no test file changes for it. Write `@GameTest` with no arguments, or that
 replacement stops matching.
 
-The same 171 mod tests run on every node. Runners report one or two more because they also include
+The same 179 mod tests run on every node. Runners report one or two more because they also include
 vanilla smoke tests such as `minecraft:always_pass`; those are not the mod's.
 
 ## The NeoForge harness
 
-The `-neoforge` nodes run the same 171 test methods, with no test body changed and no NeoForge-only
+The `-neoforge` nodes run the same 179 test methods, with no test body changed and no NeoForge-only
 branch in any of them. What stands in for Fabric API lives in `src/gametest/neoforge`:
 
 | | Fabric API | NeoForge node |
@@ -123,6 +123,7 @@ cauldron bottle draw.
 | `UpsetStomachGameTest` | Upset Stomach draining faster than nothing and faster at II, Nausea costing nothing on top of it, the saturation it cuts at I and II, and that it never hurts on its own |
 | `HealthRegenGameTest` | dehydration halting regeneration and the food refund that has to accompany it |
 | `WaterskinGameTest` | mixing, salinity, capacity, emptying |
+| `CanteenGameTest` | the copper canteen and iron flask: capacity, one sprite, boiling on a campfire through the real use path (complete, one step short, kept and restarted progress, soul campfire), salt, unlit and the waterskin not boiling, only the flask in a furnace at every fill level, no campfire recipe, both crafting recipes |
 | `TooltipGameTest` | the lines the mod adds to a tooltip, droplet row arithmetic, that the rows need AppleSkin, and that cached lines are handed out as copies |
 | `PlayerStateGameTest` | the sprint gate, exhaustion mirroring waiting for the tick, small exhaustion being carried until it crosses a sync step, the Hunger effect cancelling out, and that riding does not dehydrate |
 | `CauldronGameTest` | the cauldron blockstate property (water cauldron only, old powder snow saves still load, a fresh cauldron is not sea water), the deferred quality transfer, and the grades rain and dripstone leave behind |
@@ -133,7 +134,7 @@ cauldron bottle draw.
 | `AdvancementGameTest` | every advancement on the mod's tab loads and hangs off one root, its recipe advancements unlock recipes that exist, and the Cooking Pot files are skipped without Farmer's Delight |
 | `ThirstDataGameTest` | the state record: drinking, the quenched cap, overflow into quenched, spending exhaustion, clamping, both codecs round-tripping, including a save from before `enabled` existed, and a whole player saved to NBT and loaded back, which is the attachment under the codec |
 | `ThirstTickGameTest` | the tick spending quenched before thirst, peaceful with and without depletion, disabled and invulnerable players, Fire Resistance and Fire Protection slowing the drain, salt water charging at once, the full-bar rule |
-| `DrinkingGameTest` | drinking a bowl and a waterskin through the real right-click path, what is left in the hand, the drink animation and duration, water refused on a full bar while honey is not, the advancements a drink earns, and drinking by hand with every way it is refused |
+| `DrinkingGameTest` | drinking a bowl and a waterskin through the real right-click path, the canteen and flask restoring what a waterskin does at any grade, what is left in the hand, the drink animation and duration, water refused on a full bar while honey is not, the advancements a drink earns, and drinking by hand with every way it is refused |
 | `ThirstApiGameTest` | what items restore from the config, the blacklist, the `c:drinks` tag fallback (the gametest mod tags a nautilus shell for it) and the magic drinks it leaves out, keyword matching and its blacklist, the per-item cache dropping on commit, and `sanitize` clamping a hand-edited config |
 | `IntegrationApiGameTest` | what another mod can use: data pack values loading, an unknown item skipped without losing its file, every step of the resolution order (config and blacklist over a data pack, a data pack over `c:drinks`, an entry of nothing over keywords), re-parsing the same packs, the sync payload round trip, the player and purity methods on `ThirstApi`, and `ThirstEvents` changing, cancelling and surviving a throwing listener. The gametest mod ships its data pack file and tags dried kelp `c:drinks` for it. Listeners cannot be unregistered, so each acts on its own test's players only |
 | `CommandGameTest` | `/thirst set` and `/thirst enable` through the dispatcher, the argument range, and the permission requirement |

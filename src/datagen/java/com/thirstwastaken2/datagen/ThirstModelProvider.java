@@ -61,6 +61,9 @@ public final class ThirstModelProvider extends FabricModelProvider {
     public void generateItemModels(ItemModelGenerators generators) {
         generators.generateFlatItem(ThirstItems.CLAY_BOWL, ModelTemplates.FLAT_ITEM);
         generators.generateFlatItem(ThirstItems.TERRACOTTA_BOWL, ModelTemplates.FLAT_ITEM);
+        // Rigid vessels keep one sprite whatever they hold; the item bar shows how full they are.
+        generators.generateFlatItem(ThirstItems.COPPER_CANTEEN, ModelTemplates.FLAT_ITEM);
+        generators.generateFlatItem(ThirstItems.IRON_FLASK, ModelTemplates.FLAT_ITEM);
         HangingPotModels.item(generators);
 
         // The plain filled-bowl sprite. Nothing selects it, because every grade has one of its own,
@@ -113,6 +116,8 @@ public final class ThirstModelProvider extends FabricModelProvider {
     public void generateItemModels(ItemModelGenerators generators) {
         flat(generators, ThirstItems.CLAY_BOWL);
         flat(generators, ThirstItems.TERRACOTTA_BOWL);
+        flat(generators, ThirstItems.COPPER_CANTEEN);
+        flat(generators, ThirstItems.IRON_FLASK);
         HangingPotModels.item(generators);
         overrides(generators, ThirstItems.TERRACOTTA_WATER_BOWL, bowlVariants());
         overrides(generators, ThirstItems.WATERSKIN, waterskinVariants());

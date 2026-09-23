@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "#c:ingots/iron",
+    "N": "#c:nuggets/iron"
+  },
+  "pattern": [
+    " N ",
+    "I I",
+    "III"
+  ],
+  "result": {
+    "id": "thirstwastaken2:iron_flask"
+  }
+}

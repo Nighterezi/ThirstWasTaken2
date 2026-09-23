@@ -7,6 +7,8 @@
   "item.thirstwastaken2.terracotta_bowl": "Terracotta Bowl",
   "item.thirstwastaken2.clay_bowl": "Clay Bowl",
   "item.thirstwastaken2.waterskin": "Waterskin",
+  "item.thirstwastaken2.copper_canteen": "Copper Canteen",
+  "item.thirstwastaken2.iron_flask": "Iron Flask",
   "block.thirstwastaken2.copper_hanging_pot": "Copper Hanging Pot",
   "block.thirstwastaken2.iron_hanging_pot": "Iron Hanging Pot",
   "block.thirstwastaken2.sand_filter": "Sand Filter",
@@ -108,5 +110,8 @@
   "thirstwastaken2.config.enable_drink_tag_matching.tooltip": "Items their own mod tags as drinks restore thirst even when the config does not list them.",
   "thirstwastaken2.config.enable_keyword_matching": "Keyword Matching",
   "thirstwastaken2.config.enable_keyword_matching.tooltip": "Guesses thirst values for unknown modded items from their registry name.",
-  "thirstwastaken2.message.salt_water_refused": "Sea water would brew salty tea; use fresh water"
+  "thirstwastaken2.message.salt_water_refused": "Sea water would brew salty tea; use fresh water",
+  "thirstwastaken2.message.boiling": "Boiling: %s%%",
+  "thirstwastaken2.message.boiled": "The water is boiled clean",
+  "thirstwastaken2.message.cannot_boil_salt": "Boiling cannot take the salt out"
 }

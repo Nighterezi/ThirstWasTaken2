@@ -21,6 +21,13 @@ public final class ThirstItems {
     public static final int BOWL_MODEL_INDEX = 1;
     /** Custom model data index the waterskin's sprite dispatches on: servings left. */
     public static final int WATERSKIN_MODEL_INDEX = 0;
+    /**
+     * Ticks a serving takes to boil over a campfire, per vessel: 3 s and 4 s. Quicker than the hanging
+     * pots' 4 s and 6 s, because the player stands holding use the whole time. See
+     * docs/dev/mechanics/WATER-PURIFICATION-BALANCE.md.
+     */
+    public static final int COPPER_CANTEEN_BOIL_TICKS = 60;
+    public static final int IRON_FLASK_BOIL_TICKS = 80;
 
     public static final Item CLAY_BOWL = Vanilla.registerItem("clay_bowl", Item::new, new Item.Properties().stacksTo(64));
     public static final Item TERRACOTTA_BOWL = Vanilla.registerItem("terracotta_bowl", Item::new, new Item.Properties().stacksTo(64));
@@ -35,6 +42,19 @@ public final class ThirstItems {
                     .component(ThirstComponents.WATER_SALTY, false)
                     .component(DataComponents.CUSTOM_MODEL_DATA, Vanilla.modelSelector(BOWL_MODEL_INDEX, 3)));
     public static final Item WATERSKIN = Vanilla.registerItem("waterskin", WaterskinItem::new,
+            new Item.Properties().stacksTo(1)
+                    .component(ThirstComponents.WATER_SERVINGS, 0));
+    /**
+     * Crafted from scratch rather than upgraded from a waterskin. Copper carries heat well, so it boils
+     * fastest; it has no furnace recipe, which is the iron flask's.
+     */
+    public static final Item COPPER_CANTEEN = Vanilla.registerItem("copper_canteen",
+            properties -> new WaterskinItem(properties, 4, COPPER_CANTEEN_BOIL_TICKS, false),
+            new Item.Properties().stacksTo(1)
+                    .component(ThirstComponents.WATER_SERVINGS, 0));
+    /** Holds the most and boils slower than copper, but also cleans its water in a furnace. */
+    public static final Item IRON_FLASK = Vanilla.registerItem("iron_flask",
+            properties -> new WaterskinItem(properties, WaterskinItem.MAX_CAPACITY, IRON_FLASK_BOIL_TICKS, false),
             new Item.Properties().stacksTo(1)
                     .component(ThirstComponents.WATER_SERVINGS, 0));
     public static final Item COPPER_HANGING_POT = Vanilla.registerBlockItem(ThirstBlocks.COPPER_HANGING_POT,
@@ -64,6 +84,8 @@ public final class ThirstItems {
                             entries.accept(TERRACOTTA_BOWL);
                             entries.accept(TERRACOTTA_WATER_BOWL);
                             entries.accept(WATERSKIN);
+                            entries.accept(COPPER_CANTEEN);
+                            entries.accept(IRON_FLASK);
                             entries.accept(COPPER_HANGING_POT);
                             entries.accept(IRON_HANGING_POT);
                         })

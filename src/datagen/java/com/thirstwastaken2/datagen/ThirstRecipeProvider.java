@@ -2,6 +2,7 @@ package com.thirstwastaken2.datagen;
 
 import com.thirstwastaken2.ThirstWasTaken2;
 import com.thirstwastaken2.item.ThirstItems;
+import com.thirstwastaken2.item.WaterskinItem;
 import com.thirstwastaken2.platform.Vanilla;
 import com.thirstwastaken2.purity.ThirstComponents;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
@@ -53,11 +54,11 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Every recipe the mod ships, and the recipe book unlocks that go with them.
  *
- * <p>Eighteen of the twenty-three are purification recipes, and they are one shape rather than
- * eighteen decisions: for each container, each input grade below the cap and each heat source,
- * boiling bumps the water two grades and stops at {@link #PURIFIED}. Reading them out of
- * {@link #PURIFY_TABLE} is the point of generating them — the eighteen JSON files they replace had
- * to be kept consistent by hand.
+ * <p>Most of them are purification recipes, and they are one shape rather than dozens of decisions:
+ * for each container, each input grade below the cap and each heat source, boiling bumps the water
+ * two grades and stops at {@link #PURIFIED}. The iron flask adds one smelting recipe per fill level.
+ * Reading them out of {@link #PURIFY_TABLE} is the point of generating them — the JSON files they
+ * replace had to be kept consistent by hand.
  *
  * <p>Salt water carries no {@code water_purity} at all, so an ingredient that demands one already
  * excludes it. Demanding {@code water_salty: false} as well is belt and braces, and it is also what
@@ -75,6 +76,8 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
             TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "ingots/copper"));
     private static final TagKey<Item> IRON_INGOTS =
             TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "ingots/iron"));
+    private static final TagKey<Item> IRON_NUGGETS =
+            TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "nuggets/iron"));
     // 1.21.9 renamed the chain to the iron chain when it added copper ones.
     //? if >=1.21.9 {
     private static final Item CHAIN = Items.IRON_CHAIN;
@@ -222,6 +225,27 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
                     .unlockedBy("has_iron_ingot", has(IRON_INGOTS))
                     .save(output, recipe("iron_hanging_pot"));
 
+            // The canteen and the flask share the waterskin's shape, a U with one thing on top, so a
+            // player who knows one can guess the others. Their top rows keep them clear of the pots,
+            // the cauldron and the bucket. Leather is the canteen's strap, the nugget the flask's cap.
+            shaped(ThirstItems.COPPER_CANTEEN, 1)
+                    .pattern(" L ")
+                    .pattern("C C")
+                    .pattern("CCC")
+                    .define('L', Items.LEATHER)
+                    .define('C', COPPER_INGOTS)
+                    .unlockedBy("has_copper_ingot", has(COPPER_INGOTS))
+                    .save(output, recipe("copper_canteen"));
+
+            shaped(ThirstItems.IRON_FLASK, 1)
+                    .pattern(" N ")
+                    .pattern("I I")
+                    .pattern("III")
+                    .define('N', IRON_NUGGETS)
+                    .define('I', IRON_INGOTS)
+                    .unlockedBy("has_iron_ingot", has(IRON_INGOTS))
+                    .save(output, recipe("iron_flask"));
+
             // A bucket of fresh water poured into a fired bowl. The result is graded 2 rather than
             // sampled, because the bucket's own grade is gone by the time a recipe sees it.
             Ingredient freshWaterBucket = DefaultCustomIngredients.components(
@@ -253,6 +277,59 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
             *///?}
 
             Container.ALL.forEach(this::purifyRecipes);
+            flaskPurifyRecipes();
+        }
+
+        /**
+         * The iron flask in a furnace: one recipe per fill level and grade below the cap, because an
+         * ingredient matches exact component values and the result has to keep the servings. Smelting
+         * only; the copper canteen has none, which is what sets the two apart. No campfire recipe
+         * either: vanilla puts anything with one into the campfire's slots, which would swallow the
+         * flask's own boil on a campfire.
+         */
+        private void flaskPurifyRecipes() {
+            List<String> names = new java.util.ArrayList<>();
+            for (int servings = 1; servings <= WaterskinItem.MAX_CAPACITY; servings++) {
+                for (int purity = 0; purity < PURIFIED; purity++) names.add(flaskPurifyName(servings, purity));
+            }
+            java.util.SequencedMap<String, ItemLike> unlocks = new java.util.LinkedHashMap<>();
+            unlocks.put("has_iron_flask", ThirstItems.IRON_FLASK);
+            AdvancementHolder unlock = purifyUnlock("iron_flask", names, unlocks);
+
+            boolean first = true;
+            for (int servings = 1; servings <= WaterskinItem.MAX_CAPACITY; servings++) {
+                for (int purity = 0; purity < PURIFIED; purity++) {
+                    var key = recipe(flaskPurifyName(servings, purity));
+                    output.accept(key, Heat.SMELTING.create(flaskIngredient(servings, purity),
+                            flaskResult(servings, PURIFY_TABLE[purity])), first ? unlock : null);
+                    first = false;
+                }
+            }
+        }
+
+        static Ingredient flaskIngredient(int servings, int purity) {
+            return DefaultCustomIngredients.components(Ingredient.of(ThirstItems.IRON_FLASK),
+                    flaskComponents(servings, purity));
+        }
+
+        //? if >=26.1 {
+        static ItemStackTemplate flaskResult(int servings, int purity) {
+            return new ItemStackTemplate(ThirstItems.IRON_FLASK, flaskComponents(servings, purity));
+        }
+        //?} else {
+        /*static ItemStack flaskResult(int servings, int purity) {
+            ItemStack stack = new ItemStack(ThirstItems.IRON_FLASK);
+            stack.applyComponents(flaskComponents(servings, purity));
+            return stack;
+        }
+        *///?}
+
+        private static DataComponentPatch flaskComponents(int servings, int purity) {
+            return DataComponentPatch.builder()
+                    .set(ThirstComponents.WATER_SERVINGS, servings)
+                    .set(ThirstComponents.WATER_PURITY, purity)
+                    .set(ThirstComponents.WATER_SALTY, false)
+                    .build();
         }
 
         /**
@@ -282,17 +359,30 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
          * is enough, and so is already knowing the recipe.
          */
         private AdvancementHolder purifyUnlock(Container container) {
-            var representative = recipe(purifyName(container, 0, Heat.SMELTING));
+            List<String> names = new java.util.ArrayList<>();
+            for (int purity = 0; purity < PURIFIED; purity++) {
+                for (Heat heat : Heat.values()) names.add(purifyName(container, purity, heat));
+            }
+            return purifyUnlock(container.name(), names, purifyUnlockItems(container));
+        }
+
+        /**
+         * One unlock for a family of purification recipes: the first of {@code names} stands for the
+         * family, and the unlock hands out all of them at once.
+         */
+        private AdvancementHolder purifyUnlock(String family, List<String> names,
+                                               java.util.SequencedMap<String, ItemLike> items) {
+            var representative = recipe(names.getFirst());
             Advancement.Builder builder = rootedRecipeAdvancement()
                     // 26.3 made recipes a registry, so the criterion names a holder rather than a key.
                     //? if >=26.3 {
                     .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(registered.getOrThrow(representative)))
                     //?} else
                     /*.addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(representative))*/
-                    .rewards(purifyRewards(container))
+                    .rewards(purifyRewards(names))
                     .requirements(AdvancementRequirements.Strategy.OR);
-            purifyUnlockItems(container).forEach((name, item) -> builder.addCriterion(name, has(item)));
-            return builder.build(ThirstWasTaken2.id("recipes/misc/purify_water_" + container.name()));
+            items.forEach((name, item) -> builder.addCriterion(name, has(item)));
+            return builder.build(ThirstWasTaken2.id("recipes/misc/purify_water_" + family));
         }
 
         /**
@@ -308,14 +398,10 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
             return Advancement.Builder.recipeAdvancement().parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT);
         }
 
-        /** All six recipes for the container, so the recipe book learns the whole family at once. */
-        private static AdvancementRewards purifyRewards(Container container) {
+        /** Every recipe in the family, so the recipe book learns the whole family at once. */
+        private static AdvancementRewards purifyRewards(List<String> names) {
             AdvancementRewards.Builder rewards = new AdvancementRewards.Builder();
-            for (int purity = 0; purity < PURIFIED; purity++) {
-                for (Heat heat : Heat.values()) {
-                    rewards.addRecipe(recipe(purifyName(container, purity, heat)));
-                }
-            }
+            names.forEach(name -> rewards.addRecipe(recipe(name)));
             return rewards.build();
         }
 
@@ -486,6 +572,11 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
         return ((net.minecraft.resources.RegistryOps<?>) ops).getter(Registries.RECIPE).orElseThrow().getOrThrow(key);
     }
     //?}
+
+    /** The iron flask's furnace recipe for {@code servings} of water at {@code purity}. */
+    static String flaskPurifyName(int servings, int purity) {
+        return "purify_water_iron_flask_" + servings + "_" + purity + "_smelting";
+    }
 
     // Recipes are registry entries with keys from 1.21.2; before it a recipe is known by its id alone.
     //? if >=1.21.2 {

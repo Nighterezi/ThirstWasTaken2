@@ -10,7 +10,7 @@
 | Honey bottle | 4 | 6 |
 | Melon slice | 4 | 5 |
 | Terracotta water bowl | 4 | 5 |
-| Waterskin, per drink | 4 | 5 |
+| Waterskin, Copper Canteen or Iron Flask, per drink | 4 | 5 |
 | Apple, golden apple, enchanted golden apple, mushroom stew, rabbit stew | 2 | 3 |
 | Carrot, golden carrot, beetroot, sweet berries, glow berries | 1 | 2 |
 
@@ -51,6 +51,23 @@ but that water is always Dirty.
 - Sneak and use it on a block to pour it out, with the same splash as pouring a water bottle.
 - Mixed water takes the average grade, rounded down. One salty drink makes all of it salty.
 - Pipes and tanks from other mods can fill and empty it, one whole drink at a time.
+
+## Copper Canteen and Iron Flask
+
+Metal versions of the waterskin that can boil their own water. They fill, pour and mix exactly like
+the waterskin, and a bar under the icon shows how full they are.
+
+| | Holds |
+|---|---|
+| Copper Canteen | 4 drinks |
+| Iron Flask | 6 drinks |
+
+![Leather on top and five copper ingots in a U below make a Copper Canteen](/screenshots/copper-canteen-recipe.png)
+
+![An iron nugget on top and five iron ingots in a U below make an Iron Flask](/screenshots/iron-flask-recipe.png)
+
+Hold use on a lit campfire to boil the water inside Pure. The Iron Flask can also go in a furnace.
+Times are on the [water purity page](/docs/features/water-purity#boiling-in-a-canteen-or-flask).
 
 ## Drinking by hand
 

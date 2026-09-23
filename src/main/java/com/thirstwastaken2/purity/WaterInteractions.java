@@ -47,13 +47,13 @@ public final class WaterInteractions {
     private WaterInteractions() { }
 
     /**
-     * Lets the terracotta bowl and waterskin scoop from any water, including flowing water. A waterskin
-     * is filled in one go rather than a serving per click: a lake has no levels to lower.
+     * Lets the terracotta bowl, waterskin, canteen and flask scoop from any water, including flowing water. A carried
+     * container is filled in one go rather than a serving per click: a lake has no levels to lower.
      */
     public static InteractionResult fillFromWater(Player player, Level level, InteractionHand hand) {
         ItemStack held = player.getItemInHand(hand);
         boolean bowl = held.is(ThirstItems.TERRACOTTA_BOWL);
-        boolean waterskin = held.is(ThirstItems.WATERSKIN) && WaterskinItem.servings(held) < WaterskinItem.CAPACITY;
+        boolean waterskin = WaterskinItem.hasRoom(held);
         if (!bowl && !waterskin) return InteractionResult.PASS;
 
         BlockHitResult hit = pick(player, level, ClipContext.Fluid.ANY);
@@ -70,7 +70,7 @@ public final class WaterInteractions {
                     new ItemStack(ThirstItems.TERRACOTTA_WATER_BOWL), quality);
             player.setItemInHand(hand, ItemUtils.createFilledResult(held, player, filled));
         } else {
-            WaterskinItem.addWater(held, quality, WaterskinItem.CAPACITY);
+            WaterskinItem.addWater(held, quality, WaterskinItem.capacity(held));
         }
         level.playSound(null, player.blockPosition(), bowl ? SoundEvents.BUCKET_FILL : SoundEvents.BOTTLE_FILL,
                 SoundSource.NEUTRAL, 1.0F, 1.0F);
@@ -85,7 +85,7 @@ public final class WaterInteractions {
     public static InteractionResult fillWaterskinFromCauldron(Player player, Level level, InteractionHand hand,
                                                                BlockHitResult hit) {
         ItemStack held = player.getItemInHand(hand);
-        if (!held.is(ThirstItems.WATERSKIN) || WaterskinItem.servings(held) >= WaterskinItem.CAPACITY) {
+        if (!WaterskinItem.hasRoom(held)) {
             return InteractionResult.PASS;
         }
 
@@ -94,7 +94,7 @@ public final class WaterInteractions {
         if (!state.is(Blocks.WATER_CAULDRON)) return InteractionResult.PASS;
         if (level.isClientSide()) return InteractionResult.SUCCESS;
 
-        int drawn = Math.min(WaterskinItem.CAPACITY - WaterskinItem.servings(held),
+        int drawn = Math.min(WaterskinItem.capacity(held) - WaterskinItem.servings(held),
                 state.getValue(LayeredCauldronBlock.LEVEL));
         // Sampled before lowering: an emptied cauldron no longer holds the purity.
         WaterskinItem.addWater(held, WaterPurity.sampleAt(level, pos), drawn);
@@ -111,12 +111,12 @@ public final class WaterInteractions {
     public static InteractionResult emptyWaterskinOnBlock(Player player, Level level, InteractionHand hand,
                                                            BlockHitResult hit) {
         ItemStack held = player.getItemInHand(hand);
-        if (!player.isCrouching() || !held.is(ThirstItems.WATERSKIN) || WaterskinItem.servings(held) == 0) {
+        if (!player.isCrouching() || !WaterskinItem.is(held) || WaterskinItem.servings(held) == 0) {
             return InteractionResult.PASS;
         }
         if (level.isClientSide()) return InteractionResult.SUCCESS;
 
-        WaterskinItem.removeWater(held, WaterskinItem.CAPACITY);
+        WaterskinItem.removeWater(held, WaterskinItem.servings(held));
         BlockPos pos = hit.getBlockPos();
         splash(level, pos);
         level.gameEvent(player, GameEvent.FLUID_PLACE, pos);
@@ -151,7 +151,7 @@ public final class WaterInteractions {
         ItemStack held = player.getItemInHand(hand);
         // Waterskins draw from cauldrons in fillWaterskinFromCauldron; vanilla has no matching
         // interaction that could actually pour them back, so do not schedule a phantom transfer.
-        if (held.is(ThirstItems.WATERSKIN)) return InteractionResult.PASS;
+        if (WaterskinItem.is(held)) return InteractionResult.PASS;
         boolean filling = WaterPurity.isWaterContainer(held);
         boolean draining = before.is(Blocks.WATER_CAULDRON)
                 && (held.is(Items.GLASS_BOTTLE) || held.is(Items.BUCKET));

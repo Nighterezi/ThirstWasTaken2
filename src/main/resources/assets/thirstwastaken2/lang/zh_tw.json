@@ -7,6 +7,8 @@
   "item.thirstwastaken2.terracotta_bowl": "陶碗",
   "item.thirstwastaken2.clay_bowl": "黏土碗",
   "item.thirstwastaken2.waterskin": "水袋",
+  "item.thirstwastaken2.copper_canteen": "銅水壺",
+  "item.thirstwastaken2.iron_flask": "鐵酒壺",
   "item.thirstwastaken2.drinking_upgrade": "飲水升級",
   "item.thirstwastaken2.drinking_upgrade.tooltip": "口渴時自動飲用",
   "item.thirstwastaken2.advanced_drinking_upgrade": "高級飲水升級",
@@ -93,5 +95,8 @@
   "thirstwastaken2.config.enable_drink_tag_matching": "飲品標籤匹配",
   "thirstwastaken2.config.enable_drink_tag_matching.tooltip": "被所屬模組標記為飲品的物品，即使未寫入設定也能補充水分。",
   "thirstwastaken2.config.enable_keyword_matching": "關鍵字匹配",
-  "thirstwastaken2.config.enable_keyword_matching.tooltip": "根據註冊名猜測未知模組物品的水分數值。"
+  "thirstwastaken2.config.enable_keyword_matching.tooltip": "根據註冊名猜測未知模組物品的水分數值。",
+  "thirstwastaken2.message.boiling": "煮沸中：%s%%",
+  "thirstwastaken2.message.boiled": "水已煮沸淨化",
+  "thirstwastaken2.message.cannot_boil_salt": "煮沸無法去除鹽分"
 }

@@ -10,6 +10,7 @@ final class WaterContainerCapabilities {
 
     static void register(RegisterCapabilitiesEvent event) {
         event.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> new WaterContainerFluidHandler(stack),
-                ThirstItems.WATERSKIN, ThirstItems.TERRACOTTA_BOWL, ThirstItems.TERRACOTTA_WATER_BOWL);
+                ThirstItems.WATERSKIN, ThirstItems.COPPER_CANTEEN, ThirstItems.IRON_FLASK,
+                ThirstItems.TERRACOTTA_BOWL, ThirstItems.TERRACOTTA_WATER_BOWL);
     }
 }

@@ -7,6 +7,8 @@
   "item.thirstwastaken2.terracotta_bowl": "Bol en terre cuite",
   "item.thirstwastaken2.clay_bowl": "Bol en argile",
   "item.thirstwastaken2.waterskin": "Outre",
+  "item.thirstwastaken2.copper_canteen": "Gourde en cuivre",
+  "item.thirstwastaken2.iron_flask": "Flasque en fer",
   "item.thirstwastaken2.drinking_upgrade": "Module de boisson",
   "item.thirstwastaken2.drinking_upgrade.tooltip": "Boit automatiquement en cas de soif",
   "item.thirstwastaken2.advanced_drinking_upgrade": "Module de boisson avancé",
@@ -93,5 +95,8 @@
   "thirstwastaken2.config.enable_drink_tag_matching": "Détection par tag de boisson",
   "thirstwastaken2.config.enable_drink_tag_matching.tooltip": "Les objets que leur mod étiquette comme boissons hydratent même s'ils ne figurent pas dans la configuration.",
   "thirstwastaken2.config.enable_keyword_matching": "Détection par mot-clé",
-  "thirstwastaken2.config.enable_keyword_matching.tooltip": "Devine les valeurs d'hydratation des objets moddés inconnus d'après leur nom d'enregistrement."
+  "thirstwastaken2.config.enable_keyword_matching.tooltip": "Devine les valeurs d'hydratation des objets moddés inconnus d'après leur nom d'enregistrement.",
+  "thirstwastaken2.message.boiling": "Ébullition : %s%%",
+  "thirstwastaken2.message.boiled": "L'eau a bouilli, elle est pure",
+  "thirstwastaken2.message.cannot_boil_salt": "L'ébullition n'enlève pas le sel"
 }

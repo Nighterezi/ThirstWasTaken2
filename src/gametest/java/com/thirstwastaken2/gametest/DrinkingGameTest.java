@@ -17,6 +17,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Pose;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.BlockHitResult;
@@ -66,6 +67,30 @@ public final class DrinkingGameTest {
                 "the water left behind keeps its grade, got " + WaterPurity.quality(left));
         TestFixtures.check(helper, ThirstManager.get(player).thirst() > 10,
                 "a waterskin drink should restore thirst, got " + ThirstManager.get(player));
+        helper.succeed();
+    }
+
+    /**
+     * What a drink restores is looked up by item id, so every carried container needs its own entry.
+     * The canteen and the flask once had none and restored nothing at any grade; murky water is where
+     * it was noticed.
+     */
+    @GameTest
+    public void aCanteenOrFlaskDrinkRestoresLikeAWaterskin(GameTestHelper helper) {
+        for (Item item : new Item[] {ThirstItems.WATERSKIN, ThirstItems.COPPER_CANTEEN, ThirstItems.IRON_FLASK}) {
+            for (int grade : new int[] {WaterPurity.MAX, 1}) {
+                ServerPlayer player = thirstyPlayer(helper);
+                ItemStack vessel = new ItemStack(item);
+                WaterskinItem.addWater(vessel, WaterQuality.fresh(grade), 2);
+
+                startDrinking(player, vessel);
+                player.getUseItem().finishUsingItem(player.level(), player);
+
+                TestFixtures.check(helper, ThirstManager.get(player).thirst() == 14,
+                        item + " of grade " + grade + " should restore the waterskin's 4 thirst, got "
+                                + ThirstManager.get(player));
+            }
+        }
         helper.succeed();
     }
 

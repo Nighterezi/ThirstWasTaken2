@@ -108,6 +108,114 @@
         "recipe_id": "thirstwastaken2:purify_water_bucket_2_smoking"
       },
       "trigger": "minecraft:recipe_crafted"
+    },
+    "iron_flask_1_0_smelting": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_iron_flask_1_0_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "iron_flask_1_1_smelting": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_iron_flask_1_1_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "iron_flask_1_2_smelting": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_iron_flask_1_2_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "iron_flask_2_0_smelting": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_iron_flask_2_0_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "iron_flask_2_1_smelting": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_iron_flask_2_1_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "iron_flask_2_2_smelting": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_iron_flask_2_2_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "iron_flask_3_0_smelting": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_iron_flask_3_0_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "iron_flask_3_1_smelting": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_iron_flask_3_1_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "iron_flask_3_2_smelting": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_iron_flask_3_2_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "iron_flask_4_0_smelting": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_iron_flask_4_0_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "iron_flask_4_1_smelting": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_iron_flask_4_1_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "iron_flask_4_2_smelting": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_iron_flask_4_2_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "iron_flask_5_0_smelting": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_iron_flask_5_0_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "iron_flask_5_1_smelting": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_iron_flask_5_1_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "iron_flask_5_2_smelting": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_iron_flask_5_2_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "iron_flask_6_0_smelting": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_iron_flask_6_0_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "iron_flask_6_1_smelting": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_iron_flask_6_1_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    },
+    "iron_flask_6_2_smelting": {
+      "conditions": {
+        "recipe_id": "thirstwastaken2:purify_water_iron_flask_6_2_smelting"
+      },
+      "trigger": "minecraft:recipe_crafted"
     }
   },
   "display": {
@@ -141,7 +249,25 @@
       "bucket_1_smelting",
       "bucket_1_smoking",
       "bucket_2_smelting",
-      "bucket_2_smoking"
+      "bucket_2_smoking",
+      "iron_flask_1_0_smelting",
+      "iron_flask_1_1_smelting",
+      "iron_flask_1_2_smelting",
+      "iron_flask_2_0_smelting",
+      "iron_flask_2_1_smelting",
+      "iron_flask_2_2_smelting",
+      "iron_flask_3_0_smelting",
+      "iron_flask_3_1_smelting",
+      "iron_flask_3_2_smelting",
+      "iron_flask_4_0_smelting",
+      "iron_flask_4_1_smelting",
+      "iron_flask_4_2_smelting",
+      "iron_flask_5_0_smelting",
+      "iron_flask_5_1_smelting",
+      "iron_flask_5_2_smelting",
+      "iron_flask_6_0_smelting",
+      "iron_flask_6_1_smelting",
+      "iron_flask_6_2_smelting"
     ]
   ]
 }

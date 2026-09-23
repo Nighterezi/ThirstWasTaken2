@@ -34,9 +34,9 @@ carries, and for a boolean that value is `true`**, so a separate salinity flag m
 cauldron read as sea water. `WaterPurity.storedValue` and `storedQuality` are the only two places
 that know the encoding.
 
-## The waterskin and the bowls as fluid containers
+## The carried containers and the bowls as fluid containers
 
-On NeoForge the waterskin, the terracotta bowl and the terracotta water bowl carry the item fluid
+On NeoForge the waterskin, copper canteen, iron flask, terracotta bowl and terracotta water bowl carry the item fluid
 capability, so other mods' pipes, tanks and pumps can fill and empty them: a Create Spout or Item
 Drain, a Sophisticated Tank or Pump upgrade. `WaterContainerFluids` in `src/main/neoforge` holds the
 rules, and each of NeoForge's two fluid APIs gets a thin handler over them, chosen by the build:
@@ -56,7 +56,7 @@ rules, and each of NeoForge's two fluid APIs gets a thin handler over them, chos
 - The handlers answer with the stack as it is afterwards. The transfer handler swaps it through its
   `ItemAccess`, so a filled empty bowl becomes a water bowl in whatever slot the access allows.
 
-On Fabric the same three items are Transfer API fluid storage (`FluidStorage.ITEM`), through
+On Fabric the same five items are Transfer API fluid storage (`FluidStorage.ITEM`), through
 `WaterContainerStorage` in `src/main/fabric`. That is what a Create Fly Spout fills and an Item Drain
 empties, through Create Fly's own bridge to the Transfer API. The rules are the same, and so is the
 serving: 250 mB, 20250 droplets, not Fabric's 27000-droplet bottle, so both loaders move the same

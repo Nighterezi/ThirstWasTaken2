@@ -73,14 +73,14 @@ public final class ThirstTooltip {
     /** {@link #appendTo(ItemStack, Consumer)}, with whether the droplet rows appear left to the caller. */
     public static void appendTo(ItemStack stack, Consumer<Component> tooltip, boolean droplets) {
         if (stack.is(ThirstItems.CLAY_BOWL)) tooltip.accept(CLAY_BOWL_HINT.copy());
-        if (stack.is(ThirstItems.WATERSKIN)) {
+        if (WaterskinItem.is(stack)) {
             int servings = WaterskinItem.servings(stack);
             // Grey, like the clay bowl hint: how full the skin is describes the item, while the grade
             // and the droplet rows below say what drinking it does.
             tooltip.accept((servings == 0
                     ? Component.translatable("tooltip.thirstwastaken2.waterskin.empty")
                     : Component.translatable("tooltip.thirstwastaken2.waterskin.servings",
-                            servings, WaterskinItem.CAPACITY))
+                            servings, WaterskinItem.capacity(stack)))
                     .withStyle(ChatFormatting.GRAY));
         }
         if (WaterPurity.isWaterContainer(stack)) {

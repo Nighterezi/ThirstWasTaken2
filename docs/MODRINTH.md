@@ -71,6 +71,7 @@ Raise the grade of your water before drinking it:
 You do not need glass bottles to stay hydrated:
 * **Terracotta Bowls:** Mold clay into bowls and fire them in a furnace to scoop water early on.
 * **Waterskin:** Holds 3 servings of water in a single slot. Intelligently mixes water grades.
+* **Copper Canteen and Iron Flask:** Hold 4 and 6 servings, and boil their water into Pure water when held over a lit campfire. The Iron Flask also cleans its water in a furnace.
 * **Drink by Hand:** Sneak and right-click any fresh water block to drink directly without a container.
 
 <div align="center">

@@ -7,6 +7,8 @@
   "item.thirstwastaken2.terracotta_bowl": "Обожённая глиняная миска",
   "item.thirstwastaken2.clay_bowl": "Глиняная миска",
   "item.thirstwastaken2.waterskin": "Бурдюк",
+  "item.thirstwastaken2.copper_canteen": "Медная фляга",
+  "item.thirstwastaken2.iron_flask": "Железная фляжка",
   "item.thirstwastaken2.drinking_upgrade": "Улучшение «Питьё»",
   "item.thirstwastaken2.drinking_upgrade.tooltip": "Пьёт автоматически при жажде",
   "item.thirstwastaken2.advanced_drinking_upgrade": "Продвинутое улучшение «Питьё»",
@@ -93,5 +95,8 @@
   "thirstwastaken2.config.enable_drink_tag_matching": "Поиск по тегу напитков",
   "thirstwastaken2.config.enable_drink_tag_matching.tooltip": "Предметы, которые их мод пометил как напитки, утоляют жажду, даже если их нет в настройках.",
   "thirstwastaken2.config.enable_keyword_matching": "Поиск по ключевым словам",
-  "thirstwastaken2.config.enable_keyword_matching.tooltip": "Угадывает значения воды для незнакомых модовых предметов по их регистрационному имени."
+  "thirstwastaken2.config.enable_keyword_matching.tooltip": "Угадывает значения воды для незнакомых модовых предметов по их регистрационному имени.",
+  "thirstwastaken2.message.boiling": "Кипячение: %s%%",
+  "thirstwastaken2.message.boiled": "Вода прокипячена и очищена",
+  "thirstwastaken2.message.cannot_boil_salt": "Кипячение не убирает соль"
 }

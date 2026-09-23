@@ -21,9 +21,25 @@ servings, the same rate a cauldron uses.
 | Teapot (Kaleidoscope Cookery) | 12 s | 4 teacups | safe tea, not water | heat source below, one tea bag | a teacup restores its fixed value whatever the water's grade, so Dirty water becomes four safe drinks. Fair for a tea bag and heat. Sea water is refused, so it never desalinates |
 | **Copper Hanging Pot** | **4 s a serving, 12 s full** | **3** | **Pure** | no | needs a lit campfire below |
 | **Iron Hanging Pot** | **6 s a serving, 18 s full** | **3** | **Pure** | no | needs a lit campfire below |
+| **Copper Canteen, held on a campfire** | **3 s a serving, 12 s full** | **4** | **Pure** | no | the player holds use the whole time; `COPPER_CANTEEN_BOIL_TICKS` |
+| **Iron Flask, held on a campfire** | **4 s a serving, 24 s full** | **6** | **Pure** | no | the same; `IRON_FLASK_BOIL_TICKS` |
+| **Iron Flask, furnace** | 10 s | 1 to 6 | up two grades | yes | one recipe per fill level; the canteen has none |
 
 "Up two grades" follows `PURIFY_TABLE`: dirty becomes clean, murky and clean become Pure. Salt water
 is never purified by any of them; that is distillation, on the [roadmap](ROADMAP.md).
+
+## The canteen and the flask
+
+Since the carried vessels ([CANTEEN-AND-FLASK.md](CANTEEN-AND-FLASK.md)), the hanging pots are mostly
+decorative. They still work exactly as below and nothing about them was weakened, but the main way to
+boil water is now in hand:
+
+- **Quicker than the pots per serving** (3 s and 4 s against 4 s and 6 s), because the player has to
+  stand holding use, where a pot boils on its own.
+- **Copper boils faster, iron holds more.** A full flask takes twice a full canteen's time for half as
+  much water again. The flask also takes a furnace, which boils it unattended but only two grades.
+- **The flask in a furnace at a flat 10 s** is the furnace's best input, six servings to a bucket's
+  three. The five iron ingots and the nugget pay for that.
 
 ## Where the hanging pot sits
 

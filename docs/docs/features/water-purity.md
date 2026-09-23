@@ -126,12 +126,30 @@ Put a water bottle, terracotta water bowl or water bucket in a furnace, a smoker
 | Murky | Pure |
 | Clean | Pure |
 
-A furnace takes ten seconds, a smoker five, a campfire thirty. Other ways to clean water:
+A furnace takes ten seconds, a smoker five, a campfire thirty. An Iron Flask works in a furnace
+too, however full it is. Other ways to clean water:
 
+- A [Copper Canteen or Iron Flask](#boiling-in-a-canteen-or-flask) boils its water Pure over a
+  campfire.
 - A [Hanging Pot](#copper-hanging-pot) boils a whole bucket Pure.
 - The Farmer's Delight [Cooking Pot](/docs/features/farmers-delight#boiling-water-in-the-cooking-pot)
   makes bottles and bowls Pure in one pass.
 - The Create [Sand Filter](/docs/features/create#sand-filter) cleans water pumped through it.
+
+## Boiling in a canteen or flask
+
+Hold use on a lit campfire or soul campfire with a [Copper Canteen or Iron Flask](/docs/features/drinking#copper-canteen-and-iron-flask)
+that holds water. The progress shows above the hotbar, and when it is done all the water inside is
+Pure.
+
+| | Per drink | Full |
+|---|---|---|
+| Copper Canteen | 3 seconds | 12 seconds |
+| Iron Flask | 4 seconds | 24 seconds |
+
+- Letting go keeps the progress. Adding water starts it over.
+- Salt water never boils clean.
+- Only the Iron Flask goes in a furnace. It raises the water two grades, like a bottle.
 
 ## Copper Hanging Pot
 

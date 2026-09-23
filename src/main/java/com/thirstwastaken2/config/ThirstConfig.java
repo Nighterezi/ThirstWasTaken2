@@ -152,6 +152,9 @@ public final class ThirstConfig {
         if (drinks == null) drinks = defaultDrinks();
         // Existing config files predate the waterskin, so merge its required built-in value once.
         drinks.putIfAbsent("thirstwastaken2:waterskin", new int[]{4, 5});
+        // And the canteen and flask, which came later: a drink from them is the waterskin's drink.
+        drinks.putIfAbsent("thirstwastaken2:copper_canteen", new int[]{4, 5});
+        drinks.putIfAbsent("thirstwastaken2:iron_flask", new int[]{4, 5});
         // Same for milk and honey, added later still. A player who does not want them can set both
         // values to zero or list the item in itemBlacklist; only a missing key is filled in.
         drinks.putIfAbsent("minecraft:milk_bucket", new int[]{6, 8});
@@ -206,7 +209,7 @@ public final class ThirstConfig {
         put(values, 6, 8, "minecraft:milk_bucket");
         put(values, 4, 6, "minecraft:honey_bottle");
         put(values, 4, 5, "thirstwastaken2:terracotta_water_bowl");
-        put(values, 4, 5, "thirstwastaken2:waterskin");
+        put(values, 4, 5, "thirstwastaken2:waterskin", "thirstwastaken2:copper_canteen", "thirstwastaken2:iron_flask");
         put(values, 8, 13, "farmersdelight:apple_cider", "farmersdelight:melon_juice", "farmersdelight:hot_cocoa");
         put(values, 6, 8, "farmersdelight:milk_bottle");
         kaleidoscopeCookeryDrinks(values);

@@ -2,14 +2,16 @@ package com.thirstwastaken2.purity;
 
 import com.mojang.serialization.Codec;
 import com.thirstwastaken2.ThirstWasTaken2;
+import com.thirstwastaken2.item.WaterskinItem;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 
 public final class ThirstComponents {
+    /** Servings in a waterskin, canteen or flask. Widening the range keeps every saved stack valid. */
     public static final DataComponentType<Integer> WATER_SERVINGS = DataComponentType.<Integer>builder()
-            .persistent(Codec.intRange(0, 3))
+            .persistent(Codec.intRange(0, WaterskinItem.MAX_CAPACITY))
             .networkSynchronized(ByteBufCodecs.VAR_INT)
             .build();
 

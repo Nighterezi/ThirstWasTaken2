@@ -7,6 +7,8 @@
   "item.thirstwastaken2.terracotta_bowl": "Miska z Terakoty",
   "item.thirstwastaken2.clay_bowl": "Gliniana Miska",
   "item.thirstwastaken2.waterskin": "Bukłak",
+  "item.thirstwastaken2.copper_canteen": "Miedziana manierka",
+  "item.thirstwastaken2.iron_flask": "Żelazna piersiówka",
   "item.thirstwastaken2.drinking_upgrade": "Ulepszenie picia",
   "item.thirstwastaken2.drinking_upgrade.tooltip": "Pije automatycznie przy pragnieniu",
   "item.thirstwastaken2.advanced_drinking_upgrade": "Zaawansowane ulepszenie picia",
@@ -93,5 +95,8 @@
   "thirstwastaken2.config.enable_drink_tag_matching": "Dopasowanie tagu napojów",
   "thirstwastaken2.config.enable_drink_tag_matching.tooltip": "Przedmioty oznaczone przez swój mod jako napoje nawadniają, nawet jeśli nie ma ich w konfiguracji.",
   "thirstwastaken2.config.enable_keyword_matching": "Dopasowanie słów kluczowych",
-  "thirstwastaken2.config.enable_keyword_matching.tooltip": "Zgaduje wartości nawodnienia nieznanych przedmiotów z modów na podstawie ich nazwy rejestrowej."
+  "thirstwastaken2.config.enable_keyword_matching.tooltip": "Zgaduje wartości nawodnienia nieznanych przedmiotów z modów na podstawie ich nazwy rejestrowej.",
+  "thirstwastaken2.message.boiling": "Gotowanie: %s%%",
+  "thirstwastaken2.message.boiled": "Woda została przegotowana",
+  "thirstwastaken2.message.cannot_boil_salt": "Gotowanie nie usuwa soli"
 }

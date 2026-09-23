@@ -108,7 +108,7 @@ public final class WaterPurity {
 
     public static boolean isWaterContainer(ItemStack stack) {
         if (stack.isEmpty()) return false;
-        if (stack.is(ThirstItems.WATERSKIN)) return WaterskinItem.servings(stack) > 0;
+        if (WaterskinItem.is(stack)) return WaterskinItem.servings(stack) > 0;
         if (info(stack.getItem()).container()) return true;
         // Water bottles are plain potions distinguished only by their contents component.
         PotionContents potion = stack.get(DataComponents.POTION_CONTENTS);
@@ -118,7 +118,7 @@ public final class WaterPurity {
     /** Water-only drinks are blocked at a full thirst bar, unlike drinks with other gameplay uses. */
     public static boolean isPlainWaterDrink(ItemStack stack) {
         if (stack.isEmpty()) return false;
-        if (stack.is(ThirstItems.WATERSKIN)) return WaterskinItem.servings(stack) > 0;
+        if (WaterskinItem.is(stack)) return WaterskinItem.servings(stack) > 0;
         if (stack.is(ThirstItems.TERRACOTTA_WATER_BOWL)) return true;
         PotionContents potion = stack.get(DataComponents.POTION_CONTENTS);
         if (stack.is(Items.POTION) && potion != null && potion.is(Potions.WATER)) return true;

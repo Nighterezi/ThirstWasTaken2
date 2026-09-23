@@ -7,6 +7,8 @@
   "item.thirstwastaken2.terracotta_bowl": "テラコッタ 器",
   "item.thirstwastaken2.clay_bowl": "粘土の器",
   "item.thirstwastaken2.waterskin": "水袋",
+  "item.thirstwastaken2.copper_canteen": "銅の水筒",
+  "item.thirstwastaken2.iron_flask": "鉄のフラスク",
   "item.thirstwastaken2.drinking_upgrade": "水分補給機能",
   "item.thirstwastaken2.drinking_upgrade.tooltip": "喉が渇くと自動で飲みます",
   "item.thirstwastaken2.advanced_drinking_upgrade": "水分補給機能・改",
@@ -93,5 +95,8 @@
   "thirstwastaken2.config.enable_drink_tag_matching": "飲み物タグ判定",
   "thirstwastaken2.config.enable_drink_tag_matching.tooltip": "Mod 自身が飲み物タグを付けたアイテムは、設定に載っていなくても水分を回復します。",
   "thirstwastaken2.config.enable_keyword_matching": "キーワード判定",
-  "thirstwastaken2.config.enable_keyword_matching.tooltip": "未知の Mod アイテムの水分量を、登録名から推測します。"
+  "thirstwastaken2.config.enable_keyword_matching.tooltip": "未知の Mod アイテムの水分量を、登録名から推測します。",
+  "thirstwastaken2.message.boiling": "煮沸中: %s%%",
+  "thirstwastaken2.message.boiled": "水を煮沸して浄化した",
+  "thirstwastaken2.message.cannot_boil_salt": "煮沸しても塩は取れない"
 }

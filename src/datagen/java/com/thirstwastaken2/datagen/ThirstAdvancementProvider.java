@@ -5,6 +5,7 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import com.thirstwastaken2.ThirstWasTaken2;
 import com.thirstwastaken2.item.ThirstItems;
+import com.thirstwastaken2.item.WaterskinItem;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
@@ -129,9 +130,10 @@ public final class ThirstAdvancementProvider implements DataProvider {
     }
 
     /**
-     * Boiling any of the nine smelting or nine smoking recipes, as an OR. Vanilla sees these without
-     * help, because a furnace and a smoker credit the player who takes the result, which is why this
-     * is also the parent of {@code purified_water} rather than a sibling.
+     * Boiling any of the nine smelting or nine smoking recipes, or any of the iron flask's eighteen, as
+     * an OR. Vanilla sees these without help, because a furnace and a smoker credit the player who
+     * takes the result, which is why this is also the parent of {@code purified_water} rather than a
+     * sibling.
      */
     private static AdvancementHolder boilWater(DynamicOps<JsonElement> ops, AdvancementHolder parent) {
         Advancement.Builder builder =
@@ -140,27 +142,38 @@ public final class ThirstAdvancementProvider implements DataProvider {
         for (String container : List.of("bottle", "bowl", "bucket")) {
             for (int purity = 0; purity < 3; purity++) {
                 for (String heat : List.of("smelting", "smoking")) {
-                    Identifier id = ThirstWasTaken2.id("purify_water_" + container + "_" + purity + "_" + heat);
-                    // Recipes are registry entries with keys from 1.21.2, and from 26.3 a registry of
-                    // their own, so the trigger names the holders rather than one key.
-                    //? if >=26.3 {
-                    HolderSet<Recipe<?>> key = HolderSet.direct(
-                            ThirstRecipeProvider.recipeHolder(ops, ResourceKey.create(Registries.RECIPE, id)));
-                    //?} elif >=1.21.2 {
-                    /*ResourceKey<Recipe<?>> key = ResourceKey.create(Registries.RECIPE, id);
-                    *///?} else {
-                    /*Identifier key = id;
-                    *///?}
-                    builder.addCriterion(container + "_" + purity + "_" + heat, new Criterion<>(CriteriaTriggers.RECIPE_CRAFTED,
-                            new RecipeCraftedTrigger.TriggerInstance(java.util.Optional.empty(), key, List.of())));
+                    crafted(builder, ops, container + "_" + purity + "_" + heat,
+                            ThirstWasTaken2.id("purify_water_" + container + "_" + purity + "_" + heat));
                 }
             }
         }
+        for (int servings = 1; servings <= WaterskinItem.MAX_CAPACITY; servings++) {
+            for (int purity = 0; purity < 3; purity++) {
+                crafted(builder, ops, "iron_flask_" + servings + "_" + purity + "_smelting",
+                        ThirstWasTaken2.id(ThirstRecipeProvider.flaskPurifyName(servings, purity)));
+            }
+        }
 
-        // Any one of the eighteen is enough, so one requirements list holding all of them.
+        // Any one of them is enough, so one requirements list holding all of them.
         return builder
                 .requirements(AdvancementRequirements.Strategy.OR)
                 .build(ThirstWasTaken2.id("boil_water"));
+    }
+
+    /** A criterion met by crafting the recipe {@code id}. */
+    private static void crafted(Advancement.Builder builder, DynamicOps<JsonElement> ops, String name, Identifier id) {
+        // Recipes are registry entries with keys from 1.21.2, and from 26.3 a registry of their own, so
+        // the trigger names the holders rather than one key.
+        //? if >=26.3 {
+        HolderSet<Recipe<?>> key = HolderSet.direct(
+                ThirstRecipeProvider.recipeHolder(ops, ResourceKey.create(Registries.RECIPE, id)));
+        //?} elif >=1.21.2 {
+        /*ResourceKey<Recipe<?>> key = ResourceKey.create(Registries.RECIPE, id);
+        *///?} else {
+        /*Identifier key = id;
+        *///?}
+        builder.addCriterion(name, new Criterion<>(CriteriaTriggers.RECIPE_CRAFTED,
+                new RecipeCraftedTrigger.TriggerInstance(java.util.Optional.empty(), key, List.of())));
     }
 
     /**
