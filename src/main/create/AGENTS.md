@@ -76,7 +76,11 @@ where `Level.getBlockEntity` answers null for every block. Checked on 2026-09-18
 - the same from a water cauldron with `purity=2` (Murky): the tank holds Clean water and the cauldron
   is drained;
 - a Spout over a Depot fills a glass bottle with the tank's grade and `water_salty: false`;
-- a graded bottle dropped on an Item Drain keeps its grade in the drain's tank.
+- a graded bottle dropped on an Item Drain keeps its grade in the drain's tank;
+- a stack of three terracotta bowls on a Depot under a Spout all come out Clean water bowls. Create
+  asks the whole stack's capability, which refuses a stack of more than one, so
+  `GenericItemFillingMixin` asks about one. Checked on 2026-09-23, two filters in series, Dirty to
+  Murky to Clean.
 
 [tools/agent/integrations/create-water.jsonl](../../../tools/agent/integrations/create-water.jsonl) repeats two of these unattended,
 the Sand Filter by NBT and a Mechanical Pump drawing from a sea-water pool through an open pipe end

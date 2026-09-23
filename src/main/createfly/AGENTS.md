@@ -154,7 +154,11 @@ node still loads without it. Check by hand with `./gradlew ":26.2.x:runClient"` 
   checks this, a water bowl and an Item Drain on a copy of the Sand Filter Test world's pump line, on
   both 26.1.x and 26.2.x. Water that has been through Create Fly's tanks carries
   `create:fluid_max_capacity`, so the waterskin's storage reads only this mod's two components;
-- Engineer's Goggles on the filter show both tanks with their grade.
+- Engineer's Goggles on the filter show both tanks with their grade;
+- a stack of terracotta bowls on a Depot under a Spout fills one at a time, every one of them.
+  Create Fly asks the Transfer API about the whole stack, through a context with no overflow slot,
+  before filling one; `GenericItemFillingMixin` asks about one instead. Checked on 2026-09-23 with
+  two filters in series, Dirty to Murky to Clean, and three bowls.
 
 Keep pipes of the two networks apart: a pipe beside another pipe joins it, and the filter's input and
 output then become one network.
