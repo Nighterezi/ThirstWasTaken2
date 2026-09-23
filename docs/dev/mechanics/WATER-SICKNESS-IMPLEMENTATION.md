@@ -48,7 +48,7 @@ Normal, where the design says it stops at half a heart. Decide whether the exist
   food must not dehydrate.
 - **1b** `ThirstEffects.PARCHED`, 0.01 exhaustion per tick per level; the thirst bar swaps to
   `thirst_icons_parched.png` while it lasts (`client/AGENTS.md`). Agent-client script
-  `tools/agent/parched.jsonl`.
+  `tools/agent/gameplay/parched.jsonl`.
 - **1c** Salt water adds Parched II for 30 s, without particles.
 - **1d** `nauseaSeconds` by grade (12 / 8 / 5 / 5); drinking by hand restores 2 thirst and 2 quenched.
 

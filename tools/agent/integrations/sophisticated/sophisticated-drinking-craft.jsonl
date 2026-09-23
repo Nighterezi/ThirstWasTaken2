@@ -18,9 +18,9 @@
 // two glass bottles in place of the water.
 //
 // SophisticatedAgent is a throwaway world: copy level.dat out of any 1.21.1 world into
-// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/sophisticated-pack into its datapacks
+// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/integrations/sophisticated/sophisticated-pack into its datapacks
 // folder, fresh for each run. Then:
-//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/sophisticated-drinking-craft.jsonl -Pquickplay=SophisticatedAgent
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/integrations/sophisticated/sophisticated-drinking-craft.jsonl -Pquickplay=SophisticatedAgent
 
 {"id": "load", "command": "wait", "args": {"ticks": 400}}
 {"id": "joined", "command": "client.state"}

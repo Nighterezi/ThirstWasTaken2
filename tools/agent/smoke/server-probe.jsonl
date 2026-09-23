@@ -1,6 +1,6 @@
 // What a server answers with nobody online: the queue is open, the autorun property works, and
 // /thirst agent probe is reachable from the console. Run it with
-//     ./gradlew ":<node>:runServer" -Pagent=tools/agent/server-probe.jsonl
+//     ./gradlew ":<node>:runServer" -Pagent=tools/agent/smoke/server-probe.jsonl
 // which answers every line into run/<node>/agent/server/out.jsonl and then stops the server.
 {"id": "probe", "command": "probe"}
 {"id": "info", "command": "server.info"}

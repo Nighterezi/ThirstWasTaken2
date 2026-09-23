@@ -251,7 +251,7 @@ and `sophisticatedstorage:upgrade`. The textures are the mod's own; Sophisticate
 ## Testing
 
 The gametests run without Sophisticated and prove the node still loads without it. The upgrades are
-checked in a real client, from backpack templates in `tools/agent/sophisticated-pack`. Both scripts
+checked in a real client, from backpack templates in `tools/agent/integrations/sophisticated/sophisticated-pack`. Both scripts
 say how to set the world up.
 
 The tables below were first run on 1.21.1. On 2026-09-19 every script was run on 1.21.11 and 26.2
@@ -283,8 +283,8 @@ What the scripts and the world need on the newer versions, all already in the fi
 
 ### Tank
 
-[tools/agent/sophisticated-tank.jsonl](../../../tools/agent/sophisticated-tank.jsonl) builds four
-backpacks from the templates in `tools/agent/sophisticated-pack`, lets each tank run in the main
+[tools/agent/integrations/sophisticated/sophisticated-tank.jsonl](../../../tools/agent/integrations/sophisticated/sophisticated-tank.jsonl) builds four
+backpacks from the templates in `tools/agent/integrations/sophisticated/sophisticated-pack`, lets each tank run in the main
 hand, and exports what is left as SNBT. The file says how to set up the world and what each export has
 to show. Checked on 2026-09-19, and once with the mixin disabled for comparison:
 
@@ -302,14 +302,14 @@ same method, and Sophisticated Storage.
 
 ### Feeding
 
-[tools/agent/sophisticated-feeding.jsonl](../../../tools/agent/sophisticated-feeding.jsonl) starves a
+[tools/agent/integrations/sophisticated/sophisticated-feeding.jsonl](../../../tools/agent/integrations/sophisticated/sophisticated-feeding.jsonl) starves a
 player to food 6, sets thirst to 4, and hands them a backpack with a Feeding upgrade and 16 melon
 slices. Checked on 2026-09-19: seven slices were eaten, food went to 20 and thirst to 20. With the
 mixin left out of the config, food went to 20 and thirst stayed at 4.
 
 ### Alchemy
 
-[tools/agent/sophisticated-alchemy.jsonl](../../../tools/agent/sophisticated-alchemy.jsonl) hands out two
+[tools/agent/integrations/sophisticated/sophisticated-alchemy.jsonl](../../../tools/agent/integrations/sophisticated/sophisticated-alchemy.jsonl) hands out two
 backpacks with three bottles each and an Alchemy upgrade set to Always on that bottle. Checked on
 2026-09-19: with Fire Resistance, one potion was drunk and thirst went from 4 to 10, quenched to 8; with
 dirty water, nothing was drunk and all three bottles stayed. With the mixin left out of the config the
@@ -318,7 +318,7 @@ Sophisticated's own rule rather than the mixin's.
 
 ### Pump
 
-[tools/agent/sophisticated-pump.jsonl](../../../tools/agent/sophisticated-pump.jsonl) builds a one-block
+[tools/agent/integrations/sophisticated/sophisticated-pump.jsonl](../../../tools/agent/integrations/sophisticated/sophisticated-pump.jsonl) builds a one-block
 pool on a stone platform and sets its biome with `/fillbiome`, so the grade does not depend on where the
 world spawned. Checked on 2026-09-19, then with the Pump and filter mixins left out of the config, then
 with only the filter mixin left out:
@@ -345,7 +345,7 @@ Create tank with `client.command` and the answer is the `[CHAT]` line in the cli
 
 Three scripts, each starting from thirst 4 unless it says otherwise. Checked on 2026-09-19.
 
-[tools/agent/sophisticated-drinking.jsonl](../../../tools/agent/sophisticated-drinking.jsonl), what it
+[tools/agent/integrations/sophisticated/sophisticated-drinking.jsonl](../../../tools/agent/integrations/sophisticated/sophisticated-drinking.jsonl), what it
 drinks:
 
 | Case | Thirst after | Left in the backpack |
@@ -357,7 +357,7 @@ drinks:
 | honey, Farmer's Delight apple cider, milk, an awkward potion, an ominous bottle | 16 | milk, the awkward potion, the ominous bottle, two glass bottles |
 | honey before a Clean bottle, from thirst 14 | 20 | the honey: water goes first |
 
-[tools/agent/sophisticated-drinking-craft.jsonl](../../../tools/agent/sophisticated-drinking-craft.jsonl)
+[tools/agent/integrations/sophisticated/sophisticated-drinking-craft.jsonl](../../../tools/agent/integrations/sophisticated/sophisticated-drinking-craft.jsonl)
 crafts at a real crafting table, moving every ingredient with the slot clicks a screen sends: the basic
 upgrade from each mod's upgrade base, and the Advanced one from a basic upgrade set to Dirty, which
 keeps `drink_min_purity: 0`. It then places a Sophisticated Storage chest (`deps.sophisticated_storage`
@@ -365,7 +365,7 @@ puts Storage on the runClient classpath) and shift-clicks the upgrade in from th
 Sophisticated only puts it in an upgrade slot the tag lets it into, and it went there, not into the
 chest. Standing beside the closed chest, thirst went from 4 to 16 and the chest held two glass bottles.
 
-[tools/agent/sophisticated-drinking-tab.jsonl](../../../tools/agent/sophisticated-drinking-tab.jsonl)
+[tools/agent/integrations/sophisticated/sophisticated-drinking-tab.jsonl](../../../tools/agent/integrations/sophisticated/sophisticated-drinking-tab.jsonl)
 opens the Advanced tab by setting `sophisticatedcore:open_tab_id` on the backpack and clicks its
 buttons with `client.click`: one click moved "whole drink" to "any", and one left and two right clicks
 took Pure round to Clean, which the export shows as `drink_at: "any"`, `drink_min_purity: 2`. Then it
@@ -382,7 +382,7 @@ script.
 
 Nothing in this directory: the Smelting and Smoking upgrades cook with the vanilla recipe types, and
 the mod ships smoking recipes for water alongside the smelting ones.
-[tools/agent/sophisticated-cooking.jsonl](../../../tools/agent/sophisticated-cooking.jsonl) gives each
+[tools/agent/integrations/sophisticated/sophisticated-cooking.jsonl](../../../tools/agent/integrations/sophisticated/sophisticated-cooking.jsonl) gives each
 upgrade a purity-0 bottle and a piece of coal. Checked on 2026-09-19: both came out with
 `water_purity: 2`, through `purify_water_bottle_0_smoking` and `_smelting`.
 

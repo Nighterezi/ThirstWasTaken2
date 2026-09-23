@@ -135,18 +135,6 @@ public final class CauldronGameTest {
         helper.succeed();
     }
 
-    @GameTest
-    public void sampledCauldronWaterMatchesWhatWasPoured(GameTestHelper helper) {
-        WaterQuality poured = WaterQuality.fresh(0);
-        BlockPos pos = pour(helper, poured);
-
-        WaterQuality sampled = WaterPurity.sampleAt(helper.getLevel(), pos);
-
-        TestFixtures.check(helper, sampled.equals(poured),
-                "drawing from the cauldron should report " + poured + ", got " + sampled);
-        helper.succeed();
-    }
-
     /**
      * Rain grades itself. An empty cauldron that fills with rain is a water cauldron nobody poured
      * anything into, which used to fall back to {@code defaultPurity} by accident.

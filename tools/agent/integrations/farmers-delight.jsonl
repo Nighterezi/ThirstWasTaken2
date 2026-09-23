@@ -2,7 +2,7 @@
 // Cooking Pot recipes load and boil water Pure, salt water is refused, and Nourishment stops the drain.
 // The saved inventory writes Slot as an int, so a check matches Slot:0, not Slot:0b.
 // Only nodes that set deps.farmersdelight have it on the runClient classpath. Run it unattended:
-//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/farmers-delight.jsonl -Pquickplay=FarmersDelightAgent
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/integrations/farmers-delight.jsonl -Pquickplay=FarmersDelightAgent
 // FarmersDelightAgent is a throwaway world: copy level.dat (and, from 26.1,
 // data/minecraft/world_gen_settings.dat) out of any world of the same Minecraft version into
 // run/<node>/saves/FarmersDelightAgent, fresh for each run. drive.py's expectations and checks are not

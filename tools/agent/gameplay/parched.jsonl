@@ -1,7 +1,7 @@
 // Parched in a real client: sea water makes the player Parched through the real right click, bad
 // water does not, and neither makes them Hungry; Parched drains thirst on the server tick, faster at
 // level II; the client names it in English and Vietnamese. Run it unattended in a singleplayer world:
-//     ./gradlew ":<node>:runClient" -Pagent=tools/agent/parched.jsonl -Pquickplay=ParchedAgent
+//     ./gradlew ":<node>:runClient" -Pagent=tools/agent/gameplay/parched.jsonl -Pquickplay=ParchedAgent
 // ParchedAgent is a throwaway world: copy level.dat (and, from 26.1,
 // data/minecraft/world_gen_settings.dat) out of any world of the same Minecraft version into
 // run/<node>/saves/ParchedAgent, fresh for each run. Then read run/<node>/agent/client/out.jsonl:

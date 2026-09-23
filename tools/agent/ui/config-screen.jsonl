@@ -3,7 +3,7 @@
 // it is the check: an action that failed to link would take the client down with it, and the requests
 // after it would go unanswered.
 //
-//     ./gradlew ":26.3.x:runClient" -Pagent=tools/agent/config-screen.jsonl -Pquickplay=AgentPass
+//     ./gradlew ":26.3.x:runClient" -Pagent=tools/agent/ui/config-screen.jsonl -Pquickplay=AgentPass
 //
 // **Pressing that button opens config/thirstwastaken2.json in whatever the desktop uses for .json.**
 // Close it afterwards; nothing is written.

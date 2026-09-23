@@ -1,5 +1,0 @@
-// Numeric HUD layout check. The client must already be in a survival world.
-// Food comes from vanilla's real sprite draw calls; thirst comes from ThirstHud.drawBar.
-{"id":"settle","command":"wait","args":{"ticks":40}}
-{"id":"visible","command":"client.state","expect":{"result.barShouldRender":true,"result.creative":false}}
-{"id":"stack","command":"client.hud","expect":{"result.recording":true,"result.geometry.icons":10,"result.geometry.barWidth":81,"result.bar.width":81,"result.food.width":81},"checks":[{"left":"result.bar.right","op":"eq","right":"result.food.right"},{"left":"result.bar.bottom","op":"le","right":"result.food.top"},{"left":"result.bar.drawnMsAgo","op":"lt","value":1000},{"left":"result.food.drawnMsAgo","op":"lt","value":1000}]}

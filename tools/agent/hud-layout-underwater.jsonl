@@ -1,4 +1,0 @@
-// Run after the server has put the player under water. This compares the real vanilla air row with
-// the actual thirst row from the same client frame, without a screenshot baseline.
-{"id":"settle","command":"wait","args":{"ticks":20}}
-{"id":"underwater","command":"client.hud","expect":{"result.recording":true,"result.geometry.barWidth":81},"checks":[{"left":"result.air.bottom","op":"le","right":"result.bar.top"},{"left":"result.air.right","op":"eq","right":"result.bar.right"},{"left":"result.air.drawnMsAgo","op":"lt","value":1000},{"left":"result.bar.drawnMsAgo","op":"lt","value":1000}]}

@@ -21,29 +21,15 @@ import net.minecraft.world.damagesource.DamageSource;
  */
 public final class EnvironmentGameTest {
     @GameTest
-    public void dehydrationHasItsOwnDamageSource(GameTestHelper helper) {
+    public void dehydrationLoadsItsDamageTypeAndTags(GameTestHelper helper) {
         DamageSource source = ThirstDamageTypes.dehydration(helper.getLevel());
 
         TestFixtures.check(helper, source.is(ThirstDamageTypes.DEHYDRATE),
                 "the dehydrate damage type should load from the datapack rather than falling back "
                         + "to starvation, got " + source.getMsgId());
-        helper.succeed();
-    }
-
-    @GameTest
-    public void dehydrationBypassesArmour(GameTestHelper helper) {
-        DamageSource source = ThirstDamageTypes.dehydration(helper.getLevel());
-
         TestFixtures.check(helper, source.is(DamageTypeTags.BYPASSES_ARMOR),
                 "the mod's bypasses_armor tag entry should have loaded, so armour cannot soften "
                         + "dehydration");
-        helper.succeed();
-    }
-
-    @GameTest
-    public void dehydrationHurtsLikeDrowning(GameTestHelper helper) {
-        DamageSource source = ThirstDamageTypes.dehydration(helper.getLevel());
-
         TestFixtures.check(helper, source.is(DamageTypeTags.NO_KNOCKBACK),
                 "the mod's no_knockback tag entry should have loaded, so dehydration does not "
                         + "knock the player back");

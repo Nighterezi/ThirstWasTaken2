@@ -30,24 +30,15 @@ public final class AdvancementGameTest {
             "clay_bowl", "terracotta_bowl_from_smelting", "terracotta_water_bowl", "waterskin",
             "purify_water_bottle", "purify_water_bowl", "purify_water_bucket");
 
-    @GameTest
-    public void theModsAdvancementTabLoaded(GameTestHelper helper) {
-        for (String name : TAB) {
-            TestFixtures.check(helper, advancement(helper, ThirstWasTaken2.id(name)) != null,
-                    "advancement " + name + " did not load");
-        }
-        helper.succeed();
-    }
-
     /**
-     * One tab means one root, and everything else hanging off it. A child whose parent is missing is
-     * dropped along with everything under it.
+     * Every advancement on the tab loaded, and one tab means one root with everything else hanging off
+     * it. A child whose parent is missing is dropped along with everything under it.
      */
     @GameTest
     public void everyAdvancementHangsOffTheRoot(GameTestHelper helper) {
         for (String name : TAB) {
             AdvancementHolder holder = advancement(helper, ThirstWasTaken2.id(name));
-            if (holder == null) continue;
+            TestFixtures.check(helper, holder != null, "advancement " + name + " did not load");
             boolean shouldBeRoot = name.equals("root");
             TestFixtures.check(helper, holder.value().isRoot() == shouldBeRoot,
                     shouldBeRoot ? "the root advancement should have no parent"

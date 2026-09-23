@@ -1,8 +1,8 @@
-// MANUAL-TESTING.md's "Sync to the client", the four items one client can answer. The fifth needs a
+// The sync checks MANUAL-TESTING.md lists, the four items one client can answer. The fifth needs a
 // second client and is driven from the two queues separately; see src/dev/java/AGENTS.md.
 //
 // Run a dedicated server and one of its clients, then
-//     python tools/agent/drive.py run/manual-<node>-A/agent/A tools/agent/client-sync.jsonl
+//     python tools/agent/drive.py run/manual-<node>-A/agent/A tools/agent/gameplay/client-sync.jsonl
 // The client has to be in the world already and standing somewhere flat, and the server needs
 // fall_damage off, or walking for thirty ticks is a check of the terrain rather than of the mod.
 //

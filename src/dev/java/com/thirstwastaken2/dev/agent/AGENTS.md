@@ -73,10 +73,12 @@ apart.
 ## Driving it
 
 Appending a line and reading `out.jsonl` is the whole protocol, so an agent with only file tools
-needs nothing else. [tools/agent/drive.py](../../../../../../../tools/agent/drive.py) does the matching up:
+needs nothing else. [tools/agent/drive.py](../../../../../../../tools/agent/drive.py) does the matching up.
+The request files beside it are sorted into folders; [tools/agent/AGENTS.md](../../../../../../../tools/agent/AGENTS.md)
+says which holds what:
 
 ```bash
-python tools/agent/drive.py run/1.21.11-neoforge/agent/server tools/agent/server-probe.jsonl
+python tools/agent/drive.py run/1.21.11-neoforge/agent/server tools/agent/smoke/server-probe.jsonl
 ```
 
 ```bash
@@ -91,7 +93,7 @@ starting with `//` is a comment.
 Unattended, without an agent at all:
 
 ```bash
-./gradlew ":1.21.11-neoforge:runServer" -Pagent=tools/agent/server-probe.jsonl
+./gradlew ":1.21.11-neoforge:runServer" -Pagent=tools/agent/smoke/server-probe.jsonl
 ```
 
 `-Pagent=<file>` answers that file once the game is up and then stops the game. The path is relative
@@ -100,7 +102,7 @@ game reads the `expect` and `checks` lines beside the requests, so a run like th
 afterwards against what it recorded:
 
 ```bash
-python tools/agent/drive.py run/1.21.11-neoforge/agent/server tools/agent/server-probe.jsonl --verify
+python tools/agent/drive.py run/1.21.11-neoforge/agent/server tools/agent/smoke/server-probe.jsonl --verify
 ```
 
 A run that crashed before it opened the queue leaves the previous run's files in place, and `--verify`
@@ -109,7 +111,7 @@ question is whether the run started at all.
 
 A client script that needs a world gets one with `-Pquickplay=<world>`, which opens that singleplayer
 world of `run/<node>/saves` straight from launch; server commands then reach its integrated server.
-[tools/agent/hanging-pot.jsonl](../../../../../../../tools/agent/hanging-pot.jsonl) runs that way, in a
+[tools/agent/gameplay/hanging-pot.jsonl](../../../../../../../tools/agent/gameplay/hanging-pot.jsonl) runs that way, in a
 throwaway world made from another world's `level.dat`.
 
 ## Driving a client while the machine is in use
@@ -146,7 +148,7 @@ of using the desktop it opened on, or of the run going anywhere at all. `-Pdrive
   `src/dev/neoforge`; the screen keeps its issues private, so it reads them by reflection.
 - **An unattended NeoForge run that fails to load stops**, non-zero, rather than sitting on the error
   screen with the Gradle task open. That is what a client crashing without an optional mod looks like
-  (`tools/agent/boot.jsonl` exists for it). NeoForge posts no events until loading has finished, so
+  (`tools/agent/smoke/boot.jsonl` exists for it). NeoForge posts no events until loading has finished, so
   this one is a mixin, `LoadingErrorScreenMixin`, in a NeoForge dev config of its own; a Fabric client
   exits on a loading crash by itself.
 
@@ -223,13 +225,13 @@ overlay drew from a frame later and crashed the client, and the fonts already ho
 
 ## What a check looks like
 
-[tools/agent/client-sync.jsonl](../../../../../../../tools/agent/client-sync.jsonl) is MANUAL-TESTING.md's "Sync
+[tools/agent/gameplay/client-sync.jsonl](../../../../../../../tools/agent/gameplay/client-sync.jsonl) is MANUAL-TESTING.md's "Sync
 to the client" section, the four items one client can answer, with the expected answer written above
 each one. Start `runServer` and `runManualA`, put the player somewhere flat with `fall_damage` off,
 and:
 
 ```bash
-python tools/agent/drive.py run/manual-1.21.11-neoforge-A/agent/A tools/agent/client-sync.jsonl
+python tools/agent/drive.py run/manual-1.21.11-neoforge-A/agent/A tools/agent/gameplay/client-sync.jsonl
 ```
 
 The fifth item, that each player sees only their own bar, needs three queues and so is not one file.

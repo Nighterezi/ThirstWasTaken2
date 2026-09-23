@@ -54,7 +54,7 @@ recipe type and effect, so nothing here differs per loader. Only `1.21.1-neoforg
 
 The gametests run without Farmer's Delight, so the Cooking Pot and Nourishment are checked in a real
 client: `./gradlew ":26.2.x:runClient"` has it on the classpath, and
-[tools/agent/farmers-delight.jsonl](../../../../../../tools/agent/farmers-delight.jsonl) checks drinking, the
+[tools/agent/integrations/farmers-delight.jsonl](../../../../../../tools/agent/integrations/farmers-delight.jsonl) checks drinking, the
 Cooking Pot and Nourishment unattended on `1.21.1-neoforge`.
 
 ## Create Fly

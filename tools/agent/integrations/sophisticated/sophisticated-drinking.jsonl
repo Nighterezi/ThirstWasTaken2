@@ -2,7 +2,7 @@
 // then other drinks, and nothing below its lowest grade. Only nodes that set deps.sophisticated_core
 // have it on the runClient classpath.
 //
-// Six backpacks from tools/agent/sophisticated-pack. A water bottle, or a 250 mB serving from a tank,
+// Six backpacks from tools/agent/integrations/sophisticated/sophisticated-pack. A water bottle, or a 250 mB serving from a tank,
 // is 6 thirst and 8 quenched; the basic upgrade drinks once half a drink fits and only Clean water or
 // better. Each case starts at thirst 4 unless it says otherwise.
 // - drinking_pick, one dirty and two clean bottles: "pickDrunk" shows thirst 16. The export holds the
@@ -21,9 +21,9 @@
 // the real right click and closed again.
 //
 // SophisticatedAgent is a throwaway world: copy level.dat out of any 1.21.1 world into
-// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/sophisticated-pack into its datapacks
+// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/integrations/sophisticated/sophisticated-pack into its datapacks
 // folder, fresh for each run. Then:
-//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/sophisticated-drinking.jsonl -Pquickplay=SophisticatedAgent
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/integrations/sophisticated/sophisticated-drinking.jsonl -Pquickplay=SophisticatedAgent
 
 {"id": "load", "command": "wait", "args": {"ticks": 400}}
 {"id": "reloadTemplates", "command": "server.command", "args": {"command": "reload"}}

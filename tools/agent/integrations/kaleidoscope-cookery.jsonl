@@ -5,10 +5,10 @@
 // integration, 1.21.1-neoforge and the five Fabric ones. Only the 1.21.1 builds let dripstone fill a
 // teapot, so on the others dripGraded and pureF fail, and are the only lines that may. Run it
 // unattended in a singleplayer world:
-//     ./gradlew ":<node>:runClient" -Pagent=tools/agent/kaleidoscope-cookery.jsonl -Pquickplay=KaleidoscopeAgent
+//     ./gradlew ":<node>:runClient" -Pagent=tools/agent/integrations/kaleidoscope-cookery.jsonl -Pquickplay=KaleidoscopeAgent
 // KaleidoscopeAgent is a throwaway world: copy level.dat out of any world of that node into
 // run/<node>/saves/KaleidoscopeAgent, fresh for each run, and on 26.x its data/minecraft folder too. Then check what it recorded:
-//     python tools/agent/drive.py run/<node>/agent/client tools/agent/kaleidoscope-cookery.jsonl --verify --max-age 15
+//     python tools/agent/drive.py run/<node>/agent/client tools/agent/integrations/kaleidoscope-cookery.jsonl --verify --max-age 15
 // Every "execute" line checks that it said "Test passed", and the captures in
 // run/<node>/agent/client/screenshots/ show Jade's line under a stockpot and a teapot.
 //

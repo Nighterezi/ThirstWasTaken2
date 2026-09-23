@@ -1,9 +1,9 @@
-// MANUAL-TESTING.md's "the bar stays on the death screen". Vanilla keeps drawing the hunger bar for a
+// The thirst bar stays on the death screen. Vanilla keeps drawing the hunger bar for a
 // dead player, so the thirst row above it has to be drawn too, with the values it had when the player
 // died. Run it against a client that is in a survival world and is an operator, with the immediate
 // respawn game rule off, which is its default on every version (26.2 renamed the rule, so the script
 // does not set it):
-//     python tools/agent/drive.py run/<node>/agent/client tools/agent/hud-death-screen.jsonl
+//     python tools/agent/drive.py run/<node>/agent/client tools/agent/ui/hud-death-screen.jsonl
 // Expectations are checked by drive.py. A wrong value makes it exit 1 just like a refused request.
 {"id":"survival","command":"client.command","args":{"command":"gamemode survival @s"}}
 {"id":"set","command":"client.command","args":{"command":"thirst set @s 9 3"}}

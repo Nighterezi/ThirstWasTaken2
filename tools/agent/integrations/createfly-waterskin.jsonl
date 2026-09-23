@@ -19,7 +19,7 @@
 //
 // Items are summoned just above the Depot's top, which is how a hopper or a player's drop reaches it.
 // Any world works; Sand Filter Test is the one this was taken from:
-//     ./gradlew ":26.2.x:runClient" -Pagent=tools/agent/createfly-waterskin.jsonl "-Pquickplay=Sand Filter Test"
+//     ./gradlew ":26.2.x:runClient" -Pagent=tools/agent/integrations/createfly-waterskin.jsonl "-Pquickplay=Sand Filter Test"
 
 {"id": "load", "command": "wait", "args": {"ticks": 300}}
 {"id": "joined", "command": "client.state"}

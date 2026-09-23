@@ -78,7 +78,7 @@ where `Level.getBlockEntity` answers null for every block. Checked on 2026-09-18
 - a Spout over a Depot fills a glass bottle with the tank's grade and `water_salty: false`;
 - a graded bottle dropped on an Item Drain keeps its grade in the drain's tank.
 
-[tools/agent/create-water.jsonl](../../../tools/agent/create-water.jsonl) repeats two of these unattended,
+[tools/agent/integrations/create-water.jsonl](../../../tools/agent/integrations/create-water.jsonl) repeats two of these unattended,
 the Sand Filter by NBT and a Mechanical Pump drawing from a sea-water pool through an open pipe end
 into a Fluid Tank. Run on 2026-09-19 after `WaterFluids` and `SampledWater` moved to
 `src/main/neoforge`: Murky came out Clean, and the tank held `water_salty` water. Once the waterskin

@@ -17,7 +17,7 @@
 //
 // Any throwaway 1.21.1 world works; SophisticatedAgent's setup is enough (copy level.dat out of any
 // 1.21.1 world into run/1.21.1-neoforge/saves/SophisticatedAgent). Then:
-//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/create-water.jsonl -Pquickplay=SophisticatedAgent
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/integrations/create-water.jsonl -Pquickplay=SophisticatedAgent
 
 {"id": "load", "command": "wait", "args": {"ticks": 400}}
 {"id": "joined", "command": "client.state"}

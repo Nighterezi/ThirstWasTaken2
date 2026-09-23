@@ -3,11 +3,11 @@
 // holds and samples the water it draws out of the world, and the mod own terracotta bowl is a
 // container Moonlight knows. Only the two 1.21.1 nodes have them on the runClient classpath. Run it
 // unattended in a singleplayer world:
-//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/supplementaries.jsonl -Pquickplay=SupplementariesAgent
-//     ./gradlew ":1.21.1:runClient" -Pagent=tools/agent/supplementaries.jsonl -Pquickplay=SupplementariesAgent
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/integrations/supplementaries.jsonl -Pquickplay=SupplementariesAgent
+//     ./gradlew ":1.21.1:runClient" -Pagent=tools/agent/integrations/supplementaries.jsonl -Pquickplay=SupplementariesAgent
 // SupplementariesAgent is a throwaway world: copy level.dat out of any 1.21.1 world into
 // run/<node>/saves/SupplementariesAgent, fresh for each run. Then check what it recorded:
-//     python tools/agent/drive.py run/<node>/agent/client tools/agent/supplementaries.jsonl --verify
+//     python tools/agent/drive.py run/<node>/agent/client tools/agent/integrations/supplementaries.jsonl --verify
 // Every "execute" line has to say "Test passed", and the captures in
 // run/<node>/agent/client/screenshots/ show the scene.
 //

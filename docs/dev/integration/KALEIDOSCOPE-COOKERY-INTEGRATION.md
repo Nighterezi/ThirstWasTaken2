@@ -268,7 +268,7 @@ server thread, so no other item passing through `ItemUtils` is touched.
 The soup that comes out is **not** affected by the water's grade. The stockpot is not a purifier, and
 food has no grade.
 
-**Checked with** `tools/agent/kaleidoscope-cookery.jsonl` on `1.21.1-neoforge`, `1.21.1` and `26.3.x`:
+**Checked with** `tools/agent/integrations/kaleidoscope-cookery.jsonl` on `1.21.1-neoforge`, `1.21.1` and `26.3.x`:
 pour a Dirty bucket in and take it out, and it is still Dirty; salty stays salty; the block entity
 holds the key.
 
@@ -403,7 +403,7 @@ Fly included, and run it next to `checkLoaderSeam` in `build.yml`. It would have
 
 **B. A client without the mod, on every node that sets the key.** A new Gradle flag
 `-PwithoutOptional=<mod,...>` that leaves the named mods out of `clientRunMods` / `modLocalRuntime`,
-and an agent script `../../../tools/agent/boot.jsonl` that opens a world, waits a few seconds, opens the
+and an agent script `../../../tools/agent/smoke/boot.jsonl` that opens a world, waits a few seconds, opens the
 inventory and quits. Run each combination on `1.21.1-neoforge`, `1.21.1` and `26.3.x`, and once on
 the other three before a release:
 

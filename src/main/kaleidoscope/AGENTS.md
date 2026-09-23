@@ -150,11 +150,11 @@ Vanilla's own differences go through `Vanilla`: the item's block entity data (`p
 - `checkOptionalSeam` finds the plugin, the gate and `KaleidoscopeJade` as classes loaded without the
   mod, and passes.
 - `runGametest` passes unchanged on every node: the mod is never on its classpath.
-- `./gradlew ":<node>:runClient" -Pagent=tools/agent/boot.jsonl`, with the mod and with
+- `./gradlew ":<node>:runClient" -Pagent=tools/agent/smoke/boot.jsonl`, with the mod and with
   `-PwithoutOptional=kaleidoscope_cookery` (Jade still there, the 1.0.9 shape) and
   `kaleidoscope_cookery,jade`, comes up and stays up.
 - What it does is checked in a real client with
-  [tools/agent/kaleidoscope-cookery.jsonl](../../../tools/agent/kaleidoscope-cookery.jsonl), whose
+  [tools/agent/integrations/kaleidoscope-cookery.jsonl](../../../tools/agent/integrations/kaleidoscope-cookery.jsonl), whose
   header says how to run and verify it. Every `execute` line asserts its own "Test passed". It covers
   a Dirty bucket through each block, sea water through the stockpot and refused by the teapot, a
   teapot of Murky water picked up, placed and emptied, a teapot item dipped in a swamp and in the sea,

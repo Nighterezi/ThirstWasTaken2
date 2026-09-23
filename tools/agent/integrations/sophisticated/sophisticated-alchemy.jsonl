@@ -1,7 +1,7 @@
 // Sophisticated Backpacks' Alchemy upgrade restores thirst for what it drinks, and never drinks plain
 // water. Only nodes that set deps.sophisticated_core have it on the runClient classpath.
 //
-// Two backpacks from tools/agent/sophisticated-pack, each with three bottles and an Alchemy upgrade
+// Two backpacks from tools/agent/integrations/sophisticated/sophisticated-pack, each with three bottles and an Alchemy upgrade
 // whose one filter is that bottle, set to Always:
 // - alchemy_potion, Fire Resistance: the player drinks one (it only drinks while the effect is missing),
 //   so "potionDrunk" shows thirst 10 and quenched 8, a potion's 6 and 8 over the 4 it starts from, and
@@ -13,9 +13,9 @@
 //
 // SophisticatedAgent is a throwaway world: copy level.dat out of any 1.21.1 world (its player keeps
 // their effects, so the script clears them: a Farmer's Delight world leaves Nourishment behind) into
-// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/sophisticated-pack into its datapacks
+// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/integrations/sophisticated/sophisticated-pack into its datapacks
 // folder, fresh for each run. Then:
-//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/sophisticated-alchemy.jsonl -Pquickplay=SophisticatedAgent
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/integrations/sophisticated/sophisticated-alchemy.jsonl -Pquickplay=SophisticatedAgent
 
 {"id": "load", "command": "wait", "args": {"ticks": 400}}
 {"id": "reloadTemplates", "command": "server.command", "args": {"command": "reload"}}

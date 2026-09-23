@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * That a player is told their own thirst and no one else's, with several players in range of each
- * other — the one item of MANUAL-TESTING.md's "Sync to the client" section that two pairs of eyes on
+ * other — the one item of MANUAL-TESTING.md's sync checks that two pairs of eyes on
  * two screens were the only way to check.
  *
  * <p>NeoForge only, and deliberately so: what this exists to catch is {@code Loader.syncsTo}, which is

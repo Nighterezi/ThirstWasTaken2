@@ -2,7 +2,7 @@
 // where it lies, and buckets in the hand are emptied into and filled from the tank with their grade.
 // Only nodes that set deps.sophisticated_core have it on the runClient classpath.
 //
-// Every backpack is a gold backpack from tools/agent/sophisticated-pack with a Tank and a Pump upgrade.
+// Every backpack is a gold backpack from tools/agent/integrations/sophisticated/sophisticated-pack with a Tank and a Pump upgrade.
 // Sophisticated only unpacks a template the first time the backpack is opened, so each is opened with
 // the real right click and closed again. Read the exports under the world's
 // datapacks/thirstout_backpack_templates, and the replies named below:
@@ -29,9 +29,9 @@
 //
 // SophisticatedAgent is a throwaway world: copy level.dat out of any 1.21.1 world (its player keeps
 // their effects, so the script clears them: a Farmer's Delight world leaves Nourishment behind) into
-// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/sophisticated-pack into its datapacks
+// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/integrations/sophisticated/sophisticated-pack into its datapacks
 // folder, fresh for each run. Then:
-//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/sophisticated-pump.jsonl -Pquickplay=SophisticatedAgent
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/integrations/sophisticated/sophisticated-pump.jsonl -Pquickplay=SophisticatedAgent
 
 {"id": "load", "command": "wait", "args": {"ticks": 400}}
 {"id": "reloadTemplates", "command": "server.command", "args": {"command": "reload"}}

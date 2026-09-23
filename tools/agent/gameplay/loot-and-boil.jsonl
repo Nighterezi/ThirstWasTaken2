@@ -2,7 +2,7 @@
 // Both are datapack shapes 26.3 changed: LootIntegration now builds its pool through
 // Vanilla.lootPool, because 26.3 split the number providers and put each behind a Holder, and the
 // smelting recipes carry a components ingredient.
-//     ./gradlew ":26.3.x:runClient" -Pagent=tools/agent/loot-and-boil.jsonl -Pquickplay=AgentPass
+//     ./gradlew ":26.3.x:runClient" -Pagent=tools/agent/gameplay/loot-and-boil.jsonl -Pquickplay=AgentPass
 // AgentPass is a throwaway world; any world of the node's Minecraft version will do.
 //
 // The chests are rolled through their loot tables rather than by walking into a generated dungeon:

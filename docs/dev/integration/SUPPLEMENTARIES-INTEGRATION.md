@@ -85,7 +85,7 @@ merge it; nothing here waits on that.
 ## The bugs, and the one cause under them
 
 The seven finished items were checked in a real client on both 1.21.1 nodes with
-[tools/agent/supplementaries.jsonl](../../../tools/agent/supplementaries.jsonl), which pours a dirty
+[tools/agent/integrations/supplementaries.jsonl](../../../tools/agent/integrations/supplementaries.jsonl), which pours a dirty
 bottle, a salty one and a terracotta bowl through a jar and draws each back, pours a pure bottle into a
 goblet and drinks it, and runs five faucets: two between cauldrons, one over a pool, one draining a
 hanging pot and one filling another. Both nodes answer the same. The gametests, which run without
@@ -145,7 +145,7 @@ back, the way `WaterFluids` is for NeoForge `FluidStack`s.
 mix grades, because it compares components. A jar holding Murky water will not take Clean water. That
 is the same rule the NeoForge containers already keep, and the same rule pouring by hand keeps.
 
-Checked with `../../../tools/agent/supplementaries.jsonl` on both nodes: after a dirty bottle is poured in, the
+Checked with `../../../tools/agent/integrations/supplementaries.jsonl` on both nodes: after a dirty bottle is poured in, the
 jar's own block data reads `{components: {"thirstwastaken2:water_purity": 0}, id: "moonlight:water"}`,
 and the bottle drawn back out of it is `water_purity 0, water_salty false`.
 

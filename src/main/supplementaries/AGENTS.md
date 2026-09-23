@@ -197,10 +197,10 @@ The same three layers as [src/main/create](../create/AGENTS.md) and
 The gametests run without either mod, which is what proves the mod is unchanged when they are absent;
 `runGametest` passing on both 1.21.1 nodes is that check. What the integration does is checked in a
 real client, on both nodes, with
-[tools/agent/supplementaries.jsonl](../../../tools/agent/supplementaries.jsonl):
+[tools/agent/integrations/supplementaries.jsonl](../../../tools/agent/integrations/supplementaries.jsonl):
 
 ```bash
-./gradlew ":1.21.1:runClient" -Pagent=tools/agent/supplementaries.jsonl -Pquickplay=SupplementariesAgent
+./gradlew ":1.21.1:runClient" -Pagent=tools/agent/integrations/supplementaries.jsonl -Pquickplay=SupplementariesAgent
 ```
 
 It pours a dirty bottle, a salty one and a terracotta bowl through a jar and draws each back, pours a

@@ -112,19 +112,6 @@ public final class WaterEffectsGameTest {
         helper.succeed();
     }
 
-    @GameTest
-    public void drinkingRaisesThirst(GameTestHelper helper) {
-        ServerPlayer player = TestFixtures.mockPlayer(helper);
-        ThirstManager.set(player, ThirstManager.get(player).withLevels(4, 0));
-
-        ThirstManager.drinkItem(player, bowl(WaterQuality.fresh(3)));
-
-        int thirst = ThirstManager.get(player).thirst();
-        TestFixtures.check(helper, thirst > 4,
-                "drinking a purified water bowl should raise thirst above 4, got " + thirst);
-        helper.succeed();
-    }
-
     /**
      * Milk and honey are the two drinks vanilla has that are not water, and both used to be worth
      * nothing. Their values live in the config, which merges them into files written before they

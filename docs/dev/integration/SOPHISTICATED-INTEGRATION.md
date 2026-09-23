@@ -43,7 +43,7 @@ water bottles were refused outright. `TankUpgradeWrapperMixin` wraps the one met
 container handlers through, and `WaterQualityFluidHandler` carries the grade across. `WaterFluids`
 moved to `../../../src/main/neoforge` so Create and Sophisticated share it.
 
-Checked in a real client with `../../../tools/agent/sophisticated-tank.jsonl`, and once with the mixin off to
+Checked in a real client with `../../../tools/agent/integrations/sophisticated/sophisticated-tank.jsonl`, and once with the mixin off to
 confirm the bug. The first version duplicated water (the last sea-water bottle was poured in forever);
 the salt case now watches for that.
 
@@ -51,7 +51,7 @@ the salt case now watches for that.
 
 The Feeding upgrade finishes eating with `Item.finishUsingItem`, past the mod's hook on
 `ItemStack.finishUsingItem`, so fed food never restored thirst. `FeedingUpgradeWrapperMixin` calls
-`ThirstManager.drinkItem` on that one call. Checked with `../../../tools/agent/sophisticated-feeding.jsonl`:
+`ThirstManager.drinkItem` on that one call. Checked with `../../../tools/agent/integrations/sophisticated/sophisticated-feeding.jsonl`:
 seven melon slices took thirst from 4 to 20, and with the mixin off it stayed at 4.
 
 ### 2. Alchemy upgrade
@@ -67,7 +67,7 @@ said a water bottle in its filter was drunk for free; that was wrong. Sophistica
 definition skips any potion without effects, water included. The mixin refuses plain water at the
 condition check anyway, so a definition another mod adds cannot drink it either.
 
-Checked with `../../../tools/agent/sophisticated-alchemy.jsonl`: a Fire Resistance potion took thirst from 4 to
+Checked with `../../../tools/agent/integrations/sophisticated/sophisticated-alchemy.jsonl`: a Fire Resistance potion took thirst from 4 to
 10, and dirty water was left alone. With the mixin off the potion was drunk and thirst stayed at 4.
 
 ### 4. Pump upgrade
@@ -86,7 +86,7 @@ Three problems, one of them caused by item 3:
 and builds the pump-out request from the water in the tank. A pump filter set to water now takes water
 of any grade (`FluidFilterLogicMixin`), since a filter made from a plain bucket refused graded water.
 
-Checked with `../../../tools/agent/sophisticated-pump.jsonl`: a plains pool gave the same grade as a bottle
+Checked with `../../../tools/agent/integrations/sophisticated/sophisticated-pump.jsonl`: a plains pool gave the same grade as a bottle
 filled from it by hand, an ocean pool gave salt water, a filtered pump still collected, and buckets
 went in and out with their grades. Without the mixins every case lost its grade or, pumping out,
 moved nothing. The neighbouring-block path, through a Create Fluid Tank next to the player, was run
@@ -101,7 +101,7 @@ the smelting ones, at 100 ticks, half a furnace, as a smoker is for food. They c
 `PurificationGameTest` checks them, salt water included. This is plain data, so it covers every
 version and both loaders, not just the nodes with Sophisticated.
 
-Checked with `../../../tools/agent/sophisticated-cooking.jsonl`: a purity-0 bottle came out of both the
+Checked with `../../../tools/agent/integrations/sophisticated/sophisticated-cooking.jsonl`: a purity-0 bottle came out of both the
 Smoking and the Smelting upgrade with `water_purity: 2`.
 
 ### 6. Waterskin and bowl as fluid containers
@@ -224,7 +224,7 @@ Nothing is left to do.
 - The gametests run without Sophisticated. They prove the node still loads without it, and must keep
   passing on every NeoForge node: `./gradlew ":<node>-neoforge:runGametest"`.
 - Everything that needs Sophisticated is checked in a real client with an agent script and a backpack
-  template from `../../../tools/agent/sophisticated-pack`. `/sophisticatedbackpacks template give` builds the
+  template from `../../../tools/agent/integrations/sophisticated/sophisticated-pack`. `/sophisticatedbackpacks template give` builds the
   backpack (the short `/sbp` is `/sb` from 1.21.11), opening it once unpacks the template, and
   `template create <name> true` plus `export` write what is left as SNBT under the world's
   `datapacks/`, so the result is read as text.

@@ -150,7 +150,7 @@ node still loads without it. Check by hand with `./gradlew ":26.2.x:runClient"` 
 - a Spout over a Depot fills a glass bottle with the filtered grade. The Depot has to sit one block
   below the Spout, with a gap;
 - a Spout fills an empty waterskin on a Depot in one go, all three servings, with the Spout's grade,
-  and keeps doing so after its first fill. [tools/agent/createfly-waterskin.jsonl](../../../tools/agent/createfly-waterskin.jsonl)
+  and keeps doing so after its first fill. [tools/agent/integrations/createfly-waterskin.jsonl](../../../tools/agent/integrations/createfly-waterskin.jsonl)
   checks this, a water bowl and an Item Drain on a copy of the Sand Filter Test world's pump line, on
   both 26.1.x and 26.2.x. Water that has been through Create Fly's tanks carries
   `create:fluid_max_capacity`, so the waterskin's storage reads only this mod's two components;

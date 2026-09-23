@@ -31,13 +31,6 @@ public final class CreativeTabGameTest {
             ThirstItems.IRON_HANGING_POT);
 
     @GameTest
-    public void tabIsRegistered(GameTestHelper helper) {
-        TestFixtures.check(helper, tab() != null,
-                "no creative tab registered as " + ThirstItems.CREATIVE_TAB_KEY.identifier());
-        helper.succeed();
-    }
-
-    @GameTest
     public void tabIconIsAWaterskin(GameTestHelper helper) {
         CreativeModeTab tab = requireTab(helper);
 

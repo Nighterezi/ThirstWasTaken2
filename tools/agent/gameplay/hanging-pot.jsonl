@@ -1,6 +1,6 @@
 // The copper hanging pot in a real client: the recipe loads, the block and its item render, and a pot
 // over a lit campfire boils its water pure. Run it unattended in a singleplayer world:
-//     ./gradlew ":<node>:runClient" -Pagent=tools/agent/hanging-pot.jsonl -Pquickplay=PotAgentTest
+//     ./gradlew ":<node>:runClient" -Pagent=tools/agent/gameplay/hanging-pot.jsonl -Pquickplay=PotAgentTest
 // PotAgentTest is a throwaway world: copy level.dat (and, from 26.1, data/minecraft/world_gen_settings.dat)
 // out of any world of the same Minecraft version into run/<node>/saves/PotAgentTest, fresh for each run.
 // then read run/<node>/agent/client/out.jsonl. Every "execute if block" line has to say "Test passed",

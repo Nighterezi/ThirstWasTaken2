@@ -54,12 +54,12 @@ Fabric's empty structure as its template, and `stonecutter.gradle.kts` rewrites 
 the annotation, so no test file changes for it. Write `@GameTest` with no arguments, or that
 replacement stops matching.
 
-The same 161 mod tests run on every node. The 1.21.1 runner reports 162 and later runners report 163
-because they also include vanilla smoke tests; those are not the mod's.
+The same 171 mod tests run on every node. Runners report one or two more because they also include
+vanilla smoke tests such as `minecraft:always_pass`; those are not the mod's.
 
 ## The NeoForge harness
 
-The `-neoforge` nodes run the same 161 test methods, with no test body changed and no NeoForge-only
+The `-neoforge` nodes run the same 171 test methods, with no test body changed and no NeoForge-only
 branch in any of them. What stands in for Fabric API lives in `src/gametest/neoforge`:
 
 | | Fabric API | NeoForge node |
@@ -78,8 +78,8 @@ adds a vanilla `TestFunction` per method to `GameTestRegistry.getAllTestFunction
 NeoForge's own registration, which only accepts vanilla's annotation and takes the structure's
 namespace from a NeoForge annotation on the test class. That server has no `--report` option either,
 so the build passes the report path as `-Dthirstwastaken2.gametest.report` and the harness installs
-vanilla's `JUnitLikeTestReporter` itself. The report lists 162 tests there, without
-`minecraft:always_pass`, which the 26.2 and 26.3 nodes' reports do carry.
+vanilla's `JUnitLikeTestReporter` itself. That report has no `minecraft:always_pass`, which the 26.2
+and 26.3 nodes' reports do carry.
 
 On 1.21.11 `TestData` has no padding and `TestEnvironmentDefinition` takes no type parameter; the
 harness leaves padding out before 26.1 and holds both values in `var`s.
@@ -118,7 +118,7 @@ cauldron bottle draw.
 | Class | Covers |
 |---|---|
 | `WaterFillingGameTest` | bottle and bucket filling, that each fill resamples the water, that an abandoned fill leaves nothing behind |
-| `WaterEffectsGameTest` | salt water, the taste dirty water always leaves and that it still quenches, quenched cut by grade and by Upset Stomach, purified water, drinking, boiling not desalinating |
+| `WaterEffectsGameTest` | salt water, the taste dirty water always leaves and that it still quenches, quenched cut by grade and by Upset Stomach, purified water, milk and honey, boiling not desalinating |
 | `WaterSicknessGameTest` | the one roll per drink, forced into every range of each difficulty's table: exactly Poisoning's effects with Upset Stomach, Upset Stomach alone, or only the taste; Peaceful giving only the taste, Pure giving nothing on Hard, drinking again (extend, I to II, twice the time at most, a milder illness changing nothing) and the classic preset |
 | `UpsetStomachGameTest` | Upset Stomach draining faster than nothing and faster at II, Nausea costing nothing on top of it, the saturation it cuts at I and II, and that it never hurts on its own |
 | `HealthRegenGameTest` | dehydration halting regeneration and the food refund that has to accompany it |
@@ -126,10 +126,11 @@ cauldron bottle draw.
 | `TooltipGameTest` | the lines the mod adds to a tooltip, droplet row arithmetic, that the rows need AppleSkin, and that cached lines are handed out as copies |
 | `PlayerStateGameTest` | the sprint gate, exhaustion mirroring waiting for the tick, small exhaustion being carried until it crosses a sync step, the Hunger effect cancelling out, and that riding does not dehydrate |
 | `CauldronGameTest` | the cauldron blockstate property (water cauldron only, old powder snow saves still load, a fresh cauldron is not sea water), the deferred quality transfer, and the grades rain and dripstone leave behind |
+| `HangingPotGameTest` | the copper hanging pot through the real use path: filling, a full pot, mixing grades, drawing a bottle or a waterskin, the frame following the campfire, boiling per serving, topping up, rain and the Nether; the iron pot filling and boiling the same way, and each pot's boil time |
 | `PurificationGameTest` | which water the furnace accepts: looted bottles yes, salt water never |
-| `EnvironmentGameTest` | the datapack damage type and tag, and the version-forked environment call |
-| `CreativeTabGameTest` | the creative tab is registered, has the right icon, and holds every item the mod adds |
-| `AdvancementGameTest` | the mod's advancement tab loads, hangs off one root, its recipe advancements unlock recipes that exist, and the Cooking Pot files are skipped without Farmer's Delight |
+| `EnvironmentGameTest` | the datapack damage type and its tags, and the version-forked environment call |
+| `CreativeTabGameTest` | the creative tab has the right icon and holds every item the mod adds |
+| `AdvancementGameTest` | every advancement on the mod's tab loads and hangs off one root, its recipe advancements unlock recipes that exist, and the Cooking Pot files are skipped without Farmer's Delight |
 | `ThirstDataGameTest` | the state record: drinking, the quenched cap, overflow into quenched, spending exhaustion, clamping, both codecs round-tripping, including a save from before `enabled` existed, and a whole player saved to NBT and loaded back, which is the attachment under the codec |
 | `ThirstTickGameTest` | the tick spending quenched before thirst, peaceful with and without depletion, disabled and invulnerable players, Fire Resistance and Fire Protection slowing the drain, salt water charging at once, the full-bar rule |
 | `DrinkingGameTest` | drinking a bowl and a waterskin through the real right-click path, what is left in the hand, the drink animation and duration, water refused on a full bar while honey is not, the advancements a drink earns, and drinking by hand with every way it is refused |

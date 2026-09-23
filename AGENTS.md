@@ -28,7 +28,7 @@ One source tree, one jar per node. Nodes are the Gradle subprojects in `settings
 | `./gradlew ":<node>:checkDatagen"` | Fails if generated output differs from what is committed. CI runs it |
 | `./gradlew ":<node>:runBenchmark"` | Server cost in time and memory. See [benchmark/AGENTS.md](src/dev/java/com/thirstwastaken2/dev/benchmark/AGENTS.md) |
 | `./gradlew ":<node>:runServer" -Pagent=<file>.jsonl` | Script a running game and read numbers back. See [agent/AGENTS.md](src/dev/java/com/thirstwastaken2/dev/agent/AGENTS.md) |
-| `./gradlew ":<node>:runClient" -Pagent=tools/agent/boot.jsonl -PwithoutOptional=<name,...>\|all` | A dev client without those optional mods comes up and stays up. The check 1.0.9 lacked |
+| `./gradlew ":<node>:runClient" -Pagent=tools/agent/smoke/boot.jsonl -PwithoutOptional=<name,...>\|all` | A dev client without those optional mods comes up and stays up. The check 1.0.9 lacked |
 | `./gradlew ":<node>:checkOptionalSeam"` | Fails when a class loaded without an optional mod names that mod. CI runs it |
 | `./gradlew ":<node>:checkApiSurface"` | Fails when a public signature in `com.thirstwastaken2.api` names an internal type. CI runs it |
 | `python tools/release/publish.py --dry-run` | Release to Modrinth, then `publish_curseforge.py --no-build`. Checklist and flags in the scripts' docstrings |
@@ -161,7 +161,7 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | `src/main/resources` | Hand-written assets and lang, all nodes |
 | `src/main/generated/<mc version>` | Datagen output, never hand-edited |
 | `src/datagen`, `src/gametest`, `src/dev` | Separate mods, never packaged |
-| `tools/agent`, `tools/benchmark`, `tools/release` | Scripts for the agent client, benchmark sets, publishing |
+| `tools/agent`, `tools/benchmark`, `tools/release` | Scripts for the agent client (by folder, see [tools/agent/AGENTS.md](tools/agent/AGENTS.md)), benchmark sets, publishing |
 
 ### Optional integrations
 
@@ -202,6 +202,7 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | Datagen providers | [src/datagen/java/AGENTS.md](src/datagen/java/AGENTS.md) |
 | Automated in-game tests | [src/gametest/java/AGENTS.md](src/gametest/java/AGENTS.md) |
 | Dev-only tooling (agent client, benchmark) | [src/dev/java/AGENTS.md](src/dev/java/AGENTS.md) |
+| Agent client scripts, which folder holds what | [tools/agent/AGENTS.md](tools/agent/AGENTS.md) |
 | Benchmark baseline per node | [docs/dev/benchmark/BENCHMARK-BASELINE.md](docs/dev/benchmark/BENCHMARK-BASELINE.md) |
 | Manual checks before a release | [docs/dev/MANUAL-TESTING.md](docs/dev/MANUAL-TESTING.md) |
 | The API and data pack format other mods use | the site's developer pages, [docs/docs/developers/](docs/docs/developers/java-api.md) |

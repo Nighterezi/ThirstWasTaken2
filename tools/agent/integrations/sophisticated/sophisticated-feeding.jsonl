@@ -2,7 +2,7 @@
 // Only nodes that set deps.sophisticated_core have it on the runClient classpath.
 //
 // A hungry player with thirst 4 gets a backpack (template thirsttest:feeding_melon in
-// tools/agent/sophisticated-pack) holding a Feeding upgrade and 16 melon slices, 4 thirst and 5
+// tools/agent/integrations/sophisticated/sophisticated-pack) holding a Feeding upgrade and 16 melon slices, 4 thirst and 5
 // quenched each. Sophisticated only unpacks a template the first time the backpack is opened, so it is
 // opened with the real right click and closed again. Expected: "fed" shows food above "hungry" and
 // thirst above 4. Without the integration food rises and thirst stays at 4. The export under the
@@ -10,9 +10,9 @@
 //
 // SophisticatedAgent is a throwaway world: copy level.dat out of any 1.21.1 world (its player keeps
 // their effects, so the script clears them: a Farmer's Delight world leaves Nourishment behind) into
-// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/sophisticated-pack into its datapacks
+// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/integrations/sophisticated/sophisticated-pack into its datapacks
 // folder, fresh for each run. Then:
-//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/sophisticated-feeding.jsonl -Pquickplay=SophisticatedAgent
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/integrations/sophisticated/sophisticated-feeding.jsonl -Pquickplay=SophisticatedAgent
 
 {"id": "load", "command": "wait", "args": {"ticks": 400}}
 {"id": "reloadTemplates", "command": "server.command", "args": {"command": "reload"}}

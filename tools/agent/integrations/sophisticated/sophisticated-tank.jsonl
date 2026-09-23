@@ -2,16 +2,16 @@
 // dirty bottles, sea water stays sea water, water of another grade is refused, and unstamped water is
 // graded defaultPurity. Only nodes that set deps.sophisticated_core have it on the runClient classpath.
 //
-// Each backpack comes from a template in tools/agent/sophisticated-pack. Sophisticated only unpacks
+// Each backpack comes from a template in tools/agent/integrations/sophisticated/sophisticated-pack. Sophisticated only unpacks
 // a template the first time the backpack is opened, so it is opened with the real right click and
 // closed again, then ticks in the main hand for a while, and is then written out with /sophisticatedbackpacks template create + export, which saves its contents as SNBT
 // under the world's datapacks/thirstout_backpack_templates. Read those four files: the templates say
 // what went in, and the expected result is written above each case below.
 //
 // SophisticatedAgent is a throwaway world: copy level.dat out of any 1.21.1 world into
-// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/sophisticated-pack into its
+// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/integrations/sophisticated/sophisticated-pack into its
 // datapacks folder, fresh for each run. Then:
-//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/sophisticated-tank.jsonl -Pquickplay=SophisticatedAgent
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/integrations/sophisticated/sophisticated-tank.jsonl -Pquickplay=SophisticatedAgent
 
 {"id": "load", "command": "wait", "args": {"ticks": 400}}
 {"id": "reloadTemplates", "command": "server.command", "args": {"command": "reload"}}

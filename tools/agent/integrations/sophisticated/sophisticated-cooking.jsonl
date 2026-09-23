@@ -2,16 +2,16 @@
 // mod's smoking and smelting recipes. Only nodes that set deps.sophisticated_core have Sophisticated on
 // the runClient classpath.
 //
-// Each backpack from tools/agent/sophisticated-pack holds one cooking upgrade with a purity-0 bottle in
+// Each backpack from tools/agent/integrations/sophisticated/sophisticated-pack holds one cooking upgrade with a purity-0 bottle in
 // its input and a piece of coal as fuel. Sophisticated only unpacks a template the first time the
 // backpack is opened, so each is opened with the real right click and closed again. The export under the
 // world's datapacks/thirstout_backpack_templates has to show, in the upgrade's cooking_inventory, slot 2
 // holding a bottle with water_purity 2 and water_salty false, and no bottle left in slot 0.
 //
 // SophisticatedAgent is a throwaway world: copy level.dat out of any 1.21.1 world into
-// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/sophisticated-pack into its datapacks
+// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/integrations/sophisticated/sophisticated-pack into its datapacks
 // folder, fresh for each run. Then:
-//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/sophisticated-cooking.jsonl -Pquickplay=SophisticatedAgent
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/integrations/sophisticated/sophisticated-cooking.jsonl -Pquickplay=SophisticatedAgent
 
 {"id": "load", "command": "wait", "args": {"ticks": 400}}
 {"id": "reloadTemplates", "command": "server.command", "args": {"command": "reload"}}

@@ -4,7 +4,7 @@
 // single bottle the empty one replaces the cursor instead, which is the control this file checks
 // first and which WaterskinGameTest already covers.
 //
-//     ./gradlew ":26.3.x:runClient" -Pagent=tools/agent/waterskin-stack.jsonl -Pquickplay=AgentPass
+//     ./gradlew ":26.3.x:runClient" -Pagent=tools/agent/gameplay/waterskin-stack.jsonl -Pquickplay=AgentPass
 //
 // AgentPass is a throwaway world; any world of the node's Minecraft version will do.
 //
