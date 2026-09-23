@@ -113,7 +113,11 @@ class CurseForge:
         return names
 
     def describe(self, node: Node) -> list[str]:
-        return [f"tags      {', '.join(self.tags(node))}"]
+        lines = [f"tags      {', '.join(self.tags(node))}"]
+        by_hand = [dep.modrinth_slug for dep in node.dependencies if dep.curseforge_slug is None]
+        if by_hand:
+            lines.append(f"by hand   {', '.join(by_hand)} (add under Related Projects; the API refuses it)")
+        return lines
 
     def upload(self, node: Node, number: str, changelog: str) -> str:
         metadata = {
@@ -127,7 +131,7 @@ class CurseForge:
             metadata["relations"] = {"projects": [
                 {"slug": dep.curseforge_slug,
                  "type": "requiredDependency" if dep.required else "optionalDependency"}
-                for dep in node.dependencies]}
+                for dep in node.dependencies if dep.curseforge_slug is not None]}
         body, content_type = multipart("metadata", metadata, node.jar)
         created = self.request(f"/projects/{self.project_id}/upload-file", body, content_type)
         return f"file id {created['id']}"

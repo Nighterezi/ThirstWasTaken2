@@ -82,8 +82,9 @@ class Dependency:
     modrinth_slug: str
     modrinth_id: str
     """Modrinth's version endpoint stores the project id, and an id outlives a rename."""
-    curseforge_slug: str
-    """CurseForge's upload API names a relation by slug."""
+    curseforge_slug: str | None
+    """CurseForge's upload API names a relation by slug. None when that API refuses the project, so the
+    relation is added by hand on the file's page; `publish_curseforge.py` says which."""
     required: bool = False
 
 
@@ -104,9 +105,9 @@ DEPENDENCIES = {
     "sophisticated_storage": Dependency("sophisticated-storage", "hMlaZH8f", "sophisticated-storage"),
     # Moonlight Lib is left out for the same reason: Supplementaries requires it.
     "supplementaries": Dependency("supplementaries", "fFEIiSDQ", "supplementaries"),
-    # The Fabric nodes pin Refabricated, the maintained Fabric port.
-    "kaleidoscope_cookery": Dependency("kaleidoscope-cookery-refabricated", "Ct11Kuii",
-                                       "kaleidoscope-cookery-refabricated"),
+    # The Fabric nodes pin Refabricated, the maintained Fabric port. CurseForge's upload API answers 500
+    # to a relation naming it, though the slug is right (1.2.0, 2026-09-23), so it is listed there by hand.
+    "kaleidoscope_cookery": Dependency("kaleidoscope-cookery-refabricated", "Ct11Kuii", None),
 }
 # The same keys where a NeoForge node's dependency is a different project: Farmer's Delight Refabricated
 # and Kaleidoscope Cookery Refabricated are Fabric ports, and the NeoForge nodes use the originals.
