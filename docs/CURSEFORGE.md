@@ -3,7 +3,6 @@
 [![ghpages](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/documentation/ghpages_64h.png)](https://nighterezi.github.io/ThirstWasTaken2/)
 
 ## Thirst and Quenched
-Your body requires water just like food. The system mirrors vanilla hunger:
 * **Thirst Bar:** Depletes as you run, jump, mine, and fight.
 * **Quenched Buffer:** Works like saturation, and drains first before your thirst bar drops.
 * **Environment:** Hot biomes like deserts and the Nether deplete thirst faster. Fire Resistance and Fire Protection reduce heat drain.
@@ -19,8 +18,6 @@ Your body requires water just like food. The system mirrors vanilla hunger:
 </div>
 
 ## Water Quality
-Water is graded based on where you collect it:
-
 | Grade | Common Sources | Effects |
 | :--- | :--- | :--- |
 | **Dirty** | Swamps, stagnant pools | Often causes [Upset Stomach](https://nighterezi.github.io/ThirstWasTaken2/docs/features/water-purity#upset-stomach) or [Poisoning](https://nighterezi.github.io/ThirstWasTaken2/docs/features/water-purity#poisoning), worse on harder difficulties |
@@ -43,7 +40,6 @@ Water is graded based on where you collect it:
 </div>
 
 ## Purification
-Raise the grade of your water before drinking it:
 * **Boiling:** Smelt water bottles, bowls, or buckets in a furnace or over a campfire to raise their purity grade.
 * **Hanging Pots:** Hang a Copper or Iron Hanging Pot over a lit campfire to boil a bucket of water into Pure water.
 * **Rain and Dripstone:** Cauldrons placed under open rain or pointed dripstone automatically fill with clean water.
@@ -62,10 +58,8 @@ Raise the grade of your water before drinking it:
 </div>
 
 ## Early Game Gear and Drinking
-You do not need glass bottles to stay hydrated:
 * **Terracotta Bowls:** Mold clay into bowls and fire them in a furnace to scoop water early on.
 * **Waterskin:** Holds 3 servings of water in a single slot. Intelligently mixes water grades.
-* **Copper Canteen and Iron Flask:** Hold 4 and 6 servings, and boil their water into Pure water when held over a lit campfire. The Iron Flask also cleans its water in a furnace.
 * **Drink by Hand:** Sneak and right-click any fresh water block to drink directly without a container.
 
 <div align="center">
@@ -81,9 +75,24 @@ You do not need glass bottles to stay hydrated:
 </table>
 </div>
 
-## Mod Compatibility
+## Mid Game Gear
+* **Copper Canteen:** Holds 4 servings. Hold it over a lit campfire to boil the water inside to Pure.
+* **Iron Flask:** Holds 6 servings. Boils slower over a campfire, but also works in a furnace.
 
-Thirst Was Taken 2 integrates seamlessly with popular mods out of the box:
+<div align="center">
+<table>
+  <tr>
+    <th align="center">Copper Canteen</th>
+    <th align="center">Iron Flask</th>
+  </tr>
+  <tr>
+    <td align="center"><img alt="Five copper ingots and a leather make a Copper Canteen" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/copper-canteen-recipe.png" width="300"></td>
+    <td align="center"><img alt="Five iron ingots and an iron nugget make an Iron Flask" src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/docs/public/screenshots/iron-flask-recipe.png" width="264"></td>
+  </tr>
+</table>
+</div>
+
+## Mod Compatibility
 
 <table>
   <tr>

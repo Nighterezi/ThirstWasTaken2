@@ -2,7 +2,7 @@
 
 All notable changes to ThirstWasTaken2 are documented in this file.
 
-## [Unreleased]
+## [1.2.0] - 2026-09-23
 
 ### Added
 
@@ -14,6 +14,11 @@ All notable changes to ThirstWasTaken2 are documented in this file.
     picked up and placed again or dipped into water.
   - The Teapot refuses sea water. The Stockpot takes it and hands it back still salty.
   - With Jade installed, looking at a Stockpot or a Teapot shows the grade of the water inside.
+
+### Fixed
+
+- A Spout from Create on NeoForge 1.21.1, or Create Fly on Fabric 26.1 and 26.2, fills a stack of
+  terracotta bowls one by one. Before, it never poured into a stack.
 
 ### Notes
 
