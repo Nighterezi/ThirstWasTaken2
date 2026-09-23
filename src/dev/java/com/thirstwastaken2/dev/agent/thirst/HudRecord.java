@@ -119,6 +119,16 @@ public final class HudRecord {
         else preview = drawn;
     }
 
+    /** A sprite draw at the screen position {@code at}, the drawn position put through the pose. */
+    public static void sprite(String id, org.joml.Vector2fc at, int width, int height) {
+        sprite(id, Math.round(at.x()), Math.round(at.y()), width, height);
+    }
+
+    /** As {@link #sprite(String, org.joml.Vector2fc, int, int)}, for 1.21.1's three-dimensional pose. */
+    public static void sprite(String id, org.joml.Vector3fc at, int width, int height) {
+        sprite(id, Math.round(at.x()), Math.round(at.y()), width, height);
+    }
+
     /** Called for atlas sprite draws; only vanilla food backgrounds and air bubbles are retained. */
     public static synchronized void sprite(String id, int x, int y, int width, int height) {
         if (id.contains("hud/food_empty")) {
