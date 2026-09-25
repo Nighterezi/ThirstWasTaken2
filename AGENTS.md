@@ -212,6 +212,7 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | Supplementaries work still to do | [docs/dev/integration/SUPPLEMENTARIES-INTEGRATION.md](docs/dev/integration/SUPPLEMENTARIES-INTEGRATION.md) |
 | Kaleidoscope Cookery work still to do | [docs/dev/integration/KALEIDOSCOPE-COOKERY-INTEGRATION.md](docs/dev/integration/KALEIDOSCOPE-COOKERY-INTEGRATION.md) |
 | Brewin' and Chewin' work still to do | [docs/dev/integration/BREWIN-AND-CHEWIN-INTEGRATION.md](docs/dev/integration/BREWIN-AND-CHEWIN-INTEGRATION.md) |
+| Cold Sweat integration plan (1.21.1 NeoForge) | [docs/dev/integration/COLD-SWEAT-INTEGRATION.md](docs/dev/integration/COLD-SWEAT-INTEGRATION.md) |
 | Bad-water sickness rework: the design | [docs/dev/mechanics/WATER-SICKNESS.md](docs/dev/mechanics/WATER-SICKNESS.md) |
 | Bad-water sickness rework: where the code goes, step by step | [docs/dev/mechanics/WATER-SICKNESS-IMPLEMENTATION.md](docs/dev/mechanics/WATER-SICKNESS-IMPLEMENTATION.md) |
 | Copper Canteen and Iron Flask: capacity, boiling in hand, the flask's furnace recipes | [docs/dev/mechanics/CANTEEN-AND-FLASK.md](docs/dev/mechanics/CANTEEN-AND-FLASK.md) |

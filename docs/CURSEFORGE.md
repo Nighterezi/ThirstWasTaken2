@@ -201,24 +201,6 @@
 | 1.21.1 | Latest | Active |
 | 1.21 (Fabric only) | Latest | Active |
 
-## Quick FAQ
-
-**Will it be backported to 1.20.1 or Forge?**  
-No. There are no plans to support 1.20.1 or Forge.
-
-**Does it work in Peaceful mode?**  
-Yes. Thirst refills on its own, or drains as on Normal with [`thirstDepletionInPeaceful`](https://n1ght3r.github.io/ThirstWasTaken2/docs/configuration#thirstdepletioninpeaceful), which pairs well with [Peaceful Hunger](https://modrinth.com/mod/peaceful-hunger).
-
-**Can I use this in a modpack?**  
-Yes. You are free to include Thirst Was Taken 2 in any public or private modpack.
-
-**Supported languages:**  
-English, Vietnamese, Simplified Chinese, Traditional Chinese, French, Japanese, Korean, Polish, and Russian.
-
-![Item tooltips in Simplified Chinese](https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/chinese-tooltips.png)
-
-Want to improve or add a translation? [Open a pull request](https://github.com/n1ght3r/ThirstWasTaken2).
-
 ## For Developers
 
 **Data Packs:** Give any item a thirst value with one JSON file, no code needed. A mod can ship the same file, so its drinks work without depending on Thirst Was Taken 2. Put it under `data/<namespace>/thirstwastaken2/drinks/`:
@@ -245,6 +227,24 @@ player.addItem(ThirstApi.waterBottle(ThirstApi.maxPurity()));
 ```
 
 Full details are in the [data pack guide](https://n1ght3r.github.io/ThirstWasTaken2/docs/developers/data-packs) and the [Java API guide](https://n1ght3r.github.io/ThirstWasTaken2/docs/developers/java-api).
+
+## Quick FAQ
+
+**Will it be backported to 1.20.1 or Forge?**  
+No. There are no plans to support 1.20.1 or Forge.
+
+**Does it work in Peaceful mode?**  
+Yes. Thirst refills on its own, or drains as on Normal with [`thirstDepletionInPeaceful`](https://n1ght3r.github.io/ThirstWasTaken2/docs/configuration#thirstdepletioninpeaceful), which pairs well with [Peaceful Hunger](https://modrinth.com/mod/peaceful-hunger).
+
+**Can I use this in a modpack?**  
+Yes. You are free to include Thirst Was Taken 2 in any public or private modpack.
+
+**Supported languages:**  
+English, Vietnamese, Simplified Chinese, Traditional Chinese, French, Japanese, Korean, Polish, and Russian.
+
+![Item tooltips in Simplified Chinese](https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/chinese-tooltips.png)
+
+Want to improve or add a translation? [Open a pull request](https://github.com/n1ght3r/ThirstWasTaken2).
 
 ## Credits
 

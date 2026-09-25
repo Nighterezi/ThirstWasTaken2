@@ -86,19 +86,22 @@ class CurseForge:
 
     def published_files(self) -> set[str]:
         """The file names already on the project, from the public site's file list, a page at a time."""
+        # `pageIndex` counts pages, not files. The site ignores an unknown parameter such as `index` and
+        # answers with the first page every time, so the loop also stops once it has seen `totalCount`.
         names: set[str] = set()
-        index, size = 0, 50
+        page_index, size = 0, 50
         while True:
-            url = f"{CURSEFORGE_SITE}/mods/{self.project_id}/files?index={index}&pageSize={size}"
+            url = f"{CURSEFORGE_SITE}/mods/{self.project_id}/files?pageIndex={page_index}&pageSize={size}"
             try:
-                page = http(url, {})["data"]
+                answer = http(url, {})
+                page, total = answer["data"], answer["pagination"]["totalCount"]
             except (urllib.error.URLError, KeyError, ValueError) as error:
                 fail(f"could not read the files already on CurseForge ({error}); "
                      "pass --only to choose the nodes to upload by hand")
             names.update(file["fileName"] for file in page)
-            if len(page) < size:
+            if len(page) < size or (page_index + 1) * size >= total:
                 return names
-            index += size
+            page_index += 1
 
     def is_published(self, node: Node, number: str) -> bool:
         return node.jar.name in self.published
