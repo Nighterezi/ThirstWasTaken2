@@ -108,6 +108,8 @@ DEPENDENCIES = {
     # The Fabric nodes pin Refabricated, the maintained Fabric port. CurseForge's upload API answers 500
     # to a relation naming it, though the slug is right (1.2.0, 2026-09-23), so it is listed there by hand.
     "kaleidoscope_cookery": Dependency("kaleidoscope-cookery-refabricated", "Ct11Kuii", None),
+    # One project for both loaders on both sites.
+    "brewin_and_chewin": Dependency("brewin-and-chewin", "hIu9KJTT", "brewin-and-chewin"),
 }
 # The same keys where a NeoForge node's dependency is a different project: Farmer's Delight Refabricated
 # and Kaleidoscope Cookery Refabricated are Fabric ports, and the NeoForge nodes use the originals.
