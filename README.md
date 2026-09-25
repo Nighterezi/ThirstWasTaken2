@@ -61,7 +61,7 @@ Put the jar in the `mods` folder of the server and of every client. NeoForge fil
 
 | Minecraft | NeoForge | Java |
 |---|---|---|
-| 26.3 | 26.3.0.10-beta or newer | 25 |
+| 26.3 | 26.3.0.16-beta or newer | 25 |
 | 26.2 | 26.2.0.88 or newer | 25 |
 | 26.1, 26.1.1, 26.1.2 | 26.1.2.109 or newer | 25 |
 | 1.21.11 | 21.11.45 or newer | 21 |

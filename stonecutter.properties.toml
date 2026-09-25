@@ -20,7 +20,7 @@ mod.mc_compat = ">=1.21 <=1.21.1"
 mod.mc_releases = ["1.21", "1.21.1"]
 
 deps.fabric_api = "0.116.17+1.21.1"
-deps.modmenu = "11.0.4"
+deps.modmenu = "11.0.5"
 # 3.0.6+mc1.21, the Fabric upload.
 deps.appleskin = "b5ZiCjAr"
 deps.cloth_config = "15.0.140+fabric"
@@ -33,15 +33,15 @@ deps.farmersdelight = "1.21.1-3.3.6"
 # Fabric and NeoForge uploads share a version number. See src/main/supplementaries/AGENTS.md.
 # 1.21.1-3.9.9, the Fabric upload.
 deps.supplementaries = "h8FyJ2as"
-# 1.21.1-3.6.8, the Fabric upload.
-deps.moonlight = "lje3uEuU"
+# 1.21.1-3.6.9, the Fabric upload.
+deps.moonlight = "KMVsU1E0"
 # Kaleidoscope Cookery Refabricated, the unofficial Fabric port with the official team's permission:
 # the official Fabric build stopped at 1.0.1, before the teapot. Same mod id and package as the NeoForge
 # original, so one integration serves both. Pinned by Modrinth version id, since the Fabric uploads of
 # different Minecraft versions share one version number. See
 # docs/dev/integration/KALEIDOSCOPE-COOKERY-INTEGRATION.md.
-# 1.5.1-fabric+mc1.21.1, the Fabric upload.
-deps.kaleidoscope_cookery = "M0DfTI4N"
+# 1.5.1.1-fabric+mc1.21.1, the Fabric upload.
+deps.kaleidoscope_cookery = "sD88E3p2"
 # Forge Config API Port, which Kaleidoscope Cookery requires here, only on the runClient classpath.
 # v21.1.6-1.21.1-Fabric, the Fabric upload.
 deps.forge_config_api_port = "N5qzq0XV"
@@ -76,8 +76,8 @@ deps.sophisticated_storage = "H7wGZ8Sl"
 # Supplementaries and Moonlight Lib, the same integration the Fabric table builds; see there.
 # 1.21.1-3.9.9, the NeoForge upload.
 deps.supplementaries = "WrZWfRjP"
-# 1.21.1-3.6.8, the NeoForge upload.
-deps.moonlight = "HTfE7eCk"
+# 1.21.1-3.6.9, the NeoForge upload.
+deps.moonlight = "u6BWvDt1"
 # Kaleidoscope Cookery, the official NeoForge build, which the Fabric tables' Refabricated is a port of.
 # It has no NeoForge build past 1.21.1, so no other NeoForge table sets this.
 # 1.5.1-neoforge+mc1.21.1, the NeoForge upload.
@@ -90,7 +90,7 @@ mod.mc_releases = ["1.21.11"]
 mod.mc_compat = "1.21.11"
 
 deps.fabric_api = "0.141.6+1.21.11"
-deps.modmenu = "17.0.0"
+deps.modmenu = "17.0.1"
 # 3.0.8+mc1.21.11, the Fabric upload.
 deps.appleskin = "59ti1rvg"
 deps.cloth_config = "21.11.153+fabric"
@@ -126,7 +126,7 @@ mod.mc_releases = ["26.1", "26.1.1", "26.1.2"]
 mod.mc_compat = "~26.1"
 
 deps.fabric_api = "0.155.3+26.1.2"
-deps.modmenu = "18.0.1"
+deps.modmenu = "18.0.2"
 # 3.0.10+mc26.1.2, the Fabric upload.
 deps.appleskin = "zLlqqiTA"
 deps.cloth_config = "26.1.154+fabric"
@@ -135,8 +135,8 @@ deps.farmersdelight = "26.1-3.6.26"
 deps.create_fly = "26.1.2-6.0.9-4"
 # Kaleidoscope Cookery Refabricated, as in the 1.21.1 table. Forge Config API Port is optional from
 # 26.1 on, so it is not named here.
-# 1.5.1-fabric+mc26.1.2, the Fabric upload.
-deps.kaleidoscope_cookery = "MT3JUkCC"
+# 1.5.1.1-fabric+mc26.1.2, the Fabric upload.
+deps.kaleidoscope_cookery = "pHws6vCC"
 
 [neoforge."26.1.x"]
 # Compiled against 26.1.2, like the Fabric node.
@@ -167,7 +167,7 @@ deps.fabric_api = "0.161.0+26.2"
 # Mod Menu, Cloth Config and Jade resolve by version number; Jade's carries its loader as a suffix.
 # AppleSkin shares one version number across its Fabric and NeoForge uploads, so it is pinned by
 # Modrinth version id instead.
-deps.modmenu = "20.0.2"
+deps.modmenu = "20.0.3"
 # 3.0.10+mc26.2, the Fabric upload.
 deps.appleskin = "uo5bAN1Y"
 deps.cloth_config = "26.2.155+fabric"
@@ -179,8 +179,8 @@ deps.farmersdelight = "26.2-3.6.26"
 # src/main/createfly/AGENTS.md. Its version numbers carry the Minecraft version as a prefix too.
 deps.create_fly = "26.2-rc-2-6.0.9-1"
 # Kaleidoscope Cookery Refabricated, as in the 26.1.x table.
-# 1.5.1-fabric+mc26.2, the Fabric upload.
-deps.kaleidoscope_cookery = "T7UWTz41"
+# 1.5.1.1-fabric+mc26.2, the Fabric upload.
+deps.kaleidoscope_cookery = "jjvsGTGz"
 
 [neoforge."26.2.x"]
 # The NeoForge nodes build from the same sources as the Fabric ones; see
@@ -212,7 +212,7 @@ mod.mc_compat = "~26.3"
 deps.fabric_api = "0.161.0+26.3"
 # The only Mod Menu upload built for 26.3 so far. A node stays on the channel its pinned version is on,
 # so update_mc_deps.py keeps offering betas here until a 21.0.0 release catches up.
-deps.modmenu = "21.0.0-beta.1"
+deps.modmenu = "21.0.0"
 # 3.0.10+mc26.3, the Fabric upload.
 deps.appleskin = "PHjDtQay"
 deps.cloth_config = "26.3.159+fabric"
@@ -221,15 +221,15 @@ deps.farmersdelight = "26.3-3.6.27"
 # No `deps.create_fly`: Create Fly has no 26.3 port yet, so this node does not compile the Sand
 # Filter. See src/main/createfly/AGENTS.md.
 # Kaleidoscope Cookery Refabricated, as in the 26.1.x table.
-# 1.5.1-fabric+mc26.3, the Fabric upload.
-deps.kaleidoscope_cookery = "ZEZo8enS"
+# 1.5.1.1-fabric+mc26.3, the Fabric upload.
+deps.kaleidoscope_cookery = "gxwav1I9"
 
 [neoforge."26.3.x"]
 # Range written into neoforge.mods.toml, in NeoForge's syntax.
 mod.mc_compat = "[26.3,26.4)"
 
 # NeoForge has published only betas for 26.3. This is the newest, and the lower bound players need.
-deps.neoforge = "26.3.0.10-beta"
+deps.neoforge = "26.3.0.16-beta"
 # 3.0.10+mc26.3, the NeoForge upload. Pinned by Modrinth version id for the reason the 26.2 table gives.
 deps.appleskin = "6vok7cLb"
 deps.jade = "26.3.1+neoforge"
