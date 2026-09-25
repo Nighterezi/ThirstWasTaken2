@@ -51,6 +51,8 @@ import json
 import re
 import subprocess
 import sys
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
@@ -77,6 +79,7 @@ LOADER_SUFFIXES = ("+fabric", "+neoforge")
 MODRINTH = "https://api.modrinth.com/v2"
 FABRIC_META = "https://meta.fabricmc.net/v2/versions/loader"
 NEOFORGE_METADATA = "https://maven.neoforged.net/releases/net/neoforged/neoforge/maven-metadata.xml"
+NEOFORGE_ATTEMPTS = 3
 # Modrinth asks every client for a User-Agent that identifies the project.
 USER_AGENT = "n1ght3r/ThirstWasTaken2 dependency updater (github.com/n1ght3r/ThirstWasTaken2)"
 
@@ -137,6 +140,9 @@ MODRINTH_DEPS = [
                 neoforge_project="kaleidoscope-cookery", frozen=("1.21.11",)),
     # Kaleidoscope Cookery's required library on the Fabric 1.21.x nodes, runClient only.
     ModrinthDep("forge_config_api_port", "forge-config-api-port", by_id=True, mirrors=()),
+    # Brewin' and Chewin' shares one version number between its Fabric and NeoForge uploads, so it is
+    # pinned by id. Both 1.21.1 nodes only; its Greenhouse Config is nested in its jar.
+    ModrinthDep("brewin_and_chewin", "brewin-and-chewin", by_id=True, mirrors=()),
 ]
 
 
@@ -337,9 +343,19 @@ def check_loader(props: Properties, changes: list[Change]) -> None:
 
 
 def neoforge_versions() -> list[str]:
+    # maven.neoforged.net now and then answers 404 or times out on a file that is there, so a failure is
+    # retried before the run gives up. Unlike Modrinth, a 404 here never means the answer is "none".
     request = urllib.request.Request(NEOFORGE_METADATA, headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(request, timeout=30) as response:
-        return re.findall(r"<version>([^<]+)</version>", response.read().decode("utf-8"))
+    for attempt in range(NEOFORGE_ATTEMPTS):
+        try:
+            with urllib.request.urlopen(request, timeout=30) as response:
+                return re.findall(r"<version>([^<]+)</version>", response.read().decode("utf-8"))
+        except (urllib.error.URLError, TimeoutError) as error:
+            if attempt == NEOFORGE_ATTEMPTS - 1:
+                raise
+            print(f"{NEOFORGE_METADATA}: {error}, retrying", file=sys.stderr)
+            time.sleep(10 * (attempt + 1))
+    raise AssertionError("unreachable")
 
 
 def check_neoforge(props: Properties, node: str, changes: list[Change]) -> None:
