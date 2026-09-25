@@ -66,7 +66,7 @@ One source tree, one jar per node. Nodes are the Gradle subprojects in `settings
   enforces it; 1.0.9 crashed every NeoForge client without Sophisticated Core for want of it.
 - **Mixins**: in `com.thirstwastaken2.mixin`, package-private, `abstract`, every injected member
   prefixed `thirst$`, listed in `thirstwastaken2.mixins.json` or they silently do nothing. Client,
-  Fabric-client, dev, Create, Create Fly, Sophisticated, Supplementaries and Kaleidoscope Cookery mixins
+  Fabric-client, dev, Create, Create Fly, Sophisticated, Supplementaries, Kaleidoscope Cookery and Brewin' and Chewin' mixins
   have their own configs next to their sources. A new core config goes in both loader manifests; an
   integration's goes in its row of the integration table.
 - **Player state** is the immutable record `ThirstData`. Derive a new one and write through
@@ -174,6 +174,7 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | Sophisticated Backpacks and Storage | `deps.sophisticated_core`: every NeoForge node but `26.3.x-neoforge` | [src/main/sophisticated/AGENTS.md](src/main/sophisticated/AGENTS.md) |
 | Supplementaries and Moonlight Lib | `deps.supplementaries`: both 1.21.1 nodes | [src/main/supplementaries/AGENTS.md](src/main/supplementaries/AGENTS.md) |
 | Kaleidoscope Cookery | `deps.kaleidoscope_cookery`: `1.21.1-neoforge` and every Fabric node (Refabricated) | [src/main/kaleidoscope/AGENTS.md](src/main/kaleidoscope/AGENTS.md) |
+| Brewin' and Chewin' | `deps.brewin_and_chewin`: both 1.21.1 nodes | [src/main/brewinandchewin/AGENTS.md](src/main/brewinandchewin/AGENTS.md) |
 
 ### Adding an integration
 
@@ -210,6 +211,7 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | Sophisticated upgrades still to do | [docs/dev/integration/SOPHISTICATED-INTEGRATION.md](docs/dev/integration/SOPHISTICATED-INTEGRATION.md) |
 | Supplementaries work still to do | [docs/dev/integration/SUPPLEMENTARIES-INTEGRATION.md](docs/dev/integration/SUPPLEMENTARIES-INTEGRATION.md) |
 | Kaleidoscope Cookery work still to do | [docs/dev/integration/KALEIDOSCOPE-COOKERY-INTEGRATION.md](docs/dev/integration/KALEIDOSCOPE-COOKERY-INTEGRATION.md) |
+| Brewin' and Chewin' work still to do | [docs/dev/integration/BREWIN-AND-CHEWIN-INTEGRATION.md](docs/dev/integration/BREWIN-AND-CHEWIN-INTEGRATION.md) |
 | Bad-water sickness rework: the design | [docs/dev/mechanics/WATER-SICKNESS.md](docs/dev/mechanics/WATER-SICKNESS.md) |
 | Bad-water sickness rework: where the code goes, step by step | [docs/dev/mechanics/WATER-SICKNESS-IMPLEMENTATION.md](docs/dev/mechanics/WATER-SICKNESS-IMPLEMENTATION.md) |
 | Copper Canteen and Iron Flask: capacity, boiling in hand, the flask's furnace recipes | [docs/dev/mechanics/CANTEEN-AND-FLASK.md](docs/dev/mechanics/CANTEEN-AND-FLASK.md) |

@@ -1,0 +1,133 @@
+// Brewin' and Chewin' in a real client: water keeps its grade through the keg's buckets and bottles,
+// a keg refuses a second grade, a plain bottle still tops up a plain keg, a drawn bottle is cookable, sea
+// water comes back out salty, and a broken keg keeps its water's grade. It runs on the two nodes with
+// the integration, 1.21.1 and 1.21.1-neoforge. Run it unattended in a singleplayer world:
+//     ./gradlew ":<node>:runClient" -Pagent=tools/agent/integrations/brewin-and-chewin.jsonl -Pquickplay=BrewinAgent
+// BrewinAgent is a throwaway world: copy level.dat out of any world of that node into
+// run/<node>/saves/BrewinAgent, fresh for each run. Then check what it recorded:
+//     python tools/agent/drive.py run/<node>/agent/client tools/agent/integrations/brewin-and-chewin.jsonl --verify --max-age 15
+//
+// A keg is filled or emptied by right clicking it with the container in hand, which goes through
+// KegBlockEntity.extractInWorld. The player stands on it and looks straight down, as in
+// kaleidoscope-cookery.jsonl, and is killed and respawned first for the same reason.
+//
+// The tank is saved differently by the two loaders (a Fabric FluidVariant under "variant", a NeoForge
+// FluidStack under "Fluid", in droplets or millibuckets), so the tank is checked by what "data get"
+// prints rather than by path. The grade is one component on the fluid: water_purity 0 to 3, or
+// water_salty for sea water.
+//
+// On 1.21.1-neoforge runClient also loads Create, whose bottle handler lets a water bottle into the
+// keg as create:potion; the one bottle poured here is plain, which the keg's own bottle recipe takes
+// first, so that does not matter.
+
+{"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "arrived", "command": "client.state"}
+{"id": "survival", "command": "server.command", "args": {"command": "gamemode survival @p"}}
+{"id": "kill", "command": "server.command", "args": {"command": "kill @p"}}
+{"id": "dying", "command": "wait", "args": {"ticks": 20}}
+{"id": "respawn", "command": "client.respawn"}
+{"id": "respawned", "command": "wait", "args": {"ticks": 60}}
+{"id": "alive", "command": "client.state", "expect": {"result.alive": true}}
+
+{"id": "forceload", "command": "server.command", "args": {"command": "forceload add -8 -8 24 8"}}
+{"id": "float", "command": "server.command", "args": {"command": "effect give @p minecraft:slow_falling 600 0 true"}}
+{"id": "safe", "command": "server.command", "args": {"command": "effect give @p minecraft:resistance 600 4 true"}}
+{"id": "view", "command": "server.command", "args": {"command": "tp @p 0.5 202 0.5 0 90"}}
+{"id": "chunks", "command": "wait", "args": {"ticks": 100}}
+{"id": "day", "command": "server.command", "args": {"command": "time set noon"}}
+{"id": "clearWeather", "command": "server.command", "args": {"command": "weather clear 100000"}}
+{"id": "air", "command": "server.command", "args": {"command": "fill -8 200 -8 24 208 8 minecraft:air"}}
+{"id": "floor", "command": "server.command", "args": {"command": "fill -8 199 -8 24 199 8 minecraft:stone"}}
+
+// A Dirty bucket poured in and drawn back out with a fresh bucket is still Dirty. Without the
+// integration the keg held plain water and handed back a plain bucket, which reads as defaultPurity.
+{"id": "kegA", "command": "server.command", "args": {"command": "setblock 0 200 0 brewinandchewin:keg"}}
+{"id": "clearA", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "dirtyBucketA", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with minecraft:water_bucket[thirstwastaken2:water_purity=0,thirstwastaken2:water_salty=false]"}}
+{"id": "standA", "command": "server.command", "args": {"command": "tp @p 0.5 201 0.5 0 90"}}
+{"id": "settleA", "command": "wait", "args": {"ticks": 20}}
+{"id": "pourA", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "pouredA", "command": "wait", "args": {"ticks": 10}}
+{"id": "kegAGraded", "command": "server.command", "args": {"command": "data get block 0 200 0 FluidTank"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "\"thirstwastaken2:water_purity\": 0"}]}
+{"id": "emptiedA", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand minecraft:bucket"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "freshBucketA", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with minecraft:bucket"}}
+{"id": "drawA", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "drawnA", "command": "wait", "args": {"ticks": 10}}
+{"id": "stillDirtyA", "command": "server.command", "args": {"command": "execute if items entity @p container.* minecraft:water_bucket[thirstwastaken2:water_purity=0,thirstwastaken2:water_salty=false]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+
+// A keg holds one bucket (Brewin' and Chewin' 4.5.0's default kegCapacity, 81000 droplets), so a
+// glass bottle is drawn first to make room: it comes out Dirty. Then the keg refuses a Clean bucket,
+// as every tank refuses a second grade, and takes a Dirty one. Brewin' and Chewin' pours the whole
+// bucket and keeps what fits.
+{"id": "kegB", "command": "server.command", "args": {"command": "setblock 2 200 0 brewinandchewin:keg"}}
+{"id": "clearB", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "dirtyBucketB", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with minecraft:water_bucket[thirstwastaken2:water_purity=0,thirstwastaken2:water_salty=false]"}}
+{"id": "standB", "command": "server.command", "args": {"command": "tp @p 2.5 201 0.5 0 90"}}
+{"id": "settleB", "command": "wait", "args": {"ticks": 20}}
+{"id": "pourB", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "pouredB", "command": "wait", "args": {"ticks": 10}}
+{"id": "glassB", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with minecraft:glass_bottle"}}
+{"id": "drawB", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "drawnB", "command": "wait", "args": {"ticks": 10}}
+{"id": "dirtyBottleB", "command": "server.command", "args": {"command": "execute if items entity @p container.* minecraft:potion[thirstwastaken2:water_purity=0,thirstwastaken2:water_salty=false]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "clearB2", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "cleanBucketB", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with minecraft:water_bucket[thirstwastaken2:water_purity=2,thirstwastaken2:water_salty=false]"}}
+{"id": "pourCleanB", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "pouredCleanB", "command": "wait", "args": {"ticks": 10}}
+{"id": "closeB", "command": "client.screen", "args": {"open": "none"}}
+{"id": "refusedCleanB", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand minecraft:water_bucket[thirstwastaken2:water_purity=2]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "dirtyAgainB", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with minecraft:water_bucket[thirstwastaken2:water_purity=0,thirstwastaken2:water_salty=false]"}}
+{"id": "pourDirtyB", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "pouredDirtyB", "command": "wait", "args": {"ticks": 10}}
+{"id": "closeB2", "command": "client.screen", "args": {"open": "none"}}
+{"id": "tookDirtyB", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand minecraft:bucket"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "kegBHolds", "command": "server.command", "args": {"command": "data get block 2 200 0 FluidTank"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "\"thirstwastaken2:water_purity\": 0"}]}
+
+// A plain bucket still fills a keg with plain water, as before the integration. A glass bottle drawn
+// from it comes out stamped defaultPurity with water_salty: false, so it can be cooked; the keg's own
+// bottle carried neither. A plain water bottle still tops the keg back up, which the bottle recipe
+// only allows while the bottle matches its own exactly.
+{"id": "kegC", "command": "server.command", "args": {"command": "setblock 4 200 0 brewinandchewin:keg"}}
+{"id": "clearC", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "plainBucketC", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with minecraft:water_bucket"}}
+{"id": "closeBeforeC", "command": "client.screen", "args": {"open": "none"}}
+{"id": "standC", "command": "server.command", "args": {"command": "tp @p 4.5 201 0.5 0 90"}}
+{"id": "settleC", "command": "wait", "args": {"ticks": 20}}
+{"id": "pourC", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "pouredC", "command": "wait", "args": {"ticks": 10}}
+{"id": "kegCPlain", "command": "server.command", "args": {"command": "data get block 4 200 0 FluidTank"}}
+{"id": "glassC", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with minecraft:glass_bottle"}}
+{"id": "drawC", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "drawnC", "command": "wait", "args": {"ticks": 10}}
+{"id": "cookableC", "command": "server.command", "args": {"command": "execute if items entity @p container.* minecraft:potion[thirstwastaken2:water_purity=2,thirstwastaken2:water_salty=false]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "clearC2", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "plainBottleC", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with minecraft:potion[minecraft:potion_contents={potion:\"minecraft:water\"}]"}}
+{"id": "pourBottleC", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "pouredBottleC", "command": "wait", "args": {"ticks": 10}}
+{"id": "closeC", "command": "client.screen", "args": {"open": "none"}}
+{"id": "bottleToppedUpC", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand minecraft:glass_bottle"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+
+// Sea water goes in from a bucket and comes back out salty, with no grade.
+{"id": "kegD", "command": "server.command", "args": {"command": "setblock 6 200 0 brewinandchewin:keg"}}
+{"id": "clearD", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "saltyBucketD", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with minecraft:water_bucket[thirstwastaken2:water_salty=true]"}}
+{"id": "closeBeforeD", "command": "client.screen", "args": {"open": "none"}}
+{"id": "standD", "command": "server.command", "args": {"command": "tp @p 6.5 201 0.5 0 90"}}
+{"id": "settleD", "command": "wait", "args": {"ticks": 20}}
+{"id": "pourD", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "pouredD", "command": "wait", "args": {"ticks": 10}}
+{"id": "kegDSalty", "command": "server.command", "args": {"command": "data get block 6 200 0 FluidTank"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "\"thirstwastaken2:water_salty\": 1b"}]}
+{"id": "freshBucketD", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with minecraft:bucket"}}
+{"id": "drawD", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "drawnD", "command": "wait", "args": {"ticks": 10}}
+{"id": "stillSaltyD", "command": "server.command", "args": {"command": "execute if items entity @p container.* minecraft:water_bucket[thirstwastaken2:water_salty=true]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "noGradeD", "command": "server.command", "args": {"command": "execute unless items entity @p container.* minecraft:water_bucket[thirstwastaken2:water_purity=2]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+
+// The keg of Dirty water from the second case, broken with the player away from it so the drop is not
+// picked up: the item keeps the tank, grade and all.
+{"id": "awayE", "command": "server.command", "args": {"command": "tp @p 20.5 201 0.5 0 90"}}
+{"id": "noItemsE", "command": "server.command", "args": {"command": "kill @e[type=item]"}}
+{"id": "breakE", "command": "server.command", "args": {"command": "setblock 2 200 0 minecraft:air destroy"}}
+{"id": "droppedE", "command": "wait", "args": {"ticks": 10}}
+{"id": "kegItemE", "command": "server.command", "args": {"command": "data get entity @e[type=item,limit=1,nbt={Item:{id:\"brewinandchewin:keg\"}}] Item"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "\"thirstwastaken2:water_purity\": 0"}]}
+{"id": "done", "command": "client.state"}

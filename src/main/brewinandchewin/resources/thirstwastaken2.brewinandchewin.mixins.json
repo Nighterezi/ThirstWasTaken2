@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "com.thirstwastaken2.brewinandchewin.mixin",
+  "plugin": "com.thirstwastaken2.brewinandchewin.BrewinAndChewinMixinPlugin",
+  "compatibilityLevel": "${java}",
+  "mixins": [
+    "KegBlockEntityMixin",
+    "KegPouringRecipeMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -45,6 +45,12 @@ deps.kaleidoscope_cookery = "M0DfTI4N"
 # Forge Config API Port, which Kaleidoscope Cookery requires here, only on the runClient classpath.
 # v21.1.6-1.21.1-Fabric, the Fabric upload.
 deps.forge_config_api_port = "N5qzq0XV"
+# Brewin' and Chewin', whose keg holds water. Both 1.21.1 nodes build it, and only they: it has no
+# release for a newer Minecraft version. Pinned by Modrinth version id, since its Fabric and NeoForge
+# uploads share a version number. Its Greenhouse Config is nested in its jar. See
+# docs/dev/integration/BREWIN-AND-CHEWIN-INTEGRATION.md.
+# v4.5.0+1.21.1-fabric, the Fabric upload.
+deps.brewin_and_chewin = "O3PobqCR"
 
 [neoforge."1.21.1"]
 # NeoForge on 1.21.1 only. 1.21 is NeoForge 21.0, a separate generation, so unlike the Fabric jar this
@@ -82,6 +88,9 @@ deps.moonlight = "HTfE7eCk"
 # It has no NeoForge build past 1.21.1, so no other NeoForge table sets this.
 # 1.5.1-neoforge+mc1.21.1, the NeoForge upload.
 deps.kaleidoscope_cookery = "7vH6mhde"
+# Brewin' and Chewin', the same integration the Fabric table builds; see there.
+# v4.5.0+1.21.1-neoforge, the NeoForge upload.
+deps.brewin_and_chewin = "MbcR48Ou"
 
 ["1.21.11"]
 mod.mc_releases = ["1.21.11"]

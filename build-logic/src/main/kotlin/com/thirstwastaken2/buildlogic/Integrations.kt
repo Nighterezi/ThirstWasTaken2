@@ -149,6 +149,16 @@ val integrations: List<Integration> = listOf(
         fabricEntrypoints = mapOf("jade" to listOf("com.thirstwastaken2.client.kaleidoscope.KaleidoscopeJade")),
         neoForgeDependencies = listOf("kaleidoscope_cookery"),
     ),
+    // Both loaders: everything it touches is in the mod's own common module, which names neither. Only
+    // the two 1.21.1 nodes set the key, since the mod has no build for a newer Minecraft version.
+    // See docs/dev/integration/BREWIN-AND-CHEWIN-INTEGRATION.md.
+    Integration(
+        dir = "brewinandchewin",
+        depsKey = "deps.brewin_and_chewin",
+        loaders = setOf(Loader.FABRIC, Loader.NEOFORGE),
+        mixinConfig = "thirstwastaken2.brewinandchewin.mixins.json",
+        neoForgeDependencies = listOf("brewinandchewin"),
+    ),
 )
 
 /**

@@ -207,6 +207,53 @@ public final class ThirstApiGameTest {
         helper.succeed();
     }
 
+    /** Brewin' and Chewin' is never installed here either; see the Kaleidoscope Cookery test above. */
+    @GameTest
+    public void brewinAndChewinDrinksAreMergedIntoAnOlderConfig(GameTestHelper helper) {
+        ThirstConfig defaults = new ThirstConfig();
+        String[] drinks = {"kombucha", "beer", "mead", "bloody_mary", "red_wine", "old_wine", "strongroot_ale",
+                "red_rum"};
+        String[] foods = {"creamy_onion_soup", "fiery_fondue", "grits"};
+        for (String drink : drinks) {
+            TestFixtures.check(helper, defaults.drinks.containsKey("brewinandchewin:" + drink),
+                    "the default drinks should list brewinandchewin:" + drink);
+        }
+        for (String food : foods) {
+            TestFixtures.check(helper, defaults.foods.containsKey("brewinandchewin:" + food),
+                    "the default foods should list brewinandchewin:" + food);
+        }
+        for (String spirit : new String[]{"vodka", "brandy", "aqua_vitae", "salty_folly", "withering_dross"}) {
+            TestFixtures.check(helper, !defaults.drinks.containsKey("brewinandchewin:" + spirit),
+                    "brewinandchewin:" + spirit + " restores no thirst and should not be listed");
+        }
+
+        TestFixtures.withConfig(config -> {
+            for (String drink : drinks) config.drinks.remove("brewinandchewin:" + drink);
+            for (String food : foods) config.foods.remove("brewinandchewin:" + food);
+            // A player's own value, which merging must leave alone.
+            config.drinks.put("brewinandchewin:beer", new int[]{1, 1});
+        }, () -> {
+            ThirstConfig config = ThirstConfig.get();
+            for (String drink : drinks) {
+                if (drink.equals("beer")) continue;
+                String id = "brewinandchewin:" + drink;
+                TestFixtures.check(helper, Arrays.equals(config.drinks.get(id), defaults.drinks.get(id)),
+                        id + " should be merged back as " + Arrays.toString(defaults.drinks.get(id))
+                                + ", got " + Arrays.toString(config.drinks.get(id)));
+            }
+            for (String food : foods) {
+                String id = "brewinandchewin:" + food;
+                TestFixtures.check(helper, Arrays.equals(config.foods.get(id), defaults.foods.get(id)),
+                        id + " should be merged back as " + Arrays.toString(defaults.foods.get(id))
+                                + ", got " + Arrays.toString(config.foods.get(id)));
+            }
+            TestFixtures.check(helper, Arrays.equals(config.drinks.get("brewinandchewin:beer"), new int[]{1, 1}),
+                    "a value the player set should survive the merge, got "
+                            + Arrays.toString(config.drinks.get("brewinandchewin:beer")));
+        });
+        helper.succeed();
+    }
+
     @GameTest
     public void aBrokenKeywordPatternIsIgnoredRatherThanFatal(GameTestHelper helper) {
         TestFixtures.withConfig(config -> {

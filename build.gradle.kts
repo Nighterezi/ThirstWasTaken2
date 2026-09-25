@@ -3,6 +3,7 @@ import com.thirstwastaken2.buildlogic.OptionalRunMods
 import com.thirstwastaken2.buildlogic.flightRecorder
 import com.thirstwastaken2.buildlogic.integrations
 import com.thirstwastaken2.buildlogic.integrationsFor
+import java.util.zip.ZipFile
 
 plugins {
     // Picks the Loom variant the active Minecraft version needs. See settings.gradle.kts.
@@ -236,8 +237,15 @@ val supplementaries = findProperty("deps.supplementaries") as String?
 val kaleidoscopeCookery = findProperty("deps.kaleidoscope_cookery") as String?
 
 /**
+ * Brewin' and Chewin's Modrinth version id, set on `1.21.1` and `1.21.1-neoforge` only: it has no
+ * release for a newer Minecraft version. See docs/dev/integration/BREWIN-AND-CHEWIN-INTEGRATION.md.
+ */
+val brewinAndChewin = findProperty("deps.brewin_and_chewin") as String?
+
+/**
  * The mods a Modrinth mod bundles inside its own jar: Moonlight's CodecUI, which it reads on its first
- * line, and the Night Config that Forge Config API Port is built on. Loom does not unpack a dependency's
+ * line, the Night Config that Forge Config API Port is built on, and Brewin' and Chewin's Greenhouse
+ * Config, whose TOML support nests a Night Config of its own. Loom does not unpack a dependency's
  * nested jars into a run - which is why Cloth Config is named by hand for AppleSkin below - so they are
  * taken out of the jar the run already resolves, and are therefore always the versions that mod ships.
  * CodecUI is published nowhere else: Moonlight's own build reads it from a local Maven. They go back on
@@ -250,18 +258,30 @@ val kaleidoscopeCookery = findProperty("deps.kaleidoscope_cookery") as String?
  */
 fun nestedMods(project: String, version: String): List<File> {
     val into = layout.buildDirectory.dir("nested/$project/$version").get().asFile
-    val unpacked = File(into, ".unpacked")
+    // Renamed when what is unpacked changes, so a directory unpacked the old way is unpacked again.
+    val unpacked = File(into, ".unpacked-nested")
     if (!unpacked.isFile) {
         val jar = configurations.detachedConfiguration(
             dependencies.create("maven.modrinth:$project:$version")
         ).apply { isTransitive = false }.singleFile
-        copy {
-            from(zipTree(jar)) {
-                include("META-INF/jars/*.jar")
-                eachFile { path = name }
+        into.mkdirs()
+        // Each jar's own fabric.mod.json names the jars nested in it, one level at a time, so follow it
+        // down as Fabric Loader does: Greenhouse Config's TOML support, nested in Brewin' and Chewin',
+        // nests its Night Config in turn, under META-INF/jarjar rather than META-INF/jars.
+        val pending = ArrayDeque(listOf(jar))
+        while (pending.isNotEmpty()) {
+            ZipFile(pending.removeFirst()).use { zip ->
+                val manifest = zip.getEntry("fabric.mod.json") ?: return@use
+                @Suppress("UNCHECKED_CAST")
+                val json = groovy.json.JsonSlurper().parse(zip.getInputStream(manifest)) as Map<String, Any?>
+                @Suppress("UNCHECKED_CAST")
+                (json["jars"] as List<Map<String, Any?>>?).orEmpty().forEach { nested ->
+                    val entry = zip.getEntry(nested["file"].toString()) ?: return@forEach
+                    val out = File(into, entry.name.substringAfterLast('/'))
+                    zip.getInputStream(entry).use { input -> out.outputStream().use { input.copyTo(it) } }
+                    pending.add(out)
+                }
             }
-            includeEmptyDirs = false
-            into(into)
         }
         unpacked.writeText(version)
     }
@@ -432,6 +452,17 @@ dependencies {
             runClientMod(library, "maven.modrinth:forge-config-api-port:$forgeConfigApiPort")
             runClientMod(library, files(nestedMods("forge-config-api-port", forgeConfigApiPort.toString())))
         }
+    }
+
+    if (brewinAndChewin != null) {
+        // Mixed into, so it has to be a remapped mod rather than a plain library, as Kaleidoscope Cookery is.
+        "modCompileOnly"("maven.modrinth:brewin-and-chewin:$brewinAndChewin") { isTransitive = false }
+        // Test the keg in runClient. The gametests and runServer run without it, which is what proves the
+        // mod is unchanged when it is absent. Greenhouse Config, which it requires, comes out of its own
+        // jar, since Loom leaves a dependency's nested mods packed. Farmer's Delight is already above.
+        val names = listOf("brewin-and-chewin", "brewinandchewin")
+        runClientMod(names, "maven.modrinth:brewin-and-chewin:$brewinAndChewin")
+        runClientMod(names, files(nestedMods("brewin-and-chewin", brewinAndChewin)))
     }
 
     // A name no node loads is refused in stonecutter.gradle.kts, once every node has said what it takes.

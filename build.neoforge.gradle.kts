@@ -160,6 +160,12 @@ val supplementariesVersion = findProperty("deps.supplementaries") as String?
  */
 val kaleidoscopeCookeryVersion = findProperty("deps.kaleidoscope_cookery") as String?
 
+/**
+ * Brewin' and Chewin's Modrinth version id, set on `1.21.1-neoforge` and nowhere else among the NeoForge
+ * nodes. See docs/dev/integration/BREWIN-AND-CHEWIN-INTEGRATION.md.
+ */
+val brewinAndChewinVersion = findProperty("deps.brewin_and_chewin") as String?
+
 /*
  * The same gametests the Fabric nodes run, as their own small mod, so none of it reaches the jar.
  * `src/gametest/neoforge` holds the harness that finds and registers them, in place of Fabric API's;
@@ -416,6 +422,15 @@ dependencies {
         // is what proves the mod is unchanged when it is absent.
         runClientMod(listOf("kaleidoscope-cookery", "kaleidoscope-cookery-refabricated", "kaleidoscope_cookery"),
             "maven.modrinth:kaleidoscope-cookery:$kaleidoscopeCookeryVersion") { isTransitive = false }
+    }
+
+    if (brewinAndChewinVersion != null) {
+        compileOnly("maven.modrinth:brewin-and-chewin:$brewinAndChewinVersion") { isTransitive = false }
+        // Test the keg in runClient. The gametests and runServer run without it, which is what proves the
+        // mod is unchanged when it is absent. NeoForge loads the Greenhouse Config nested in its jar;
+        // Farmer's Delight is already above.
+        runClientMod(listOf("brewin-and-chewin", "brewinandchewin"),
+            "maven.modrinth:brewin-and-chewin:$brewinAndChewinVersion") { isTransitive = false }
     }
 
     // A name no node loads is refused in stonecutter.gradle.kts, once every node has said what it takes.

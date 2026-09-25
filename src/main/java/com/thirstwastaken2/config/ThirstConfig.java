@@ -170,6 +170,9 @@ public final class ThirstConfig {
         // And for Kaleidoscope Cookery, added after both.
         kaleidoscopeCookeryDrinks(drinks);
         kaleidoscopeCookeryFoods(foods);
+        // And for Brewin' and Chewin', added after that.
+        brewinAndChewinDrinks(drinks);
+        brewinAndChewinFoods(foods);
         if (itemBlacklist == null) itemBlacklist = new LinkedHashSet<>();
         if (sicknessPreset == null) sicknessPreset = SicknessPreset.REALISTIC;
         if (drinkTagValue == null || drinkTagValue.length != 2) drinkTagValue = new int[]{6, 8};
@@ -213,6 +216,7 @@ public final class ThirstConfig {
         put(values, 8, 13, "farmersdelight:apple_cider", "farmersdelight:melon_juice", "farmersdelight:hot_cocoa");
         put(values, 6, 8, "farmersdelight:milk_bottle");
         kaleidoscopeCookeryDrinks(values);
+        brewinAndChewinDrinks(values);
         return values;
     }
 
@@ -230,6 +234,7 @@ public final class ThirstConfig {
         put(values, 6, 8, "farmersdelight:fruit_salad");
         put(values, 4, 5, "farmersdelight:tomato_sauce", "farmersdelight:mixed_salad", "farmersdelight:beef_stew", "farmersdelight:chicken_soup", "farmersdelight:vegetable_soup", "farmersdelight:fish_stew", "farmersdelight:pumpkin_soup", "farmersdelight:baked_cod_stew", "farmersdelight:noodle_soup", "farmersdelight:onion_soup");
         kaleidoscopeCookeryFoods(values);
+        brewinAndChewinFoods(values);
         return values;
     }
 
@@ -267,6 +272,37 @@ public final class ThirstConfig {
         putMissing(foods, 3, 4, "kaleidoscope_cookery:beef_noodle", "kaleidoscope_cookery:hui_noodle",
                 "kaleidoscope_cookery:udon_noodle");
         putMissing(foods, 2, 3, "kaleidoscope_cookery:tomato");
+    }
+
+    /**
+     * Brewin' and Chewin's drinks, by id alone, as Kaleidoscope Cookery's are: they reach every node, one
+     * with no integration included, and match nothing where the mod is absent. None of them is tagged
+     * {@code c:drinks}, so without these they restore nothing.
+     *
+     * <p>A tankard or a bottle is one drink, a bottle of water's size. The stronger it is, the less it
+     * restores: light brews a little under water, strong ones a third of it, and spirits nothing, so they
+     * are left out, as are Salty Folly and Withering Dross, which no one drinks for their water. Brewed
+     * drinks are safe whatever water went into the keg, as tea is.
+     */
+    private static void brewinAndChewinDrinks(Map<String, int[]> drinks) {
+        putMissing(drinks, 6, 8, "brewinandchewin:kombucha");
+        putMissing(drinks, 5, 6, "brewinandchewin:beer", "brewinandchewin:mead", "brewinandchewin:egg_grog",
+                "brewinandchewin:glittering_grenadine");
+        putMissing(drinks, 4, 5, "brewinandchewin:bloody_mary");
+        putMissing(drinks, 3, 4, "brewinandchewin:red_wine", "brewinandchewin:white_wine",
+                "brewinandchewin:currant_wine", "brewinandchewin:verruca_wine", "brewinandchewin:twisted_wine",
+                "brewinandchewin:rice_wine", "brewinandchewin:old_wine");
+        putMissing(drinks, 3, 3, "brewinandchewin:pale_jane", "brewinandchewin:strongroot_ale",
+                "brewinandchewin:dread_nog");
+        putMissing(drinks, 2, 2, "brewinandchewin:saccharine_rum", "brewinandchewin:steel_toe_stout",
+                "brewinandchewin:red_rum");
+    }
+
+    /** Brewin' and Chewin's soups and porridges eaten out of a bowl in hand; see {@link #brewinAndChewinDrinks}. */
+    private static void brewinAndChewinFoods(Map<String, int[]> foods) {
+        putMissing(foods, 4, 5, "brewinandchewin:creamy_onion_soup");
+        putMissing(foods, 2, 3, "brewinandchewin:fiery_fondue", "brewinandchewin:grits",
+                "brewinandchewin:chopped_liver");
     }
 
     private static void put(Map<String, int[]> values, int thirst, int quenched, String... ids) {
