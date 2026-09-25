@@ -27,7 +27,7 @@ Fabric API is required and must match the Minecraft version.
 
 | Minecraft | File suffix | NeoForge | Java |
 |---|---|---|---|
-| 26.3 | `+26.3-neoforge` | 26.3.0.10-beta or newer | 25 |
+| 26.3 | `+26.3-neoforge` | 26.3.0.16-beta or newer | 25 |
 | 26.2 | `+26.2-neoforge` | 26.2.0.88 or newer | 25 |
 | 26.1, 26.1.1, 26.1.2 | `+26.1.2-neoforge` | 26.1.2.109 or newer | 25 |
 | 1.21.11 | `+1.21.11-neoforge` | 21.11.45 or newer | 21 |
@@ -52,14 +52,14 @@ All optional except Fabric API. Versions are listed in the order 26.3, 26.2, 26.
 | Mod | Versions built with | What it adds |
 |---|---|---|
 | [Fabric API](https://modrinth.com/mod/fabric-api) | 0.161.0+26.3, 0.161.0+26.2, 0.155.3+26.1.2, 0.141.6+1.21.11, 0.116.17+1.21.1 | Required. |
-| [Mod Menu](https://modrinth.com/mod/modmenu) | 21.0.0-beta.1, 20.0.2, 18.0.1, 17.0.0, 11.0.4 | A Config button for the [settings screen](/docs/configuration). |
+| [Mod Menu](https://modrinth.com/mod/modmenu) | 21.0.0, 20.0.3, 18.0.2, 17.0.1, 11.0.5 | A Config button for the [settings screen](/docs/configuration). |
 | [AppleSkin](https://modrinth.com/mod/appleskin) | 3.0.10+mc26.3, 3.0.10+mc26.2, 3.0.10+mc26.1.2, 3.0.8+mc1.21.11, 3.0.6+mc1.21 | The quenched outline on the thirst bar, droplet rows in tooltips, and the exhaustion strip. |
 | [Cloth Config](https://modrinth.com/mod/cloth-config) | 26.3.159, 26.2.155, 26.1.154, 21.11.153, 15.0.140 | AppleSkin's own settings screen. |
 | [Farmer's Delight Refabricated](https://modrinth.com/mod/farmers-delight-refabricated) | 26.3-3.6.27, 26.2-3.6.26, 26.1-3.6.26, 1.21.11-3.6.16, 1.21.1-3.3.6 | Thirst from its [drinks and meals](/docs/features/farmers-delight), Pure water from the Cooking Pot, and no drain under Nourishment. |
 | [Create Fly](https://modrinth.com/mod/create-fly) | 26.2-rc-2-6.0.9-1, 26.1.2-6.0.9-4 | The [Sand Filter](/docs/features/create). 26.2 and 26.1.2 only. |
 | [Jade](https://modrinth.com/mod/jade) | 26.3.1, 26.2.11, 26.1.11, 21.1.6, 15.10.6 | The [grade of the water](/docs/features/water-purity#checking-water-with-jade) under the crosshair. Client only. |
 | [Supplementaries](https://modrinth.com/mod/supplementaries) | 1.21.1-3.9.9 | [Water that keeps its grade](/docs/features/supplementaries) in Jars, Goblets and Faucets, and a Jar or Goblet of water that can be drunk. 1.21.1 only. |
-| [Kaleidoscope Cookery Refabricated](https://modrinth.com/mod/kaleidoscope-cookery-refabricated) | 1.5.1-fabric+mc26.3, 1.5.1-fabric+mc26.2, 1.5.1-fabric+mc26.1.2, 1.3.0.9-fabric+mc1.21.11, 1.5.1-fabric+mc1.21.1 | Thirst from its [teas and soups](/docs/features/kaleidoscope-cookery), and water that keeps its grade in the Stockpot and the Teapot. The official Fabric build stopped at 1.0.1 and only gets the thirst values. |
+| [Kaleidoscope Cookery Refabricated](https://modrinth.com/mod/kaleidoscope-cookery-refabricated) | 1.5.1.1-fabric+mc26.3, 1.5.1.1-fabric+mc26.2, 1.5.1.1-fabric+mc26.1.2, 1.3.0.9-fabric+mc1.21.11, 1.5.1.1-fabric+mc1.21.1 | Thirst from its [teas and soups](/docs/features/kaleidoscope-cookery), and water that keeps its grade in the Stockpot and the Teapot. The official Fabric build stopped at 1.0.1 and only gets the thirst values. |
 
 ### NeoForge
 
