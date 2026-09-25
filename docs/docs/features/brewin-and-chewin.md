@@ -9,9 +9,11 @@ Everything on this page works on Fabric and NeoForge, Minecraft 1.21.1, with
 newer Minecraft version.
 :::
 
-![A Brewin' and Chewin' Keg with Jade naming its water Dirty](/screenshots/brewin-keg.png)
+![A Brewin' and Chewin' Keg beside barrels on a lakeshore, with Jade naming its water Dirty](/screenshots/brewin-keg.png)
 
 ## Brews and soups
+
+![Brewin' and Chewin' brews in the hotbar, with the Beer tooltip showing its thirst and quenched droplets](/screenshots/brewin-drinks.png)
 
 | Item | Thirst | Quenched |
 |---|---|---|

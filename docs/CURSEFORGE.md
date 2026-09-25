@@ -154,7 +154,7 @@
       Water keeps its purity grade in Jars, Goblets and Faucets, and sea water stays sea water. A Jar or a Goblet of water can be drunk straight from the block. Faucets fill and empty hanging pots and grade the water they draw from a lake.
     </td>
     <td width="45%">
-      <img alt="Five jars of water side by side, brown, grey blue, blue, cyan and turquoise, with Jade naming the middle one Clean" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/supplementaries-jars.png" width="100%">
+      <img alt="Five jars of water on a lakeshore, brown, grey, blue, cyan and turquoise, with Jade naming the middle one Clean" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/supplementaries-jars.png" width="100%"><br><img alt="A Faucet pouring from a cauldron into a Copper Hanging Pot, with Jade naming the pot's water Murky" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/supplementaries-faucet.png" width="100%">
     </td>
   </tr>
   <tr>
@@ -175,7 +175,7 @@
       Brews and soups restore thirst, less the stronger the drink. Water keeps its purity grade in the Keg, and nothing ferments from sea water.
     </td>
     <td width="45%">
-      <img alt="A Brewin' and Chewin' Keg with Jade naming its water Dirty" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/brewin-keg.png" width="100%">
+      <img alt="A Brewin' and Chewin' Keg beside barrels on a lakeshore, with Jade naming its water Dirty" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/brewin-keg.png" width="100%"><br><img alt="Brewin' and Chewin' brews in the hotbar, with the Beer tooltip showing its thirst and quenched droplets" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/brewin-drinks.png" width="100%">
     </td>
   </tr>
   <tr>
@@ -189,6 +189,11 @@
     </td>
   </tr>
 </table>
+
+## For Modpacks and Mod Developers
+
+* **Data Packs:** Give any item a thirst value with a single JSON file, no code needed. A mod can ship the same file, so its drinks work without depending on Thirst Was Taken 2. See the [data pack guide](https://n1ght3r.github.io/ThirstWasTaken2/docs/developers/data-packs).
+* **Java API:** Read and change a player's thirst, react when a player drinks, and check water purity. It is the same on Fabric and NeoForge and on every supported version. See the [Java API guide](https://n1ght3r.github.io/ThirstWasTaken2/docs/developers/java-api).
 
 ## Version Support
 
@@ -225,7 +230,3 @@ Want to improve or add a translation? [Open a pull request](https://github.com/n
 * Hanging Pot models adapted from [Dehydration](https://github.com/Globox1997/Dehydration) by [Globox1997](https://github.com/Globox1997), under the GPL-3.0.
 * Parched effect icon inspired by [Yet Another Thirst](https://github.com/minhnh303/Yet-Another-Thirst) by [minhnh303](https://github.com/minhnh303), redrawn from scratch.
 * Licensed under the [GPL-3.0](https://github.com/n1ght3r/ThirstWasTaken2/blob/main/LICENSE) from 1.0.7. See [CREDITS.md](https://github.com/n1ght3r/ThirstWasTaken2/blob/main/CREDITS.md).
-
-## Community
-
-[![discord](https://cdn.modrinth.com/data/cached_images/ed9e22abe916888bc68150b8ad3b2afa4adbc241.png)](https://discord.com/invite/YwD9Xv7Beu)
