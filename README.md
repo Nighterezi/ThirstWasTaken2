@@ -1,10 +1,10 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/Nighterezi/ThirstWasTaken2/main/.github/assets/banner.png" alt="ThirstWasTaken2 banner" width="420">
+<img src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/.github/assets/banner.png" alt="ThirstWasTaken2 banner" width="420">
 
 [![modrinth](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/modrinth_64h.png)](https://modrinth.com/mod/thirst-was-taken-2)
 [![curseforge](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/curseforge_64h.png)](https://www.curseforge.com/minecraft/mc-mods/thirst-was-taken-2)
-[![ghpages](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/documentation/ghpages_64h.png)](https://nighterezi.github.io/ThirstWasTaken2/)
+[![ghpages](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/documentation/ghpages_64h.png)](https://n1ght3r.github.io/ThirstWasTaken2/)
 
 </div>
 
@@ -24,7 +24,7 @@
 |---|---|
 | ![An Iron Hanging Pot boiling water over a campfire](docs/public/screenshots/iron-hanging-pot.png) | ![The config screen with its live preview](docs/public/screenshots/config-screen.png) |
 
-Every feature is explained on the [documentation site](https://nighterezi.github.io/ThirstWasTaken2/).
+Every feature is explained on the [documentation site](https://n1ght3r.github.io/ThirstWasTaken2/).
 
 ## Download
 
@@ -68,7 +68,7 @@ Put the jar in the `mods` folder of the server and of every client. NeoForge fil
 | 1.21.1 | 21.1.251 or newer | 21 |
 
 Optional mods and their versions are listed in the
-[installation guide](https://nighterezi.github.io/ThirstWasTaken2/docs/installation#compatible-mods).
+[installation guide](https://n1ght3r.github.io/ThirstWasTaken2/docs/installation#compatible-mods).
 
 ## Configuration
 
@@ -92,7 +92,7 @@ These commands require game master permission.
 Your items can restore thirst without any code: list them in a data pack file under
 `data/<namespace>/thirstwastaken2/drinks/`. Mods that want more can use the Java API to read and change
 a player's thirst, react to drinking and read water purity. Both are described in
-the [developer pages](https://nighterezi.github.io/ThirstWasTaken2/docs/developers/data-packs) of the documentation.
+the [developer pages](https://n1ght3r.github.io/ThirstWasTaken2/docs/developers/data-packs) of the documentation.
 
 ## Languages
 
@@ -105,7 +105,7 @@ The 26.x versions need Java 25 and the 1.21.x versions need Java 21. Gradle down
 Java version by itself.
 
 ```bash
-git clone https://github.com/Nighterezi/ThirstWasTaken2.git
+git clone https://github.com/n1ght3r/ThirstWasTaken2.git
 cd ThirstWasTaken2
 ./gradlew buildAndCollect
 ```

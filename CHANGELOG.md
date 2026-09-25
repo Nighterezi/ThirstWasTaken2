@@ -33,7 +33,7 @@ All notable changes to ThirstWasTaken2 are documented in this file.
   server uses.
 - Other mods can now read and change thirst, check water purity and adjust what drinking restores,
   without needing a compatibility patch in this mod. See the
-  [developer pages](https://nighterezi.github.io/ThirstWasTaken2/docs/developers/data-packs).
+  [developer pages](https://n1ght3r.github.io/ThirstWasTaken2/docs/developers/data-packs).
 - Compatibility with Kaleidoscope Cookery on NeoForge 1.21.1:
   - Its teas, milk tea and soups restore thirst.
   - The Stockpot and the Teapot keep the grade of the water poured into them, including a Teapot

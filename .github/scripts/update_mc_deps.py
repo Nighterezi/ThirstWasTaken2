@@ -78,7 +78,7 @@ MODRINTH = "https://api.modrinth.com/v2"
 FABRIC_META = "https://meta.fabricmc.net/v2/versions/loader"
 NEOFORGE_METADATA = "https://maven.neoforged.net/releases/net/neoforged/neoforge/maven-metadata.xml"
 # Modrinth asks every client for a User-Agent that identifies the project.
-USER_AGENT = "Nighterezi/ThirstWasTaken2 dependency updater (github.com/Nighterezi/ThirstWasTaken2)"
+USER_AGENT = "n1ght3r/ThirstWasTaken2 dependency updater (github.com/n1ght3r/ThirstWasTaken2)"
 
 
 @dataclass(frozen=True)
