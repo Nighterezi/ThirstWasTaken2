@@ -154,7 +154,7 @@
       Water keeps its purity grade in Jars, Goblets and Faucets, and sea water stays sea water. A Jar or a Goblet of water can be drunk straight from the block. Faucets fill and empty hanging pots and grade the water they draw from a lake.
     </td>
     <td width="45%">
-      <img alt="Five jars of water on a lakeshore, brown, grey, blue, cyan and turquoise, with Jade naming the middle one Clean" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/supplementaries-jars.png" width="100%"><br><img alt="A Faucet pouring from a cauldron into a Copper Hanging Pot, with Jade naming the pot's water Murky" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/supplementaries-faucet.png" width="100%">
+      <img alt="Five jars of water on a lakeshore, brown, grey, blue, cyan and turquoise, with Jade naming the middle one Clean" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/supplementaries-jars.png" width="100%">
     </td>
   </tr>
   <tr>
@@ -190,11 +190,6 @@
   </tr>
 </table>
 
-## For Modpacks and Mod Developers
-
-* **Data Packs:** Give any item a thirst value with a single JSON file, no code needed. A mod can ship the same file, so its drinks work without depending on Thirst Was Taken 2. See the [data pack guide](https://n1ght3r.github.io/ThirstWasTaken2/docs/developers/data-packs).
-* **Java API:** Read and change a player's thirst, react when a player drinks, and check water purity. It is the same on Fabric and NeoForge and on every supported version. See the [Java API guide](https://n1ght3r.github.io/ThirstWasTaken2/docs/developers/java-api).
-
 ## Version Support
 
 | Minecraft version | Mod version | Support status |
@@ -208,11 +203,11 @@
 
 ## Quick FAQ
 
-**Is the mod required on both client and server?**  
-Yes. The mod needs to be installed on both sides for packet synchronization and HUD display.
+**Will it be backported to 1.20.1 or Forge?**  
+No. There are no plans to support 1.20.1 or Forge.
 
 **Does it work in Peaceful mode?**  
-Yes. In Peaceful mode, thirst naturally regenerates over time.
+Yes. Thirst refills on its own, or drains as on Normal with [`thirstDepletionInPeaceful`](https://n1ght3r.github.io/ThirstWasTaken2/docs/configuration#thirstdepletioninpeaceful), which pairs well with [Peaceful Hunger](https://modrinth.com/mod/peaceful-hunger).
 
 **Can I use this in a modpack?**  
 Yes. You are free to include Thirst Was Taken 2 in any public or private modpack.
@@ -223,6 +218,33 @@ English, Vietnamese, Simplified Chinese, Traditional Chinese, French, Japanese, 
 ![Item tooltips in Simplified Chinese](https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/chinese-tooltips.png)
 
 Want to improve or add a translation? [Open a pull request](https://github.com/n1ght3r/ThirstWasTaken2).
+
+## For Developers
+
+**Data Packs:** Give any item a thirst value with one JSON file, no code needed. A mod can ship the same file, so its drinks work without depending on Thirst Was Taken 2. Put it under `data/<namespace>/thirstwastaken2/drinks/`:
+
+```json
+{
+  "values": {
+    "mymod:lemonade": { "thirst": 6, "quenched": 8 },
+    "mymod:iced_tea": { "thirst": 8, "quenched": 12 }
+  }
+}
+```
+
+**Java API:** Read and change a player's thirst, react when a player drinks, and check water purity. The same API works on Fabric, NeoForge and every supported version.
+
+```java
+// Salty snacks restore no thirst.
+ThirstEvents.DRINK.register((player, stack, drink) -> {
+    if (stack.is(MyItems.SALTY_SNACK)) drink.cancel();
+});
+
+// Give a player a bottle of Pure water.
+player.addItem(ThirstApi.waterBottle(ThirstApi.maxPurity()));
+```
+
+Full details are in the [data pack guide](https://n1ght3r.github.io/ThirstWasTaken2/docs/developers/data-packs) and the [Java API guide](https://n1ght3r.github.io/ThirstWasTaken2/docs/developers/java-api).
 
 ## Credits
 
