@@ -17,9 +17,9 @@
 // "storageDrunk" shows 16 (a placed storage serves players within three blocks), and "storageAfter"
 // two glass bottles in place of the water.
 //
-// SophisticatedAgent is a throwaway world: copy level.dat out of any 1.21.1 world into
-// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/integrations/sophisticated/sophisticated-pack into its datapacks
-// folder, fresh for each run. Then:
+// SophisticatedAgent is a throwaway world, made fresh for each run by
+//     python tools/agent/new_world.py 1.21.1-neoforge SophisticatedAgent --datapack tools/agent/integrations/sophisticated/sophisticated-pack
+// Then:
 //     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/integrations/sophisticated/sophisticated-drinking-craft.jsonl -Pquickplay=SophisticatedAgent
 
 {"id": "load", "command": "wait", "args": {"ticks": 400}}

@@ -13,10 +13,16 @@ import java.util.Set;
  * installed, and each mixin only where its own target, and the method it needs, is still there.
  */
 public final class BrewinAndChewinMixinPlugin implements IMixinConfigPlugin {
-    /** Mixins on one method of their target, by simple name, with that method. */
-    private static final Map<String, String> NEEDS_METHOD = Map.of(
-            "KegBlockEntityMixin", "fluidExtract",
-            "KegPouringRecipeMixin", "getFluid");
+    /**
+     * The methods each mixin injects into, by simple name. A mixin is applied only where its target
+     * declares all of them, so a method renamed upstream skips that mixin rather than failing it.
+     * {@code KegBottleMixin} names a lambda by its synthetic name, the likeliest of all to move.
+     */
+    private static final Map<String, List<String>> NEEDS_METHODS = Map.of(
+            "KegBlockEntityMixin", List.of("fluidExtract"),
+            "KegBottleMixin", List.of("fluidExtract", "lambda$getPouringRecipe$4"),
+            "KegFermentingMixin", List.of("canFerment"),
+            "KegPouringRecipeMixin", List.of("getFluid"));
 
     @Override
     public void onLoad(String mixinPackage) { }
@@ -28,10 +34,12 @@ public final class BrewinAndChewinMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        String method = NEEDS_METHOD.get(mixinClassName.substring(mixinClassName.lastIndexOf('.') + 1));
-        return method == null
-                ? BrewinAndChewinPresence.hasTarget(targetClassName)
-                : BrewinAndChewinPresence.hasMethod(targetClassName, method);
+        List<String> methods = NEEDS_METHODS.get(mixinClassName.substring(mixinClassName.lastIndexOf('.') + 1));
+        if (methods == null) return BrewinAndChewinPresence.hasTarget(targetClassName);
+        for (String method : methods) {
+            if (!BrewinAndChewinPresence.hasMethod(targetClassName, method)) return false;
+        }
+        return true;
     }
 
     @Override

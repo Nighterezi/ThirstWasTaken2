@@ -110,7 +110,6 @@
   "thirstwastaken2.config.enable_drink_tag_matching.tooltip": "Vật phẩm được mod của nó gắn tag đồ uống sẽ hồi nước, kể cả khi không có trong config.",
   "thirstwastaken2.config.enable_keyword_matching": "Dò theo từ khóa",
   "thirstwastaken2.config.enable_keyword_matching.tooltip": "Đoán giá trị nước cho vật phẩm mod lạ dựa trên tên đăng ký của nó.",
-  "thirstwastaken2.message.salt_water_refused": "Nước biển sẽ pha ra trà mặn; hãy dùng nước ngọt",
   "thirstwastaken2.message.boiling": "Đang đun: %s%%",
   "thirstwastaken2.message.boiled": "Nước đã được đun sạch",
   "thirstwastaken2.message.cannot_boil_salt": "Đun sôi không khử được muối"

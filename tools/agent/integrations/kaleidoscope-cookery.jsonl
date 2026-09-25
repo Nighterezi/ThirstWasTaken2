@@ -1,20 +1,21 @@
 // Kaleidoscope Cookery in a real client: water keeps its grade through the stockpot and the teapot,
-// sea water goes through the stockpot and is refused by the teapot, a teapot picked up and placed
-// again keeps its water's grade, a teapot item scooping world water samples it and refuses the sea,
+// sea water goes through the stockpot and the teapot and comes back out salty, a teapot of sea water
+// brews nothing while one of fresh water brews, a teapot picked up and placed again keeps its water's
+// grade, a teapot item scooping world water samples it, sea water included,
 // and dripstone fills a teapot with dripstonePurity water. It runs on every node with the
 // integration, 1.21.1-neoforge and the five Fabric ones. Only the 1.21.1 builds let dripstone fill a
 // teapot, so on the others dripGraded and pureF fail, and are the only lines that may. Run it
 // unattended in a singleplayer world:
 //     ./gradlew ":<node>:runClient" -Pagent=tools/agent/integrations/kaleidoscope-cookery.jsonl -Pquickplay=KaleidoscopeAgent
-// KaleidoscopeAgent is a throwaway world: copy level.dat out of any world of that node into
-// run/<node>/saves/KaleidoscopeAgent, fresh for each run, and on 26.x its data/minecraft folder too. Then check what it recorded:
+// KaleidoscopeAgent is a throwaway world, made fresh for each run by
+//     python tools/agent/new_world.py <node> KaleidoscopeAgent
+// Then check what it recorded:
 //     python tools/agent/drive.py run/<node>/agent/client tools/agent/integrations/kaleidoscope-cookery.jsonl --verify --max-age 15
 // Every "execute" line checks that it said "Test passed", and the captures in
 // run/<node>/agent/client/screenshots/ show Jade's line under a stockpot and a teapot.
 //
 // The blocks are right clicked by standing on them and looking straight down, as in
-// supplementaries.jsonl, and the player is killed and respawned first for the same reason. The
-// player is addressed by selector: a NeoForge dev client names its player Dev, a Fabric one Player<NN>.
+// supplementaries.jsonl. The player is addressed by selector: a NeoForge dev client names its player Dev, a Fabric one Player<NN>.
 //
 // A grade is stored on the block as one int, thirstwastaken2:water_quality: 1 to 4 for Dirty, Murky,
 // Clean and Pure, 5 for sea water, as a cauldron stores it.
@@ -22,10 +23,6 @@
 {"id": "load", "command": "wait", "args": {"ticks": 400}}
 {"id": "arrived", "command": "client.state"}
 {"id": "survival", "command": "server.command", "args": {"command": "gamemode survival @p"}}
-{"id": "kill", "command": "server.command", "args": {"command": "kill @p"}}
-{"id": "dying", "command": "wait", "args": {"ticks": 20}}
-{"id": "respawn", "command": "client.respawn"}
-{"id": "respawned", "command": "wait", "args": {"ticks": 60}}
 {"id": "alive", "command": "client.state", "expect": {"result.alive": true}}
 
 {"id": "forceload", "command": "server.command", "args": {"command": "forceload add -24 -8 13 8"}}
@@ -94,8 +91,7 @@
 {"id": "drawnC", "command": "wait", "args": {"ticks": 10}}
 {"id": "stillDirtyC", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand minecraft:water_bucket[thirstwastaken2:water_purity=0,thirstwastaken2:water_salty=false]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
 
-// The teapot refuses sea water: tea brewed from the sea would come out as safe as any other. The
-// bucket stays in the hand, still salty, and the teapot stays empty.
+// The teapot takes sea water, as the stockpot does, and hands it back salty with no grade.
 {"id": "teapotB", "command": "server.command", "args": {"command": "setblock 6 200 0 kaleidoscope_cookery:teapot"}}
 {"id": "clearD", "command": "server.command", "args": {"command": "clear @p"}}
 {"id": "saltyBucketD", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with minecraft:water_bucket[thirstwastaken2:water_salty=true]"}}
@@ -103,8 +99,24 @@
 {"id": "settleD", "command": "wait", "args": {"ticks": 20}}
 {"id": "pourD", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
 {"id": "pouredD", "command": "wait", "args": {"ticks": 10}}
-{"id": "refusedD", "command": "server.command", "args": {"command": "execute if data block 6 200 0 {TeaFluidId:\"minecraft:empty\"}"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
-{"id": "keptD", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand minecraft:water_bucket[thirstwastaken2:water_salty=true]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "teapotBSalty", "command": "server.command", "args": {"command": "execute if data block 6 200 0 {TeaFluidId:\"minecraft:water\",\"thirstwastaken2:water_quality\":5}"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "emptiedD", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand minecraft:bucket"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "drawD", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "drawnD", "command": "wait", "args": {"ticks": 10}}
+{"id": "stillSaltyD", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand minecraft:water_bucket[thirstwastaken2:water_salty=true]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "noGradeD", "command": "server.command", "args": {"command": "execute unless items entity @p weapon.mainhand minecraft:water_bucket[thirstwastaken2:water_purity=2]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+
+// Sea water brews nothing. Two teapots on magma blocks, each with a barley tea bag in: the one of
+// Clean water starts brewing (Status 1, then 2), the one of sea water stays at Status 0 with its bag.
+// Filled straight from the block's data, the way a save would load them.
+{"id": "brewFloor", "command": "server.command", "args": {"command": "fill 6 200 3 8 200 3 minecraft:magma_block"}}
+{"id": "brewFresh", "command": "server.command", "args": {"command": "setblock 6 201 3 kaleidoscope_cookery:teapot{TeaFluidId:\"minecraft:water\",\"thirstwastaken2:water_quality\":3,Input:{id:\"kaleidoscope_cookery:barley_tea_bag\",count:1}}"}}
+{"id": "brewSea", "command": "server.command", "args": {"command": "setblock 8 201 3 kaleidoscope_cookery:teapot{TeaFluidId:\"minecraft:water\",\"thirstwastaken2:water_quality\":5,Input:{id:\"kaleidoscope_cookery:barley_tea_bag\",count:1}}"}}
+{"id": "brewing", "command": "wait", "args": {"ticks": 200}}
+{"id": "freshBrews", "command": "server.command", "args": {"command": "execute unless data block 6 201 3 {Status:0}"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "seaBrewsNothing", "command": "server.command", "args": {"command": "execute if data block 8 201 3 {Status:0}"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "seaKeepsBag", "command": "server.command", "args": {"command": "execute if data block 8 201 3 {Input:{id:\"kaleidoscope_cookery:barley_tea_bag\"}}"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "brewCleanup", "command": "server.command", "args": {"command": "fill 6 200 3 8 201 3 minecraft:air"}}
 
 // A teapot of Murky water picked up with an empty hand, placed again beside where it stood, and
 // emptied: the water is still Murky. The mod builds the item's data from nothing, holding only the
@@ -143,8 +155,8 @@
 {"id": "stillMurkyE", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand minecraft:water_bucket[thirstwastaken2:water_purity=1,thirstwastaken2:water_salty=false]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
 
 // An empty teapot in the hand scoops water out of the world as a bucket does, and the water is
-// sampled where it lay: a swamp pool gives Dirty water. An ocean pool is refused, and stays where it
-// is. Each pool is a strip of source blocks in the floor, looked at from the dry floor to its north.
+// sampled where it lay: a swamp pool gives Dirty water, an ocean pool sea water. Each pool is a strip
+// of source blocks in the floor, looked at from the dry floor to its north.
 // Biomes are set four blocks at a time, and reading one blends in the cells next to it, differently
 // on every seed, so each pool's biome covers every cell around its own and a cell of neither lies
 // between the two.
@@ -167,8 +179,7 @@
 {"id": "scoopO", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
 {"id": "scoopedO", "command": "wait", "args": {"ticks": 10}}
 {"id": "oceanItem", "command": "server.command", "args": {"command": "data get entity @p SelectedItem"}}
-{"id": "oceanRefused", "command": "server.command", "args": {"command": "execute unless items entity @p weapon.mainhand kaleidoscope_cookery:teapot[minecraft:block_entity_data]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
-{"id": "oceanStays", "command": "server.command", "args": {"command": "execute if block -19 199 -1 minecraft:water"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "oceanSalty", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand kaleidoscope_cookery:teapot[minecraft:block_entity_data={id:\"kaleidoscope_cookery:teapot\",TeaFluidId:\"minecraft:water\",\"thirstwastaken2:water_quality\":5}]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
 
 // Dripstone water is graded as it is for a cauldron: dripstonePurity, Pure by default, which is 4.
 {"id": "dripWait", "command": "wait", "args": {"ticks": 300}}

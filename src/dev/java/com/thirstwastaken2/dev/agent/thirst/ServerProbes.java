@@ -82,46 +82,97 @@ final class ServerProbes {
          * Runs a command and hands back what it returned and what it said. With `as`, it runs from the
          * console's own source moved to that player: `@s` resolves to them, and the permission level is
          * still the console's, so a check never fails because a development player is not an operator.
-         *
-         * A client polls its queue on the client thread, and the integrated server answers a block
-         * entity lookup from any other thread with null, so `data get block` would report every block
-         * entity missing. The command is therefore handed to the server's own thread and waited for.
+         * It runs on the server's own thread; see perform.
          */
         dispatcher.register("server.command", (request, reply) -> {
-            MinecraftServer server = server();
             String command = request.string("command").strip();
             if (command.startsWith("/")) command = command.substring(1);
-            Feedback feedback = new Feedback();
-            CommandSourceStack console = server.createCommandSourceStack().withSource(feedback);
             ServerPlayer as = request.has("as") ? player(request, request.string("as")) : null;
-            String line = command;
-            Runnable run = () -> {
-                CommandSourceStack source = console;
-                if (as != null) {
-                    source = source.withEntity(as).withPosition(as.position());
-                    if (as.level() instanceof ServerLevel level) source = source.withLevel(level);
-                }
-                server.getCommands().performPrefixedCommand(source, line);
-            };
-            if (server.isSameThread()) {
-                run.run();
-            } else {
-                try {
-                    server.submit(run).get(30, TimeUnit.SECONDS);
-                } catch (TimeoutException e) {
-                    throw new AgentException("server.command: the server did not run '" + command
-                            + "' within 30 seconds; is the world paused?");
-                } catch (InterruptedException | ExecutionException e) {
-                    throw new AgentException("server.command: '" + command + "' failed: " + e);
-                }
-            }
             JsonObject result = new JsonObject();
             result.addProperty("command", command);
-            JsonArray messages = new JsonArray();
-            feedback.messages.forEach(messages::add);
-            result.add("messages", messages);
+            result.add("messages", perform(server(), command, as));
             reply.ok(result);
         });
+
+        /*
+         * Runs `ticks` server ticks as fast as the server can, through /tick sprint, and answers once
+         * every one of them has run. For what only time does in the game, a keg fermenting or a crop
+         * growing: the same ticks run the same code as at 20 a second, only without the sleep between
+         * them, so the result is the one a player would get by waiting.
+         *
+         * Answering when the sprint is over, rather than after a guess at how long it takes, is the
+         * point. A script that sprinted and then waited a fixed number of client ticks waited the whole
+         * wall-clock time anyway, since the client ticks at 20 a second whatever the server does, and on
+         * a server slower than the guess it went on while the sprint was still running. The server's
+         * own tick count says when it is done; each look that finds it moving tells the dispatcher the
+         * run is not stalled, since a long sprint answers nothing for minutes.
+         */
+        dispatcher.register("server.sprint", (request, reply) -> {
+            MinecraftServer server = server();
+            int ticks = request.integer("ticks", 1, 1_000_000);
+            int start = server.getTickCount();
+            long began = System.nanoTime();
+            JsonArray messages = perform(server, "tick sprint " + ticks, null);
+            dispatcher.defer(SPRINT_POLL_TICKS, reply, new Runnable() {
+                private int seen = start;
+
+                @Override
+                public void run() {
+                    int now = server.getTickCount();
+                    if (now - start < ticks) {
+                        if (now != seen) dispatcher.progress();
+                        seen = now;
+                        dispatcher.defer(SPRINT_POLL_TICKS, reply, this);
+                        return;
+                    }
+                    JsonObject result = new JsonObject();
+                    result.addProperty("ticks", ticks);
+                    result.addProperty("ran", now - start);
+                    result.addProperty("seconds", round((System.nanoTime() - began) / 1e9));
+                    result.add("messages", messages);
+                    reply.ok(result);
+                }
+            });
+        });
+    }
+
+    /** How often, in client or server ticks, {@code server.sprint} looks at the server's tick count. */
+    private static final int SPRINT_POLL_TICKS = 5;
+
+    /**
+     * Runs one command as the console, or as {@code as}, on the server's own thread, and answers what it
+     * said.
+     *
+     * <p>A client polls its queue on the client thread, and the integrated server answers a block
+     * entity lookup from any other thread with null, so {@code data get block} would report every block
+     * entity missing. The command is therefore handed to the server's own thread and waited for.
+     */
+    private static JsonArray perform(MinecraftServer server, String command, ServerPlayer as) {
+        Feedback feedback = new Feedback();
+        CommandSourceStack console = server.createCommandSourceStack().withSource(feedback);
+        Runnable run = () -> {
+            CommandSourceStack source = console;
+            if (as != null) {
+                source = source.withEntity(as).withPosition(as.position());
+                if (as.level() instanceof ServerLevel level) source = source.withLevel(level);
+            }
+            server.getCommands().performPrefixedCommand(source, command);
+        };
+        if (server.isSameThread()) {
+            run.run();
+        } else {
+            try {
+                server.submit(run).get(30, TimeUnit.SECONDS);
+            } catch (TimeoutException e) {
+                throw new AgentException("the server did not run '" + command
+                        + "' within 30 seconds; is the world paused?");
+            } catch (InterruptedException | ExecutionException e) {
+                throw new AgentException("'" + command + "' failed: " + e);
+            }
+        }
+        JsonArray messages = new JsonArray();
+        feedback.messages.forEach(messages::add);
+        return messages;
     }
 
     /** The whole of a player's thirst plus the server-side state a check might read beside it. */

@@ -319,9 +319,12 @@ again, and the water is still Dirty; on 1.21.1 dripstone gives `dripstonePurity`
 
 ## 5. Salt water (to decide before items 3 and 4)
 
-**Decided as recommended**, and built: the teapot refuses a salty bucket only where it would otherwise
-take one, so a full or busy teapot still answers in its own words. The message is
-`thirstwastaken2.message.salt_water_refused`.
+**Decided as recommended** on 2026-09-22, and built. **Changed on 2026-09-25**: every integration now
+takes sea water into its containers, as Brewin' and Chewin's keg does. The teapot takes it from a
+bucket and from the world and hands it back salty, and brews nothing from it: `TeapotBlockEntityMixin`
+skips the teapot's `tick` while it holds sea water, which is where brewing starts. The refusal and its
+message, `thirstwastaken2.message.salt_water_refused`, are gone. What follows is the first decision,
+kept as a record.
 
 - **Teapot**: recommend **refusing** a salty bucket in `addTeaFluid` (`@Inject(HEAD)`, cancellable,
   return false), with a message in the action bar using the mod's own lang key

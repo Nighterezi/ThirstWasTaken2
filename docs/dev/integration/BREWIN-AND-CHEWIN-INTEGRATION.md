@@ -104,19 +104,19 @@ Milk from the keg comes out as `farmersdelight:milk_bottle`, which already has a
 | 2 | Thirst values for the drinks and soups | data | all (config) | **Done** (2026-09-25), values as proposed |
 | 3 | What actually happens to a grade, per loader, per path | investigation | two | **Done** (2026-09-25) |
 | 4 | The keg keeps the grade: bucket and bottle in and out | bug | two | **Done** (2026-09-25): buckets both ways, bottles out |
-| 5 | A graded water bottle is accepted by the keg | bug | two (NeoForge certainly) | To do, if 3 confirms it |
-| 6 | Sea water in the keg | decision | — | To decide |
-| 7 | What fermenting does with a grade | decision | — | To decide |
-| 8 | The grade is visible: Jade line on the keg | feature | two | To do |
-| 9 | Changelog and player docs | docs | — | To do |
-| 10 | Nothing crashes without the mod: `checkOptionalSeam`, `-PwithoutOptional`, `boot.jsonl` | test | all | To do |
+| 5 | A graded water bottle is accepted by the keg | bug | two | **Done** (2026-09-25) |
+| 6 | Sea water in the keg | decision | two | **Decided** (2026-09-25): (b), and **done** |
+| 7 | What fermenting does with a grade | decision | two | **Decided** (2026-09-25): (a), as recommended; nothing to build |
+| 8 | The grade is visible: Jade line on the keg | feature | two | **Done** (2026-09-25) |
+| 9 | Changelog and player docs | docs | — | **Done** (2026-09-25) |
+| 10 | Nothing crashes without the mod: `checkOptionalSeam`, `-PwithoutOptional`, `boot.jsonl` | test | all | **Done** (2026-09-25), again after 8 |
 
 ## 1. Build dependency and gate (done)
 
 - A row in [the integration table](../../../build-logic/src/main/kotlin/com/thirstwastaken2/buildlogic/Integrations.kt):
   `dir = "brewinandchewin"`, `depsKey = "deps.brewin_and_chewin"`, both loaders, mixin config
   `thirstwastaken2.brewinandchewin.mixins.json`, `neoForgeDependencies = listOf("brewinandchewin")`.
-  No client directory yet; step 8 adds one, with `client = true` and a Fabric `jade` entrypoint.
+  Step 8 added the client directory, with `client = true` and a Fabric `jade` entrypoint.
 - `deps.brewin_and_chewin` pinned by Modrinth version id in `[fabric."1.21.1"]` and
   `[neoforge."1.21.1"]`, and in `MODRINTH_DEPS`. Greenhouse Config needs no key: see above.
 - `BrewinAndChewinPresence` and `BrewinAndChewinMixinPlugin`, as in
@@ -164,12 +164,16 @@ passed whole on both nodes: a Dirty bucket in and out, a drawn bottle Dirty, a C
 Dirty keg with room and a Dirty one taken, a plain bucket and a plain bottle still working with a plain
 keg and the drawn bottle cookable, sea water in and out salty, and a broken keg's item keeping the grade.
 
-## 5. A graded water bottle is accepted
+## 5. A graded water bottle is accepted (done)
 
-Step 3 confirmed the refusal on Fabric, and on NeoForge without Create. Where `getPouringRecipe` and `fluidExtract` compare the slot with the
-recipe's result `strict`ly, compare a water container by item and `potion_contents` only, so our two
-components do not stop the match. One `@WrapOperation` on each `isSameItemSameComponents` call, that
-falls through to the original for anything that is not water.
+Step 3 confirmed the refusal on Fabric, and on NeoForge without Create. `KegBottleMixin` wraps every
+`ItemStack.isSameItemSameComponents` in `getPouringRecipe`'s filter lambda and in `fluidExtract`: when
+the stack in hand is a stamped water container and the recipe's stack is not, it also compares the
+recipe's stack with the held one unstamped. So a graded bottle matches the strict bottle recipe as its
+plain self, and its grade goes in through `getFluid` as a bucket's does. A drawn container compared
+with the output slot is stamped itself, so that comparison stays exact and two grades never stack
+there. On `1.21.1-neoforge` the keg's own recipe now matches before Create's bottle handler, so a
+bottle goes in as water rather than `create:potion`.
 
 ## 6. Decision: sea water in the keg
 
@@ -180,9 +184,12 @@ Options:
 - (b) The keg takes it and hands it back salty, like the stockpot, but no recipe ferments from it.
 - (c) Nothing: it ferments into ordinary drinks, and salt water is laundered into beer.
 
-**Recommended: (a).** The keg is a brewing vessel, like the teapot, not a cooking pot, and (b) needs a
-second mixin on the recipe match to stop fermentation, for storage nobody needs. (c) is the laundering
-this mod exists to prevent.
+Recommended was (a). **Chosen: (b)**, 2026-09-25. Step 4 already hands sea water back salty;
+`KegFermentingMixin` makes `canFerment` answer false while the keg holds sea water, on every tick, so
+a keg of sea water with beer's ingredients never starts and one already brewing stops. Every water
+recipe matches the tag `#c:water`, which ignores components, so this is the only place that can tell
+sea water apart. The recipe still shows in the keg's screen (`getRecipeWithoutTemperature` is not
+changed); it just does not progress.
 
 ## 7. Decision: what fermenting does with a grade
 
@@ -196,28 +203,44 @@ Options:
 drink-with-grade path the config values do not have, for a trade-off players will not see. Only
 `kombucha` and the grape wines are close to water; none is.
 
-## 8. Jade line on the keg
+**Chosen: (a)**, 2026-09-25. Nothing to build: a finished brew replaces the tank's fluid with the
+recipe's result, which carries no component of ours, and the drinks' values in `ThirstConfig` have no
+grade. The agent script checks that beer brewed from Dirty water carries none.
 
-A reader added to the mod's own Jade plugin if it has one (it does not: only JEI and EMI), otherwise a
-plugin of ours registered for `KegBlock`, as `KaleidoscopeJade` does. It reads the grade off the tank
-fluid in the client's block entity: `writeUpdateTag` sends the `FluidTank`, so the client has it. Names
-none of the mod's classes in a signature Jade loads without it.
+## 8. Jade line on the keg (done)
 
-**Check:** a Jade screenshot in the agent script.
+The mod has no Jade plugin of its own (only JEI and EMI), so the keg joins ours, as Kaleidoscope's
+blocks do: `KegHeldWaterMixin` gives `KegBlockEntity` our interface `HeldKegWater`, which reads the grade
+off the tank, and `BrewinAndChewinJade` hands it to `JadeIntegration.addContainer`. `writeUpdateTag`
+sends the `FluidTank` with its components, so the client's keg has the grade. The Jade class names only
+`HeldKegWater` and the gate, and asks the gate before adding anything.
 
-## 9. Docs
+**Checked:** the agent script's last case pours a Dirty bucket into a keg and captures Jade over it and
+over the sea water keg: "Dirty" and "Salty". The cropped first is `docs/public/screenshots/brewin-keg.png`.
 
-`CHANGELOG.md`, the supported mods page on the site, the Modrinth and CurseForge pages (the
-`write-docs` skill), and the integration row in the root `AGENTS.md` tables.
+## 9. Docs (done)
 
-## 10. Optional seam
+`CHANGELOG.md` (Unreleased), [the site's page](../../docs/features/brewin-and-chewin.md) and its sidebar
+entry, the Fabric and NeoForge rows in `docs/docs/installation.md`, and the Modrinth and CurseForge
+pages. The root `AGENTS.md` already had the row.
 
-- `checkOptionalSeam` finds the plugin, the gate and the Jade class loaded without the mod.
-- `runGametest` on both 1.21.1 nodes, unchanged.
-- `./gradlew ":<node>:runClient" -Pagent=tools/agent/smoke/boot.jsonl` on both nodes, with the mod,
-  with `-PwithoutOptional=brewinandchewin` and with `brewinandchewin,jade`.
-- `tools/agent/integrations/brewin-and-chewin.jsonl`, whose header says how to run and verify it,
-  every `execute` line asserting its own "Test passed".
+The page lists only what 4.5.0 ships. The grape wines other than Rice Wine, Old Wine, Brandy, Aqua
+Vitae, the tinctures, Grits and Chopped Liver are on the unreleased 5.0.0 branch only; their ids are in
+`ThirstConfig` already and match nothing until then. So the "eleven fermenting recipes" above are
+5.0.0's count; add the new items to the page when 5.0.0 is released.
+
+## 10. Optional seam (done)
+
+Run again on 2026-09-25 after step 8, on `1.21.1` and `1.21.1-neoforge`:
+
+- `checkOptionalSeam` and `checkLoaderSeam` pass, finding the plugin, the gate and the Jade class
+  loaded without the mod.
+- `tools/agent/smoke/boot.jsonl` with `-PwithoutOptional=brewinandchewin` and with
+  `brewinandchewin,jade`: all four come up, stay up and verify. Without the mod, Jade still loads
+  `BrewinAndChewinJade`, which is the case 1.0.9 crashed in, and nothing fails.
+- `tools/agent/integrations/brewin-and-chewin.jsonl` with the mod passes whole on both, in worlds made
+  by `tools/agent/new_world.py`, with the two Jade captures.
+- `runGametest` needs no rerun: the mod is never on its classpath, and nothing it loads changed.
 
 ## Not planned
 

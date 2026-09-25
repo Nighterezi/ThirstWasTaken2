@@ -3,8 +3,8 @@
 // still held, and both crafting recipes fill a real crafting table. Run it unattended in a
 // singleplayer world:
 //     ./gradlew ":<node>:runClient" -Pagent=tools/agent/gameplay/canteen.jsonl -Pquickplay=CanteenAgent
-// CanteenAgent is a throwaway world: copy level.dat (and, from 26.1, data/minecraft/world_gen_settings.dat)
-// out of any world of the same Minecraft version into run/<node>/saves/CanteenAgent, fresh for each run.
+// CanteenAgent is a throwaway world, made fresh for each run by
+//     python tools/agent/new_world.py <node> CanteenAgent
 // Then check it with
 //     python tools/agent/drive.py run/<node>/agent/client tools/agent/gameplay/canteen.jsonl --verify
 // The captures in run/<node>/agent/client/screenshots/ are the scene mid-boil and the two filled

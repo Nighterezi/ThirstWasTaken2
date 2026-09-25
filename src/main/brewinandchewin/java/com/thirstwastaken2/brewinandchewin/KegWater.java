@@ -10,6 +10,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluids;
 import umpaz.brewinandchewin.common.utility.AbstractedFluidStack;
 
+import java.util.Optional;
+
 /**
  * Water quality on the keg's fluid, the only place that reads or writes one on Brewin' and Chewin's
  * {@link AbstractedFluidStack}.
@@ -59,6 +61,29 @@ public final class KegWater {
     public static ItemStack drawn(ItemStack result, AbstractedFluidStack tank) {
         if (isWater(tank) && WaterPurity.isWaterContainer(result)) WaterPurity.setQuality(result, quality(tank));
         return result;
+    }
+
+    /**
+     * Whether the keg holds sea water. Asked on every fermenting tick, so it reads the patch the stack
+     * already has rather than building a component map.
+     */
+    public static boolean isSalt(AbstractedFluidStack stack) {
+        if (!isWater(stack)) return false;
+        Optional<? extends Boolean> salty = stack.componentPatch().get(ThirstComponents.WATER_SALTY);
+        return salty != null && salty.isPresent() && salty.get();
+    }
+
+    /**
+     * Whether {@code held} is a stamped water container and {@code expected}, a recipe's stack, is not:
+     * the one case where the two may still be the same water container with a grade on top.
+     */
+    public static boolean isGradedFormOf(ItemStack expected, ItemStack held) {
+        return WaterPurity.isStamped(held) && WaterPurity.isWaterContainer(held) && !WaterPurity.isStamped(expected);
+    }
+
+    /** {@code held} without its grade, to compare with a recipe's plain stack. */
+    public static ItemStack plain(ItemStack held) {
+        return WaterPurity.unstamped(held);
     }
 
     /** A copy of {@code stack} holding {@code quality} as its one quality component. */

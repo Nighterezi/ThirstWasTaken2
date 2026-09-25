@@ -230,5 +230,5 @@ Nothing is left to do.
   `datapacks/`, so the result is read as text.
 - Run each check once with the new mixin left out of the config as well, to show the bug was real and
   that the check can tell the two apart.
-- A `level.dat` copied out of the Farmer's Delight world keeps Nourishment on its player, which cancels
-  exhaustion. Clear effects at the start of a script.
+- Make the world with `tools/agent/new_world.py`: a `level.dat` copied by hand keeps the old player,
+  Nourishment included, which cancels exhaustion. Clearing effects at the start of a script guards it.

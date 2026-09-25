@@ -73,6 +73,19 @@ public final class ClientWindow {
     }
 
     /**
+     * Puts what the agent is doing in the window title, once a second, on a driven client: the request
+     * it is answering, the ticks it still waits and how far through the script it is. A script that
+     * waits minutes for a keg to ferment otherwise looks exactly like a hung game, a player standing
+     * still with a bucket, to whoever glances at the window. The title rather than the screen, so
+     * nothing of it reaches a capture. Vanilla sets its own title now and then, on joining a world for
+     * one; the next second puts this one back.
+     */
+    public static void showStatus(Minecraft minecraft, String status, long tick) {
+        if (!DRIVEN || status == null || tick % 20 != 0) return;
+        minecraft.getWindow().setTitle("ThirstWasTaken2 agent: " + status);
+    }
+
+    /**
      * Presses "I know what I'm doing!" on vanilla's experimental settings prompt, on a driven client
      * only. Called from the client tick while no world is loaded, which is the only time the prompt can
      * be up and keeps this off the path a client in a world takes.

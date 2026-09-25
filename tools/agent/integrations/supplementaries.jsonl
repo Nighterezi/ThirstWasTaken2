@@ -5,8 +5,9 @@
 // unattended in a singleplayer world:
 //     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/integrations/supplementaries.jsonl -Pquickplay=SupplementariesAgent
 //     ./gradlew ":1.21.1:runClient" -Pagent=tools/agent/integrations/supplementaries.jsonl -Pquickplay=SupplementariesAgent
-// SupplementariesAgent is a throwaway world: copy level.dat out of any 1.21.1 world into
-// run/<node>/saves/SupplementariesAgent, fresh for each run. Then check what it recorded:
+// SupplementariesAgent is a throwaway world, made fresh for each run by
+//     python tools/agent/new_world.py <node> SupplementariesAgent
+// Then check what it recorded:
 //     python tools/agent/drive.py run/<node>/agent/client tools/agent/integrations/supplementaries.jsonl --verify
 // Every "execute" line has to say "Test passed", and the captures in
 // run/<node>/agent/client/screenshots/ show the scene.
@@ -15,10 +16,7 @@
 // script cannot miss. World edits go through server.command, which runs with the console's
 // permissions, so the world does not need cheats on.
 //
-// The player is killed and respawned first. A world built from another world's level.dat drops the
-// player wherever that one left them, with new terrain underneath, so they usually fall to their
-// death during the opening wait; killing first makes that the same every run rather than a race, and
-// a dead player interacts with nothing. The scene is force loaded because it is nowhere near spawn.
+// The scene is force loaded because it is nowhere near spawn.
 //
 // The player is addressed by selector throughout: a Fabric dev client calls its player Player<NN>
 // and a NeoForge one calls it Dev, so a name would only ever fit one of the two nodes.
@@ -26,10 +24,6 @@
 {"id": "load", "command": "wait", "args": {"ticks": 400}}
 {"id": "arrived", "command": "client.state"}
 {"id": "survival", "command": "server.command", "args": {"command": "gamemode survival @p"}}
-{"id": "kill", "command": "server.command", "args": {"command": "kill @p"}}
-{"id": "dying", "command": "wait", "args": {"ticks": 20}}
-{"id": "respawn", "command": "client.respawn"}
-{"id": "respawned", "command": "wait", "args": {"ticks": 60}}
 {"id": "alive", "command": "client.state", "expect": {"result.alive": true}}
 
 // Go to the scene: a world may spawn the player far from it, where nothing is loaded.

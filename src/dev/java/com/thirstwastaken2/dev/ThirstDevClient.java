@@ -15,6 +15,7 @@ import net.minecraft.client.Minecraft;
  */
 public final class ThirstDevClient {
     private static boolean started;
+    private static long ticks;
 
     private ThirstDevClient() { }
 
@@ -40,6 +41,7 @@ public final class ThirstDevClient {
             // client the prompt vanilla puts in front of one is nobody's to press.
             ClientWindow.passWorldPrompt(Minecraft.getInstance());
             ThirstAgent.tick();
+            ClientWindow.showStatus(Minecraft.getInstance(), ThirstAgent.status(), ++ticks);
         });
         DevClientLoader.onClientStopping(ThirstAgent::flush);
     }

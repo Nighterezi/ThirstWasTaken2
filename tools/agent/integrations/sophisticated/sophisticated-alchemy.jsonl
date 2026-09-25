@@ -11,10 +11,9 @@
 // Sophisticated only unpacks a template the first time the backpack is opened, so each is opened with
 // the real right click and closed again.
 //
-// SophisticatedAgent is a throwaway world: copy level.dat out of any 1.21.1 world (its player keeps
-// their effects, so the script clears them: a Farmer's Delight world leaves Nourishment behind) into
-// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/integrations/sophisticated/sophisticated-pack into its datapacks
-// folder, fresh for each run. Then:
+// SophisticatedAgent is a throwaway world, made fresh for each run by
+//     python tools/agent/new_world.py 1.21.1-neoforge SophisticatedAgent --datapack tools/agent/integrations/sophisticated/sophisticated-pack
+// Then:
 //     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/integrations/sophisticated/sophisticated-alchemy.jsonl -Pquickplay=SophisticatedAgent
 
 {"id": "load", "command": "wait", "args": {"ticks": 400}}

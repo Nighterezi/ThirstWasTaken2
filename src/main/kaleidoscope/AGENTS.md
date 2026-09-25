@@ -15,8 +15,8 @@ does there:
 - **an empty teapot item dipped into water** samples it where it lies, as a bucket does;
 - **dripstone** fills a teapot with `dripstonePurity` water, as it does a cauldron (the 1.21.1 builds
   only: the others do not let dripstone fill a teapot at all);
-- **sea water**: the teapot refuses it, from a bucket or from the world, since tea brewed from it
-  comes out safe; the stockpot takes it and hands it back salty;
+- **sea water**: both blocks take it, the teapot from a bucket or from the world, and hand it back
+  salty; the teapot **brews nothing from it**, since tea brewed from it would come out safe;
 - and **Jade** names the grade under the crosshair.
 
 The drink and soup values are not here. They are ids in `ThirstConfig`, common code that names no class
@@ -53,7 +53,7 @@ kaleidoscope/java/com/thirstwastaken2/kaleidoscope/
   BrewedWaterQuality         the only place that reads a grade off what goes in, and stores it
   ReturnedWater              the grade on its way back out, per thread, for one remove call
   mixin/StockpotBlockEntityMixin   addSoupBase, removeSoupBase, save and load
-  mixin/TeapotBlockEntityMixin     addTeaFluid (and the salt refusal), removeTeaFluid, getDrops, save and load
+  mixin/TeapotBlockEntityMixin     addTeaFluid, removeTeaFluid, getDrops, save and load, and tick (no tea from sea water)
   mixin/TeapotDripstoneMixin       receiveDripstoneFluid, which only the 1.21.1 builds have
   mixin/TeapotItemMixin            an empty teapot scooping world water
   mixin/ItemUtilsMixin             stamps the bucket both blocks hand back through ItemUtils
@@ -156,10 +156,11 @@ Vanilla's own differences go through `Vanilla`: the item's block entity data (`p
 - What it does is checked in a real client with
   [tools/agent/integrations/kaleidoscope-cookery.jsonl](../../../tools/agent/integrations/kaleidoscope-cookery.jsonl), whose
   header says how to run and verify it. Every `execute` line asserts its own "Test passed". It covers
-  a Dirty bucket through each block, sea water through the stockpot and refused by the teapot, a
+  a Dirty bucket through each block, sea water through both blocks, a teapot of sea water brewing
+  nothing beside one of Clean water that brews, a
   teapot of Murky water picked up, placed and emptied, a teapot item dipped in a swamp and in the sea,
   and dripstone, and leaves two Jade screenshots. It passed whole on `1.21.1-neoforge` and `1.21.1`
   on 2026-09-23, and on `1.21.11`, `26.1.x`, `26.2.x` and `26.3.x` with only the two dripstone lines
   failing, as they must there. Run again on the four Fabric nodes after the pins moved to
-  Refabricated 1.5.1, with the same result. A 26.x world needs its `data/minecraft` folder next to `level.dat`,
-  where those versions keep the world generation settings.
+  Refabricated 1.5.1, with the same result. Make its world with `tools/agent/new_world.py`, which
+  also copies the `data/minecraft` files 26.x keeps its world generation settings in.

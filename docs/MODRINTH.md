@@ -168,10 +168,20 @@
       <b><a href="https://n1ght3r.github.io/ThirstWasTaken2/docs/features/kaleidoscope-cookery">Kaleidoscope Cookery</a></b><br>
       <i>NeoForge: <a href="https://modrinth.com/mod/kaleidoscope-cookery">Kaleidoscope Cookery</a> on 1.21.1<br>
       Fabric: <a href="https://modrinth.com/mod/kaleidoscope-cookery-refabricated">Kaleidoscope Cookery Refabricated</a>, every version</i><br><br>
-      Teas, milk tea and soups restore thirst. Water keeps its purity grade in the Stockpot and the Teapot, and the Teapot refuses sea water.
+      Teas, milk tea and soups restore thirst. Water keeps its purity grade in the Stockpot and the Teapot, and the Teapot brews nothing from sea water.
     </td>
     <td width="45%">
       <img alt="A Teapot on a lit Stove among teacups in a cherry grove, with Jade naming its water Clean" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/kaleidoscope-teapot.png" width="100%"><br><img alt="Kaleidoscope Cookery teas in the hotbar, with the Sakura Fubuki tooltip showing its thirst and quenched droplets" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/kaleidoscope-teas.png" width="100%">
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
+      <b><a href="https://n1ght3r.github.io/ThirstWasTaken2/docs/features/brewin-and-chewin">Brewin' and Chewin'</a></b><br>
+      <i>Fabric and NeoForge: <a href="https://modrinth.com/mod/brewin-and-chewin">Brewin' and Chewin'</a> on 1.21.1</i><br><br>
+      Brews and soups restore thirst, less the stronger the drink. Water keeps its purity grade in the Keg, and nothing ferments from sea water.
+    </td>
+    <td width="45%">
+      <img alt="A Brewin' and Chewin' Keg with Jade naming its water Dirty" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/brewin-keg.png" width="100%">
     </td>
   </tr>
   <tr>

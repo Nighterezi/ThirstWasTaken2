@@ -150,12 +150,16 @@ val integrations: List<Integration> = listOf(
         neoForgeDependencies = listOf("kaleidoscope_cookery"),
     ),
     // Both loaders: everything it touches is in the mod's own common module, which names neither. Only
-    // the two 1.21.1 nodes set the key, since the mod has no build for a newer Minecraft version.
-    // See docs/dev/integration/BREWIN-AND-CHEWIN-INTEGRATION.md.
+    // the two 1.21.1 nodes set the key, since the mod has no build for a newer Minecraft version. The
+    // Jade reader is a Fabric entrypoint; NeoForge finds it by its annotation. Jade reads it whether or
+    // not Brewin' and Chewin' is installed, so it names none of its classes.
+    // See src/main/brewinandchewin/AGENTS.md.
     Integration(
         dir = "brewinandchewin",
         depsKey = "deps.brewin_and_chewin",
         loaders = setOf(Loader.FABRIC, Loader.NEOFORGE),
+        client = true,
+        fabricEntrypoints = mapOf("jade" to listOf("com.thirstwastaken2.client.brewinandchewin.BrewinAndChewinJade")),
         mixinConfig = "thirstwastaken2.brewinandchewin.mixins.json",
         neoForgeDependencies = listOf("brewinandchewin"),
     ),

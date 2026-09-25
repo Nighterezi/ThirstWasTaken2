@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.thirstwastaken2.ThirstWasTaken2;
 import com.thirstwastaken2.dev.agent.core.AgentDispatcher;
 import com.thirstwastaken2.dev.agent.core.AgentQueue;
+import com.thirstwastaken2.dev.agent.core.AgentWatchdog;
 import com.thirstwastaken2.dev.harness.Autorun;
 import com.thirstwastaken2.dev.harness.DevEnvironment;
 import com.thirstwastaken2.dev.harness.ServerAwake;
@@ -35,6 +36,16 @@ public final class ThirstAgent {
      * pair is read by {@link Autorun}, which the benchmark's own autorun property goes through too.
      */
     public static final String SCRIPT_PROPERTY = "thirstwastaken2.agent.script";
+    /**
+     * Seconds an unattended run may go without answering a request before it gives up and stops, 300
+     * by default: {@code -Dthirstwastaken2.agent.stallSeconds=<n>}.
+     */
+    public static final String STALL_PROPERTY = "thirstwastaken2.agent.stallSeconds";
+    /**
+     * Seconds an unattended run's game thread may go without a tick before the process is halted, 300
+     * by default: {@code -Dthirstwastaken2.agent.frozenSeconds=<n>}.
+     */
+    public static final String FROZEN_PROPERTY = "thirstwastaken2.agent.frozenSeconds";
 
     /** The queue this process owns, or null before {@link #install} or outside a development run. */
     private static AgentDispatcher dispatcher;
@@ -93,9 +104,28 @@ public final class ThirstAgent {
      */
     public static void start() {
         if (dispatcher == null) return;
-        dispatcher.start();
+        boolean open = dispatcher.start();
         Autorun script = Autorun.of(SCRIPT_PROPERTY);
         if (script == null || script.argument().isEmpty()) return;
+        if (!open) {
+            // Most likely another game of this node still running, one whose Gradle task was killed
+            // but whose window was not. Running the script anyway would mix both runs' answers.
+            ThirstWasTaken2.LOGGER.error("[ThirstAgent] DONE refused, the script was not run: the queue in {} is not "
+                    + "this game's; the line above says why", dispatcher.queue().directory().toAbsolutePath());
+            if (script.stopWhenDone()) stop();
+            return;
+        }
+        if (script.stopWhenDone()) {
+            // Nobody is watching an unattended run, so it must end on its own even when it cannot finish.
+            dispatcher.watchStall(Integer.getInteger(STALL_PROPERTY, 300), () -> {
+                ThirstWasTaken2.LOGGER.error("[ThirstAgent] DONE stalled: no request answered for {} s while {} "
+                        + "waited; stopping", Integer.getInteger(STALL_PROPERTY, 300), dispatcher.status());
+                flush("the run stalled, and was stopped before this request was started");
+                if (exit != null) exit.run();
+            });
+            AgentWatchdog.start(dispatcher, Thread.currentThread(), Integer.getInteger(FROZEN_PROPERTY, 300),
+                    ThirstWasTaken2.LOGGER);
+        }
         dispatcher.runScript(Path.of(script.argument()), () -> {
             ThirstWasTaken2.LOGGER.info("[ThirstAgent] DONE script answered, out={}",
                     dispatcher.queue().file(AgentQueue.OUT).toAbsolutePath());
@@ -106,6 +136,15 @@ public final class ThirstAgent {
     /** Answers whatever is still deferred and closes the queue, without stopping the game. */
     public static void flush() {
         if (dispatcher != null) dispatcher.stop();
+    }
+
+    private static void flush(String reason) {
+        if (dispatcher != null) dispatcher.stop(reason);
+    }
+
+    /** What the queue is doing, in one line for a person, or null when the agent is not installed. */
+    public static String status() {
+        return dispatcher == null ? null : dispatcher.status();
     }
 
     /** Closes the queue and then stops this process: halting a dedicated server, or closing a window. */

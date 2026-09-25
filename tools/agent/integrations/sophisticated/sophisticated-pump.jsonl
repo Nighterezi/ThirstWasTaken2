@@ -27,10 +27,9 @@
 //   "handOutFilled" passes, and the tank is empty. Without the integration the bucket stays empty: the
 //   pump asks for plain water and the backpack only hands out water whose components match.
 //
-// SophisticatedAgent is a throwaway world: copy level.dat out of any 1.21.1 world (its player keeps
-// their effects, so the script clears them: a Farmer's Delight world leaves Nourishment behind) into
-// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/integrations/sophisticated/sophisticated-pack into its datapacks
-// folder, fresh for each run. Then:
+// SophisticatedAgent is a throwaway world, made fresh for each run by
+//     python tools/agent/new_world.py 1.21.1-neoforge SophisticatedAgent --datapack tools/agent/integrations/sophisticated/sophisticated-pack
+// Then:
 //     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/integrations/sophisticated/sophisticated-pump.jsonl -Pquickplay=SophisticatedAgent
 
 {"id": "load", "command": "wait", "args": {"ticks": 400}}

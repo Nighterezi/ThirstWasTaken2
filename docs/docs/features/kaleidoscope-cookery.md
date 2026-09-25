@@ -40,8 +40,9 @@ straight off a placed block are solid food and restore no thirst. Every value ca
 - An empty Teapot dipped into water grades it where it lies, the way filling a bucket there does.
 - Water dripping into a Teapot from pointed dripstone is Pure, as it is in a cauldron. Only the
   Minecraft 1.21.1 builds of Kaleidoscope Cookery let dripstone fill a Teapot.
-- The Teapot refuses sea water, from a bucket or straight from the sea. Tea brewed from it would come
-  out safe, which would make the sea drinkable.
-- The Stockpot takes sea water, and a bucket taken back out is still sea water.
+- The Stockpot and the Teapot take sea water, from a bucket or, for the Teapot, straight from the sea.
+  A bucket taken back out is still sea water.
+- The Teapot brews no tea from sea water. Tea from it would come out safe, which would make the sea
+  drinkable.
 
 With Jade installed, looking at a Stockpot or a Teapot of water shows its grade under the crosshair.

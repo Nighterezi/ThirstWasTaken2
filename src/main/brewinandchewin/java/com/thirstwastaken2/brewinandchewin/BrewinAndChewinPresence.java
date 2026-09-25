@@ -27,6 +27,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class BrewinAndChewinPresence {
     private static final Logger LOGGER = LoggerFactory.getLogger("thirstwastaken2");
 
+    /** The keg's block entity, a binary name: what the Jade reader asks about. */
+    public static final String KEG = "umpaz.brewinandchewin.common.block.entity.KegBlockEntity";
+
     private static final Map<String, Boolean> TARGETS = new ConcurrentHashMap<>();
 
     private BrewinAndChewinPresence() { }

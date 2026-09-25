@@ -5,6 +5,9 @@
   "compatibilityLevel": "${java}",
   "mixins": [
     "KegBlockEntityMixin",
+    "KegBottleMixin",
+    "KegFermentingMixin",
+    "KegHeldWaterMixin",
     "KegPouringRecipeMixin"
   ],
   "injectors": {

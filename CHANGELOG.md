@@ -2,6 +2,24 @@
 
 All notable changes to ThirstWasTaken2 are documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- Compatibility with Brewin' and Chewin' on Fabric and NeoForge 1.21.1:
+  - Its brews and soups restore thirst. The stronger a drink, the less it restores, and spirits
+    restore none.
+  - The Keg keeps the grade of the water poured into it from a bucket or a bottle, including a Keg
+    picked up and placed again. A Keg holding one grade refuses another.
+  - The Keg takes sea water and hands it back still salty, but nothing ferments from it.
+  - Drinks brewed from fresh water are safe whatever its grade.
+  - With Jade installed, looking at a Keg shows the grade of the water inside.
+
+### Changed
+
+- Kaleidoscope Cookery: the Teapot now takes sea water, from a bucket or dipped into the sea, and
+  hands it back still salty. It brews no tea from it.
+
 ## [1.2.0] - 2026-09-23
 
 ### Added

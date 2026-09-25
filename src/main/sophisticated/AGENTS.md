@@ -277,8 +277,8 @@ What the scripts and the world need on the newer versions, all already in the fi
 - **Into the main hand from slot 1.** A world whose player has another hotbar slot selected gets the
   backpack moved to the main hand after each give.
 - **The off hand** is read from `equipment.offhand` from 1.21.5 as well as `Inventory`.
-- **A 26.2 world** keeps its generation settings and players beside `level.dat`, so copy the whole
-  world rather than `level.dat` alone. The driven client passes NeoForge's loading warnings screen by
+- **A 26.2 world** keeps its generation settings beside `level.dat`, which
+  `tools/agent/new_world.py` copies. The driven client passes NeoForge's loading warnings screen by
   itself when none of the warnings is this mod's.
 
 ### Tank
@@ -388,5 +388,6 @@ upgrade a purity-0 bottle and a piece of coal. Checked on 2026-09-19: both came 
 
 ### Effects on the test player
 
-A world whose `level.dat` came from the Farmer's Delight check carries Nourishment on its player, which
-cancels all exhaustion, so the Feeding and Alchemy scripts clear the player's effects first.
+A world whose `level.dat` was copied by hand from the Farmer's Delight check carried Nourishment on its
+player, which cancels all exhaustion, so the Feeding and Alchemy scripts clear the player's effects
+first. A world made by `tools/agent/new_world.py` has no player of its own, so that is only a guard now.

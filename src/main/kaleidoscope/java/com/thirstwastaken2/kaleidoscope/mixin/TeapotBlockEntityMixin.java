@@ -2,7 +2,6 @@ package com.thirstwastaken2.kaleidoscope.mixin;
 
 import com.github.ysbbbbbb.kaleidoscopecookery.api.blockentity.ITeapot;
 import com.github.ysbbbbbb.kaleidoscopecookery.blockentity.kitchen.TeapotBlockEntity;
-import com.github.ysbbbbbb.kaleidoscopecookery.crafting.serializer.TeapotRecipeSerializer;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.thirstwastaken2.kaleidoscope.BrewedWater;
@@ -23,11 +22,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * The teapot keeps the grade of the water poured into it: back out in a bucket, and in the item when the
- * teapot is picked up and placed again. It refuses sea water, as the Cooking Pot does: tea brewed from
- * the sea would come out as safe as any other, a free way to make it drinkable.
+ * teapot is picked up and placed again. Sea water goes in and comes back out salty, but brews nothing:
+ * tea brewed from the sea would come out as safe as any other, a free way to make it drinkable.
  *
  * <p>The tea itself is not affected. It is brewed from boiled water, so a cup restores its fixed value
- * whatever went into the pot.
+ * whatever fresh water went into the pot.
  */
 @Mixin(value = TeapotBlockEntity.class, remap = false)
 abstract class TeapotBlockEntityMixin implements BrewedWater {
@@ -51,16 +50,20 @@ abstract class TeapotBlockEntityMixin implements BrewedWater {
     private boolean thirst$keepPouredGrade(Level level, LivingEntity user, ItemStack itemStack, Operation<Boolean> original) {
         // Read before the call: it empties the bucket.
         WaterQuality poured = BrewedWaterQuality.of(itemStack);
-        // Refused only where the teapot would otherwise take it, so a full or busy teapot still says why
-        // in its own words.
-        if (poured != null && poured.salty() && status == ITeapot.PUT_INGREDIENT
-                && TeapotRecipeSerializer.EMPTY_TEA_FLUID.equals(teaFluidId)) {
-            BrewedWaterQuality.refuseSalt(user);
-            return false;
-        }
         boolean added = original.call(level, user, itemStack);
         if (added) thirst$quality = poured;
         return added;
+    }
+
+    /**
+     * Sea water brews nothing. The teapot starts brewing from its tick, once it has water, heat and a
+     * recipe for what went in, so the tick is skipped while it holds sea water: no recipe is looked up,
+     * no timer runs, and the ingredients wait until the water is taken back out. {@code tick} is the
+     * mod's own, matched by name; it has one overload on every build.
+     */
+    @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
+    private void thirst$noTeaFromSeaWater(Level level, CallbackInfo ci) {
+        if (BrewedWaterQuality.isSalt(thirst$heldWater())) ci.cancel();
     }
 
     @WrapMethod(method = "removeTeaFluid")

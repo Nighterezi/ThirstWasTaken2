@@ -19,14 +19,13 @@ import org.spongepowered.asm.mixin.injection.At;
 
 /**
  * An empty teapot held in the hand scoops water straight out of the world, the way a bucket does, and
- * writes only the fluid id into the item. The water is sampled where it lay, as a bucket's is, and sea
- * water is refused, as the placed teapot refuses a bucket of it. Without this a teapot dipped in the
- * sea and emptied into a bucket turned sea water fresh.
+ * writes only the fluid id into the item. The water is sampled where it lay, as a bucket's is, sea
+ * water included, which the teapot keeps salty and brews nothing from. Without this a teapot dipped in
+ * the sea and emptied into a bucket turned sea water fresh.
  */
 @Mixin(value = TeapotItem.class, remap = false)
 abstract class TeapotItemMixin {
-    // Sampled before the call: it takes the source block away. Both sides sample, so the client agrees
-    // with the server about a refusal rather than showing a teapot that fills and then empties again.
+    // Sampled before the call: it takes the source block away.
     // Item.use and pickupBlock are Minecraft's, so remapped; pickupBlock took the Player itself on 1.21.1.
     //? if >1.21.1 {
     @WrapOperation(method = "use", remap = true, at = @At(value = "INVOKE",

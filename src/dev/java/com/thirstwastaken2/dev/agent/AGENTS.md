@@ -112,7 +112,33 @@ question is whether the run started at all.
 A client script that needs a world gets one with `-Pquickplay=<world>`, which opens that singleplayer
 world of `run/<node>/saves` straight from launch; server commands then reach its integrated server.
 [tools/agent/gameplay/hanging-pot.jsonl](../../../../../../../tools/agent/gameplay/hanging-pot.jsonl) runs that way, in a
-throwaway world made from another world's `level.dat`.
+throwaway world made by `tools/agent/new_world.py` (see [tools/agent/AGENTS.md](../../../../../../../tools/agent/AGENTS.md#a-world-for-a-script)).
+
+### One game per queue, and an unattended run always ends
+
+- **A queue belongs to one game.** The game that opens `run/<node>/agent/<name>/` holds an operating
+  system lock on `queue.lock` in it for as long as it lives. A second game of the same node started
+  meanwhile leaves the files alone, logs who owns them (the pid from their `ready.json`), and with
+  `-Pagent` logs `DONE refused` and closes. Without it, the second game rotated the first one's
+  `out.jsonl` away and both appended to the new one, so every answer of both runs was mixed. The usual
+  way to get there is killing a `runClient` Gradle task: that does not always close the game window,
+  which then runs its script to the end. The system drops the lock when the process ends, however it
+  ends. Two games of one node at once need `-Dthirstwastaken2.agent=<name>` on one of them.
+- **`stop` jumps a running script.** Written to `in.jsonl` while a `-Pagent` script runs, it is answered
+  on the poll that reads it rather than after the script's last line. Otherwise it keeps its place:
+  `drive.py` writes a whole file at once, and one ending in `stop` means after the rest.
+- **A stalled run stops.** With `-Pagent`, when requests are waiting and none has been answered for 300
+  seconds (`-Dthirstwastaken2.agent.stallSeconds`), the rest is refused as stalled, the log says
+  `DONE stalled` with the request it was stuck on, and the game closes. The longest request a script
+  can make is a one minute `wait`.
+- **A frozen game is halted.** A game thread that stops ticking cannot run that check, so a watchdog
+  thread halts the process after 300 seconds without a tick (`-Dthirstwastaken2.agent.frozenSeconds`),
+  logging where the game thread was stuck and writing a `watchdog` line to `out.jsonl`. Generating a
+  world renders without ticking for a while, which the limit leaves plenty of room for.
+- **The window title says what the script is doing** on a driven client, once a second: the request
+  it is answering, the ticks it still waits, and how far through the script it is, such as
+  `ThirstWasTaken2 agent: brewing3 (wait), 1140 ticks left, 152/187`. A long `wait` looks exactly like a
+  hung game to anyone glancing at the window; the title is how to tell. It never reaches a capture.
 
 ## Driving a client while the machine is in use
 
@@ -170,12 +196,13 @@ a client answers all three.
 |---|---|---|
 | `probe` | | side, loader, Minecraft version, run directory, queue, whether a server is running, the command list |
 | `wait` | `ticks` | after that many game ticks have run. The way to let the game catch up |
-| `stop` | | after stopping this process: halting a server, closing a client's window |
+| `stop` | | after stopping this process: halting a server, closing a client's window. Answered ahead of a running `-Pagent` script |
 | `server.info` | | dedicated, tick count, players, difficulty, levels |
 | `server.players` | | every online player's thirst, position, health, food and flags |
 | `server.thirst.get` | `player` | the same, for one player |
 | `server.thirst.set` | `player`, `thirst`, `quenched`, `exhaustion`, `enabled` | what it was and what it is now. Writes the state directly, not through `/thirst set` |
 | `server.command` | `command`, `as` | what the command returned and what it said, collected rather than logged |
+| `server.sprint` | `ticks` | after `/tick sprint <ticks>` has run every tick: `ran`, the wall-clock `seconds` it took. For what only time does, a keg fermenting or a crop growing; the same ticks run the same code, without the sleep. Use it rather than a sprint and a fixed `wait`, which waits the full time anyway since the client ticks at 20 a second |
 | `client.info` | | window and GUI size, GUI scale, fps, screen, server, player, key names, `toggleCrouch`, `toggleSprint`, and whether this client is `driven` and `mouseGrabbed` |
 | `client.state` | | what this client holds: thirst, sprinting, sneaking, health, food, dimension, position, whether the bar should render |
 | `client.hud` | | the rectangle the mod drew the bar in, the values it drew, the ten droplet rectangles, and the config preview's |

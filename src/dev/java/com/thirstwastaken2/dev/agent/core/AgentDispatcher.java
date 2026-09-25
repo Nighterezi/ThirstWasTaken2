@@ -64,6 +64,19 @@ public final class AgentDispatcher {
     private boolean started;
     private Runnable onDrained;
 
+    /** Requests of the running script, and how many answers have been written since it started. */
+    private int scriptTotal;
+    private int answered;
+    /** The request started last, for {@link #status}: its id and command. */
+    private String currentId;
+    private String currentCommand;
+
+    /** {@link System#nanoTime} of the last answer written and of the last tick, for the stall checks. */
+    private volatile long lastAnswerNanos = System.nanoTime();
+    private volatile long lastTickNanos = System.nanoTime();
+    private long stallNanos;
+    private Runnable onStall;
+
     /**
      * @param about what {@code ready.json} says about this process before the command list is added to
      *              it: which node, which Minecraft version, which side
@@ -97,14 +110,20 @@ public final class AgentDispatcher {
      * what {@code startedAt} and {@code pid} are for. Waiting for the file alone is not enough: a game
      * takes the better part of a minute to come up, and for all of it the previous run's file is still
      * sitting there saying the queue is open.
+     *
+     * @return whether the queue is open: false when another game owns the directory, or it could not be
+     *         written
      */
-    public void start() {
-        if (started) return;
+    public boolean start() {
+        if (started) return true;
         try {
             queue.open();
+        } catch (QueueBusyException e) {
+            log.error("[ThirstAgent] the queue stays closed: {}", e.getMessage());
+            return false;
         } catch (IOException e) {
             log.error("[ThirstAgent] could not open the queue in {}", queue.directory(), e);
-            return;
+            return false;
         }
         started = true;
         JsonObject ready = about.deepCopy();
@@ -117,6 +136,52 @@ public final class AgentDispatcher {
         ready.addProperty("out", queue.file(AgentQueue.OUT).toAbsolutePath().toString());
         queue.writeReady(GSON.toJson(ready) + "\n");
         log.info("[ThirstAgent] ready, {} commands, queue {}", handlers.size(), queue.directory().toAbsolutePath());
+        return true;
+    }
+
+    /**
+     * Calls {@code onStall}, on the game thread, when requests are waiting and none has been answered
+     * for {@code seconds}. For an unattended run, which otherwise sits on a request that will never
+     * answer with its window open until someone notices. The longest single request a script may make
+     * is a {@code wait} of 1200 ticks, a minute at full speed, so a few minutes is never a slow request;
+     * one that runs longer on purpose calls {@link #progress} as it goes.
+     */
+    public void watchStall(int seconds, Runnable onStall) {
+        this.stallNanos = seconds * 1_000_000_000L;
+        this.onStall = onStall;
+    }
+
+    /**
+     * Tells the stall check the request being answered is moving, for one that answers nothing for
+     * minutes by design, such as a long {@code server.sprint}.
+     */
+    public void progress() {
+        lastAnswerNanos = System.nanoTime();
+    }
+
+    /** {@link System#nanoTime} of the last tick, read by a watchdog on another thread. */
+    public long lastTickNanos() {
+        return lastTickNanos;
+    }
+
+    /**
+     * One line saying what the queue is doing, for a person looking at the game: the request being
+     * answered, the ticks it still waits, and how far through the script it is. Nothing waiting reads
+     * as idle, which is the one state that looks the same as a hang from outside and is not one.
+     */
+    public String status() {
+        if (!started) return "queue closed";
+        if (pending() == 0) return onDrained == null && scriptTotal > 0 ? "script done" : "idle, waiting for in.jsonl";
+        StringBuilder status = new StringBuilder();
+        if (currentId != null) {
+            status.append(currentId);
+            if (!currentId.equals(currentCommand)) status.append(" (").append(currentCommand).append(')');
+        }
+        int ticksLeft = 0;
+        for (Deferred entry : deferred) ticksLeft = Math.max(ticksLeft, entry.ticks);
+        if (ticksLeft > 20) status.append(", ").append(ticksLeft).append(" ticks left");
+        if (scriptTotal > 0) status.append(", ").append(Math.min(answered + 1, scriptTotal)).append('/').append(scriptTotal);
+        return status.toString();
     }
 
     /**
@@ -143,6 +208,9 @@ public final class AgentDispatcher {
             String trimmed = line.strip();
             if (!trimmed.isEmpty() && !trimmed.startsWith("//")) waiting.add(trimmed);
         }
+        scriptTotal = waiting.size();
+        answered = 0;
+        lastAnswerNanos = System.nanoTime();
         run();
         checkDrained();
     }
@@ -177,14 +245,29 @@ public final class AgentDispatcher {
 
     /** Called once per game tick, on the side that owns this queue. */
     public void tick() {
+        lastTickNanos = System.nanoTime();
         if (!started) return;
         runDeferred();
         if (++sinceLastPoll >= POLL_TICKS) {
             sinceLastPoll = 0;
-            waiting.addAll(queue.poll());
+            // A stop written while the launch's script runs jumps the queue. Behind the script it would
+            // wait for every line of it, which is exactly when an agent wants a game gone: the script is
+            // stuck, or no longer wanted. Only then: a file drive.py sends is written in one go, and one
+            // that ends in stop means after everything else in it.
+            String stop = null;
+            for (String line : queue.poll()) {
+                if (stop == null && onDrained != null && isStop(line)) stop = line;
+                else waiting.add(line);
+            }
+            if (stop != null) {
+                // What was read with it waits, and is refused with a reason when the game goes down.
+                accept(stop);
+                return;
+            }
         }
         run();
         checkDrained();
+        checkStalled();
     }
 
     /**
@@ -193,6 +276,11 @@ public final class AgentDispatcher {
      * rather than never being answered at all.
      */
     public void stop() {
+        stop("the game stopped before this request was started");
+    }
+
+    /** The same, refusing what is still waiting with {@code reason}. */
+    public void stop(String reason) {
         if (!started) return;
         for (Deferred entry : List.copyOf(deferred)) {
             try {
@@ -202,7 +290,7 @@ public final class AgentDispatcher {
             }
         }
         deferred.clear();
-        for (String line : waiting) refuse(line, "the game stopped before this request was started");
+        for (String line : waiting) refuse(line, reason);
         waiting.clear();
         started = false;
     }
@@ -250,7 +338,9 @@ public final class AgentDispatcher {
             return;
         }
 
-        AgentReply reply = new AgentReply(request, envelope -> queue.write(GSON.toJson(envelope)));
+        currentId = request.id();
+        currentCommand = request.command();
+        AgentReply reply = new AgentReply(request, envelope -> write(GSON.toJson(envelope)));
         AgentHandler handler = handlers.get(request.command());
         if (handler == null) {
             reply.fail("unknown command; ready.json lists the ones this process answers");
@@ -280,7 +370,31 @@ public final class AgentDispatcher {
         envelope.addProperty("ok", false);
         envelope.addProperty("error", message);
         envelope.addProperty("line", line.length() > 200 ? line.substring(0, 200) + "..." : line);
-        queue.write(GSON.toJson(envelope));
+        write(GSON.toJson(envelope));
+    }
+
+    private void write(String line) {
+        queue.write(line);
+        answered++;
+        lastAnswerNanos = System.nanoTime();
+    }
+
+    private static boolean isStop(String line) {
+        if (!line.contains("stop")) return false;
+        try {
+            JsonElement parsed = JsonParser.parseString(line);
+            return parsed.isJsonObject() && parsed.getAsJsonObject().has("command")
+                    && "stop".equals(parsed.getAsJsonObject().get("command").getAsString());
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
+
+    private void checkStalled() {
+        if (onStall == null || pending() == 0 || System.nanoTime() - lastAnswerNanos < stallNanos) return;
+        Runnable stalled = onStall;
+        onStall = null;
+        stalled.run();
     }
 
     private void checkDrained() {

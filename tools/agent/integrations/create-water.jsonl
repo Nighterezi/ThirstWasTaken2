@@ -15,8 +15,9 @@
 // - "drainRead" shows the Item Drain's tank holding 250 mB of water_purity 0, poured out of a dirty
 //   terracotta water bowl, and "drainCheck" passes.
 //
-// Any throwaway 1.21.1 world works; SophisticatedAgent's setup is enough (copy level.dat out of any
-// 1.21.1 world into run/1.21.1-neoforge/saves/SophisticatedAgent). Then:
+// Any throwaway 1.21.1 world works, such as the one the Sophisticated scripts use:
+//     python tools/agent/new_world.py 1.21.1-neoforge SophisticatedAgent
+// Then:
 //     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/integrations/create-water.jsonl -Pquickplay=SophisticatedAgent
 
 {"id": "load", "command": "wait", "args": {"ticks": 400}}

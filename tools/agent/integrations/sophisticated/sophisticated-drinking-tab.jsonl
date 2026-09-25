@@ -14,9 +14,9 @@
 // font, and both tabs are captured, so a cropped title ends in "..." on the picture. The basic tab's
 // title has 37 GUI pixels of room and the advanced one's 55. The client is set back to English last.
 //
-// SophisticatedAgent is a throwaway world: copy level.dat out of any 1.21.1 world into
-// run/1.21.1-neoforge/saves/SophisticatedAgent, and tools/agent/integrations/sophisticated/sophisticated-pack into its datapacks
-// folder, fresh for each run. Then:
+// SophisticatedAgent is a throwaway world, made fresh for each run by
+//     python tools/agent/new_world.py 1.21.1-neoforge SophisticatedAgent --datapack tools/agent/integrations/sophisticated/sophisticated-pack
+// Then:
 //     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/integrations/sophisticated/sophisticated-drinking-tab.jsonl -Pquickplay=SophisticatedAgent
 
 {"id": "load", "command": "wait", "args": {"ticks": 400}}

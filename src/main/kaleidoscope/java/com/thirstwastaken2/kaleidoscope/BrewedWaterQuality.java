@@ -5,9 +5,7 @@ import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.purity.WaterQuality;
 import com.thirstwastaken2.platform.Vanilla;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +25,6 @@ import java.util.function.Supplier;
 public final class BrewedWaterQuality {
     /** One int, {@link WaterPurity#storedValue}: 1-4 for the four grades, 5 for sea water, absent for none. */
     private static final String KEY = ThirstWasTaken2.MOD_ID + ":water_quality";
-    private static final String SALT_REFUSED = "thirstwastaken2.message.salt_water_refused";
 
     /** The fluid id both blocks keep for water: the stockpot's water soup base and the teapot's tea fluid. */
     private static final Identifier WATER = Identifier.withDefaultNamespace("water");
@@ -52,18 +49,18 @@ public final class BrewedWaterQuality {
 
     /**
      * An empty teapot item about to scoop the water at {@code pos} out of the world: hands the water's
-     * grade to {@code scooped} and lets {@code pickup} take it, or refuses sea water and takes nothing.
-     * Sampled before the pickup, which takes the source block away.
+     * grade to {@code scooped}, sea water included, and lets {@code pickup} take it. Sampled before the
+     * pickup, which takes the source block away.
      */
     public static ItemStack scoop(LivingEntity user, LevelAccessor level, BlockPos pos, BlockState state,
                                   Consumer<WaterQuality> scooped, Supplier<ItemStack> pickup) {
-        WaterQuality quality = sample(level, pos, state);
-        if (quality != null && quality.salty()) {
-            refuseSalt(user);
-            return ItemStack.EMPTY;
-        }
-        scooped.accept(quality);
+        scooped.accept(sample(level, pos, state));
         return pickup.get();
+    }
+
+    /** Whether a block holds sea water: {@code held} is its {@code thirst$heldWater}, null for none. */
+    public static boolean isSalt(WaterQuality held) {
+        return held != null && held.salty();
     }
 
     /** Adds {@code quality} to the block entity data a teapot item carries, which the teapot loads once placed. */
@@ -99,13 +96,5 @@ public final class BrewedWaterQuality {
     @FunctionalInterface
     public interface IntReader {
         int read(String key, int fallback);
-    }
-
-    /**
-     * Tells a player why the teapot would not take sea water, in the action bar as Kaleidoscope Cookery's
-     * own refusals are. The teapot runs on both sides, so only the server says it, once.
-     */
-    public static void refuseSalt(LivingEntity user) {
-        if (user instanceof ServerPlayer player) Vanilla.sendOverlayMessage(player, Component.translatable(SALT_REFUSED));
     }
 }
