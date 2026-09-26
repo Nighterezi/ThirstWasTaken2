@@ -183,6 +183,9 @@ public final class ThirstConfig {
         // And for Cultural Delights, added after that.
         culturalDelightsDrinks(drinks);
         culturalDelightsFoods(foods);
+        // And for Fruits Delight, added after that.
+        fruitsDelightDrinks(drinks);
+        fruitsDelightFoods(foods);
         if (itemBlacklist == null) itemBlacklist = new LinkedHashSet<>();
         if (sicknessPreset == null) sicknessPreset = SicknessPreset.REALISTIC;
         if (drinkTagValue == null || drinkTagValue.length != 2) drinkTagValue = new int[]{6, 8};
@@ -229,6 +232,7 @@ public final class ThirstConfig {
         brewinAndChewinDrinks(values);
         coldSweatDrinks(values);
         culturalDelightsDrinks(values);
+        fruitsDelightDrinks(values);
         return values;
     }
 
@@ -248,6 +252,7 @@ public final class ThirstConfig {
         kaleidoscopeCookeryFoods(values);
         brewinAndChewinFoods(values);
         culturalDelightsFoods(values);
+        fruitsDelightFoods(values);
         return values;
     }
 
@@ -359,6 +364,47 @@ public final class ThirstConfig {
         putMissing(foods, 1, 2, "culturaldelights:cut_cucumber");
         putMissing(foods, 4, 5, "culturaldelights:hearty_salad");
         putMissing(foods, 2, 3, "culturaldelights:creamed_corn", "culturaldelights:poached_eggplants");
+    }
+
+    /**
+     * Fruits Delight's juices and teas, by id alone like the other mods'. The mod ships thirst values
+     * of its own, but only for the original Thirst Was Taken, whose mod id is not ours, so without these
+     * its drinks restore nothing. The drinks keep its values, which are already Farmer's Delight's juice
+     * value here; a juice is safe whatever water went into it, as tea is.
+     */
+    private static void fruitsDelightDrinks(Map<String, int[]> drinks) {
+        putMissing(drinks, 8, 13, "fruitsdelight:hamimelon_juice", "fruitsdelight:kiwi_juice",
+                "fruitsdelight:orange_juice", "fruitsdelight:lemon_juice", "fruitsdelight:pear_juice",
+                "fruitsdelight:hawberry_tea", "fruitsdelight:mango_tea", "fruitsdelight:peach_tea",
+                "fruitsdelight:lychee_cherry_tea", "fruitsdelight:mangosteen_tea", "fruitsdelight:bayberry_soup");
+        putMissing(drinks, 8, 12, "fruitsdelight:mango_milkshake");
+        putMissing(drinks, 5, 6, "fruitsdelight:bellini_cocktail");
+    }
+
+    /**
+     * Fruits Delight's watery foods; see {@link #fruitsDelightDrinks}. Its own values for food are two
+     * to three times ours, so these follow the Farmer's Delight food each is closest to: a hamimelon
+     * slice is a melon slice, a fruit an apple, a popsicle the melon popsicle, a stew a stew. Jam,
+     * cookies, pies and the dry foods are left out.
+     */
+    private static void fruitsDelightFoods(Map<String, int[]> foods) {
+        putMissing(foods, 8, 10, "fruitsdelight:hamimelon_shaved_ice");
+        putMissing(foods, 7, 9, "fruitsdelight:hamimelon_popsicle", "fruitsdelight:kiwi_popsicle");
+        putMissing(foods, 3, 4, "fruitsdelight:apple_jello", "fruitsdelight:bayberry_jello",
+                "fruitsdelight:blueberry_jello", "fruitsdelight:chorus_jello", "fruitsdelight:cranberry_jello",
+                "fruitsdelight:durian_jello", "fruitsdelight:fig_jello", "fruitsdelight:glowberry_jello",
+                "fruitsdelight:hamimelon_jello", "fruitsdelight:hawberry_jello", "fruitsdelight:kiwi_jello",
+                "fruitsdelight:lemon_jello", "fruitsdelight:lychee_jello", "fruitsdelight:mango_jello",
+                "fruitsdelight:mangosteen_jello", "fruitsdelight:melon_jello", "fruitsdelight:orange_jello",
+                "fruitsdelight:peach_jello", "fruitsdelight:pear_jello", "fruitsdelight:persimmon_jello",
+                "fruitsdelight:pineapple_jello", "fruitsdelight:sweetberry_jello");
+        putMissing(foods, 4, 5, "fruitsdelight:hamimelon_slice");
+        putMissing(foods, 2, 3, "fruitsdelight:orange", "fruitsdelight:lychee", "fruitsdelight:pineapple_slice",
+                "fruitsdelight:kiwi", "fruitsdelight:peach", "fruitsdelight:mango", "fruitsdelight:pear");
+        putMissing(foods, 1, 2, "fruitsdelight:orange_slice", "fruitsdelight:lemon_slice", "fruitsdelight:baked_pear");
+        putMissing(foods, 6, 8, "fruitsdelight:pear_with_rock_sugar");
+        putMissing(foods, 4, 5, "fruitsdelight:fig_chicken_stew", "fruitsdelight:mango_salad");
+        putMissing(foods, 2, 3, "fruitsdelight:blueberry_custard");
     }
 
     private static void put(Map<String, int[]> values, int thirst, int quenched, String... ids) {

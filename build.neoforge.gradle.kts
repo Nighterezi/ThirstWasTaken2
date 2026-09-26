@@ -388,6 +388,13 @@ dependencies {
         runClientMod(listOf("farmers-delight", "farmersdelight"), "maven.modrinth:farmers-delight:$it")
     }
 
+    // Fruits Delight, on the node that sets it. Nothing compiles against it: its drinks are reached by
+    // registry id, and src/main/fruitsdelight's mixins name their targets by string. Only here to test
+    // them. Its L2 libraries are nested in its jar, which NeoForge loads itself.
+    findProperty("deps.fruits_delight")?.let {
+        runClientMod(listOf("fruits-delight", "fruitsdelight"), "maven.modrinth:fruits-delight:$it") { isTransitive = false }
+    }
+
     if (createVersion != null && createLibraries != null) {
         compileOnly("maven.modrinth:create:$createVersion") { isTransitive = false }
         compileOnly(files(createLibraries.map { it.destinationDir.listFiles().orEmpty().toList() })

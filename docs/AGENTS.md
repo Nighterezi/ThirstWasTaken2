@@ -15,14 +15,19 @@ npm run docs:build    # must pass before you call a docs change done
 |---|---|
 | `index.md` | The hero page. Feature cards link into the documentation. |
 | `docs/` | The manual: overview, features, installation, commands, configuration, FAQ. |
-| `docs/features/` | What the mod does and why, in prose. No config key listings. |
+| `docs/features/` | What the mod does on its own and why, in prose. No config key listings. |
+| `docs/integrations/` | One page per optional mod that changes what this one does, under the sidebar's Integrations. Farmer's Delight and its addons (Brewin' and Chewin', Cultural Delights, Fruits Delight) share `docs/integrations/farmers-delight/`, whose `index.md` is Farmer's Delight's own page. AppleSkin and Jade only show what is already there, so they get no page. |
 | `docs/developers/` | For mod and data pack authors: the data pack format and the Java API. |
 | `.vitepress/config.mts` | Nav, sidebar and the GitHub, Modrinth and CurseForge icons. |
 | `.vitepress/theme/` | Default theme plus `custom.css` for the brand colour. |
 | `public/` | `logo.png` for the navbar and favicon, and `screenshots/`, by subject: `hud/`, `water/`, `recipes/`, `config/`, and `integrations/<mod>/` for each optional mod. A new image goes in the folder of what it shows. The home hero is a slideshow of three screenshots, in `.vitepress/theme/HeroSlideshow.vue`. |
 
 `docs/` contains all player and server documentation. Pages describing gameplay belong in
-`docs/features/`; pages listing config keys belong directly in `docs/`.
+`docs/features/`, pages about another mod in `docs/integrations/` (an addon of Farmer's Delight in its
+folder), and pages listing config keys directly in `docs/`. A new integration page also goes in the
+sidebar's Integrations group in `.vitepress/config.mts`, and its row in `MODRINTH.md` and
+`CURSEFORGE.md` goes above the Farmer's Delight group, or inside it for an addon, so the Farmer's
+Delight mods stay together at the bottom of the table.
 
 ## Style
 
@@ -57,7 +62,7 @@ ones most likely to go stale:
 | Exhaustion, climate or damage in `ThirstManager` | `docs/features/thirst-and-quenched.md` |
 | Thirst values, bowls, loot | `docs/features/drinking.md` |
 | Anything in `WaterPurity` or a purify recipe | `docs/features/water-purity.md` |
-| Farmer's Delight values, Cooking Pot recipes or Nourishment | `docs/features/farmers-delight.md` |
-| The Drinking Upgrade or another Sophisticated upgrade | `docs/features/sophisticated-backpacks.md` |
+| Farmer's Delight values, Cooking Pot recipes or Nourishment | `docs/integrations/farmers-delight/index.md` |
+| The Drinking Upgrade or another Sophisticated upgrade | `docs/integrations/sophisticated-backpacks.md` |
 | Supported Minecraft, Loader or Fabric API version | `docs/installation.md` |
 | `com.thirstwastaken2.api`, the data pack format in `DataPackDrinks` | `docs/developers/java-api.md`, `docs/developers/data-packs.md` |

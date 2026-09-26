@@ -302,6 +302,53 @@ public final class ThirstApiGameTest {
         helper.succeed();
     }
 
+    /** Fruits Delight is never installed here either; see the Kaleidoscope Cookery test above. */
+    @GameTest
+    public void fruitsDelightDrinksAreMergedIntoAnOlderConfig(GameTestHelper helper) {
+        ThirstConfig defaults = new ThirstConfig();
+        String[] drinks = {"orange_juice", "mango_tea", "bayberry_soup", "mango_milkshake", "bellini_cocktail"};
+        String[] foods = {"hamimelon_slice", "kiwi_popsicle", "apple_jello", "pear", "fig_chicken_stew"};
+        for (String drink : drinks) {
+            TestFixtures.check(helper, defaults.drinks.containsKey("fruitsdelight:" + drink),
+                    "the default drinks should list fruitsdelight:" + drink);
+        }
+        for (String food : foods) {
+            TestFixtures.check(helper, defaults.foods.containsKey("fruitsdelight:" + food),
+                    "the default foods should list fruitsdelight:" + food);
+        }
+        for (String dry : new String[]{"orange_jam", "lemon_cookie", "durian_flesh", "dried_persimmon"}) {
+            TestFixtures.check(helper, !defaults.foods.containsKey("fruitsdelight:" + dry)
+                            && !defaults.drinks.containsKey("fruitsdelight:" + dry),
+                    "fruitsdelight:" + dry + " restores no thirst and should not be listed");
+        }
+
+        TestFixtures.withConfig(config -> {
+            for (String drink : drinks) config.drinks.remove("fruitsdelight:" + drink);
+            for (String food : foods) config.foods.remove("fruitsdelight:" + food);
+            // A player's own value, which merging must leave alone.
+            config.drinks.put("fruitsdelight:orange_juice", new int[]{1, 1});
+        }, () -> {
+            ThirstConfig config = ThirstConfig.get();
+            for (String drink : drinks) {
+                if (drink.equals("orange_juice")) continue;
+                String id = "fruitsdelight:" + drink;
+                TestFixtures.check(helper, Arrays.equals(config.drinks.get(id), defaults.drinks.get(id)),
+                        id + " should be merged back as " + Arrays.toString(defaults.drinks.get(id))
+                                + ", got " + Arrays.toString(config.drinks.get(id)));
+            }
+            for (String food : foods) {
+                String id = "fruitsdelight:" + food;
+                TestFixtures.check(helper, Arrays.equals(config.foods.get(id), defaults.foods.get(id)),
+                        id + " should be merged back as " + Arrays.toString(defaults.foods.get(id))
+                                + ", got " + Arrays.toString(config.foods.get(id)));
+            }
+            TestFixtures.check(helper, Arrays.equals(config.drinks.get("fruitsdelight:orange_juice"), new int[]{1, 1}),
+                    "a value the player set should survive the merge, got "
+                            + Arrays.toString(config.drinks.get("fruitsdelight:orange_juice")));
+        });
+        helper.succeed();
+    }
+
     @GameTest
     public void aBrokenKeywordPatternIsIgnoredRatherThanFatal(GameTestHelper helper) {
         TestFixtures.withConfig(config -> {

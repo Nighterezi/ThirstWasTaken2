@@ -55,12 +55,12 @@ All optional except Fabric API. Versions are listed in the order 26.3, 26.2, 26.
 | [Mod Menu](https://modrinth.com/mod/modmenu) | 21.0.0, 20.0.3, 18.0.2, 17.0.1, 11.0.5 | A Config button for the [settings screen](/docs/configuration). |
 | [AppleSkin](https://modrinth.com/mod/appleskin) | 3.0.10+mc26.3, 3.0.10+mc26.2, 3.0.10+mc26.1.2, 3.0.8+mc1.21.11, 3.0.6+mc1.21 | The quenched outline on the thirst bar, droplet rows in tooltips, and the exhaustion strip. |
 | [Cloth Config](https://modrinth.com/mod/cloth-config) | 26.3.159, 26.2.155, 26.1.154, 21.11.153, 15.0.140 | AppleSkin's own settings screen. |
-| [Farmer's Delight Refabricated](https://modrinth.com/mod/farmers-delight-refabricated) | 26.3-3.6.27, 26.2-3.6.26, 26.1-3.6.26, 1.21.11-3.6.16, 1.21.1-3.3.6 | Thirst from its [drinks and meals](/docs/features/farmers-delight), Pure water from the Cooking Pot, and no drain under Nourishment. |
-| [Create Fly](https://modrinth.com/mod/create-fly) | 26.2-rc-2-6.0.9-1, 26.1.2-6.0.9-4 | The [Sand Filter](/docs/features/create). 26.2 and 26.1.2 only. |
+| [Create Fly](https://modrinth.com/mod/create-fly) | 26.2-rc-2-6.0.9-1, 26.1.2-6.0.9-4 | The [Sand Filter](/docs/integrations/create). 26.2 and 26.1.2 only. |
 | [Jade](https://modrinth.com/mod/jade) | 26.3.1, 26.2.11, 26.1.11, 21.1.6, 15.10.6 | The [grade of the water](/docs/features/water-purity#checking-water-with-jade) under the crosshair. Client only. |
-| [Supplementaries](https://modrinth.com/mod/supplementaries) | 1.21.1-3.9.9 | [Water that keeps its grade](/docs/features/supplementaries) in Jars, Goblets and Faucets, and a Jar or Goblet of water that can be drunk. 1.21.1 only. |
-| [Kaleidoscope Cookery Refabricated](https://modrinth.com/mod/kaleidoscope-cookery-refabricated) | 1.5.1.1-fabric+mc26.3, 1.5.1.1-fabric+mc26.2, 1.5.1.1-fabric+mc26.1.2, 1.3.0.9-fabric+mc1.21.11, 1.5.1.1-fabric+mc1.21.1 | Thirst from its [teas and soups](/docs/features/kaleidoscope-cookery), and water that keeps its grade in the Stockpot and the Teapot. The official Fabric build stopped at 1.0.1 and only gets the thirst values. |
-| [Brewin' and Chewin'](https://modrinth.com/mod/brewin-and-chewin) | v4.5.0+1.21.1-fabric | Thirst from its [brews and soups](/docs/features/brewin-and-chewin), and water that keeps its grade in the Keg. 1.21.1 only. |
+| [Supplementaries](https://modrinth.com/mod/supplementaries) | 1.21.1-3.9.9 | [Water that keeps its grade](/docs/integrations/supplementaries) in Jars, Goblets and Faucets, and a Jar or Goblet of water that can be drunk. 1.21.1 only. |
+| [Kaleidoscope Cookery Refabricated](https://modrinth.com/mod/kaleidoscope-cookery-refabricated) | 1.5.1.1-fabric+mc26.3, 1.5.1.1-fabric+mc26.2, 1.5.1.1-fabric+mc26.1.2, 1.3.0.9-fabric+mc1.21.11, 1.5.1.1-fabric+mc1.21.1 | Thirst from its [teas and soups](/docs/integrations/kaleidoscope-cookery), and water that keeps its grade in the Stockpot and the Teapot. The official Fabric build stopped at 1.0.1 and only gets the thirst values. |
+| [Farmer's Delight Refabricated](https://modrinth.com/mod/farmers-delight-refabricated) | 26.3-3.6.27, 26.2-3.6.26, 26.1-3.6.26, 1.21.11-3.6.16, 1.21.1-3.3.6 | Thirst from its [drinks and meals](/docs/integrations/farmers-delight/), Pure water from the Cooking Pot, and no drain under Nourishment. |
+| [Brewin' and Chewin'](https://modrinth.com/mod/brewin-and-chewin) | v4.5.0+1.21.1-fabric | Thirst from its [brews and soups](/docs/integrations/farmers-delight/brewin-and-chewin), and water that keeps its grade in the Keg. 1.21.1 only. |
 
 ### NeoForge
 
@@ -71,14 +71,15 @@ The settings screen opens from the Config button in NeoForge's Mods list, with n
 | [AppleSkin](https://modrinth.com/mod/appleskin) | 3.0.10+mc26.3, 3.0.10+mc26.2, 3.0.9+mc26.1, 3.0.8+mc1.21.11, 3.0.9+mc1.21 | The same as on Fabric. |
 | [Cloth Config](https://modrinth.com/mod/cloth-config) | 26.2.155, 26.1.154, 21.11.153, 15.0.140 | AppleSkin's own settings screen. Not on 26.3 yet. |
 | [Jade](https://modrinth.com/mod/jade) | 26.3.1, 26.2.10, 26.1.10, 21.1.7, 15.10.6 | The same as on Fabric. Client only. |
-| [Create](https://modrinth.com/mod/create) | 6.0.10 | The [Sand Filter](/docs/features/create). 1.21.1 only. |
-| [Farmer's Delight](https://modrinth.com/mod/farmers-delight) | 1.21.1-1.3.4 | The same as on Fabric. 1.21.1 only. |
-| [Sophisticated Backpacks](https://modrinth.com/mod/sophisticated-backpacks) | Core 26.2-1.5.0.2337, 26.1.2-1.5.0.2334, 1.21.11-1.5.0.2340, 1.21.1-1.5.1.2341. Not on 26.3 yet. | The [Drinking Upgrade](/docs/features/sophisticated-backpacks), and water that keeps its grade in the Tank and Pump Upgrades. Sophisticated Storage takes the Drinking Upgrade too. |
+| [Create](https://modrinth.com/mod/create) | 6.0.10 | The [Sand Filter](/docs/integrations/create). 1.21.1 only. |
+| [Sophisticated Backpacks](https://modrinth.com/mod/sophisticated-backpacks) | Core 26.2-1.5.0.2337, 26.1.2-1.5.0.2334, 1.21.11-1.5.0.2340, 1.21.1-1.5.1.2341. Not on 26.3 yet. | The [Drinking Upgrade](/docs/integrations/sophisticated-backpacks), and water that keeps its grade in the Tank and Pump Upgrades. Sophisticated Storage takes the Drinking Upgrade too. |
 | [Supplementaries](https://modrinth.com/mod/supplementaries) | 1.21.1-3.9.9 | The same as on Fabric. 1.21.1 only. |
-| [Kaleidoscope Cookery](https://modrinth.com/mod/kaleidoscope-cookery) | 1.5.1-neoforge+mc1.21.1 | Thirst from its [teas and soups](/docs/features/kaleidoscope-cookery), and water that keeps its grade in the Stockpot and the Teapot. 1.21.1 only. |
+| [Kaleidoscope Cookery](https://modrinth.com/mod/kaleidoscope-cookery) | 1.5.1-neoforge+mc1.21.1 | Thirst from its [teas and soups](/docs/integrations/kaleidoscope-cookery), and water that keeps its grade in the Stockpot and the Teapot. 1.21.1 only. |
+| [Cold Sweat](https://modrinth.com/mod/cold-sweat) | 2.4.3.1 | Thirst that follows [its temperature](/docs/integrations/cold-sweat), a graded Waterskin, and a Boiler that purifies water. 1.21.1 only. |
+| [Farmer's Delight](https://modrinth.com/mod/farmers-delight) | 1.21.1-1.3.4 | The same as on Fabric. 1.21.1 only. |
 | [Brewin' and Chewin'](https://modrinth.com/mod/brewin-and-chewin) | v4.5.0+1.21.1-neoforge | The same as on Fabric. 1.21.1 only. |
-| [Cold Sweat](https://modrinth.com/mod/cold-sweat) | 2.4.3.1 | Thirst that follows [its temperature](/docs/features/cold-sweat), a graded Waterskin, and a Boiler that purifies water. 1.21.1 only. |
-| [Cultural Delights](https://modrinth.com/mod/cultural-delights) | 0.18.1-1.21.1 | Thirst from its [drinks and watery foods](/docs/features/cultural-delights), and a Vat that brews nothing from sea water. 1.21.1 only. |
+| [Cultural Delights](https://modrinth.com/mod/cultural-delights) | 0.18.1-1.21.1 | Thirst from its [drinks and watery foods](/docs/integrations/farmers-delight/cultural-delights), and a Vat that brews nothing from sea water. 1.21.1 only. |
+| [Fruits Delight](https://modrinth.com/mod/fruits-delight) | 1.2.14 | Thirst from its [juices, teas and fruit](/docs/integrations/farmers-delight/fruits-delight). 1.21.1 only. |
 
 Other food mods usually work as they are. Drinks their mod marks as drinks restore thirst, and any
 item can be given a value in [Configuration](/docs/configuration).

@@ -18,7 +18,7 @@
 - Plain water cannot be drunk while the bar is full. Potions and food are not blocked.
 - Drinks from other mods restore thirst when their mod marks them as drinks, or when a mod or
   [data pack](/docs/developers/data-packs) gives them a value.
-- [Farmer's Delight](/docs/features/farmers-delight) has its own values.
+- [Farmer's Delight](/docs/integrations/farmers-delight/) has its own values.
 - Any item can be given a value in the [config](/docs/configuration#drinks-and-foods).
 
 With AppleSkin installed, tooltips show the values as droplets. Each droplet is two points: filled

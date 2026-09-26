@@ -182,6 +182,16 @@ val integrations: List<Integration> = listOf(
         mixinConfig = "thirstwastaken2.culturaldelights.mixins.json",
         neoForgeDependencies = listOf("culturaldelights"),
     ),
+    // NeoForge only: the mod has no Fabric build and nothing past 1.21.1. Its mixins name their targets
+    // by string, since one is in L2 Core, nested in its jar, so nothing compiles against it.
+    // See src/main/fruitsdelight/AGENTS.md.
+    Integration(
+        dir = "fruitsdelight",
+        depsKey = "deps.fruits_delight",
+        loaders = setOf(Loader.NEOFORGE),
+        mixinConfig = "thirstwastaken2.fruitsdelight.mixins.json",
+        neoForgeDependencies = listOf("fruitsdelight"),
+    ),
 )
 
 /**

@@ -204,7 +204,7 @@ first backpack from it ended up holding, and on 26.2 templates only load their i
 - `../../../CHANGELOG.md`, under `[Unreleased]`: the Drinking upgrade, the four upgrades that keep water's grade
   or restore thirst, smokers purifying water, and waterskins and bowls as fluid containers, with a note
   that it is every NeoForge version and no Fabric one.
-- A new page, `../../docs/features/sophisticated-backpacks.md`, in the Features sidebar, with the
+- A new page, `../../docs/integrations/sophisticated-backpacks.md`, in the Features sidebar, with the
   Drinking upgrade's tab (`sophisticated-drinking-upgrade.png`) and its recipe
   (`drinking-upgrade-recipe.png`). Only the basic recipe is shot; the page names the Advanced one's
   ingredients.

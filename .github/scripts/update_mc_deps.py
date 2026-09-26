@@ -149,6 +149,9 @@ MODRINTH_DEPS = [
     # uploads for different Minecraft versions put the version in the number in no fixed place.
     ModrinthDep("cultural_delights", "cultural-delights", by_id=True, mirrors=()),
     ModrinthDep("cooks_collection", "cooks-collection", by_id=True, mirrors=()),
+    # Fruits Delight, NeoForge 1.21.1 only and runClient only, pinned by id like the others printed on
+    # no page.
+    ModrinthDep("fruits_delight", "fruits-delight", by_id=True, mirrors=()),
 ]
 
 

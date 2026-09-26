@@ -123,18 +123,7 @@
   </tr>
   <tr>
     <td width="55%">
-      <b><a href="https://n1ght3r.github.io/ThirstWasTaken2/docs/features/farmers-delight">Farmer's Delight</a></b><br>
-      <i>Fabric: <a href="https://modrinth.com/mod/farmers-delight-refabricated">Farmer's Delight Refabricated</a><br>
-      NeoForge: <a href="https://modrinth.com/mod/farmers-delight">Farmer's Delight</a> on 1.21.1</i><br><br>
-      Soups, stews, and drinks restore thirst. The Cooking Pot purifies water to Pure grade. The Nourishment effect pauses thirst depletion.
-    </td>
-    <td width="45%">
-      <img alt="A Farmer's Delight Cooking Pot boiling water bottles to Pure" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/integrations/farmers-delight/farmers-delight-cooking-pot.png" width="100%">
-    </td>
-  </tr>
-  <tr>
-    <td width="55%">
-      <b><a href="https://n1ght3r.github.io/ThirstWasTaken2/docs/features/create">Create</a></b><br>
+      <b><a href="https://n1ght3r.github.io/ThirstWasTaken2/docs/integrations/create">Create</a></b><br>
       <i>Fabric: <a href="https://modrinth.com/mod/create-fly">Create Fly</a> on 26.1.2 and 26.2 (no 26.3 build)<br>
       NeoForge: <a href="https://modrinth.com/mod/create">Create</a> on 1.21.1</i><br><br>
       Adds a Sand Filter to purify dirty water by one grade. Water also keeps its purity grade through pipes, pumps, tanks, drains, and spouts.
@@ -155,7 +144,7 @@
   </tr>
   <tr>
     <td width="55%">
-      <b><a href="https://n1ght3r.github.io/ThirstWasTaken2/docs/features/supplementaries">Supplementaries</a></b><br>
+      <b><a href="https://n1ght3r.github.io/ThirstWasTaken2/docs/integrations/supplementaries">Supplementaries</a></b><br>
       <i>Fabric and NeoForge: <a href="https://modrinth.com/mod/supplementaries">Supplementaries</a> on 1.21.1</i><br><br>
       Water keeps its purity grade in Jars, Goblets and Faucets, and sea water stays sea water. A Jar or a Goblet of water can be drunk straight from the block. Faucets fill and empty hanging pots and grade the water they draw from a lake.
     </td>
@@ -165,7 +154,7 @@
   </tr>
   <tr>
     <td width="55%">
-      <b><a href="https://n1ght3r.github.io/ThirstWasTaken2/docs/features/kaleidoscope-cookery">Kaleidoscope Cookery</a></b><br>
+      <b><a href="https://n1ght3r.github.io/ThirstWasTaken2/docs/integrations/kaleidoscope-cookery">Kaleidoscope Cookery</a></b><br>
       <i>NeoForge: <a href="https://modrinth.com/mod/kaleidoscope-cookery">Kaleidoscope Cookery</a> on 1.21.1<br>
       Fabric: <a href="https://modrinth.com/mod/kaleidoscope-cookery-refabricated">Kaleidoscope Cookery Refabricated</a>, every version</i><br><br>
       Teas, milk tea and soups restore thirst. Water keeps its purity grade in the Stockpot and the Teapot, and the Teapot brews nothing from sea water.
@@ -176,17 +165,7 @@
   </tr>
   <tr>
     <td width="55%">
-      <b><a href="https://n1ght3r.github.io/ThirstWasTaken2/docs/features/brewin-and-chewin">Brewin' and Chewin'</a></b><br>
-      <i>Fabric and NeoForge: <a href="https://modrinth.com/mod/brewin-and-chewin">Brewin' and Chewin'</a> on 1.21.1</i><br><br>
-      Brews and soups restore thirst, less the stronger the drink. Water keeps its purity grade in the Keg, and nothing ferments from sea water.
-    </td>
-    <td width="45%">
-      <img alt="A Brewin' and Chewin' Keg beside barrels on a lakeshore, with Jade naming its water Dirty" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/integrations/brewin-and-chewin/brewin-keg.png" width="100%">
-    </td>
-  </tr>
-  <tr>
-    <td width="55%">
-      <b><a href="https://n1ght3r.github.io/ThirstWasTaken2/docs/features/cold-sweat">Cold Sweat</a></b><br>
+      <b><a href="https://n1ght3r.github.io/ThirstWasTaken2/docs/integrations/cold-sweat">Cold Sweat</a></b><br>
       <i>NeoForge: <a href="https://modrinth.com/mod/cold-sweat">Cold Sweat</a> on 1.21.1</i><br><br>
       Thirst follows the temperature Cold Sweat shows around you, hearths and shade included. Its Waterskin carries a purity grade and quenches thirst, and the Boiler purifies water.
     </td>
@@ -196,12 +175,43 @@
   </tr>
   <tr>
     <td width="55%">
-      <b><a href="https://n1ght3r.github.io/ThirstWasTaken2/docs/features/cultural-delights">Cultural Delights</a></b><br>
+      <b><a href="https://n1ght3r.github.io/ThirstWasTaken2/docs/integrations/farmers-delight/">Farmer's Delight</a></b><br>
+      <i>Fabric: <a href="https://modrinth.com/mod/farmers-delight-refabricated">Farmer's Delight Refabricated</a><br>
+      NeoForge: <a href="https://modrinth.com/mod/farmers-delight">Farmer's Delight</a> on 1.21.1</i><br><br>
+      Soups, stews, and drinks restore thirst. The Cooking Pot purifies water to Pure grade. The Nourishment effect pauses thirst depletion.
+    </td>
+    <td width="45%">
+      <img alt="A Farmer's Delight Cooking Pot boiling water bottles to Pure" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/integrations/farmers-delight/farmers-delight-cooking-pot.png" width="100%">
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
+      <b><a href="https://n1ght3r.github.io/ThirstWasTaken2/docs/integrations/farmers-delight/brewin-and-chewin">Brewin' and Chewin'</a></b><br>
+      <i>Fabric and NeoForge: <a href="https://modrinth.com/mod/brewin-and-chewin">Brewin' and Chewin'</a> on 1.21.1</i><br><br>
+      Brews and soups restore thirst, less the stronger the drink. Water keeps its purity grade in the Keg, and nothing ferments from sea water.
+    </td>
+    <td width="45%">
+      <img alt="A Brewin' and Chewin' Keg beside barrels on a lakeshore, with Jade naming its water Dirty" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/integrations/brewin-and-chewin/brewin-keg.png" width="100%">
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
+      <b><a href="https://n1ght3r.github.io/ThirstWasTaken2/docs/integrations/farmers-delight/cultural-delights">Cultural Delights</a></b><br>
       <i>NeoForge: <a href="https://modrinth.com/mod/cultural-delights">Cultural Delights</a> on 1.21.1</i><br><br>
       Its drinks, cucumbers and salads restore thirst, less the stronger the drink. The Vat brews nothing from sea water.
     </td>
     <td width="45%">
       <img alt="A Cultural Delights Vat between barrels and crates of cucumbers, corn and eggplants in a plains village" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/integrations/cultural-delights/cultural-vat.png" width="100%">
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
+      <b><a href="https://n1ght3r.github.io/ThirstWasTaken2/docs/integrations/farmers-delight/fruits-delight">Fruits Delight</a></b><br>
+      <i>NeoForge: <a href="https://modrinth.com/mod/fruits-delight">Fruits Delight</a> on 1.21.1</i><br><br>
+      Its juices, teas, jellos, popsicles and juicy fruits restore thirst. Sea water makes no juice.
+    </td>
+    <td width="45%">
+      <img alt="A fruiting orange tree from Fruits Delight beside a lemonade cauldron and crates of oranges, lemons and pears in a plains village" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/integrations/fruits-delight/fruits-orchard.png" width="100%">
     </td>
   </tr>
   <tr>

@@ -124,7 +124,7 @@ brews.
 
 ## 5. Docs (done)
 
-`CHANGELOG.md` (Unreleased), [the site's page](../../docs/features/cultural-delights.md) and its
+`CHANGELOG.md` (Unreleased), [the site's page](../../docs/integrations/farmers-delight/cultural-delights.md) and its
 sidebar entry, the NeoForge row in `docs/docs/installation.md`, and the Modrinth and CurseForge rows,
 with `docs/public/screenshots/integrations/cultural-delights/cultural-vat.png` staged in a plains
 village (see the `capture-screenshots` skill).

@@ -19,6 +19,9 @@ All notable changes to ThirstWasTaken2 are documented in this file.
     spirits restore none.
   - The Vat brews nothing while it holds a bucket of sea water. Drinks brewed from fresh water are safe
     whatever its grade.
+- Compatibility with Fruits Delight on NeoForge 1.21.1:
+  - Its juices, teas, jellos, popsicles and juicy fruits restore thirst.
+  - A bottle of sea water makes no juice, and a cauldron of sea water takes no lemon slice or jam.
 
 ### Changed
 

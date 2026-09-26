@@ -222,7 +222,7 @@ docs image `docs/public/screenshots/integrations/brewin-and-chewin/brewin-keg.pn
 
 ## 9. Docs (done)
 
-`CHANGELOG.md` (Unreleased), [the site's page](../../docs/features/brewin-and-chewin.md) and its sidebar
+`CHANGELOG.md` (Unreleased), [the site's page](../../docs/integrations/farmers-delight/brewin-and-chewin.md) and its sidebar
 entry, the Fabric and NeoForge rows in `docs/docs/installation.md`, and the Modrinth and CurseForge
 pages. The root `AGENTS.md` already had the row.
 

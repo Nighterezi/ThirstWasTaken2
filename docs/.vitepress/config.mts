@@ -23,15 +23,30 @@ const manualSidebar = [
     items: [
       { text: 'Thirst and Quenched', link: '/docs/features/thirst-and-quenched' },
       { text: 'Drinking', link: '/docs/features/drinking' },
-      { text: 'Water Purity', link: '/docs/features/water-purity' },
-      { text: "Farmer's Delight", link: '/docs/features/farmers-delight' },
-      { text: 'Create', link: '/docs/features/create' },
-      { text: 'Sophisticated Backpacks', link: '/docs/features/sophisticated-backpacks' },
-      { text: 'Supplementaries', link: '/docs/features/supplementaries' },
-      { text: 'Kaleidoscope Cookery', link: '/docs/features/kaleidoscope-cookery' },
-      { text: "Brewin' and Chewin'", link: '/docs/features/brewin-and-chewin' },
-      { text: 'Cold Sweat', link: '/docs/features/cold-sweat' },
-      { text: 'Cultural Delights', link: '/docs/features/cultural-delights' }
+      { text: 'Water Purity', link: '/docs/features/water-purity' }
+    ]
+  },
+  {
+    // Mods that change what this one does get a page each. AppleSkin and Jade only show what is
+    // already there, so they are covered on the feature pages instead.
+    text: 'Integrations',
+    items: [
+      { text: 'Create', link: '/docs/integrations/create' },
+      { text: 'Sophisticated Backpacks', link: '/docs/integrations/sophisticated-backpacks' },
+      { text: 'Supplementaries', link: '/docs/integrations/supplementaries' },
+      { text: 'Kaleidoscope Cookery', link: '/docs/integrations/kaleidoscope-cookery' },
+      { text: 'Cold Sweat', link: '/docs/integrations/cold-sweat' },
+      {
+        // Farmer's Delight and its addons, together.
+        text: "Farmer's Delight",
+        link: '/docs/integrations/farmers-delight/',
+        collapsed: false,
+        items: [
+          { text: "Brewin' and Chewin'", link: '/docs/integrations/farmers-delight/brewin-and-chewin' },
+          { text: 'Cultural Delights', link: '/docs/integrations/farmers-delight/cultural-delights' },
+          { text: 'Fruits Delight', link: '/docs/integrations/farmers-delight/fruits-delight' }
+        ]
+      }
     ]
   },
   {

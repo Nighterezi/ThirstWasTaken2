@@ -103,6 +103,11 @@ deps.cultural_delights = "jL5hP1qm"
 # Cook's Collection, which Cultural Delights 0.18 requires, only on the runClient classpath.
 # 0.6.1-1.21.1, the NeoForge upload.
 deps.cooks_collection = "z1YUDQXH"
+# Fruits Delight, whose juice and fruit cauldrons take no sea water. Only on the runClient classpath:
+# its mixins name their targets by string. NeoForge 1.21.1 is its only build.
+# See src/main/fruitsdelight/AGENTS.md.
+# 1.2.14, the NeoForge upload.
+deps.fruits_delight = "TWbuEFZt"
 
 ["1.21.11"]
 mod.mc_releases = ["1.21.11"]

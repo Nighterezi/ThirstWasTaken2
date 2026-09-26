@@ -32,7 +32,7 @@ Riding a horse, boat or minecart costs nothing. Creative and spectator players a
 | Cold or rainy biome | Drains slower |
 | The Nether, or any dimension where water evaporates | Drains much faster |
 
-- With [Cold Sweat](/docs/features/cold-sweat#climate) installed (NeoForge 1.21.1), hot and cold
+- With [Cold Sweat](/docs/integrations/cold-sweat#climate) installed (NeoForge 1.21.1), hot and cold
   follow the temperature Cold Sweat shows around the player instead of the biome's.
 - Fire Resistance halves the drain. Fire Protection slows it further, down to a quarter.
 - Nausea adds extra drain while it lasts.

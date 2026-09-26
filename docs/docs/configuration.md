@@ -37,7 +37,7 @@ Default `true`. Stops natural healing until thirst is nearly full. See
 
 Default `true`. With Cold Sweat installed, the drain follows the temperature Cold Sweat measures around
 the player, hearths and shade included, instead of the biome's. Does nothing without Cold Sweat. See
-[Cold Sweat](/docs/features/cold-sweat#climate).
+[Cold Sweat](/docs/integrations/cold-sweat#climate).
 
 ## Water
 

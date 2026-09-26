@@ -281,7 +281,7 @@ A CHANGELOG entry and the supported mods page, through the `write-docs` skill: w
 Sweat's waterskin is graded, drinking it quenches, the Boiler purifies, and thirst follows the
 temperature Cold Sweat shows. A line in [MANUAL-TESTING.md](../MANUAL-TESTING.md) for the HUD overlap.
 
-**Done**: the CHANGELOG, `docs/docs/features/cold-sweat.md`, the installation table, the Modrinth and
+**Done**: the CHANGELOG, `docs/docs/integrations/cold-sweat.md`, the installation table, the Modrinth and
 CurseForge pages, and the manual check.
 
 ## 10. Nothing crashes without the mod

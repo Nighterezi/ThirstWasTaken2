@@ -33,7 +33,7 @@ Mod and data pack authors can give their items a value themselves, with a
 
 ## Is Create required?
 
-No. With [Create](/docs/features/create) installed, the Sand Filter is added.
+No. With [Create](/docs/integrations/create) installed, the Sand Filter is added.
 
 ## Does it work on Peaceful?
 

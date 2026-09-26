@@ -2,7 +2,7 @@
 // and nothing from a sea water bucket, which stays in its slot. Runs on 1.21.1-neoforge, the one node
 // with the integration: the vat is Cultural Delights 0.18, which has no Fabric build. Run it unattended
 // in a singleplayer world:
-//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/integrations/cultural-delights.jsonl -Pquickplay=CulturalAgent
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/integrations/cultural-delights.jsonl -Pquickplay=CulturalAgent -PwithoutOptional=cold-sweat
 // CulturalAgent is a throwaway world, made fresh for each run by
 //     python tools/agent/new_world.py 1.21.1-neoforge CulturalAgent
 // Then check what it recorded:

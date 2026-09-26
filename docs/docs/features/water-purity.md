@@ -132,9 +132,9 @@ too, however full it is. Other ways to clean water:
 - A [Copper Canteen or Iron Flask](#boiling-in-a-canteen-or-flask) boils its water Pure over a
   campfire.
 - A [Hanging Pot](#copper-hanging-pot) boils a whole bucket Pure.
-- The Farmer's Delight [Cooking Pot](/docs/features/farmers-delight#boiling-water-in-the-cooking-pot)
+- The Farmer's Delight [Cooking Pot](/docs/integrations/farmers-delight/#boiling-water-in-the-cooking-pot)
   makes bottles and bowls Pure in one pass.
-- The Create [Sand Filter](/docs/features/create#sand-filter) cleans water pumped through it.
+- The Create [Sand Filter](/docs/integrations/create#sand-filter) cleans water pumped through it.
 
 ## Boiling in a canteen or flask
 

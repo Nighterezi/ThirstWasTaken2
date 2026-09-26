@@ -92,88 +92,77 @@ what is eaten, so only `pineapple_slice` is listed. Step 3 confirms each id reso
 
 | # | Item | Kind | Nodes | Status |
 |---|---|---|---|---|
-| 1 | The mod on the `runClient` classpath | build | `1.21.1-neoforge` | To do |
-| 2 | Thirst values for the drinks and foods | data | all (config) | To do |
-| 3 | What happens to a grade, per path | investigation | `1.21.1-neoforge` | To do |
-| 4 | A graded or salty water bottle in the juice recipes | decision | `1.21.1-neoforge` | Open |
-| 5 | Ask upstream to target `thirstwastaken2` | outreach | — | Optional |
-| 6 | Changelog and player docs | docs | — | To do |
-| 7 | Nothing crashes without the mod | test | `1.21.1-neoforge` | To do, only if step 4 adds code |
+| 1 | The mod on the `runClient` classpath | build | `1.21.1-neoforge` | **Done** (2026-09-26) |
+| 2 | Thirst values for the drinks and foods | data | all (config) | **Done** (2026-09-26), values as proposed |
+| 3 | What happens to a grade, per path | investigation | `1.21.1-neoforge` | **Done** (2026-09-26) |
+| 4 | A graded or salty water bottle in the juice recipes | decision | `1.21.1-neoforge` | **Decided** (2026-09-26): (b), sea water refused, and **done** |
+| 5 | Ask upstream to target `thirstwastaken2` | outreach | — | Not done: optional, and for the user to raise upstream |
+| 6 | Changelog and player docs | docs | — | **Done** (2026-09-26) |
+| 7 | Nothing crashes without the mod | test | `1.21.1-neoforge` | **Done** (2026-09-26), again after step 4 |
 
-## 1. The mod on the `runClient` classpath
+## 1. The mod on the `runClient` classpath (done)
 
-No integration row yet: nothing in steps 1 to 3 names a class of the mod. Like Farmer's Delight
-(`deps.farmersdelight`), only a key and a `runClientMod` line:
+`deps.fruits_delight = "TWbuEFZt"` in `[neoforge."1.21.1"]` and in `MODRINTH_DEPS`, and one
+`runClientMod` line in `build.neoforge.gradle.kts`, beside Farmer's Delight's. Step 4 added the row in
+the integration table; still no `compileOnly`, since its mixins name their targets by string.
+`-PwithoutOptional=fruits-delight` leaves it out.
 
-- `deps.fruits_delight = "TWbuEFZt"` in `[neoforge."1.21.1"]`, pinned by Modrinth version id, and
-  `ModrinthDep("fruits_delight", "fruits-delight", by_id=True, mirrors=())` in `MODRINTH_DEPS`.
-- In `build.neoforge.gradle.kts`, `findProperty("deps.fruits_delight")?.let { runClientMod(listOf(
-  "fruits-delight", "fruitsdelight"), "maven.modrinth:fruits-delight:$it") { isTransitive = false } }`.
-- If step 4 decides on a mixin, the row, the gate and `compileOnly` come then, as in
-  [Adding an integration](../../../AGENTS.md#adding-an-integration).
+## 2. Thirst values (done)
 
-**Check:** `./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/smoke/boot.jsonl` comes up with
-the mod, and with `-PwithoutOptional=fruits-delight` without it.
+`fruitsDelightDrinks` and `fruitsDelightFoods` in `ThirstConfig`, the table above, merged with
+`putMissing`. `fruitsDelightDrinksAreMergedIntoAnOlderConfig` checks the defaults, that jam and the dry
+foods are left out, and that a merge keeps a player's value. `runGametest` passes (183) on `1.21.1` and
+`1.21.1-neoforge`.
 
-## 2. Thirst values
+## 3. Investigation (done)
 
-`fruitsDelightDrinks` and `fruitsDelightFoods` in `ThirstConfig`, the table above, called from
-`defaultDrinks`, `defaultFoods` and `sanitize` with `putMissing`, and a Javadoc that says why they are
-listed (the upstream compat targets another mod id) and why the foods are scaled down from upstream.
+[tools/agent/integrations/fruits-delight.jsonl](../../../tools/agent/integrations/fruits-delight.jsonl),
+run on 2026-09-26 on `1.21.1-neoforge` with Cold Sweat left out, passes whole:
 
-**Check:** a unit or game test in the pattern of `brewinAndChewinDrinksAreMergedIntoAnOlderConfig`:
-the defaults list the juices, leave the jams out, and a merge into an older config does not overwrite
-a player's value. `runGametest` on one Fabric and one NeoForge node, since `ThirstConfig` is common.
-
-## 3. Investigation: what happens to a grade
-
-A throwaway agent script on `1.21.1-neoforge` with the mod, no code of ours. Record for each case what
-comes out, as Brewin' and Chewin' step 3 did:
-
-| Case | What to record |
+| Case | Found |
 |---|---|
-| Orange juice crafted from a Dirty water bottle, from a Pure one, from a sea water bottle | accepted or refused, and whether the crafting grid gives back a glass bottle |
-| Lemon slice on a full Dirty cauldron, a full sea water cauldron | lemonade cauldron or not |
-| Create mixer with Dirty and sea water piped in (kiwi juice, `JUICE` has no water; `lemon_juice` has) | juice or not |
-| Every id in step 2 | resolves; the log shows no "item does not exist" warning for them |
-| Drinking each group | the value is restored, the tooltip shows it |
+| Orange juice from a plain, a Dirty and a sea water bottle | **all three accepted**: l2core's `PotionIngredient` tests only `potion_contents`. No glass bottle comes back, as with vanilla's own water bottle recipes |
+| Lemon slice on a full plain, Dirty and sea water cauldron | **all three become a lemonade cauldron**; the block is replaced, so the grade goes |
+| Create mixing | not run: Create 6 tests a basin's fluid with NeoForge's `SizedFluidIngredient`, on the fluid alone, so every grade and sea water mix into juice |
+| Every id in step 2 | exists: `/give` takes each one |
+| Drinking from thirst 4, quenched 0 | Orange Juice to 12 and 12 (quenched capped at thirst), Apple Jello to 7 and 4, an Orange to 6 and 3; the tooltips show the droplets |
 
-## 4. Decision: graded and salty water in the juice recipes
+## 4. Decision (done)
 
-Options, once step 3 says what happens:
+First chosen (a), then changed on 2026-09-26 to **(b)**, so that the three Farmer's Delight addons agree:
+sea water makes no safe drink through Brewin' and Chewin's keg, Cultural Delights' vat, or Fruits
+Delight. Built as described in [src/main/fruitsdelight/AGENTS.md](../../../src/main/fruitsdelight/AGENTS.md):
 
-- **(a) Nothing.** A juice is its own item with its own value, and the bottle's grade is dropped,
-  which is what tea and fermented drinks already do (Brewin' and Chewin' decision 7). Sea water makes
-  lemon juice.
-- (b) As (a), but **refuse sea water**: a mixin on the recipe's ingredient test so a salty bottle
-  does not match `PotionIngredient.of(Potions.WATER)`, and nothing on the Create path.
-- (c) The juice remembers the grade and rolls sickness. Not recommended, for the same reasons as
-  Brewin' and Chewin' decision 7(b).
+- `WaterBottleIngredientMixin` on L2 Core's `PotionIngredient.test`: a salty bottle is not a water
+  bottle, which also reaches other L2 mods' water bottle recipes;
+- `FruitCauldronMixin` on `FDCauldronInteraction.perform`: a full cauldron of sea water takes no lemon
+  slice and no jam, since the jello at the end of that chain restores thirst.
 
-**Recommended: (a)**, unless step 3 finds that a stamped bottle is refused, in which case the fix is
-a mixin like `KegBottleMixin` that compares a stamped bottle unstamped, plus (b) in the same place.
-Either of those turns this into a real integration: a row in the integration table, a
-`FruitsDelightPresence` gate, a mixin plugin, and step 7.
+Create's mixer is not covered; see that file for why. Fresh water of any grade is unchanged.
+
+**Checked** by the agent script, whose sea water cases now expect a refusal: plain and Dirty bottles
+make juice and the sea water one does not; plain and Dirty cauldrons become lemonade cauldrons and the
+sea water one stays.
 
 ## 5. Optional: ask upstream to target `thirstwastaken2`
 
 Fruits Delight lists Thirst Was Taken as an optional dependency on Modrinth. A data pack file in its
 own jar (`data/fruitsdelight/thirstwastaken2/drinks/fruitsdelight.json`, see
 [data-packs.md](../../docs/developers/data-packs.md)) would give its values with no class reference
-either way. Our config still wins over it, so step 2 stays useful. Not needed for anything above.
+either way. Our config still wins over it. Not needed for anything above.
 
-## 6. Docs
+## 6. Docs (done)
 
-`CHANGELOG.md` (Unreleased), a short section or page on the site listing Fruits Delight as supported
-(values only on every node, NeoForge 1.21.1 in practice since that is the only build), and the
-installation page's NeoForge row. Follow the `write-docs` skill. The root `AGENTS.md` gets a row in the
-optional integrations table only if step 4 adds code; a values-only mod is covered by the "Drinks from
-other mods" row.
+`CHANGELOG.md` (Unreleased), [the site's page](../../docs/integrations/farmers-delight/fruits-delight.md) and its sidebar
+entry, the NeoForge row in `docs/docs/installation.md`, and the Modrinth and CurseForge rows with
+`docs/public/screenshots/integrations/fruits-delight/fruits-orchard.png`, staged in a plains village.
+Step 4 added the root `AGENTS.md` integration row.
 
-## 7. Optional seam
+## 7. Optional seam (done)
 
-Only if step 4 adds code: `checkOptionalSeam`, `checkLoaderSeam`, and
-`tools/agent/smoke/boot.jsonl` with `-PwithoutOptional=fruitsdelight` on `1.21.1-neoforge`.
+`checkOptionalSeam` and `checkLoaderSeam` pass on `1.21.1-neoforge`, finding the plugin and the gate
+loaded without the mod, and `tools/agent/smoke/boot.jsonl` with
+`-PwithoutOptional=fruits-delight,cold-sweat` comes up and stays up.
 
 ## Not planned
 

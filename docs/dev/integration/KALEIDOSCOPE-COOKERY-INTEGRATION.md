@@ -347,12 +347,12 @@ on NeoForge. It shows `Dirty` / `Sea water` under the stockpot and the teapot. L
 
 ## 7. Changelog and player docs
 
-**Done**: the CHANGELOG, `docs/docs/features/kaleidoscope-cookery.md`, both rows on the installation
+**Done**: the CHANGELOG, `docs/docs/integrations/kaleidoscope-cookery.md`, both rows on the installation
 page, and a card on the Modrinth and CurseForge pages. The Version Support table there is by Minecraft
 version, not by mod, so it got no row; the card says where each part works.
 
 A CHANGELOG entry, the compatible-mods list on the installation page, a
-`docs/docs/features/kaleidoscope-cookery.md` page (thirst value table, water keeps its grade in the
+`docs/docs/integrations/kaleidoscope-cookery.md` page (thirst value table, water keeps its grade in the
 stockpot and teapot, tea is safe, sea water is refused by the teapot), and the Modrinth and CurseForge
 pages. Use the `write-docs` skill. State clearly: **on Fabric, install Refabricated; the official
 Fabric 1.0.1 only gets the drink values.** Add a row to the version support matrix in
