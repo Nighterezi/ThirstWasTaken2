@@ -1,5 +1,6 @@
 package com.thirstwastaken2.item;
 
+import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.platform.DrinkItem;
 import com.thirstwastaken2.platform.Vanilla;
 import com.thirstwastaken2.purity.ThirstComponents;
@@ -28,6 +29,7 @@ import net.minecraft.world.level.block.CampfireBlock;
 
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.function.IntSupplier;
 
 /**
  * A carried, reusable water container holding several drinks of one mixed purity: the leather
@@ -61,21 +63,26 @@ public final class WaterskinItem extends DrinkItem {
      */
     private record Boil(ItemStack stack, int servings, WaterQuality quality, int ticks) { }
 
-    private final int capacity;
-    private final int boilTicksPerServing;
+    private final IntSupplier capacity;
+    private final IntSupplier boilTicksPerServing;
     private final boolean spriteShowsServings;
 
     /** The leather waterskin: three servings, no boiling, a sprite per fill level. */
     public WaterskinItem(Properties properties) {
-        this(properties, CAPACITY, 0, true);
+        this(properties, () -> CAPACITY, () -> 0, true);
     }
 
     /**
+     * Capacity and boil time are asked for on each use rather than fixed, so the canteen and the flask
+     * follow the config. A stack holding more than a lowered capacity keeps its water and takes no more.
+     *
+     * @param capacity            servings it holds when full, at most {@link #MAX_CAPACITY}
      * @param boilTicksPerServing ticks each serving takes to boil over a campfire, or 0 when it cannot
      * @param spriteShowsServings whether the item model dispatches on the servings left, as the
      *                            waterskin's does; a rigid vessel keeps one sprite and relies on its bar
      */
-    public WaterskinItem(Properties properties, int capacity, int boilTicksPerServing, boolean spriteShowsServings) {
+    public WaterskinItem(Properties properties, IntSupplier capacity, IntSupplier boilTicksPerServing,
+                         boolean spriteShowsServings) {
         super(properties, null);
         this.capacity = capacity;
         this.boilTicksPerServing = boilTicksPerServing;
@@ -89,12 +96,19 @@ public final class WaterskinItem extends DrinkItem {
 
     /** How many servings {@code stack} holds when full, or 0 when it is not a carried container. */
     public static int capacity(ItemStack stack) {
-        return stack.getItem() instanceof WaterskinItem vessel ? vessel.capacity : 0;
+        return stack.getItem() instanceof WaterskinItem vessel ? vessel.capacity.getAsInt() : 0;
     }
 
-    /** Ticks each serving in {@code stack} takes to boil over a campfire, or 0 when it cannot boil. */
+    /**
+     * Ticks each serving in {@code stack} takes to boil over a campfire, or 0 when it cannot boil, which
+     * is every vessel while the config switches boiling in hand off.
+     */
     public static int boilTicksPerServing(ItemStack stack) {
-        return stack.getItem() instanceof WaterskinItem vessel ? vessel.boilTicksPerServing : 0;
+        return stack.getItem() instanceof WaterskinItem vessel ? vessel.boilTicks() : 0;
+    }
+
+    private int boilTicks() {
+        return ThirstConfig.get().enableBoilingInHand ? boilTicksPerServing.getAsInt() : 0;
     }
 
     public static int servings(ItemStack stack) {
@@ -155,7 +169,8 @@ public final class WaterskinItem extends DrinkItem {
         ItemStack stack = context.getItemInHand();
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
-        if (boilTicksPerServing == 0 || servings(stack) == 0
+        int boilTicks = boilTicks();
+        if (boilTicks == 0 || servings(stack) == 0
                 || !CampfireBlock.isLitCampfire(level.getBlockState(pos))) {
             return InteractionResult.PASS;
         }
@@ -168,12 +183,13 @@ public final class WaterskinItem extends DrinkItem {
             Vanilla.sendOverlayMessage(player, Component.translatable("thirstwastaken2.message.cannot_boil_salt"));
             return InteractionResult.CONSUME;
         }
-        if (fresh.purity() < WaterPurity.MAX) boilStep(player, stack, fresh, (ServerLevel) level, pos);
+        if (fresh.purity() < WaterPurity.MAX) boilStep(player, stack, fresh, boilTicks, (ServerLevel) level, pos);
         return InteractionResult.CONSUME;
     }
 
     /** One step of boiling, finishing the whole vessel Purified once every serving has had its time. */
-    private void boilStep(Player player, ItemStack stack, WaterQuality quality, ServerLevel level, BlockPos pos) {
+    private static void boilStep(Player player, ItemStack stack, WaterQuality quality, int boilTicksPerServing,
+                                 ServerLevel level, BlockPos pos) {
         int servings = servings(stack);
         Boil previous = BOILING.get(player);
         boolean resumes = previous != null && previous.stack() == stack
@@ -255,7 +271,7 @@ public final class WaterskinItem extends DrinkItem {
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        return Math.round(13.0F * servings(stack) / capacity);
+        return Math.min(13, Math.round(13.0F * servings(stack) / capacity.getAsInt()));
     }
 
     @Override

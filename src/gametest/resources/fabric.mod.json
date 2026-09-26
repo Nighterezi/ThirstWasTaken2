@@ -23,6 +23,7 @@
       "com.thirstwastaken2.gametest.EnvironmentGameTest",
       "com.thirstwastaken2.gametest.CreativeTabGameTest",
       "com.thirstwastaken2.gametest.ModItemsGameTest",
+      "com.thirstwastaken2.gametest.BalanceConfigGameTest",
       "com.thirstwastaken2.gametest.AdvancementGameTest",
       "com.thirstwastaken2.gametest.ThirstDataGameTest",
       "com.thirstwastaken2.gametest.ThirstTickGameTest",

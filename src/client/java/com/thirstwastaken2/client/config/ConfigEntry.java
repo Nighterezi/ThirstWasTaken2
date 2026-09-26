@@ -96,6 +96,32 @@ abstract class ConfigEntry<T> {
         };
     }
 
+    /** A whole number between {@code min} and {@code max}, shown through {@code label}. */
+    static ConfigEntry<Integer> number(String key, int min, int max, IntFunction<Component> label,
+                                       Function<ThirstConfig, Integer> getter, BiConsumer<ThirstConfig, Integer> setter) {
+        return new ConfigEntry<>(key, getter, setter) {
+            @Override
+            AbstractWidget control(int width) {
+                return new IntSlider(width, min, max, value(), this::set, label);
+            }
+        };
+    }
+
+    /** A number of seconds, for {@link #number}. */
+    static Component seconds(int seconds) {
+        return Component.translatable(PREFIX + "unit.seconds", seconds);
+    }
+
+    /** A number of drinks a container holds, for {@link #number}. */
+    static Component servings(int servings) {
+        return Component.translatable(PREFIX + "unit.servings", servings);
+    }
+
+    /** A whole percentage, for {@link #number}. */
+    static Component wholePercent(int percent) {
+        return Component.literal(percent + "%");
+    }
+
     /** A fresh control showing the current value. The screen builds one each time it lays a page out. */
     abstract AbstractWidget control(int width);
 

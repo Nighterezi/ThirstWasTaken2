@@ -67,7 +67,10 @@ item is not being used. `WaterskinItem.useOn` takes each repeat as one step of `
   whether the sprite follows the fill. Callers ask `WaterskinItem.is(stack)`, `capacity(stack)` and
   `hasRoom(stack)`, never `stack.is(ThirstItems.WATERSKIN)`. `CAPACITY` stays the waterskin's own 3;
   `MAX_CAPACITY` bounds the servings component; a bucket is always `BUCKET_SERVINGS`, three.
-- `item/ThirstItems`: the two registrations and `COPPER_CANTEEN_BOIL_TICKS` / `IRON_FLASK_BOIL_TICKS`.
+- `item/ThirstItems`: the two registrations, which read capacity and boil time from the config
+  (`copperCanteenCapacity`, `ironFlaskCapacity`, `copperCanteenBoilSeconds`, `ironFlaskBoilSeconds`,
+  and `enableBoilingInHand`). Capacity goes up to `MAX_CAPACITY` and no further, because the flask's
+  furnace recipes are generated one per fill level up to it.
 - `purity/ThirstComponents`: `water_servings` widened to `0..6`, which keeps every saved stack valid.
 - Every waterskin call site switched to the helpers: `WaterContainers`, `WaterInteractions`,
   `WaterPurity`, `HangingPotInteractions`, `ThirstTooltip`, `ThirstApi.thirstValues`, and the three

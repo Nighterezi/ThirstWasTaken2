@@ -33,6 +33,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.function.IntConsumer;
+import java.util.function.IntSupplier;
 
 /**
  * A hanging pot, copper or iron, adapted from Dehydration's campfire cauldron (Globox1997, GPL-3.0).
@@ -79,10 +80,10 @@ public final class HangingPotBlock extends SupportedBlock {
     private static final float RAIN_FILL_CHANCE = 0.05F;
     private static final int BLOCK_UPDATE_FLAGS = 3;
 
-    private final int secondsPerServing;
+    private final IntSupplier secondsPerServing;
 
-    /** A pot whose servings each take {@code secondsPerServing} to boil. */
-    public HangingPotBlock(Properties properties, int secondsPerServing) {
+    /** A pot whose servings each take {@code secondsPerServing}, read from the config at each step, to boil. */
+    public HangingPotBlock(Properties properties, IntSupplier secondsPerServing) {
         super(properties, copy -> new HangingPotBlock(copy, secondsPerServing));
         this.secondsPerServing = secondsPerServing;
         registerDefaultState(stateDefinition.any()
@@ -165,7 +166,7 @@ public final class HangingPotBlock extends SupportedBlock {
 
     /** Seconds each serving in this pot takes to boil, from the config. */
     public int secondsPerServing() {
-        return secondsPerServing;
+        return secondsPerServing.getAsInt();
     }
 
     private int stepTicks() {
@@ -225,10 +226,11 @@ public final class HangingPotBlock extends SupportedBlock {
     public void handlePrecipitation(BlockState state, Level level, BlockPos pos, Biome.Precipitation precipitation) {
         int servings = state.getValue(LEVEL);
         if (precipitation != Biome.Precipitation.RAIN || servings >= CAPACITY
+                || !ThirstConfig.get().enableRainCollection
                 || level.getRandom().nextFloat() >= RAIN_FILL_CHANCE) {
             return;
         }
-        WaterQuality rain = WaterQuality.fresh(WaterPurity.RAINWATER_PURITY);
+        WaterQuality rain = WaterQuality.fresh(WaterPurity.rainwaterPurity());
         level.setBlockAndUpdate(pos, withPoured(state, 1, rain));
         level.gameEvent(null, GameEvent.BLOCK_CHANGE, pos);
     }

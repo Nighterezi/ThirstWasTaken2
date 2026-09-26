@@ -87,8 +87,9 @@ checks all three implementations against one set of assertions, in millibuckets.
   shares.
 - **Water that arrives on its own is graded where it lands.** Rain and pointed dripstones fill
   cauldrons with nobody pouring anything in, so `filledByRain` and `filledByDripstone` stamp
-  `WaterPurity.RAINWATER_PURITY` (Clean) and `DRIPSTONE_PURITY` (Pure) rather than letting the cauldron fall through
-  to `defaultPurity`. Both keep the worse of what the cauldron held and what fell in, like pouring,
+  `WaterPurity.rainwaterPurity()` (Clean by default) and `dripstonePurity()` (Pure), both from the
+  config, rather than letting the cauldron fall through to `defaultPurity`. With
+  `enableRainCollection` off, `filledByRain` does nothing and pots ignore rain. Both keep the worse of what the cauldron held and what fell in, like pouring,
   and both check that the blockstate actually changed: the vanilla hooks run whether or not a layer
   was added.
 - **Sampling is interaction-only and server-only.** The fixed 5x3x5 block inspection must never move
@@ -120,8 +121,11 @@ checks all three implementations against one set of assertions, in millibuckets.
   adds its effects, the same one extends them up to twice their time and turns Upset Stomach I into
   II, a milder one does nothing. The `classic` preset keeps the roll from before, Nausea and Poison by
   grade alone. The original also applied Hunger; this mod never has. Salt water never reaches the
-  roll: it spends exhaustion, applies Nausea and Parched II (without particles), and returns false.
-  `quenched` cuts what a drink of water quenches by `QUENCHED_PERCENT` (Dirty none, Murky half),
+  roll: it spends exhaustion, applies Nausea and Parched II (without particles) for the config's
+  `seaWaterNauseaSeconds` and `seaWaterParchedSeconds`, and returns false. With `enableSeaWater` off,
+  `sampleAt` grades ocean and beach water like any other.
+  `quenched` cuts what a drink of water quenches by the config's `quenchedPercent` (Dirty none, Murky
+  half by default),
   and Upset Stomach cuts it again in `ThirstManager.drinkThroughEvent`; tooltips show the grade's cut.
   The design is `../../../../../../docs/dev/mechanics/WATER-SICKNESS.md`, and where its code goes
   `../../../../../../docs/dev/mechanics/WATER-SICKNESS-IMPLEMENTATION.md`.

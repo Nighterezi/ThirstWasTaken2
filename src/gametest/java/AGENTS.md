@@ -54,12 +54,12 @@ Fabric's empty structure as its template, and `stonecutter.gradle.kts` rewrites 
 the annotation, so no test file changes for it. Write `@GameTest` with no arguments, or that
 replacement stops matching.
 
-The same 187 mod tests run on every node. Runners report one or two more because they also include
+The same 193 mod tests run on every node. Runners report one or two more because they also include
 vanilla smoke tests such as `minecraft:always_pass`; those are not the mod's.
 
 ## The NeoForge harness
 
-The `-neoforge` nodes run the same 187 test methods, with no test body changed and no NeoForge-only
+The `-neoforge` nodes run the same 193 test methods, with no test body changed and no NeoForge-only
 branch in any of them. What stands in for Fabric API lives in `src/gametest/neoforge`:
 
 | | Fabric API | NeoForge node |

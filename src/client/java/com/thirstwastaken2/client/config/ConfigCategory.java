@@ -6,6 +6,7 @@ import com.thirstwastaken2.compat.AppleSkin;
 import com.thirstwastaken2.config.QuenchedOverlay;
 import com.thirstwastaken2.config.SicknessPreset;
 import com.thirstwastaken2.config.ThirstConfig;
+import com.thirstwastaken2.item.WaterskinItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
@@ -37,7 +38,23 @@ enum ConfigCategory {
             ConfigEntry.grade("default_purity",
                     config -> config.defaultPurity, (config, value) -> config.defaultPurity = value),
             ConfigEntry.toggle("can_drink_by_hand",
-                    config -> config.canDrinkByHand, (config, value) -> config.canDrinkByHand = value))),
+                    config -> config.canDrinkByHand, (config, value) -> config.canDrinkByHand = value),
+            quenchedPercent("quenched_percent_dirty", 0),
+            quenchedPercent("quenched_percent_murky", 1),
+            quenchedPercent("quenched_percent_clean", 2),
+            quenchedPercent("quenched_percent_pure", 3),
+            ConfigEntry.toggle("enable_sea_water",
+                    config -> config.enableSeaWater, (config, value) -> config.enableSeaWater = value),
+            ConfigEntry.number("sea_water_nausea_seconds", 0, ThirstConfig.MAX_EFFECT_SECONDS, ConfigEntry::seconds,
+                    config -> config.seaWaterNauseaSeconds, (config, value) -> config.seaWaterNauseaSeconds = value),
+            ConfigEntry.number("sea_water_parched_seconds", 0, ThirstConfig.MAX_EFFECT_SECONDS, ConfigEntry::seconds,
+                    config -> config.seaWaterParchedSeconds, (config, value) -> config.seaWaterParchedSeconds = value),
+            ConfigEntry.toggle("enable_rain_collection",
+                    config -> config.enableRainCollection, (config, value) -> config.enableRainCollection = value),
+            ConfigEntry.grade("rainwater_purity",
+                    config -> config.rainwaterPurity, (config, value) -> config.rainwaterPurity = value),
+            ConfigEntry.grade("dripstone_purity",
+                    config -> config.dripstonePurity, (config, value) -> config.dripstonePurity = value))),
 
     APPLESKIN("appleskin", Identifier.withDefaultNamespace("textures/item/apple.png"), List.of(
             ConfigEntry.choice("appleskin_quenched_overlay", QuenchedOverlay.values(),
@@ -86,7 +103,25 @@ enum ConfigCategory {
             // Recipes are only read as data loads, so a switch here does nothing until the next load.
             rows.add(ConfigRow.note(Component.translatable("thirstwastaken2.config.mod_items_reload")));
         }
-    };
+    },
+
+    CONTAINERS("containers", ThirstWasTaken2.id("textures/item/iron_flask.png"), List.of(
+            ConfigEntry.number("copper_canteen_capacity", 1, WaterskinItem.MAX_CAPACITY, ConfigEntry::servings,
+                    config -> config.copperCanteenCapacity, (config, value) -> config.copperCanteenCapacity = value),
+            ConfigEntry.number("iron_flask_capacity", 1, WaterskinItem.MAX_CAPACITY, ConfigEntry::servings,
+                    config -> config.ironFlaskCapacity, (config, value) -> config.ironFlaskCapacity = value),
+            ConfigEntry.toggle("enable_boiling_in_hand",
+                    config -> config.enableBoilingInHand, (config, value) -> config.enableBoilingInHand = value),
+            ConfigEntry.number("copper_canteen_boil_seconds", 1, ThirstConfig.MAX_BOIL_SECONDS, ConfigEntry::seconds,
+                    config -> config.copperCanteenBoilSeconds, (config, value) -> config.copperCanteenBoilSeconds = value),
+            ConfigEntry.number("iron_flask_boil_seconds", 1, ThirstConfig.MAX_BOIL_SECONDS, ConfigEntry::seconds,
+                    config -> config.ironFlaskBoilSeconds, (config, value) -> config.ironFlaskBoilSeconds = value),
+            ConfigEntry.number("copper_hanging_pot_boil_seconds", 1, ThirstConfig.MAX_BOIL_SECONDS, ConfigEntry::seconds,
+                    config -> config.copperHangingPotBoilSeconds,
+                    (config, value) -> config.copperHangingPotBoilSeconds = value),
+            ConfigEntry.number("iron_hanging_pot_boil_seconds", 1, ThirstConfig.MAX_BOIL_SECONDS, ConfigEntry::seconds,
+                    config -> config.ironHangingPotBoilSeconds,
+                    (config, value) -> config.ironHangingPotBoilSeconds = value)));
 
     private final String key;
     private final Identifier icon;
@@ -96,6 +131,12 @@ enum ConfigCategory {
         this.key = key;
         this.icon = icon;
         this.entries = entries;
+    }
+
+    /** One grade's share of a drink's quenched. The value is an element of an array, so it is set in place. */
+    private static ConfigEntry<Integer> quenchedPercent(String key, int grade) {
+        return ConfigEntry.number(key, 0, 100, ConfigEntry::wholePercent,
+                config -> config.quenchedPercent[grade], (config, value) -> config.quenchedPercent[grade] = value);
     }
 
     Component title() {

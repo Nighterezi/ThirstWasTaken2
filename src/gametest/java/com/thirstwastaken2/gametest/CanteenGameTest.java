@@ -59,7 +59,7 @@ public final class CanteenGameTest {
     public void aCanteenBoilsPureOverALitCampfire(GameTestHelper helper) {
         ServerPlayer player = playerAtCampfire(helper, Blocks.CAMPFIRE.defaultBlockState(),
                 filled(ThirstItems.COPPER_CANTEEN, DIRTY, 2));
-        int steps = 2 * ThirstItems.COPPER_CANTEEN_BOIL_TICKS / WaterskinItem.BOIL_STEP_TICKS;
+        int steps = 2 * canteenBoilTicks() / WaterskinItem.BOIL_STEP_TICKS;
 
         use(helper, player, steps - 1);
         TestFixtures.check(helper, WaterPurity.quality(held(player)).equals(DIRTY),
@@ -74,11 +74,11 @@ public final class CanteenGameTest {
 
     @GameTest
     public void copperBoilsFasterThanIron(GameTestHelper helper) {
-        TestFixtures.check(helper, ThirstItems.COPPER_CANTEEN_BOIL_TICKS < ThirstItems.IRON_FLASK_BOIL_TICKS,
+        TestFixtures.check(helper, canteenBoilTicks() < flaskBoilTicks(),
                 "copper carries heat better, so a canteen serving should boil sooner than a flask one");
         ServerPlayer player = playerAtCampfire(helper, Blocks.SOUL_CAMPFIRE.defaultBlockState(),
                 filled(ThirstItems.IRON_FLASK, DIRTY, 1));
-        use(helper, player, ThirstItems.IRON_FLASK_BOIL_TICKS / WaterskinItem.BOIL_STEP_TICKS);
+        use(helper, player, flaskBoilTicks() / WaterskinItem.BOIL_STEP_TICKS);
         TestFixtures.check(helper, WaterPurity.quality(held(player)).equals(PURE),
                 "a flask should boil over a soul campfire too, got " + WaterPurity.quality(held(player)));
         helper.succeed();
@@ -105,12 +105,12 @@ public final class CanteenGameTest {
     public void saltEmptyAndUnlitDoNotBoil(GameTestHelper helper) {
         ServerPlayer salty = playerAtCampfire(helper, Blocks.CAMPFIRE.defaultBlockState(),
                 filled(ThirstItems.COPPER_CANTEEN, WaterQuality.SALT, 4));
-        use(helper, salty, 4 * ThirstItems.COPPER_CANTEEN_BOIL_TICKS / WaterskinItem.BOIL_STEP_TICKS);
+        use(helper, salty, 4 * canteenBoilTicks() / WaterskinItem.BOIL_STEP_TICKS);
         TestFixtures.check(helper, WaterPurity.isSalty(held(salty)), "boiling must not take the salt out");
 
         ServerPlayer unlit = playerAtCampfire(helper, Blocks.CAMPFIRE.defaultBlockState().setValue(CampfireBlock.LIT, false),
                 filled(ThirstItems.COPPER_CANTEEN, DIRTY, 1));
-        use(helper, unlit, ThirstItems.COPPER_CANTEEN_BOIL_TICKS / WaterskinItem.BOIL_STEP_TICKS);
+        use(helper, unlit, canteenBoilTicks() / WaterskinItem.BOIL_STEP_TICKS);
         TestFixtures.check(helper, WaterPurity.quality(held(unlit)).equals(DIRTY),
                 "an unlit campfire should not boil anything, got " + WaterPurity.quality(held(unlit)));
         TestFixtures.check(helper, WaterskinItem.boilProgress(unlit, held(unlit)) == 0,
@@ -118,7 +118,7 @@ public final class CanteenGameTest {
 
         ServerPlayer skin = playerAtCampfire(helper, Blocks.CAMPFIRE.defaultBlockState(),
                 filled(ThirstItems.WATERSKIN, DIRTY, 3));
-        use(helper, skin, 3 * ThirstItems.IRON_FLASK_BOIL_TICKS / WaterskinItem.BOIL_STEP_TICKS);
+        use(helper, skin, 3 * flaskBoilTicks() / WaterskinItem.BOIL_STEP_TICKS);
         TestFixtures.check(helper, WaterPurity.quality(held(skin)).equals(DIRTY),
                 "a leather waterskin cannot go on the fire, got " + WaterPurity.quality(held(skin)));
         helper.succeed();
@@ -202,5 +202,15 @@ public final class CanteenGameTest {
         for (int i = 0; i < times; i++) {
             player.gameMode.useItemOn(player, helper.getLevel(), held(player), InteractionHand.MAIN_HAND, hit);
         }
+    }
+
+    /** Ticks a serving takes to boil in the copper canteen, from the config. */
+    private static int canteenBoilTicks() {
+        return WaterskinItem.boilTicksPerServing(new ItemStack(ThirstItems.COPPER_CANTEEN));
+    }
+
+    /** Ticks a serving takes to boil in the iron flask, from the config. */
+    private static int flaskBoilTicks() {
+        return WaterskinItem.boilTicksPerServing(new ItemStack(ThirstItems.IRON_FLASK));
     }
 }

@@ -57,28 +57,12 @@ public final class WaterPurity {
     private static final int DEEP_AQUIFER_Y = 32;
     private static final int SALTY_EXHAUSTION = 8;
     /**
-     * How long, and how hard, a drink of sea water leaves the player Parched: II, like vanilla's
-     * pufferfish gives Hunger III. It is given without particles: a dry mouth is felt, not seen, and
-     * the icon and the sandy thirst bar already show it.
+     * How hard a drink of sea water leaves the player Parched: II, like vanilla's pufferfish gives
+     * Hunger III. How long is {@code seaWaterParchedSeconds}, 30 by default. It is given without
+     * particles: a dry mouth is felt, not seen, and the icon and the sandy thirst bar already show it.
+     * Nausea lasts {@code seaWaterNauseaSeconds}, 8 by default: the original's 5 barely warped the
+     * screen, because vanilla fades Nausea in over 150 ticks and starts fading it out 60 before it ends.
      */
-    private static final int PARCHED_TICKS = 20 * 30;
-    /**
-     * Nausea from sea water: 8 seconds. The original's 5 barely warped the screen, because vanilla fades
-     * Nausea in over 150 ticks and starts fading it out 60 ticks before it ends.
-     */
-    private static final int SALT_NAUSEA_TICKS = 20 * 8;
-    /**
-     * Percent of a drink's quenched that water of each grade gives, Dirty first. Bad water fills the
-     * bar but not for long, the way rotten flesh gives almost no saturation.
-     */
-    private static final int[] QUENCHED_PERCENT = {0, 50, 100, 100};
-    /**
-     * The grade rain leaves in a cauldron or a hanging pot: Clean. Chosen rather than left to
-     * {@code defaultPurity}, so collecting rain is a decision with a known outcome.
-     */
-    public static final int RAINWATER_PURITY = 2;
-    /** The grade a pointed dripstone leaves in a cauldron, having filtered the water: Pure. */
-    public static final int DRIPSTONE_PURITY = 3;
     private static final int SALT_PARCHED_LEVEL = 1;
 
     /** Bounds of the contamination score a sample is graded from. It is never stored on an item. */
@@ -210,7 +194,9 @@ public final class WaterPurity {
         var biome = level.getBiome(pos);
         // The sea is not a grade of fresh water, so it never reaches the scoring below. This also
         // spares the neighbourhood scan on every coastline.
-        if (biome.is(BiomeTags.IS_OCEAN) || biome.is(BiomeTags.IS_BEACH)) return WaterQuality.SALT;
+        if (config.enableSeaWater && (biome.is(BiomeTags.IS_OCEAN) || biome.is(BiomeTags.IS_BEACH))) {
+            return WaterQuality.SALT;
+        }
 
         int score;
         if (biome.is(STAGNANT_WATER)) score = 85;
@@ -235,12 +221,17 @@ public final class WaterPurity {
         switch (quality(stack)) {
             case WaterQuality.Salt ignored -> {
                 ThirstManager.addExhaustion(player, SALTY_EXHAUSTION);
-                player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, SALT_NAUSEA_TICKS));
+                ThirstConfig config = ThirstConfig.get();
+                if (config.seaWaterNauseaSeconds > 0) {
+                    player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, config.seaWaterNauseaSeconds * 20));
+                }
                 // Not in the original. Salt makes you thirstier at once: the body spends more water
                 // getting rid of it than the drink brought in. Bad fresh water dries you out only
                 // later, once it makes you ill, so it does not make you Parched.
-                player.addEffect(new MobEffectInstance(ThirstEffects.PARCHED, PARCHED_TICKS, SALT_PARCHED_LEVEL,
-                        false, false, true));
+                if (config.seaWaterParchedSeconds > 0) {
+                    player.addEffect(new MobEffectInstance(ThirstEffects.PARCHED, config.seaWaterParchedSeconds * 20,
+                            SALT_PARCHED_LEVEL, false, false, true));
+                }
                 return false;
             }
             case WaterQuality.Fresh fresh -> {
@@ -253,12 +244,27 @@ public final class WaterPurity {
     }
 
     /**
-     * The quenched a drink of {@code quality} gives out of {@code base}, by {@link #QUENCHED_PERCENT},
-     * rounded down. Salt water quenches nothing anyway and is left alone.
+     * The quenched a drink of {@code quality} gives out of {@code base}, by the config's
+     * {@code quenchedPercent} for its grade, rounded down: by default Dirty none and Murky half, so bad
+     * water fills the bar but not for long, the way rotten flesh gives almost no saturation. Salt water
+     * quenches nothing anyway and is left alone.
      */
     public static int quenched(WaterQuality quality, int base) {
         if (!(quality instanceof WaterQuality.Fresh fresh)) return base;
-        return base * QUENCHED_PERCENT[fresh.purity()] / 100;
+        return base * ThirstConfig.get().quenchedPercent[fresh.purity()] / 100;
+    }
+
+    /**
+     * The grade rain leaves in a cauldron or a hanging pot, Clean by default. Chosen rather than left to
+     * {@code defaultPurity}, so collecting rain is a decision with a known outcome.
+     */
+    public static int rainwaterPurity() {
+        return ThirstConfig.get().rainwaterPurity;
+    }
+
+    /** The grade a pointed dripstone leaves in a cauldron, having filtered the water: Pure by default. */
+    public static int dripstonePurity() {
+        return ThirstConfig.get().dripstonePurity;
     }
 
     /** @return a fresh copy of the grade line, see {@link TooltipLines}. */

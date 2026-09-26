@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.thirstwastaken2.ThirstWasTaken2;
 import com.thirstwastaken2.data.ThirstData;
+import com.thirstwastaken2.item.WaterskinItem;
 import com.thirstwastaken2.platform.Loader;
 
 import java.io.IOException;
@@ -28,6 +29,10 @@ public final class ThirstConfig {
     private static final Path PATH = Loader.configDir().resolve("thirstwastaken2.json");
     private static volatile ThirstConfig INSTANCE;
     private static volatile int generation;
+    /** The longest sea water's Nausea or Parched may be set to last, and the config screen's slider end. */
+    public static final int MAX_EFFECT_SECONDS = 300;
+    /** The longest a serving may be set to take to boil, in a pot or in hand. */
+    public static final int MAX_BOIL_SECONDS = 60;
 
     // ---- thirst depletion -------------------------------------------------
     public double thirstDepletionModifier = 1.2;
@@ -47,6 +52,31 @@ public final class ThirstConfig {
 
     // ---- water purity -----------------------------------------------------
     public int defaultPurity = 2;
+
+    // ---- water balance ----------------------------------------------------
+    // The numbers WaterPurity used to hold as constants. Each is read as a drink or a fill happens, never
+    // cached, so a change applies at once. See docs/dev/MODPACK-CONFIG.md, step 3.
+    /** Percent of a drink's quenched that water of each grade gives, Dirty first. */
+    public int[] quenchedPercent = {0, 50, 100, 100};
+    /** Off, ocean and beach water is graded like any other water instead of being sea water. */
+    public boolean enableSeaWater = true;
+    public int seaWaterNauseaSeconds = 8;
+    public int seaWaterParchedSeconds = 30;
+    /** Off, rain fills no hanging pot, and rain in a cauldron is left ungraded, as vanilla leaves it. */
+    public boolean enableRainCollection = true;
+    public int rainwaterPurity = 2;
+    public int dripstonePurity = 3;
+
+    // ---- containers -------------------------------------------------------
+    /** Off, the copper canteen and the iron flask no longer boil their water over a campfire. */
+    public boolean enableBoilingInHand = true;
+    /** 1 to {@code WaterskinItem.MAX_CAPACITY}, which bounds the saved servings and the flask's furnace recipes. */
+    public int copperCanteenCapacity = 4;
+    public int ironFlaskCapacity = 6;
+    public int copperCanteenBoilSeconds = 3;
+    public int ironFlaskBoilSeconds = 4;
+    public int copperHangingPotBoilSeconds = 4;
+    public int ironHangingPotBoilSeconds = 6;
 
     // ---- water sickness ---------------------------------------------------
     // This replaced quenchWhenDebuffed, nauseaChance, poisonChance and nauseaSeconds in the sickness
@@ -227,6 +257,20 @@ public final class ThirstConfig {
         if (keywordSoupValue == null || keywordSoupValue.length != 2) keywordSoupValue = new int[]{4, 5};
         if (keywordFruitValue == null || keywordFruitValue.length != 2) keywordFruitValue = new int[]{2, 3};
         defaultPurity = clamp(defaultPurity, 0, 3);
+        if (quenchedPercent == null || quenchedPercent.length != 4) quenchedPercent = new int[]{0, 50, 100, 100};
+        for (int grade = 0; grade < quenchedPercent.length; grade++) {
+            quenchedPercent[grade] = clamp(quenchedPercent[grade], 0, 100);
+        }
+        seaWaterNauseaSeconds = clamp(seaWaterNauseaSeconds, 0, MAX_EFFECT_SECONDS);
+        seaWaterParchedSeconds = clamp(seaWaterParchedSeconds, 0, MAX_EFFECT_SECONDS);
+        rainwaterPurity = clamp(rainwaterPurity, 0, 3);
+        dripstonePurity = clamp(dripstonePurity, 0, 3);
+        copperCanteenCapacity = clamp(copperCanteenCapacity, 1, WaterskinItem.MAX_CAPACITY);
+        ironFlaskCapacity = clamp(ironFlaskCapacity, 1, WaterskinItem.MAX_CAPACITY);
+        copperCanteenBoilSeconds = clamp(copperCanteenBoilSeconds, 1, MAX_BOIL_SECONDS);
+        ironFlaskBoilSeconds = clamp(ironFlaskBoilSeconds, 1, MAX_BOIL_SECONDS);
+        copperHangingPotBoilSeconds = clamp(copperHangingPotBoilSeconds, 1, MAX_BOIL_SECONDS);
+        ironHangingPotBoilSeconds = clamp(ironHangingPotBoilSeconds, 1, MAX_BOIL_SECONDS);
         // Gson reads a name it does not know, including a hand typo, as null.
         if (appleskinQuenchedOverlay == null) appleskinQuenchedOverlay = QuenchedOverlay.DIAMOND;
         thirstDepletionModifier = clamp(thirstDepletionModifier, 0.0, 10.0);

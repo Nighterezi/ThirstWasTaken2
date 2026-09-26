@@ -18,9 +18,9 @@ and clients, or uses a data pack (`data/<ns>/thirstwastaken2/drinks/`), which do
 
 | Step | What | State |
 |---|---|---|
-| 1 | Edit item values in the config screen | done, not committed |
-| 2 | Switch off the mod's own items | done, not committed |
-| 3 | Expose the hard-coded numbers, and switches for single mechanics | planned |
+| 1 | Edit item values in the config screen | done |
+| 2 | Switch off the mod's own items | done |
+| 3 | Expose the hard-coded numbers, and switches for single mechanics | done, not committed |
 
 ## Step 1: item values in the config screen (done)
 
@@ -95,34 +95,60 @@ Checked: `runDatagen` on all five Fabric nodes (47 files each); `runGametest` on
 
 **Still to do:**
 
-- `checkDatagen` compares with git, so it only passes once the regenerated `src/main/generated/` is
-  committed.
 - By hand: switch the waterskin off on the Mod Items page, `/reload`, and check its recipe is gone from
   the recipe book and the crafting grid; rejoin and check the creative tab.
 - Recipe viewers are left for later. Without a recipe, JEI and EMI still list the item. To hide it
   they would need an integration of their own, or the `c:hidden_from_recipe_viewers` tag, which is data
   and cannot read the config, so that route needs a generated data pack.
 
-## Step 3: numbers and single mechanics
+## Step 3: numbers and single mechanics (done)
 
-Constants a pack may want to change. Each one becomes a config field clamped in `sanitize()`, with a
-widget on the Water page or a new page:
+### What became a setting
 
-| Now | Where |
+| Setting | Default | Was | Page |
+|---|---|---|---|
+| `quenchedPercent` | `[0, 50, 100, 100]` | `WaterPurity.QUENCHED_PERCENT` | Water, one slider a grade |
+| `enableSeaWater` | `true` | always on | Water |
+| `seaWaterNauseaSeconds`, `seaWaterParchedSeconds` | `8`, `30` | `SALT_NAUSEA_TICKS`, `PARCHED_TICKS` | Water |
+| `enableRainCollection` | `true` | always on | Water |
+| `rainwaterPurity`, `dripstonePurity` | `2`, `3` | `RAINWATER_PURITY`, `DRIPSTONE_PURITY` | Water |
+| `copperCanteenCapacity`, `ironFlaskCapacity` | `4`, `6`, range 1 to 6 | fixed at registration | Containers |
+| `enableBoilingInHand` | `true` | always on | Containers |
+| `copperCanteenBoilSeconds`, `ironFlaskBoilSeconds` | `3`, `4` | `*_BOIL_TICKS` | Containers |
+| `copperHangingPotBoilSeconds`, `ironHangingPotBoilSeconds` | `4`, `6` | `*_SECONDS_PER_SERVING` | Containers |
+
+The three checks, per constant:
+
+- **Cache.** None of them reaches `WaterPurity.INFO` or `ThirstApi.CACHE`. Each is read as a drink, a
+  fill or a boil step happens, so a change applies at once, with no reload.
+- **Recipe.** Only capacity. The flask's furnace recipes are one per fill level up to
+  `WaterskinItem.MAX_CAPACITY`, so capacity is a setting from 1 to 6 and no higher.
+- **Sync.** Capacity is read on the client too: the bar, the tooltip and the inventory click that
+  pours a bottle in. The config is not synced (see the top of this file), so a client whose file
+  differs sees the wrong bar and has its click corrected by the server. A pack ships one config.
+
+`WaterskinItem` and `HangingPotBlock` now take an `IntSupplier` for capacity and boil time instead of
+an `int`. A stack holding more than a lowered capacity keeps its water and takes no more; its bar is
+capped at full.
+
+The switches: sea water, rain collection and boiling in hand. With rain collection off, pots ignore
+rain and `filledByRain` stamps nothing, so vanilla's rain water counts as `defaultPurity`. The hanging
+pots need no switch of their own: step 2's `enableCopperHangingPot` and `enableIronHangingPot` take
+them out.
+
+### What stays fixed, and why
+
+| Constant | Why |
 |---|---|
-| Quenched share by grade, `{0, 50, 100, 100}` | `WaterPurity.QUENCHED_PERCENT` |
-| Parched and Nausea length after sea water | `WaterPurity.PARCHED_TICKS`, `SALT_NAUSEA_TICKS` |
-| Grade of rain and dripstone water | `WaterPurity.RAINWATER_PURITY`, `DRIPSTONE_PURITY` |
-| Canteen and flask capacity, boil time | `ThirstItems` (`4`, `WaterskinItem.MAX_CAPACITY`, `*_BOIL_TICKS`) |
+| `WaterskinItem.CAPACITY`, 3 | the waterskin's sprite has one model per fill level |
+| `WaterskinItem.MAX_CAPACITY`, 6 | bounds the saved `water_servings` component and the flask's generated furnace recipes |
+| `HangingPotBlock.CAPACITY`, 3 | the blockstate's `level` property range is fixed at registration |
+| `SALT_PARCHED_LEVEL`, `SALTY_EXHAUSTION` | not asked for; sea water's cost is tuned by its two durations |
+| `sampleAt`'s scores | the grading model itself, not a knob; `defaultPurity`, the rain and dripstone grades and the switches cover what a pack needs |
+| `SicknessTable` chances | already chosen through `sicknessPreset` |
 
-Switches for single mechanics: sea water, rain collection, boiling in hand, hanging pots. These are for
-packs where another mod already covers that mechanic.
+Checked: `runGametest` on `26.3.x` (194), `1.21.1` and `1.21.1-neoforge` (193 each), all passing,
+`BalanceConfigGameTest` included; `checkLang` and the seam and API checks; every other node compiled.
 
-Before building, check each constant for three things:
-
-- Does it reach a cached value? `WaterPurity.INFO` may not hold config values.
-- Does it reach a recipe? The flask's furnace recipes are one per fill level up to `MAX_CAPACITY`, so a
-  bigger flask needs more generated recipes and cannot be a plain setting.
-- Does it reach a sync? Capacity is stored on the stack.
-
-Write down which constants stay fixed and why.
+**Still to check by hand:** the Containers page and the new Water sliders in game, and a canteen whose
+capacity is lowered while it holds water.

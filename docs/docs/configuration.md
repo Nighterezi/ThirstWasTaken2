@@ -63,6 +63,29 @@ Default `2`, Clean. The grade for water that has none, such as drinks from other
 
 Default `true`. Sneak and use an empty hand on water to drink.
 
+### quenchedPercent
+
+Default `[0, 50, 100, 100]`. How much of a drink's quenched water of each grade gives, Dirty first,
+then Murky, Clean and Pure. Bad water fills the bar but does not keep it full. Shown as four sliders.
+
+### enableSeaWater
+
+Default `true`. Ocean and beach water is salty. Off, it is graded like any other water.
+
+### seaWaterNauseaSeconds and seaWaterParchedSeconds
+
+Default `8` and `30`. How long a drink of sea water gives Nausea and Parched. `0` gives none.
+
+### enableRainCollection
+
+Default `true`. Rain fills hanging pots, and rain in a cauldron gets `rainwaterPurity`. Off, pots
+ignore rain and rain in a cauldron has no grade, so it counts as `defaultPurity`.
+
+### rainwaterPurity and dripstonePurity
+
+Default `2`, Clean, and `3`, Pure. The grade of collected rain and of water a pointed dripstone drips
+into a cauldron.
+
 ## AppleSkin
 
 These settings are client-side and only used while AppleSkin is installed. The exhaustion strip
@@ -153,3 +176,22 @@ Default `true`. The Iron Flask, and cleaning its water in a furnace.
 ### enableCopperHangingPot and enableIronHangingPot
 
 Default `true`. The Copper Hanging Pot and the Iron Hanging Pot, one switch each.
+
+## Containers
+
+### copperCanteenCapacity and ironFlaskCapacity
+
+Default `4` and `6`, from `1` to `6`. How many drinks each holds when full. One that already holds
+more keeps its water but takes no more.
+
+### enableBoilingInHand
+
+Default `true`. Holding use with a Copper Canteen or Iron Flask on a lit campfire boils its water.
+
+### copperCanteenBoilSeconds and ironFlaskBoilSeconds
+
+Default `3` and `4`. Seconds each drink takes to boil over a campfire.
+
+### copperHangingPotBoilSeconds and ironHangingPotBoilSeconds
+
+Default `4` and `6`. Seconds each drink in a hanging pot takes to boil.

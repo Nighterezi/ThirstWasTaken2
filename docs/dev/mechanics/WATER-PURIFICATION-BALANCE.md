@@ -21,8 +21,8 @@ servings, the same rate a cauldron uses.
 | Teapot (Kaleidoscope Cookery) | 12 s | 4 teacups | safe tea, not water | heat source below, one tea bag | a teacup restores its fixed value whatever the water's grade, so Dirty water becomes four safe drinks. Fair for a tea bag and heat. Sea water is refused, so it never desalinates |
 | **Copper Hanging Pot** | **4 s a serving, 12 s full** | **3** | **Pure** | no | needs a lit campfire below |
 | **Iron Hanging Pot** | **6 s a serving, 18 s full** | **3** | **Pure** | no | needs a lit campfire below |
-| **Copper Canteen, held on a campfire** | **3 s a serving, 12 s full** | **4** | **Pure** | no | the player holds use the whole time; `COPPER_CANTEEN_BOIL_TICKS` |
-| **Iron Flask, held on a campfire** | **4 s a serving, 24 s full** | **6** | **Pure** | no | the same; `IRON_FLASK_BOIL_TICKS` |
+| **Copper Canteen, held on a campfire** | **3 s a serving, 12 s full** | **4** | **Pure** | no | the player holds use the whole time; `copperCanteenBoilSeconds` in the config |
+| **Iron Flask, held on a campfire** | **4 s a serving, 24 s full** | **6** | **Pure** | no | the same; `ironFlaskBoilSeconds` |
 | **Iron Flask, furnace** | 10 s | 1 to 6 | up two grades | yes | one recipe per fill level; the canteen has none |
 | Boiler (Cold Sweat) | 10 s a grade, 30 s Dirty to Pure | up to 27 (nine buckets) | up one grade a pass, to Pure | yes | only with Cold Sweat; every 200 ticks at its default temperature rate. Slower than a furnace per grade but nine slots, and it keeps going to Pure on its own; fair for a block that costs fuel and a crafted Boiler |
 | Campfire, Cold Sweat's Waterskin | 60 s | 1 | up two grades | no | Cold Sweat's own recipe, 1200 ticks; the grade follows the bottle's campfire rule |
@@ -65,7 +65,7 @@ The two pots differ in boil time only, based on the metals themselves:
 
 | | Copper | Iron |
 |---|---|---|
-| Boil time | 4 s a serving (`COPPER_SECONDS_PER_SERVING`) | 6 s a serving (`IRON_SECONDS_PER_SERVING`) |
+| Boil time | 4 s a serving (`copperHangingPotBoilSeconds`) | 6 s a serving (`ironHangingPotBoilSeconds`) |
 | Why | copper carries heat far better | iron carries heat worse |
 | Heat source | lit campfire or soul campfire | the same, for now |
 | Recipe | two sticks, a chain, five copper ingots | two sticks, a chain, five iron ingots |

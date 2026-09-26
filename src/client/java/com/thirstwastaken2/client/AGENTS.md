@@ -15,7 +15,7 @@ alone (`ThirstData.STORAGE`), and only the config screen's AppleSkin settings ar
 | `HandDrinking` | hand drinking from water the crosshair misses: picks again with fluids and sends vanilla's use-on-block packet on the water |
 | `config/ThirstConfigScreen` | the whole options screen: header with search, a sidebar tab per page, the scrolling rows, Reset, Cancel and Done |
 | `config/ConfigCategory` | every page: its icon, its `ConfigEntry` list and any extra rows (preview, note, open-file button) |
-| `config/ConfigEntry` | one setting: getter/setter on the live config, its default, its control (`toggle`, `choice`, `grade`, `percent`) and its lang keys |
+| `config/ConfigEntry` | one setting: getter/setter on the live config, its default, its control (`toggle`, `choice`, `grade`, `percent`, `number`) and its lang keys |
 | `config/ConfigRow` | one row of the list: heading, setting, note, preview or action button |
 | `config/ItemValueRows` | the per-item thirst values on the Item Values page: one row per listed item, and the row that adds one |
 | `config/ConfigTheme` | the screen's colours and small drawing helpers |
@@ -169,7 +169,9 @@ Adding a setting means: field in `ThirstConfig`, clamp in `sanitize()`, a `Confi
 all nine lang files (`checkLang` fails on a missing one). The key is the Java field name
 in snake_case. A new page also needs `section.<key>`, its tooltip and a 16x16 icon texture. Enums use
 `choice`, labelled by `<key>.<value in lower case>`, so each value needs its own lang key. Doubles are
-edited as integer percentages (`percent`) because the slider steps in whole numbers. The AppleSkin page
+edited as integer percentages (`percent`) because the slider steps in whole numbers. Whole numbers
+use `number`, labelled by `ConfigEntry.seconds`, `servings` or `wholePercent`; the first two are
+`thirstwastaken2.config.unit.*` keys. A value inside an array (`quenchedPercent`) is set in place. The AppleSkin page
 is always shown; without AppleSkin it adds a note saying the settings do nothing yet.
 
 The preview never builds an `ItemStack`: Mod Menu opens the screen from the title screen, where 26.1

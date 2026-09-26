@@ -112,8 +112,8 @@ Events registered there, in registration order per event:
 
 `block/HangingPotBlock` is adapted from Dehydration's campfire cauldron (GPL-3.0; see `CREDITS.md`).
 The copper and iron pots are two registrations of it that differ in look, sound, recipe and the
-boil time they are built with (`ThirstBlocks.COPPER_SECONDS_PER_SERVING` and `IRON_SECONDS_PER_SERVING`;
-the numbers are argued in `../../../../../docs/dev/mechanics/WATER-PURIFICATION-BALANCE.md`), so
+boil time they read from the config at each step (`copperHangingPotBoilSeconds` and
+`ironHangingPotBoilSeconds`, 4 and 6 by default; the numbers are argued in `../../../../../docs/dev/mechanics/WATER-PURIFICATION-BALANCE.md`), so
 code that asks whether a block is a pot checks `instanceof HangingPotBlock`, never one of the two.
 It holds `CAPACITY` servings and stores their quality in `WaterPurity.BLOCK_PURITY`, like a cauldron,
 and `HangingPotInteractions` does all the filling and drawing itself, inline, because vanilla has no

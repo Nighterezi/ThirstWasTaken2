@@ -263,7 +263,7 @@ public final class HangingPotGameTest {
         }
 
         BlockState after = level.getBlockState(pos);
-        WaterQuality expected = WaterQuality.fresh(WaterPurity.RAINWATER_PURITY);
+        WaterQuality expected = WaterQuality.fresh(WaterPurity.rainwaterPurity());
         TestFixtures.check(helper, after.getValue(HangingPotBlock.LEVEL) == 1,
                 "rain should have added one serving in 500 tries, the pot holds " + after.getValue(HangingPotBlock.LEVEL));
         TestFixtures.check(helper, expected.equals(HangingPotBlock.quality(after)),
