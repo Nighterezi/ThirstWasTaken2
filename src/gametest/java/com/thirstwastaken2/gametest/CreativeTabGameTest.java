@@ -54,6 +54,20 @@ public final class CreativeTabGameTest {
         helper.succeed();
     }
 
+    /** A Mod Items switch takes its item out of the tab, and nothing else. */
+    @GameTest
+    public void tabLeavesOutASwitchedOffItem(GameTestHelper helper) {
+        TestFixtures.withConfig(config -> config.enableIronFlask = false, () -> {
+            Collection<ItemStack> contents = displayItems(helper, helper.getLevel());
+            for (Item expected : EXPECTED) {
+                boolean listed = contents.stream().anyMatch(stack -> stack.is(expected));
+                TestFixtures.check(helper, listed == (expected != ThirstItems.IRON_FLASK),
+                        expected + (listed ? " should not be" : " should be") + " in the tab with enableIronFlask off");
+            }
+        });
+        helper.succeed();
+    }
+
     private static CreativeModeTab tab() {
         return BuiltInRegistries.CREATIVE_MODE_TAB.getValue(ThirstItems.CREATIVE_TAB_KEY);
     }

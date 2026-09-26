@@ -3,6 +3,7 @@ package com.thirstwastaken2.platform;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.serialization.Codec;
 import com.thirstwastaken2.ThirstWasTaken2;
+import com.thirstwastaken2.neoforge.ItemEnabledCondition;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Registry;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -87,6 +88,11 @@ public final class Loader {
         return ModList.get().isLoaded(modId);
     }
 
+    /** The name a mod gives itself, or {@code modId} when no mod has that id. */
+    public static String modName(String modId) {
+        return ModList.get().getModContainerById(modId).map(mod -> mod.getModInfo().getDisplayName()).orElse(modId);
+    }
+
     /**
      * Runs {@code registration} when {@code registry} accepts new entries.
      *
@@ -104,6 +110,15 @@ public final class Loader {
             listening = true;
         }
         PENDING.computeIfAbsent(registry, key -> new ArrayList<>()).add(registration);
+    }
+
+    /**
+     * Registers the {@code thirstwastaken2:item_enabled} load condition the mod's recipes carry, so a
+     * recipe for an item the config switches off is skipped as it loads. See {@link ItemEnabledCondition}.
+     */
+    public static void registerResourceConditions() {
+        onRegister(NeoForgeRegistries.Keys.CONDITION_CODECS, () -> Registry.register(
+                NeoForgeRegistries.CONDITION_SERIALIZERS, ThirstWasTaken2.id("item_enabled"), ItemEnabledCondition.CODEC));
     }
 
     /** Registers a per-player value, saved with {@code codec} and synced to its owner with {@code streamCodec}. */

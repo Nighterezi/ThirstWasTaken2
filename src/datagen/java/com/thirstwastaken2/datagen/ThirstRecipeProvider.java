@@ -8,6 +8,8 @@ import com.thirstwastaken2.purity.ThirstComponents;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.DefaultCustomIngredients;
+import net.fabricmc.fabric.api.resource.conditions.v1.ResourceCondition;
+import com.thirstwastaken2.platform.ItemEnabledCondition;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementRequirements;
@@ -50,6 +52,7 @@ import net.minecraft.world.level.ItemLike;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
 
 /**
  * Every recipe the mod ships, and the recipe book unlocks that go with them.
@@ -63,6 +66,10 @@ import java.util.concurrent.CompletableFuture;
  * <p>Salt water carries no {@code water_purity} at all, so an ingredient that demands one already
  * excludes it. Demanding {@code water_salty: false} as well is belt and braces, and it is also what
  * forces anything that hands out water to stamp both components, loot included.
+ *
+ * <p>Every recipe that makes one of the mod's own items, or fills or cleans one, carries a
+ * {@code thirstwastaken2:item_enabled} condition naming it, so a pack that switches the item off in the
+ * config loses those recipes and their unlocks. The bottle and bucket recipes carry none.
  */
 public final class ThirstRecipeProvider extends FabricRecipeProvider {
     /** The grade boiling cannot improve on, so the grade with no recipe of its own. */
@@ -108,19 +115,30 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
     protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries,
                                                   BootstrapContext<Recipe<?>> recipes,
                                                   BootstrapContext<Advancement> advancements) {
-        return new Recipes(registries, recipes, advancements);
+        return new Recipes(registries, recipes, advancements, this::withConditions);
     }
     //?} elif >=1.21.2 {
     /*@Override
     protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
-        return new Recipes(registries, output);
+        return new Recipes(registries, output, this::withConditions);
     }
     *///?} else {
     /*@Override
     public void buildRecipes(RecipeOutput output) {
-        new Recipes(output).buildRecipes();
+        new Recipes(output, this::withConditions).buildRecipes();
     }
     *///?}
+
+    /**
+     * {@link #withConditions}, which {@code Recipes} cannot call itself: it is a static class, and from
+     * 1.21.2 its output is the vanilla provider's, which only exists once it is constructed.
+     */
+    interface Conditions extends BiFunction<RecipeOutput, ResourceCondition[], RecipeOutput> { }
+
+    /** The condition that loads a recipe only while the config leaves {@code item}, one of the mod's own, switched on. */
+    static ResourceCondition itemEnabled(Item item) {
+        return new ItemEnabledCondition(Vanilla.itemId(item));
+    }
 
     /** One purifiable container: what holds the water, and what the recipes call it. */
     record Container(String name, Item item, boolean potion, boolean bowl) {
@@ -134,14 +152,16 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
     //? if >=26.3 {
     static final class Recipes extends RecipeProvider {
         private final HolderGetter<Item> items;
+        private final Conditions conditions;
         /** The recipes this provider is about to register, for the criteria that name one. */
         private final HolderGetter<Recipe<?>> registered;
 
         private Recipes(HolderLookup.Provider registries, BootstrapContext<Recipe<?>> recipes,
-                        BootstrapContext<Advancement> advancements) {
+                        BootstrapContext<Advancement> advancements, Conditions conditions) {
             super(recipes, advancements);
             this.items = registries.lookupOrThrow(Registries.ITEM);
             this.registered = recipes.lookup(Registries.RECIPE);
+            this.conditions = conditions;
         }
 
         private ShapedRecipeBuilder shaped(ItemLike result, int count) {
@@ -150,10 +170,12 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
     //?} elif >=1.21.2 {
     /*static final class Recipes extends RecipeProvider {
         private final HolderGetter<Item> items;
+        private final Conditions conditions;
 
-        private Recipes(HolderLookup.Provider registries, RecipeOutput output) {
+        private Recipes(HolderLookup.Provider registries, RecipeOutput output, Conditions conditions) {
             super(registries, output);
             this.items = registries.lookupOrThrow(Registries.ITEM);
+            this.conditions = conditions;
         }
 
         private ShapedRecipeBuilder shaped(ItemLike result, int count) {
@@ -162,9 +184,11 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
     *///?} else {
     /*static final class Recipes {
         private final RecipeOutput output;
+        private final Conditions conditions;
 
-        private Recipes(RecipeOutput output) {
+        private Recipes(RecipeOutput output, Conditions conditions) {
             this.output = output;
+            this.conditions = conditions;
         }
 
         private ShapedRecipeBuilder shaped(ItemLike result, int count) {
@@ -180,7 +204,7 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
                     .pattern(" C ")
                     .define('C', Items.CLAY_BALL)
                     .unlockedBy("has_clay_ball", has(Items.CLAY_BALL))
-                    .save(output, recipe("clay_bowl"));
+                    .save(enabled(ThirstItems.CLAY_BOWL), recipe("clay_bowl"));
 
             //? if >=26.1 {
             SimpleCookingRecipeBuilder.smelting(Ingredient.of(ThirstItems.CLAY_BOWL), RecipeCategory.MISC,
@@ -190,7 +214,7 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
                             ThirstItems.TERRACOTTA_BOWL, 0.1F, SMELTING_TIME)
             *///?}
                     .unlockedBy("has_clay_bowl", has(ThirstItems.CLAY_BOWL))
-                    .save(output, recipe("terracotta_bowl_from_smelting"));
+                    .save(enabled(ThirstItems.TERRACOTTA_BOWL), recipe("terracotta_bowl_from_smelting"));
 
             shaped(ThirstItems.WATERSKIN, 1)
                     .pattern(" S ")
@@ -199,7 +223,7 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
                     .define('S', Items.STRING)
                     .define('L', Items.LEATHER)
                     .unlockedBy("has_leather", has(Items.LEATHER))
-                    .save(output, recipe("waterskin"));
+                    .save(enabled(ThirstItems.WATERSKIN), recipe("waterskin"));
 
             // The pot costs a campfire's worth of commitment on top of its own copper, which is what its
             // capacity and one-pass boil pay back. An iron chain for now: 1.21.1 has no copper one.
@@ -211,7 +235,7 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
                     .define('K', CHAIN)
                     .define('C', COPPER_INGOTS)
                     .unlockedBy("has_copper_ingot", has(COPPER_INGOTS))
-                    .save(output, recipe("copper_hanging_pot"));
+                    .save(enabled(ThirstItems.COPPER_HANGING_POT), recipe("copper_hanging_pot"));
 
             // The same pot in iron, for a world short on copper. Its top row keeps it clear of the
             // cauldron's recipe.
@@ -223,7 +247,7 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
                     .define('K', CHAIN)
                     .define('I', IRON_INGOTS)
                     .unlockedBy("has_iron_ingot", has(IRON_INGOTS))
-                    .save(output, recipe("iron_hanging_pot"));
+                    .save(enabled(ThirstItems.IRON_HANGING_POT), recipe("iron_hanging_pot"));
 
             // The canteen and the flask share the waterskin's shape, a U with one thing on top, so a
             // player who knows one can guess the others. Their top rows keep them clear of the pots,
@@ -235,7 +259,7 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
                     .define('L', Items.LEATHER)
                     .define('C', COPPER_INGOTS)
                     .unlockedBy("has_copper_ingot", has(COPPER_INGOTS))
-                    .save(output, recipe("copper_canteen"));
+                    .save(enabled(ThirstItems.COPPER_CANTEEN), recipe("copper_canteen"));
 
             shaped(ThirstItems.IRON_FLASK, 1)
                     .pattern(" N ")
@@ -244,7 +268,7 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
                     .define('N', IRON_NUGGETS)
                     .define('I', IRON_INGOTS)
                     .unlockedBy("has_iron_ingot", has(IRON_INGOTS))
-                    .save(output, recipe("iron_flask"));
+                    .save(enabled(ThirstItems.IRON_FLASK), recipe("iron_flask"));
 
             // A bucket of fresh water poured into a fired bowl. The result is graded 2 rather than
             // sampled, because the bucket's own grade is gone by the time a recipe sees it.
@@ -258,17 +282,18 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
                     .requires(ThirstItems.TERRACOTTA_BOWL)
                     .requires(freshWaterBucket)
                     .unlockedBy("has_terracotta_bowl", has(ThirstItems.TERRACOTTA_BOWL))
-                    .save(output, recipe("terracotta_water_bowl"));
+                    .save(enabled(ThirstItems.TERRACOTTA_WATER_BOWL), recipe("terracotta_water_bowl"));
             //?} else {
             /*// 1.21.1's builder cannot give its result components, so the recipe and its unlock are
             // written out the way the builder itself would write them.
             var bowlRecipe = recipe("terracotta_water_bowl");
-            output.accept(bowlRecipe,
+            RecipeOutput bowlOutput = enabled(ThirstItems.TERRACOTTA_WATER_BOWL);
+            bowlOutput.accept(bowlRecipe,
                     new net.minecraft.world.item.crafting.ShapelessRecipe("",
                             net.minecraft.world.item.crafting.CraftingBookCategory.MISC, bowlResult(2),
                             net.minecraft.core.NonNullList.of(Ingredient.EMPTY,
                                     Ingredient.of(ThirstItems.TERRACOTTA_BOWL), freshWaterBucket)),
-                    output.advancement()
+                    bowlOutput.advancement()
                             .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(bowlRecipe))
                             .rewards(AdvancementRewards.Builder.recipe(bowlRecipe))
                             .requirements(AdvancementRequirements.Strategy.OR)
@@ -278,6 +303,14 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
 
             Container.ALL.forEach(this::purifyRecipes);
             flaskPurifyRecipes();
+        }
+
+        /**
+         * The recipe output, with everything written through it, recipes and unlocks alike, loading only
+         * while the config leaves {@code item} switched on.
+         */
+        private RecipeOutput enabled(Item item) {
+            return conditions.apply(output, new ResourceCondition[]{itemEnabled(item)});
         }
 
         /**
@@ -295,12 +328,13 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
             java.util.SequencedMap<String, ItemLike> unlocks = new java.util.LinkedHashMap<>();
             unlocks.put("has_iron_flask", ThirstItems.IRON_FLASK);
             AdvancementHolder unlock = purifyUnlock("iron_flask", names, unlocks);
+            RecipeOutput flasks = enabled(ThirstItems.IRON_FLASK);
 
             boolean first = true;
             for (int servings = 1; servings <= WaterskinItem.MAX_CAPACITY; servings++) {
                 for (int purity = 0; purity < PURIFIED; purity++) {
                     var key = recipe(flaskPurifyName(servings, purity));
-                    output.accept(key, Heat.SMELTING.create(flaskIngredient(servings, purity),
+                    flasks.accept(key, Heat.SMELTING.create(flaskIngredient(servings, purity),
                             flaskResult(servings, PURIFY_TABLE[purity])), first ? unlock : null);
                     first = false;
                 }
@@ -339,6 +373,8 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
          */
         private void purifyRecipes(Container container) {
             AdvancementHolder unlock = purifyUnlock(container);
+            // Only the bowl is the mod's own; bottles and buckets are purified whatever the config says.
+            RecipeOutput purified = container.bowl() ? enabled(container.item()) : output;
 
             boolean first = true;
             for (int purity = 0; purity < PURIFIED; purity++) {
@@ -348,7 +384,7 @@ public final class ThirstRecipeProvider extends FabricRecipeProvider {
                 for (Heat heat : Heat.values()) {
                     var key = recipe(purifyName(container, purity, heat));
                     // The unlock is one file shared by all six, so only the first accept writes it.
-                    output.accept(key, heat.create(ingredient, result), first ? unlock : null);
+                    purified.accept(key, heat.create(ingredient, result), first ? unlock : null);
                     first = false;
                 }
             }

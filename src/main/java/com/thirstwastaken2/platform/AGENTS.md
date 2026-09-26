@@ -91,6 +91,7 @@ What does live here are the types those signatures need, because both copies hav
 | `onServerTickEnd`, `onUseBlock`, `onUseItem`, `onRegisterCommands`, `onTagsLoaded` | the event bus |
 | `onLootTable` | loot table modification, on every table whoever wrote it |
 | `onServerDataReload` | a server data reload listener, run at startup and on `/reload` |
+| `registerResourceConditions` | the `thirstwastaken2:item_enabled` load condition the mod's recipes carry |
 | `onDataPackSync`, `clientboundPayload`, `send` | telling each client what a data pack decided: when to, the payload's registration, and sending it only to a client that can take it |
 | `ClientLoader.addRightStatusBar` | HUD layer registration and the right-hand status bar height |
 | `ClientLoader.appleSkinShowsExhaustionUnderlay` | AppleSkin's own setting, which it keeps in a different class shape on each loader |
@@ -111,6 +112,7 @@ What does live here are the types those signatures need, because both copies hav
 | `onLootTable` | `LootTableEvents.MODIFY` | `LootTableLoadEvent`, `getTable().addPool` |
 | `onServerDataReload` | `ResourceLoader.get(SERVER_DATA).registerReloadListener`, a `ResourceManagerReloadListener` | `AddServerReloadListenersEvent.addListener(id, ...)` |
 | `onDataPackSync` | `ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS` | `OnDatapackSyncEvent.getRelevantPlayers()` |
+| `registerResourceConditions` | `ResourceConditions.register` of `platform/ItemEnabledCondition`, whose `test` takes a `RegistryInfoLookup` from 1.21.2 and a `HolderLookup.Provider` before it, hence its place in `platform/` | `neoforge/ItemEnabledCondition`'s `MapCodec` into `CONDITION_SERIALIZERS` through `onRegister`. The recipe files name it under `condition`, Fabric's key; the build moves it to `type` (`neoForgeConditions`) |
 | `clientboundPayload` | `PayloadTypeRegistry.clientboundPlay()`; the handler waits in `fabric/ClientboundPayloads` until the client entrypoint hands it to `ClientPlayNetworking`, which common code cannot see | `RegisterPayloadHandlersEvent`, `registrar("1").optional().playToClient` on the mod bus |
 | `send` | `ServerPlayNetworking.canSend`, then `send` | `hasChannel`, then `PacketDistributor.sendToPlayer`; never to a fake player, for the reason `syncsTo` gives |
 | `ClientLoader.addRightStatusBar` | `HudElementRegistry.attachElementAfter(FOOD_BAR)` plus `HudStatusBarHeightRegistry.addRight`; `GuiMixin` on 1.21.1 | a layer `registerAbove(VanillaGuiLayers.FOOD_LEVEL)` that draws at `guiHeight() - hud.rightHeight` and advances `Hud.rightHeight` only when it drew, and only when the player can be hurt, which is when vanilla draws the food bar |

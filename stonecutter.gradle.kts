@@ -32,10 +32,12 @@ stonecutter parameters {
             replace("net.minecraft.util.Util", "net.minecraft.Util")
         }
 
-        // 26.1 renamed the HUD draw target while keeping the drawing methods identical, so the
-        // whole difference is the type name.
+        // 26.1 renamed the HUD draw target while keeping the drawing methods identical but one, so
+        // the whole difference is two names.
         string(current.parsed < "26.1") {
             replace("GuiGraphicsExtractor", "GuiGraphics")
+            // The one: its item icon method lost its prefix in the same rename.
+            replace(".fakeItem(", ".renderFakeItem(")
             // The Fabric data generation API renamed both of these for 26.1 without changing what
             // they do, so the datagen providers name the newer pair and get the older one here.
             replace("FabricPackOutput", "FabricDataOutput")

@@ -191,7 +191,7 @@ public final class ThirstConfigScreen extends Screen {
             rows.add(ConfigRow.heading(selected.title(), selected.description(), selected.icon()));
             selected.addLeadingRows(rows);
             for (ConfigEntry<?> entry : selected.entries()) rows.add(ConfigRow.option(entry, controlWidth, this::refreshRows));
-            selected.addTrailingRows(rows);
+            selected.addTrailingRows(rows, this::refreshRows);
         } else {
             List<ConfigRow> results = new ArrayList<>();
             int count = 0;
@@ -201,6 +201,15 @@ public final class ThirstConfigScreen extends Screen {
                 results.add(ConfigRow.subheading(category.title(), category.icon()));
                 for (ConfigEntry<?> entry : matches) results.add(ConfigRow.option(entry, controlWidth, this::refreshRows));
                 count += matches.size();
+            }
+            // Items the Item Values page lists are found by id, name or mod, under that page.
+            List<ConfigRow> items = new ArrayList<>();
+            int itemCount = ItemValueRows.addMatching(items, query, this::refreshRows);
+            if (itemCount > 0) {
+                results.add(ConfigRow.subheading(Component.translatable("thirstwastaken2.config.item_values"),
+                        ConfigCategory.ITEMS.icon()));
+                results.addAll(items);
+                count += itemCount;
             }
             rows.add(ConfigRow.heading(Component.translatable("thirstwastaken2.config.search_results"),
                     Component.translatable("thirstwastaken2.config.search_results.count", count), null));

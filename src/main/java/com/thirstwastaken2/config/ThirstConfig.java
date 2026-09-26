@@ -3,6 +3,7 @@ package com.thirstwastaken2.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.thirstwastaken2.ThirstWasTaken2;
+import com.thirstwastaken2.data.ThirstData;
 import com.thirstwastaken2.platform.Loader;
 
 import java.io.IOException;
@@ -71,6 +72,18 @@ public final class ThirstConfig {
     public Set<String> itemBlacklist = new LinkedHashSet<>();
     public Map<String, int[]> drinks = defaultDrinks();
     public Map<String, int[]> foods = defaultFoods();
+
+    // ---- the mod's own items ----------------------------------------------
+    // For a pack that brings its own. Off takes the item's recipes and its creative tab entry away; the
+    // item stays registered, because registries must match between server and client and a world may
+    // still hold one, and a stack that already exists keeps working. See isItemEnabled.
+    /** The clay bowl, the terracotta bowl and the water bowl, which make no sense one without the others. */
+    public boolean enableBowls = true;
+    public boolean enableWaterskin = true;
+    public boolean enableCopperCanteen = true;
+    public boolean enableIronFlask = true;
+    public boolean enableCopperHangingPot = true;
+    public boolean enableIronHangingPot = true;
 
     private transient Pattern keywordBlacklistPattern;
     private transient Pattern drinkKeywordPattern;
@@ -148,6 +161,24 @@ public final class ThirstConfig {
         generation++;
     }
 
+    /**
+     * Whether the mod's own item {@code id} may be crafted and is listed in the creative tab. True for
+     * any id that is not one of the mod's items. Read by the {@code thirstwastaken2:item_enabled}
+     * recipe condition as recipes load, so a change takes effect on the next data reload.
+     */
+    public boolean isItemEnabled(String id) {
+        return switch (id) {
+            case "thirstwastaken2:clay_bowl", "thirstwastaken2:terracotta_bowl",
+                 "thirstwastaken2:terracotta_water_bowl" -> enableBowls;
+            case "thirstwastaken2:waterskin" -> enableWaterskin;
+            case "thirstwastaken2:copper_canteen" -> enableCopperCanteen;
+            case "thirstwastaken2:iron_flask" -> enableIronFlask;
+            case "thirstwastaken2:copper_hanging_pot" -> enableCopperHangingPot;
+            case "thirstwastaken2:iron_hanging_pot" -> enableIronHangingPot;
+            default -> true;
+        };
+    }
+
     public Pattern keywordBlacklistPattern() { return keywordBlacklistPattern; }
     public Pattern drinkKeywordPattern() { return drinkKeywordPattern; }
     public Pattern soupKeywordPattern() { return soupKeywordPattern; }
@@ -186,7 +217,10 @@ public final class ThirstConfig {
         // And for Fruits Delight, added after that.
         fruitsDelightDrinks(drinks);
         fruitsDelightFoods(foods);
+        clampValues(drinks);
+        clampValues(foods);
         if (itemBlacklist == null) itemBlacklist = new LinkedHashSet<>();
+        itemBlacklist.remove(null);
         if (sicknessPreset == null) sicknessPreset = SicknessPreset.REALISTIC;
         if (drinkTagValue == null || drinkTagValue.length != 2) drinkTagValue = new int[]{6, 8};
         if (keywordDrinkValue == null || keywordDrinkValue.length != 2) keywordDrinkValue = new int[]{10, 14};
@@ -210,6 +244,20 @@ public final class ThirstConfig {
         } catch (Exception exception) {
             ThirstWasTaken2.LOGGER.error("Invalid keyword pattern '{}', ignoring it", pattern, exception);
             return null;
+        }
+    }
+
+    /**
+     * Keeps every item value a pair inside the bar, as a data pack's already is: a hand-edited entry of
+     * the wrong length is dropped, and one out of range is brought back into {@code 0..ThirstData.MAX}.
+     * The config screen edits these maps too and never offers more than the bar holds.
+     */
+    private static void clampValues(Map<String, int[]> values) {
+        values.entrySet().removeIf(entry -> entry.getKey() == null || entry.getValue() == null || entry.getValue().length != 2);
+        for (Map.Entry<String, int[]> entry : values.entrySet()) {
+            int[] value = entry.getValue();
+            value[0] = clamp(value[0], 0, ThirstData.MAX);
+            value[1] = clamp(value[1], 0, ThirstData.MAX);
         }
     }
 

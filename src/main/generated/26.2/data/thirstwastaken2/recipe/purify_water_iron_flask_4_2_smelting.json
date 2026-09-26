@@ -1,4 +1,10 @@
 {
+  "fabric:load_conditions": [
+    {
+      "condition": "thirstwastaken2:item_enabled",
+      "item": "thirstwastaken2:iron_flask"
+    }
+  ],
   "type": "minecraft:smelting",
   "experience": 0.35,
   "ingredient": {

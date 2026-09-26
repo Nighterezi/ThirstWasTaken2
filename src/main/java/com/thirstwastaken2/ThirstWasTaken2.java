@@ -52,6 +52,7 @@ public final class ThirstWasTaken2 {
         Loader.onRegister(Registries.CREATIVE_MODE_TAB, ThirstItems::registerCreativeTab);
         Loader.onRegister(Registries.MOB_EFFECT, ThirstEffects::register);
         LootIntegration.register();
+        Loader.registerResourceConditions();
 
         Loader.onServerTickEnd(ThirstManager::tick);
         Loader.onServerTickEnd(WaterInteractions::tick);

@@ -5,6 +5,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * The colours and small drawing helpers every part of the config screen shares. The panels are
@@ -53,5 +54,25 @@ final class ConfigTheme {
     /** A whole 16x16 texture, such as an item's, drawn at its own size. */
     static void icon(GuiGraphicsExtractor graphics, Identifier texture, int x, int y) {
         ClientVanilla.blit(graphics, texture, x, y, 0, 0, 16, 16, 16, 16, WHITE);
+    }
+
+    /**
+     * A small picture given as rows of {@code #}, one GUI pixel each, so it stays crisp at any scale.
+     */
+    static void glyph(GuiGraphicsExtractor graphics, String[] rows, int x, int y, int argb) {
+        for (int row = 0; row < rows.length; row++) {
+            for (int column = 0; column < rows[row].length(); column++) {
+                if (rows[row].charAt(column) != '#') continue;
+                graphics.fill(x + column, y + row, x + column + 1, y + row + 1, argb);
+            }
+        }
+    }
+
+    /**
+     * An item's icon at 16x16, as a slot draws it but without a count. Only call this in a world: 26.1
+     * and later bind item components when one loads, and a stack built before that crashes the game.
+     */
+    static void item(GuiGraphicsExtractor graphics, ItemStack stack, int x, int y) {
+        graphics.fakeItem(stack, x, y);
     }
 }

@@ -478,6 +478,7 @@ dependencies {
  * | `fabric:type` `fabric:components`, `base`, `components`  | `neoforge:ingredient_type` `neoforge:components`, `items`, `components` |
  * | `fabric:type` `fabric:any`, `ingredients`                | `neoforge:ingredient_type` `neoforge:compound`, `children` |
  * | `fabric:load_conditions`, `fabric:all_mods_loaded`       | `neoforge:conditions`, one `neoforge:mod_loaded` per mod |
+ * | `condition` `thirstwastaken2:item_enabled`, `item`       | `type` `thirstwastaken2:item_enabled`, `item`        |
  *
  * Both components ingredients take a `DataComponentPatch` and match a stack that carries at least the
  * listed values, which is NeoForge's default `strict: false`, so `strict` is left out.
@@ -530,10 +531,18 @@ fun neoForgeItems(base: Any?, file: String): Any? = when {
 fun neoForgeConditions(conditions: Any?, file: String): List<Map<String, Any?>> =
     (conditions as List<*>).flatMap { condition ->
         condition as Map<*, *>
-        if (condition["condition"] != "fabric:all_mods_loaded") {
-            throw GradleException("$file: no NeoForge translation for the Fabric load condition ${condition["condition"]}")
+        when (condition["condition"]) {
+            "fabric:all_mods_loaded" ->
+                (condition["values"] as List<*>).map { mapOf("type" to "neoforge:mod_loaded", "modid" to it) }
+            // The mod's own condition, registered under the same id on both loaders; only its key moves.
+            "thirstwastaken2:item_enabled" -> {
+                if (condition.keys != setOf("condition", "item")) {
+                    throw GradleException("$file: no NeoForge translation for ${condition.keys} in thirstwastaken2:item_enabled")
+                }
+                listOf(mapOf("type" to "thirstwastaken2:item_enabled", "item" to condition["item"]))
+            }
+            else -> throw GradleException("$file: no NeoForge translation for the Fabric load condition ${condition["condition"]}")
         }
-        (condition["values"] as List<*>).map { mapOf("type" to "neoforge:mod_loaded", "modid" to it) }
     }
 
 fun requireKeys(node: Map<*, *>, keys: Set<String>, file: String) {

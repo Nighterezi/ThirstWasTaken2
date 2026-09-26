@@ -17,6 +17,7 @@ alone (`ThirstData.STORAGE`), and only the config screen's AppleSkin settings ar
 | `config/ConfigCategory` | every page: its icon, its `ConfigEntry` list and any extra rows (preview, note, open-file button) |
 | `config/ConfigEntry` | one setting: getter/setter on the live config, its default, its control (`toggle`, `choice`, `grade`, `percent`) and its lang keys |
 | `config/ConfigRow` | one row of the list: heading, setting, note, preview or action button |
+| `config/ItemValueRows` | the per-item thirst values on the Item Values page: one row per listed item, and the row that adds one |
 | `config/ConfigTheme` | the screen's colours and small drawing helpers |
 | `config/ConfigPreview` | the live thirst bar, food bar and tooltip on the AppleSkin page |
 | `platform/ClientVanilla` | client vanilla calls whose shape differs between Minecraft versions |
@@ -123,7 +124,40 @@ on every call, so it never holds a stale instance after Cancel.
 
 Reset (per row, or the footer's for the page or the search results) copies values from a
 `new ThirstConfig()` and rebuilds the rows, because controls show the value they were built with. The
-item maps are never reset from a button; they stay in the file, which Item Values opens.
+item maps are never reset from the footer, only one item row at a time.
+
+### Item values
+
+`ItemValueRows` puts the `drinks`, `foods` and `itemBlacklist` entries on the Item Values page, below its
+two switches and the Open button, which is now only for the keyword patterns. One row per id, sorted, so
+one mod's items sit together: icon and name, a thirst and a quenched box (0 to `ThirstData.MAX`), a
+switch that adds or removes the id from `itemBlacklist`, and reset. Reset puts back the mod's value for
+an id `new ThirstConfig()` lists, and takes the line out for any other; a default id is never removed,
+since `sanitize()` would merge it straight back. Ids of mods that are not installed are left off the
+page, with a note counting them, and stay in the file.
+
+Rows are grouped by namespace under a heading named by `Loader.modName` (the mod's own name, or the
+namespace when no mod has that id): vanilla first, then by name. A heading opens and closes its group.
+Only `minecraft` starts open. The open set is a static field, kept for the session, and adding an item
+opens its group. The search box finds item rows by id or name, and every item of a mod whose name or
+namespace matches, under their headings, always open.
+
+- **The icon is only drawn in a world** (`minecraft.level != null`), for the `ItemStack` reason below.
+  `ConfigTheme.item` calls `fakeItem`, which `stonecutter.gradle.kts` renames to `renderFakeItem`
+  before 26.1.
+- **26.1 removed `EditBox.setFilter`.** A box's responder puts the last valid text back instead.
+- **The integrated server reads the same config from its own thread.** An edit that adds or removes a
+  key replaces the map or set with an edited copy; a value edit puts a new array under an existing key.
+  Keep that when adding an edit: never restructure a map the server may be reading.
+- A new item goes into `drinks` with `drinkTagValue`, the value any tagged drink gets. The add box
+  completes an id from the item registry and Add takes the completion.
+
+### Mod Items
+
+Six switches, one per item a pack would replace (the three bowls are one). They change nothing on the
+spot: the recipe condition is read as data loads, and the creative tab is filled when the client builds
+it. So the page opens with a note saying a change needs `/reload` or rejoining, and a restart on a
+dedicated server, which reads its own file only on start.
 
 `ConfigPreview` sweeps quenched and saturation over 3.2 seconds, and its exhaustion strip fills once
 per sweep, drawn separately from the bar so the droplets never show a drain: the same loop as

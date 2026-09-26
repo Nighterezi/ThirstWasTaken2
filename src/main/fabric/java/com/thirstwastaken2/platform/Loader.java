@@ -62,6 +62,11 @@ public final class Loader {
         return FabricLoader.getInstance().isModLoaded(modId);
     }
 
+    /** The name a mod gives itself, or {@code modId} when no mod has that id. */
+    public static String modName(String modId) {
+        return FabricLoader.getInstance().getModContainer(modId).map(mod -> mod.getMetadata().getName()).orElse(modId);
+    }
+
     /**
      * Runs {@code registration} when {@code registry} accepts new entries.
      *
@@ -70,6 +75,14 @@ public final class Loader {
      */
     public static void onRegister(ResourceKey<? extends Registry<?>> registry, Runnable registration) {
         registration.run();
+    }
+
+    /**
+     * Registers the {@code thirstwastaken2:item_enabled} load condition the mod's recipes carry, so a
+     * recipe for an item the config switches off is skipped as it loads. See {@link ItemEnabledCondition}.
+     */
+    public static void registerResourceConditions() {
+        ItemEnabledCondition.register();
     }
 
     /** Registers a per-player value, saved with {@code codec} and synced to its owner with {@code streamCodec}. */

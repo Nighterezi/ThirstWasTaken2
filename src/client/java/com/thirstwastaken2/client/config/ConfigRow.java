@@ -20,14 +20,14 @@ import java.util.List;
  */
 abstract class ConfigRow {
     static final int OPTION_HEIGHT = 22;
-    private static final int CONTROL_HEIGHT = 20;
-    private static final int RESET_WIDTH = 20;
-    private static final int GAP = 4;
-    private static final int PADDING = 6;
+    static final int CONTROL_HEIGHT = 20;
+    static final int RESET_WIDTH = 20;
+    static final int GAP = 4;
+    static final int PADDING = 6;
 
     private final List<AbstractWidget> widgets;
 
-    private ConfigRow(List<AbstractWidget> widgets) {
+    ConfigRow(List<AbstractWidget> widgets) {
         this.widgets = widgets;
     }
 
@@ -49,7 +49,7 @@ abstract class ConfigRow {
     /** Called every tick while the row is on screen. */
     void tick() { }
 
-    private static Font font() {
+    static Font font() {
         return Minecraft.getInstance().font;
     }
 
@@ -154,7 +154,7 @@ abstract class ConfigRow {
     }
 
     /** A circular arrow, one row per string, drawn a GUI pixel at a time so it stays crisp at any scale. */
-    private static final String[] RESET_ICON = {
+    static final String[] RESET_ICON = {
             "..####.#",
             ".#....##",
             "#....###",
@@ -167,20 +167,21 @@ abstract class ConfigRow {
 
     private static void paintReset(GuiGraphicsExtractor graphics, AbstractWidget widget,
                                    int mouseX, int mouseY) {
+        paintIconButton(graphics, widget, RESET_ICON, ConfigTheme.CHANGED);
+    }
+
+    /**
+     * A square button showing {@code icon}, 8x8 as strings of {@code #}, in {@code color}: faint while
+     * inactive and white while hovered.
+     */
+    static void paintIconButton(GuiGraphicsExtractor graphics, AbstractWidget widget, String[] icon, int color) {
         int x = widget.getX();
         int y = widget.getY();
         boolean lit = widget.active && widget.isHoveredOrFocused();
         graphics.fill(x, y, x + widget.getWidth(), y + widget.getHeight(), lit ? ConfigTheme.ROW_HOVER : ConfigTheme.ROW);
         ConfigTheme.border(graphics, x, y, widget.getWidth(), widget.getHeight(), lit ? ConfigTheme.ACCENT : ConfigTheme.LINE);
-        int color = !widget.active ? ConfigTheme.FAINT : lit ? ConfigTheme.TEXT : ConfigTheme.CHANGED;
-        int left = x + (widget.getWidth() - 8) / 2;
-        int top = y + (widget.getHeight() - 8) / 2;
-        for (int row = 0; row < RESET_ICON.length; row++) {
-            for (int column = 0; column < RESET_ICON[row].length(); column++) {
-                if (RESET_ICON[row].charAt(column) != '#') continue;
-                graphics.fill(left + column, top + row, left + column + 1, top + row + 1, color);
-            }
-        }
+        int shade = !widget.active ? ConfigTheme.FAINT : lit ? ConfigTheme.TEXT : color;
+        ConfigTheme.glyph(graphics, icon, x + (widget.getWidth() - 8) / 2, y + (widget.getHeight() - 8) / 2, shade);
     }
 
     /** A labelled button that is not a setting, such as opening the config file. */

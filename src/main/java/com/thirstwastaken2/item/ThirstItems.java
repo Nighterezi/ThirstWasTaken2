@@ -2,6 +2,7 @@ package com.thirstwastaken2.item;
 
 import com.thirstwastaken2.ThirstWasTaken2;
 import com.thirstwastaken2.block.ThirstBlocks;
+import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.platform.DrinkItem;
 import com.thirstwastaken2.platform.Loader;
 import com.thirstwastaken2.platform.Vanilla;
@@ -15,6 +16,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
 
 public final class ThirstItems {
     /** Custom model data index the filled bowl's sprite dispatches on: its grade, with salt one past. */
@@ -73,21 +76,22 @@ public final class ThirstItems {
      */
     public static void register() { }
 
-    /** Registers the creative tab. Runs after {@link #register}. */
+    /**
+     * Registers the creative tab. Runs after {@link #register}. An item the config switches off is left
+     * out; the tab is filled when the client builds it, so it follows the client's own config, and a
+     * change shows once the tab is built again, on the next join.
+     */
     public static void registerCreativeTab() {
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, CREATIVE_TAB_KEY,
                 Loader.creativeTabBuilder()
                         .title(Component.translatable("itemGroup.thirstwastaken2"))
                         .icon(() -> new ItemStack(WATERSKIN))
                         .displayItems((parameters, entries) -> {
-                            entries.accept(CLAY_BOWL);
-                            entries.accept(TERRACOTTA_BOWL);
-                            entries.accept(TERRACOTTA_WATER_BOWL);
-                            entries.accept(WATERSKIN);
-                            entries.accept(COPPER_CANTEEN);
-                            entries.accept(IRON_FLASK);
-                            entries.accept(COPPER_HANGING_POT);
-                            entries.accept(IRON_HANGING_POT);
+                            ThirstConfig config = ThirstConfig.get();
+                            for (Item item : List.of(CLAY_BOWL, TERRACOTTA_BOWL, TERRACOTTA_WATER_BOWL, WATERSKIN,
+                                    COPPER_CANTEEN, IRON_FLASK, COPPER_HANGING_POT, IRON_HANGING_POT)) {
+                                if (config.isItemEnabled(Vanilla.itemId(item).toString())) entries.accept(item);
+                            }
                         })
                         .build());
     }

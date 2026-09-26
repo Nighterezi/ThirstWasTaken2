@@ -13,9 +13,10 @@ import java.util.List;
 
 /**
  * One page of the config screen: its icon in the sidebar, its settings, and any rows that are not a
- * setting. Every scalar in {@link ThirstConfig} belongs to exactly one page; the per-item maps and the
- * keyword patterns stay in the file, which Item Values opens. Reset puts back exactly the page's
- * entries, so the maps are never reset from a button.
+ * setting. Every scalar in {@link ThirstConfig} belongs to exactly one page. The per-item values are
+ * edited item by item on Item Values ({@link ItemValueRows}); the keyword patterns stay in the file,
+ * which Item Values opens. Reset puts back exactly the page's entries, so the item values are never
+ * reset from the footer, only one row at a time.
  */
 enum ConfigCategory {
     THIRST("thirst", ThirstWasTaken2.id("textures/item/waterskin_3.png"), List.of(
@@ -58,11 +59,32 @@ enum ConfigCategory {
             ConfigEntry.toggle("enable_keyword_matching",
                     config -> config.enableKeywordMatching, (config, value) -> config.enableKeywordMatching = value))) {
         @Override
-        void addTrailingRows(List<ConfigRow> rows) {
+        void addTrailingRows(List<ConfigRow> rows, Runnable refresh) {
             rows.add(ConfigRow.action(Component.translatable("thirstwastaken2.config.open_file"),
                     Component.translatable("thirstwastaken2.config.open_file.tooltip"),
                     Component.translatable("thirstwastaken2.config.open_file.button"),
                     () -> ClientVanilla.openPath(ThirstConfig.path())));
+            ItemValueRows.addPage(rows, refresh);
+        }
+    },
+
+    MOD_ITEMS("mod_items", ThirstWasTaken2.id("textures/item/copper_canteen.png"), List.of(
+            ConfigEntry.toggle("enable_bowls",
+                    config -> config.enableBowls, (config, value) -> config.enableBowls = value),
+            ConfigEntry.toggle("enable_waterskin",
+                    config -> config.enableWaterskin, (config, value) -> config.enableWaterskin = value),
+            ConfigEntry.toggle("enable_copper_canteen",
+                    config -> config.enableCopperCanteen, (config, value) -> config.enableCopperCanteen = value),
+            ConfigEntry.toggle("enable_iron_flask",
+                    config -> config.enableIronFlask, (config, value) -> config.enableIronFlask = value),
+            ConfigEntry.toggle("enable_copper_hanging_pot",
+                    config -> config.enableCopperHangingPot, (config, value) -> config.enableCopperHangingPot = value),
+            ConfigEntry.toggle("enable_iron_hanging_pot",
+                    config -> config.enableIronHangingPot, (config, value) -> config.enableIronHangingPot = value))) {
+        @Override
+        void addLeadingRows(List<ConfigRow> rows) {
+            // Recipes are only read as data loads, so a switch here does nothing until the next load.
+            rows.add(ConfigRow.note(Component.translatable("thirstwastaken2.config.mod_items_reload")));
         }
     };
 
@@ -96,6 +118,6 @@ enum ConfigCategory {
     /** Rows placed between the page heading and its settings. */
     void addLeadingRows(List<ConfigRow> rows) { }
 
-    /** Rows placed after the page's settings. */
-    void addTrailingRows(List<ConfigRow> rows) { }
+    /** Rows placed after the page's settings. {@code refresh} rebuilds the page, for a row that adds or removes rows. */
+    void addTrailingRows(List<ConfigRow> rows, Runnable refresh) { }
 }

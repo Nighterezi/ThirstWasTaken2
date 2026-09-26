@@ -119,6 +119,20 @@ right per version, and prepends `fabric:load_conditions`.
 A new provider has to be added to `ThirstDatagen.onInitializeDataGenerator` or it never runs, and
 nothing fails to tell you so.
 
+## The Mod Items condition
+
+Every recipe that makes, fills or cleans one of the mod's own items carries
+`{"condition": "thirstwastaken2:item_enabled", "item": <that item>}`, and so does its unlock, so a pack
+that switches the item off in the config loses both on the next data load. The bottle and bucket
+purification recipes carry none. `Recipes` is a static class and cannot call the outer provider's
+`withConditions`, so the provider hands it `this::withConditions` and `Recipes.enabled(item)` wraps the
+output with it; every `save` and `accept` for one of the mod's items goes through that. The Cooking Pot
+bowl recipe adds the same condition to its `fabric:all_mods_loaded` list by hand.
+
+The condition class is `platform/ItemEnabledCondition` in `src/main/fabric`, which datagen can see. A
+new recipe for one of the mod's items goes through `enabled(...)` too, and `ModItemsGameTest` lists the
+files each switch should take away.
+
 ## What is not generated
 
 Textures, the hanging pot's three Blockbench models, `icon.png`, `font/droplets.json`, the nine `lang/` files and

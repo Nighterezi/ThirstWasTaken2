@@ -5,6 +5,10 @@
       "values": [
         "farmersdelight"
       ]
+    },
+    {
+      "condition": "thirstwastaken2:item_enabled",
+      "item": "thirstwastaken2:terracotta_water_bowl"
     }
   ],
   "parent": "minecraft:recipes/root",

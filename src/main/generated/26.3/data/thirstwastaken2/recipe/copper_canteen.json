@@ -1,4 +1,10 @@
 {
+  "fabric:load_conditions": [
+    {
+      "condition": "thirstwastaken2:item_enabled",
+      "item": "thirstwastaken2:copper_canteen"
+    }
+  ],
   "type": "minecraft:crafting_shaped",
   "key": {
     "C": "#c:ingots/copper",

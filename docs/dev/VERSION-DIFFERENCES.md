@@ -133,6 +133,8 @@ versions write `recipe`. Nothing else in the generated files moved.
 |---|---|
 | A player's action bar message has its own method, `sendOverlayMessage` | `Vanilla.sendOverlayMessage`, which the Kaleidoscope Cookery Teapot's sea water refusal calls |
 | The HUD draw target was renamed `GuiGraphicsExtractor` | replacement |
+| Its `renderFakeItem` became `fakeItem` | replacement; `ConfigTheme.item` |
+| `EditBox` lost `setFilter` | none: `ItemValueRows.valueBox` undoes an invalid keystroke in its responder, on every version |
 | A block's render layer follows its textures, so a cut-out model needs no registration | `ClientLoader.renderCutout`; before it Fabric registers the layer and NeoForge reads `render_type` from the model |
 | Blockstate definitions became `BlockStateModelDispatcher` | `HangingPotModels` |
 | A widget draws in `extractWidgetRenderState` rather than `renderWidget`, and `drawString` became `text` | `ClientVanilla.canvas`, `ClientVanilla.button`, `ClientVanilla.text` |
@@ -254,6 +256,9 @@ it makes no difference to any jar.
 - **Loot tables from vanilla's experiment packs** are reported as built in by Fabric API on 1.21.1 and
   as a data pack's on later versions. The mod adds its loot to every table regardless of source, so
   this has no effect; it is recorded because it is why the mod stopped filtering by source.
+- **A resource condition's `test`** takes a `RegistryOps.RegistryInfoLookup` from 1.21.2 and a
+  `HolderLookup.Provider` on 1.21.1. `platform/ItemEnabledCondition` in `src/main/fabric` forks for it
+  (written `>=1.21.2`); it reads neither. `FabricRecipeProvider.withConditions` is the same on every node.
 
 ## Keeping this page true
 

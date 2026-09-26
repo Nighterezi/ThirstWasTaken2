@@ -101,7 +101,7 @@ public final class FarmersDelightRecipeProvider implements DataProvider {
         }
         Ingredient anyGrade = DefaultCustomIngredients.any(grades.toArray(Ingredient[]::new));
 
-        JsonObject json = conditional(ops);
+        JsonObject json = conditional(container, ops);
         json.addProperty("type", COOKING);
         json.addProperty("recipe_book_tab", "drinks");
         JsonArray ingredients = new JsonArray();
@@ -132,17 +132,22 @@ public final class FarmersDelightRecipeProvider implements DataProvider {
                 .build(ThirstWasTaken2.id("recipes/misc/" + name(container)))
                 .value();
 
-        JsonObject json = conditional(ops);
+        JsonObject json = conditional(container, ops);
         encode(Advancement.CODEC, advancement, ops).getAsJsonObject().entrySet()
                 .forEach(entry -> json.add(entry.getKey(), entry.getValue()));
         return json;
     }
 
-    /** A JSON object that only loads alongside Farmer's Delight. */
-    private static JsonObject conditional(DynamicOps<JsonElement> ops) {
+    /**
+     * A JSON object that only loads alongside Farmer's Delight, and for the bowl only while the config
+     * leaves the bowls switched on, as the bowl's other recipes do.
+     */
+    private static JsonObject conditional(Container container, DynamicOps<JsonElement> ops) {
+        List<ResourceCondition> conditions = new ArrayList<>();
+        conditions.add(ResourceConditions.allModsLoaded(FarmersDelight.MOD_ID));
+        if (container.bowl()) conditions.add(ThirstRecipeProvider.itemEnabled(container.item()));
         JsonObject json = new JsonObject();
-        json.add(ResourceConditions.CONDITIONS_KEY, encode(ResourceCondition.LIST_CODEC,
-                List.of(ResourceConditions.allModsLoaded(FarmersDelight.MOD_ID)), ops));
+        json.add(ResourceConditions.CONDITIONS_KEY, encode(ResourceCondition.LIST_CODEC, conditions, ops));
         return json;
     }
 

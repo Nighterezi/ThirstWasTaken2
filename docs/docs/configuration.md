@@ -83,7 +83,9 @@ Default `true`. Shows the thirst and quenched droplets in tooltips.
 
 ### drinks and foods
 
-Two lists in the file only. Each entry is an item id and its thirst and quenched:
+Two lists of item ids and their thirst and quenched. The **Item Values** page shows one row per item,
+with a box for each number, a switch that puts the item in `itemBlacklist`, and a row to add an item.
+In the file they look like this:
 
 ```json
 "drinks": {
@@ -120,3 +122,34 @@ Words matched against the item id, separated by `|`. Matches are worth `keywordD
 ### keywordBlacklist
 
 Words that stop a guess, so `melon_seed` is not treated as fruit. Only applies to guesses.
+
+## Mod items
+
+For a modpack that brings its own canteen or pot. A switch that is off stops the item being crafted
+and hides it from the creative tab. Items that already exist keep working, and the item stays in the
+game, so worlds that hold one still load.
+
+Changes apply after `/reload`, or on rejoining a singleplayer world. A dedicated server reads the file
+only on start, so it needs a restart. Recipe viewers such as JEI and EMI still list a switched-off
+item.
+
+### enableBowls
+
+Default `true`. The Clay Bowl, the Terracotta Bowl and the filled bowl, together, since one is no use
+without the others. Off also removes boiling water in a bowl.
+
+### enableWaterskin
+
+Default `true`. The Waterskin.
+
+### enableCopperCanteen
+
+Default `true`. The Copper Canteen.
+
+### enableIronFlask
+
+Default `true`. The Iron Flask, and cleaning its water in a furnace.
+
+### enableCopperHangingPot and enableIronHangingPot
+
+Default `true`. The Copper Hanging Pot and the Iron Hanging Pot, one switch each.

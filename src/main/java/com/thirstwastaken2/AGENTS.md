@@ -14,6 +14,7 @@ thirst, and the client only receives it through the `PlayerData` sync.
 | Drain rate, climate, damage, full-bar drinking rules, hand drinking | `data/ThirstManager` |
 | The state record itself (thirst, quenched, exhaustion) | `data/ThirstData` |
 | A new config key | `config/ThirstConfig` (field + `sanitize()`), then the client config screen |
+| Switching off the mod's own items (Mod Items page) | `config/ThirstConfig.isItemEnabled`, read by the `item_enabled` recipe condition (`platform/Loader.registerResourceConditions`, the generators in `src/datagen`) and by the creative tab |
 | Bowls, waterskin, copper canteen, iron flask, creative tab | `item/` (the three carried containers are one class, `WaterskinItem`; see `docs/dev/mechanics/CANTEEN-AND-FLASK.md`) |
 | The mod's own mob effects (Parched) | `effect/ThirstEffects`; what they do lives where they matter, e.g. Parched's drain in `ThirstManager.tickPlayer` |
 | The copper and iron hanging pots: capacity, boiling, filling and drawing | `block/` |
@@ -32,7 +33,7 @@ thirst, and the client only receives it through the `PlayerData` sync.
 order matters:
 `ThirstConfig.load()` → `ThirstData.register()` → `ThirstBlocks.register()` →
 `ThirstComponents.register()` → `ThirstItems.register()` → `ThirstItems.registerCreativeTab()` →
-`ThirstEffects.register()` → `LootIntegration.register()` → events.
+`ThirstEffects.register()` → `LootIntegration.register()` → `Loader.registerResourceConditions()` → events.
 Nothing in this source set may import a mod loader's API; it goes through `platform/Loader` (see
 `platform/AGENTS.md`).
 

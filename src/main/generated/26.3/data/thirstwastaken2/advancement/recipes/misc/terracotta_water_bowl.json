@@ -1,4 +1,10 @@
 {
+  "fabric:load_conditions": [
+    {
+      "condition": "thirstwastaken2:item_enabled",
+      "item": "thirstwastaken2:terracotta_water_bowl"
+    }
+  ],
   "parent": "minecraft:recipes/root",
   "criteria": {
     "has_terracotta_bowl": {
