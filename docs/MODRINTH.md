@@ -214,17 +214,14 @@
       <img alt="A fruiting orange tree from Fruits Delight beside a lemonade cauldron and crates of oranges, lemons and pears in a plains village" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/integrations/fruits-delight/fruits-orchard.png" width="100%">
     </td>
   </tr>
-  <tr>
-    <td width="55%">
-      <b><a href="https://n1ght3r.github.io/ThirstWasTaken2/docs/configuration">Settings screen</a></b><br>
-      <i>Fabric and NeoForge</i><br><br>
-      Configure the mod in game with a live HUD preview. Fabric requires <a href="https://modrinth.com/mod/modmenu">Mod Menu</a>; NeoForge uses the Config button in its Mods list.
-    </td>
-    <td width="45%">
-      <img alt="The ThirstWasTaken2 settings screen on its AppleSkin page, with the live preview" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/config/config-appleskin.png" width="100%">
-    </td>
-  </tr>
 </table>
+
+## Settings Screen
+Every setting can be changed in game, with a live preview of the thirst bar and its tooltips. Pages cover thirst, water, AppleSkin, what each item restores, which of the mod's items are enabled, and container sizes and boil times. Fabric requires <a href="https://modrinth.com/mod/modmenu">Mod Menu</a>; NeoForge uses the Config button in its Mods list.
+
+<p align="center">
+  <img alt="The ThirstWasTaken2 settings screen: a slider and a switch on the Thirst page, the Water tabs, the AppleSkin preview changing outline, the item list scrolling, and the Containers page" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/config/config-showcase.gif" width="100%">
+</p>
 
 ## Version Support
 
