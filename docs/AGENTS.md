@@ -27,7 +27,9 @@ npm run docs:build    # must pass before you call a docs change done
 folder), and pages listing config keys directly in `docs/`. A new integration page also goes in the
 sidebar's Integrations group in `.vitepress/config.mts`, and its row in `MODRINTH.md` and
 `CURSEFORGE.md` goes above the Farmer's Delight group, or inside it for an addon, so the Farmer's
-Delight mods stay together at the bottom of the table.
+Delight mods stay together at the bottom of the table. A small integration with nothing of its own to
+picture (Cultural Delights, Fruits Delight, Serene Seasons) gets no row: one line in the list under the
+table, linking its page.
 
 ## Style
 

@@ -131,7 +131,8 @@ is `thirstwastaken2.config.group.<page>.<section>`, in all nine lang files.
 
 A setting that does nothing without another mod is built `.requires("<mod id>")` and left off the
 page, the search and Reset while that mod is missing; its value stays in the file. Cold Sweat Climate
-is one.
+is one. A tab left with no settings that way is dropped too (Thirst's Seasons tab without Serene
+Seasons), and a page left with one tab shows no strip.
 
 A setting row is its name (amber, with an amber bar, when it differs from the default), its control,
 and a reset button beside it; the row's tooltip is the description. Rows scroll a whole row at a time,

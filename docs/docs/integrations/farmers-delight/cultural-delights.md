@@ -1,5 +1,7 @@
 # Cultural Delights
 
+![Cultural Delights](https://cdn.modrinth.com/data/cached_images/d6a323ce1e69b76f2143b3c0e03bd9ce36fc69e1.png)
+
 With Cultural Delights installed, its drinks and watery foods restore thirst, and its Vat brews nothing
 from sea water.
 
@@ -8,8 +10,6 @@ Everything on this page works on NeoForge, Minecraft 1.21.1, with
 [Cultural Delights](https://modrinth.com/mod/cultural-delights) 0.18.1. Its Fabric build has not been
 updated since 0.17, so it has no Vat and no drinks. Its cucumbers and salad still restore thirst there.
 :::
-
-![A Cultural Delights Vat between barrels and crates of cucumbers, corn and eggplants in a plains village](/screenshots/integrations/cultural-delights/cultural-vat.png)
 
 ## Drinks and foods
 

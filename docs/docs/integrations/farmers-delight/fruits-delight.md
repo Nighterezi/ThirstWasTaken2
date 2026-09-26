@@ -8,8 +8,6 @@ Everything on this page works on NeoForge, Minecraft 1.21.1, with
 build for a newer Minecraft version.
 :::
 
-![A fruiting orange tree from Fruits Delight beside a lemonade cauldron and crates of oranges, lemons and pears in a plains village](/screenshots/integrations/fruits-delight/fruits-orchard.png)
-
 ## Drinks and foods
 
 | Item | Thirst | Quenched |

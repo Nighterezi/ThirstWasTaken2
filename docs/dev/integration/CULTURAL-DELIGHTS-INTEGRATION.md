@@ -125,9 +125,10 @@ brews.
 ## 5. Docs (done)
 
 `CHANGELOG.md` (Unreleased), [the site's page](../../docs/integrations/farmers-delight/cultural-delights.md) and its
-sidebar entry, the NeoForge row in `docs/docs/installation.md`, and the Modrinth and CurseForge rows,
-with `docs/public/screenshots/integrations/cultural-delights/cultural-vat.png` staged in a plains
-village (see the `capture-screenshots` skill).
+sidebar entry, the NeoForge row in `docs/docs/installation.md`, and a line under the Modrinth and
+CurseForge compatibility tables. A picture of the Vat in a village was taken and later dropped as
+showing only the mod's own blocks; the site's page opens with Cultural Delights' own banner, linked
+straight from its Modrinth page (`cdn.modrinth.com`) rather than copied into the repository.
 
 ## 6. Optional seam (done)
 

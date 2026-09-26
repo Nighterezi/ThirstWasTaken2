@@ -41,6 +41,18 @@ the player, hearths and shade included, instead of the biome's. Does nothing wit
 when Cold Sweat is installed. See
 [Cold Sweat](/docs/integrations/cold-sweat#climate).
 
+### sereneSeasonsClimate
+
+Default `true`. With Serene Seasons installed, the drain follows the season, and tropical biomes follow
+their wet and dry seasons. Shown on the Seasons tab, which only appears with Serene Seasons. See
+[Serene Seasons](/docs/integrations/serene-seasons).
+
+### seasonDrainSpring, seasonDrainSummer, seasonDrainAutumn, seasonDrainWinter
+
+Defaults `1.0`, `1.15`, `1.0` and `0.9`, shown as percentages from `25%` to `400%`. The drain speed in
+the middle of each season, with Serene Seasons installed. Between two seasons the speed moves from one
+to the other a little each day.
+
 ## Water
 
 ![The Water page, split into Drinking, Quenched, Sea Water and Rain and Dripstone tabs](/screenshots/config/config-water.png)

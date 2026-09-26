@@ -36,6 +36,7 @@ const manualSidebar = [
       { text: 'Supplementaries', link: '/docs/integrations/supplementaries' },
       { text: 'Kaleidoscope Cookery', link: '/docs/integrations/kaleidoscope-cookery' },
       { text: 'Cold Sweat', link: '/docs/integrations/cold-sweat' },
+      { text: 'Serene Seasons', link: '/docs/integrations/serene-seasons' },
       {
         // Farmer's Delight and its addons, together.
         text: "Farmer's Delight",

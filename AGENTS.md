@@ -180,6 +180,7 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | Cold Sweat | `deps.cold_sweat`: `1.21.1-neoforge` | [src/main/coldsweat/AGENTS.md](src/main/coldsweat/AGENTS.md) |
 | Fruits Delight | `deps.fruits_delight`: `1.21.1-neoforge` | [src/main/fruitsdelight/AGENTS.md](src/main/fruitsdelight/AGENTS.md) |
 | Cultural Delights | `deps.cultural_delights`: `1.21.1-neoforge` (the Fabric port stopped at 0.17 and is not built against) | [src/main/culturaldelights/AGENTS.md](src/main/culturaldelights/AGENTS.md) |
+| Serene Seasons | `deps.serene_seasons`: every node, both loaders | [src/main/sereneseasons/AGENTS.md](src/main/sereneseasons/AGENTS.md) |
 
 ### Adding an integration
 
@@ -193,7 +194,10 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 4. Put its version differences in `com.thirstwastaken2.<integration>.platform`, or in core
    `platform/Vanilla` when the difference is vanilla's. `checkVersionSeam` fails on a `//?` anywhere else.
 5. Gate it at runtime and keep it off the load path. `checkOptionalSeam` checks that, and that core
-   code never names its package, which it reads from the table.
+   code never names its package, which it reads from the table. An integration both loaders compile that has to run
+   code at init can carry neither `@Mod` nor `ModInitializer`: make it a `Runnable` marked
+   `platform/IntegrationEntrypoint` and list it under `thirstwastaken2:integration` in its row's
+   `fabricEntrypoints` (Serene Seasons does).
 
 ## Where to look
 
@@ -220,6 +224,7 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | Cold Sweat: the plan, its decisions and what was found in game (1.21.1 NeoForge) | [docs/dev/integration/COLD-SWEAT-INTEGRATION.md](docs/dev/integration/COLD-SWEAT-INTEGRATION.md) |
 | Fruits Delight: the plan, its decisions and what was found in game (1.21.1 NeoForge) | [docs/dev/integration/FRUITS-DELIGHT-INTEGRATION.md](docs/dev/integration/FRUITS-DELIGHT-INTEGRATION.md) |
 | Cultural Delights: the plan, its decisions and what was found in game (1.21.1 NeoForge) | [docs/dev/integration/CULTURAL-DELIGHTS-INTEGRATION.md](docs/dev/integration/CULTURAL-DELIGHTS-INTEGRATION.md) |
+| Serene Seasons: the plan, its decisions and what was found in game (every node) | [docs/dev/integration/SERENE-SEASONS-INTEGRATION.md](docs/dev/integration/SERENE-SEASONS-INTEGRATION.md) |
 | Bad-water sickness rework: the design | [docs/dev/mechanics/WATER-SICKNESS.md](docs/dev/mechanics/WATER-SICKNESS.md) |
 | Bad-water sickness rework: where the code goes, step by step | [docs/dev/mechanics/WATER-SICKNESS-IMPLEMENTATION.md](docs/dev/mechanics/WATER-SICKNESS-IMPLEMENTATION.md) |
 | Copper Canteen and Iron Flask: capacity, boiling in hand, the flask's furnace recipes | [docs/dev/mechanics/CANTEEN-AND-FLASK.md](docs/dev/mechanics/CANTEEN-AND-FLASK.md) |

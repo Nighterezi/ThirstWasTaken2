@@ -172,6 +172,9 @@ val coldSweatVersion = findProperty("deps.cold_sweat") as String?
 /** Cultural Delights' Modrinth version id, on `1.21.1-neoforge` only. See src/main/culturaldelights/AGENTS.md. */
 val culturalDelightsVersion = findProperty("deps.cultural_delights") as String?
 
+/** Serene Seasons' Modrinth version id, on every node. See src/main/sereneseasons/AGENTS.md. */
+val sereneSeasonsVersion = findProperty("deps.serene_seasons") as String?
+
 /*
  * The same gametests the Fabric nodes run, as their own small mod, so none of it reaches the jar.
  * `src/gametest/neoforge` holds the harness that finds and registers them, in place of Fabric API's;
@@ -448,9 +451,13 @@ dependencies {
 
     if (coldSweatVersion != null) {
         compileOnly("maven.modrinth:cold-sweat:$coldSweatVersion") { isTransitive = false }
-        // Test the climate, the waterskin and the Boiler in runClient. The gametests and runServer run
-        // without it, which is what proves the mod is unchanged when it is absent.
-        runClientMod(listOf("cold-sweat", "cold_sweat"), "maven.modrinth:cold-sweat:$coldSweatVersion") { isTransitive = false }
+        // Off in runClient by default: its temperature gauge, HUD icon and world changes get into every
+        // other test and screenshot. Uncomment the line below only to work on the Cold Sweat integration
+        // (the climate, the waterskin, the Boiler). The gametests and runServer run without it, which is
+        // what proves the mod is unchanged when it is absent.
+        // runClientMod(listOf("cold-sweat", "cold_sweat"), "maven.modrinth:cold-sweat:$coldSweatVersion") { isTransitive = false }
+        // Keeps `-PwithoutOptional=cold-sweat` in the agent scripts a known name while the line above is off.
+        optionalRunMods.include(listOf("cold-sweat", "cold_sweat"))
     }
 
     if (culturalDelightsVersion != null) {
@@ -461,6 +468,23 @@ dependencies {
             "maven.modrinth:cultural-delights:$culturalDelightsVersion") { isTransitive = false }
         runClientMod(listOf("cooks-collection", "cookscollection", "cultural-delights", "culturaldelights"),
             "maven.modrinth:cooks-collection:${property("deps.cooks_collection")}") { isTransitive = false }
+    }
+
+    if (sereneSeasonsVersion != null) {
+        val glitchCoreVersion = property("deps.glitchcore").toString()
+        // GlitchCore is compiled against too: before 26.2 the dimension check reads Serene Seasons'
+        // config, whose class extends one of GlitchCore's.
+        compileOnly("maven.modrinth:serene-seasons:$sereneSeasonsVersion") { isTransitive = false }
+        compileOnly("maven.modrinth:glitchcore:$glitchCoreVersion") { isTransitive = false }
+        // Off in runClient, for the reason build.gradle.kts gives. Uncomment the two lines below only to
+        // work on the Serene Seasons integration. The gametests and runServer run without it, which is
+        // what proves the mod is unchanged when it is absent. NeoForge loads the Night Config nested in
+        // their jars itself.
+        val names = listOf("serene-seasons", "sereneseasons")
+        // runClientMod(names, "maven.modrinth:serene-seasons:$sereneSeasonsVersion") { isTransitive = false }
+        // runClientMod(names + listOf("glitchcore"), "maven.modrinth:glitchcore:$glitchCoreVersion") { isTransitive = false }
+        // Keeps `-PwithoutOptional=serene-seasons` in the agent scripts a known name while the lines above are off.
+        optionalRunMods.include(names + listOf("glitchcore"))
     }
 
     // A name no node loads is refused in stonecutter.gradle.kts, once every node has said what it takes.

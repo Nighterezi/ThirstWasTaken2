@@ -243,6 +243,11 @@ val kaleidoscopeCookery = findProperty("deps.kaleidoscope_cookery") as String?
 val brewinAndChewin = findProperty("deps.brewin_and_chewin") as String?
 
 /**
+ * Serene Seasons' Modrinth version id, on every node. See docs/dev/integration/SERENE-SEASONS-INTEGRATION.md.
+ */
+val sereneSeasons = findProperty("deps.serene_seasons") as String?
+
+/**
  * The mods a Modrinth mod bundles inside its own jar: Moonlight's CodecUI, which it reads on its first
  * line, the Night Config that Forge Config API Port is built on, and Brewin' and Chewin's Greenhouse
  * Config, whose TOML support nests a Night Config of its own. Loom does not unpack a dependency's
@@ -463,6 +468,28 @@ dependencies {
         val names = listOf("brewin-and-chewin", "brewinandchewin")
         runClientMod(names, "maven.modrinth:brewin-and-chewin:$brewinAndChewin")
         runClientMod(names, files(nestedMods("brewin-and-chewin", brewinAndChewin)))
+    }
+
+    if (sereneSeasons != null) {
+        val glitchCore = property("deps.glitchcore").toString()
+        // Read through its API alone, but its 1.21.x jars are in intermediary names, so it is a remapped
+        // mod like the others. GlitchCore and the Night Config nested in Serene Seasons are compiled
+        // against too: before 26.2 the dimension check reads Serene Seasons' config, whose class extends
+        // GlitchCore's, which extends Night Config's.
+        "modCompileOnly"("maven.modrinth:serene-seasons:$sereneSeasons") { isTransitive = false }
+        "modCompileOnly"("maven.modrinth:glitchcore:$glitchCore") { isTransitive = false }
+        compileOnly(files(nestedMods("serene-seasons", sereneSeasons)))
+        // Off in runClient: it recolours grass and leaves by the season and snows on plains in winter,
+        // which gets into every other test and screenshot. Uncomment the three lines below only to work
+        // on the Serene Seasons integration. The gametests and runServer run without it, which is what
+        // proves the mod is unchanged when it is absent. The Night Config it nests comes out of its jar,
+        // since Loom leaves nested mods packed; GlitchCore nests the same one.
+        val names = listOf("serene-seasons", "sereneseasons")
+        // runClientMod(names, "maven.modrinth:serene-seasons:$sereneSeasons")
+        // runClientMod(names, files(nestedMods("serene-seasons", sereneSeasons)))
+        // runClientMod(names + listOf("glitchcore"), "maven.modrinth:glitchcore:$glitchCore")
+        // Keeps `-PwithoutOptional=serene-seasons` in the agent scripts a known name while the lines above are off.
+        optionalRunMods.include(names + listOf("glitchcore"))
     }
 
     // A name no node loads is refused in stonecutter.gradle.kts, once every node has said what it takes.

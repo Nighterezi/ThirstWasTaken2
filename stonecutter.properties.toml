@@ -51,6 +51,15 @@ deps.forge_config_api_port = "N5qzq0XV"
 # docs/dev/integration/BREWIN-AND-CHEWIN-INTEGRATION.md.
 # v4.5.0+1.21.1-fabric, the Fabric upload.
 deps.brewin_and_chewin = "O3PobqCR"
+# Serene Seasons, whose calendar speeds the thirst drain up in summer and slows it in winter. Every
+# node builds it, on both loaders. Pinned by Modrinth version id, since its uploads for different
+# loaders and Minecraft versions share version numbers. See src/main/sereneseasons/AGENTS.md.
+# 10.1.0.9, the Fabric upload.
+deps.serene_seasons = "q34wStJM"
+# GlitchCore, which Serene Seasons requires, only on the runClient classpath. Modrinth does not
+# list it as a dependency of the 26.x uploads, but their manifests require it all the same.
+# 2.1.0.2, the Fabric upload.
+deps.glitchcore = "sux8kYHe"
 
 [neoforge."1.21.1"]
 # NeoForge on 1.21.1 only. 1.21 is NeoForge 21.0, a separate generation, so unlike the Fabric jar this
@@ -108,6 +117,11 @@ deps.cooks_collection = "z1YUDQXH"
 # See src/main/fruitsdelight/AGENTS.md.
 # 1.2.14, the NeoForge upload.
 deps.fruits_delight = "TWbuEFZt"
+# Serene Seasons and GlitchCore, the same integration the Fabric table builds; see there.
+# 10.1.0.9, the NeoForge upload.
+deps.serene_seasons = "pHEgQQUE"
+# 2.1.0.2, the NeoForge upload.
+deps.glitchcore = "S2TfWrZR"
 
 ["1.21.11"]
 mod.mc_releases = ["1.21.11"]
@@ -129,6 +143,11 @@ deps.kaleidoscope_cookery = "Gns9Xmuq"
 # Forge Config API Port, which Kaleidoscope Cookery requires here, only on the runClient classpath.
 # 21.11.1, the Fabric upload.
 deps.forge_config_api_port = "uXrWPsCu"
+# Serene Seasons and GlitchCore, as in the 1.21.1 tables.
+# 21.11.0.4, the Fabric upload.
+deps.serene_seasons = "6GpaVF7N"
+# 21.11.0.4, the Fabric upload.
+deps.glitchcore = "CO7NeLTt"
 
 [neoforge."1.21.11"]
 mod.mc_compat = "[1.21.11,1.21.12)"
@@ -144,6 +163,11 @@ deps.sophisticated_core = "l0tJHroU"
 deps.sophisticated_backpacks = "MPfwVddi"
 # 1.21.11-1.5.102.2130, only on the runClient classpath.
 deps.sophisticated_storage = "PJ4lJy4t"
+# Serene Seasons and GlitchCore, as in the 1.21.1 tables.
+# 21.11.0.4, the NeoForge upload.
+deps.serene_seasons = "eDxStG5h"
+# 21.11.0.4, the NeoForge upload.
+deps.glitchcore = "6dbbrOrO"
 
 ["26.1.x"]
 mod.mc_releases = ["26.1", "26.1.1", "26.1.2"]
@@ -163,6 +187,11 @@ deps.create_fly = "26.1.2-6.0.9-4"
 # 26.1 on, so it is not named here.
 # 1.5.1.1-fabric+mc26.1.2, the Fabric upload.
 deps.kaleidoscope_cookery = "pHws6vCC"
+# Serene Seasons and GlitchCore, as in the 1.21.1 tables.
+# 26.1.2.0.7, the Fabric upload.
+deps.serene_seasons = "kxB8vG5W"
+# 26.1.2.0.2, the Fabric upload.
+deps.glitchcore = "WNtSATXw"
 
 [neoforge."26.1.x"]
 # Compiled against 26.1.2, like the Fabric node.
@@ -180,6 +209,11 @@ deps.sophisticated_core = "OoXooxvB"
 deps.sophisticated_backpacks = "3xlcYe9r"
 # 26.1.2-1.5.113.2133, only on the runClient classpath.
 deps.sophisticated_storage = "DGzw01EG"
+# Serene Seasons and GlitchCore, as in the 1.21.1 tables.
+# 26.1.2.0.7, the NeoForge upload.
+deps.serene_seasons = "atclxQCD"
+# 26.1.2.0.2, the NeoForge upload.
+deps.glitchcore = "mYUbCfgT"
 
 ["26.2.x"]
 # Releases to mark compatible when publishing.
@@ -207,6 +241,11 @@ deps.create_fly = "26.2-rc-2-6.0.9-1"
 # Kaleidoscope Cookery Refabricated, as in the 26.1.x table.
 # 1.5.1.1-fabric+mc26.2, the Fabric upload.
 deps.kaleidoscope_cookery = "jjvsGTGz"
+# Serene Seasons and GlitchCore, as in the 1.21.1 tables.
+# 26.1.2.0.6, the Fabric upload.
+deps.serene_seasons = "q5mzi8wy"
+# 26.2.0.0.0, the Fabric upload.
+deps.glitchcore = "SDUCBYRU"
 
 [neoforge."26.2.x"]
 # The NeoForge nodes build from the same sources as the Fabric ones; see
@@ -227,6 +266,11 @@ deps.sophisticated_core = "HJLJBWYT"
 deps.sophisticated_backpacks = "LPnOSNVg"
 # 26.2-1.5.114.2132, only on the runClient classpath.
 deps.sophisticated_storage = "9jOzQdN5"
+# Serene Seasons and GlitchCore, as in the 1.21.1 tables.
+# 26.1.2.0.6, the NeoForge upload.
+deps.serene_seasons = "MZd2wAtJ"
+# 26.2.0.0.0, the NeoForge upload.
+deps.glitchcore = "POAebwFo"
 
 ["26.3.x"]
 # Releases to mark compatible when publishing.
@@ -249,6 +293,11 @@ deps.farmersdelight = "26.3-3.6.27"
 # Kaleidoscope Cookery Refabricated, as in the 26.1.x table.
 # 1.5.1.1-fabric+mc26.3, the Fabric upload.
 deps.kaleidoscope_cookery = "gxwav1I9"
+# Serene Seasons and GlitchCore, as in the 1.21.1 tables.
+# 26.1.2.0.7, the Fabric upload.
+deps.serene_seasons = "V9PxJPuw"
+# 26.3.0.0.3, the Fabric upload.
+deps.glitchcore = "aaUghyGp"
 
 [neoforge."26.3.x"]
 # Range written into neoforge.mods.toml, in NeoForge's syntax.
@@ -263,3 +312,8 @@ deps.jade = "26.3.1+neoforge"
 # here rather than something the mod compiles against. Nor `deps.sophisticated_core`, which has no 26.3
 # build either, so this node skips the Sophisticated upgrades; see src/main/sophisticated/AGENTS.md.
 # Farmer's Delight and Create are absent for the reason the 26.2 table gives.
+# Serene Seasons and GlitchCore, as in the 1.21.1 tables.
+# 26.1.2.0.7, the NeoForge upload.
+deps.serene_seasons = "QnvW5HPm"
+# 26.3.0.0.3, the NeoForge upload.
+deps.glitchcore = "5FMzBcg1"

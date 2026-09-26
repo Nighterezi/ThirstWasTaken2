@@ -14,5 +14,8 @@ public final class ThirstWasTaken2Fabric implements ModInitializer {
         // Minecraft version the list is empty. See src/main/createfly/AGENTS.md.
         FabricLoader.getInstance().getEntrypoints("thirstwastaken2:createfly", ModInitializer.class)
                 .forEach(ModInitializer::onInitialize);
+        // The integrations both loaders compile, which may not name ModInitializer; see IntegrationEntrypoint.
+        FabricLoader.getInstance().getEntrypoints("thirstwastaken2:integration", Runnable.class)
+                .forEach(Runnable::run);
     }
 }

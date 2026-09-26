@@ -28,8 +28,8 @@ data class Integration(
     val dev: Boolean = false,
     /** Also has `src/main/<dir>-transfer` or `src/main/<dir>-fluidhandler`, by NeoForge's fluid API generation. */
     val fluidApiSplit: Boolean = false,
-    /** Its mixin config, named in the built manifest on a node that builds it. */
-    val mixinConfig: String,
+    /** Its mixin config, named in the built manifest on a node that builds it; null for one with no mixins. */
+    val mixinConfig: String? = null,
     /** Where the mixin config goes in `fabric.mod.json`'s `mixins`; appended when null. */
     val fabricMixinIndex: Int? = null,
     /** Entrypoints added to `fabric.mod.json`, appended to a key that already has some. */
@@ -58,7 +58,7 @@ data class Integration(
 
     /** What is appended to `neoforge.mods.toml`: the mixin config, then one optional dependency per mod. */
     fun neoForgeManifest(modId: String): String = buildString {
-        append("\n[[mixins]]\nconfig = \"$mixinConfig\"\n")
+        if (mixinConfig != null) append("\n[[mixins]]\nconfig = \"$mixinConfig\"\n")
         neoForgeDependencies.forEach { dependency ->
             append("\n[[dependencies.$modId]]\nmodId = \"$dependency\"\ntype = \"optional\"\nordering = \"NONE\"\nside = \"BOTH\"\n")
         }
@@ -68,7 +68,9 @@ data class Integration(
     fun patchFabricManifest(json: MutableMap<String, Any?>) {
         @Suppress("UNCHECKED_CAST")
         val mixins = json.getValue("mixins") as MutableList<Any?>
-        if (fabricMixinIndex != null) mixins.add(fabricMixinIndex, mixinConfig) else mixins.add(mixinConfig)
+        if (mixinConfig != null) {
+            if (fabricMixinIndex != null) mixins.add(fabricMixinIndex, mixinConfig) else mixins.add(mixinConfig)
+        }
         if (fabricEntrypoints.isEmpty()) return
         @Suppress("UNCHECKED_CAST")
         val entrypoints = json.getValue("entrypoints") as MutableMap<String, Any?>
@@ -191,6 +193,19 @@ val integrations: List<Integration> = listOf(
         loaders = setOf(Loader.NEOFORGE),
         mixinConfig = "thirstwastaken2.fruitsdelight.mixins.json",
         neoForgeDependencies = listOf("fruitsdelight"),
+    ),
+    // Both loaders and every node: Serene Seasons ships them all. No mixins; the calendar is read
+    // through its API when the drain recomputes, and the entrypoint hands the drain a SeasonalClimate.
+    // Fabric finds the entrypoint through `thirstwastaken2:integration`, NeoForge by its annotation.
+    // See src/main/sereneseasons/AGENTS.md.
+    Integration(
+        dir = "sereneseasons",
+        depsKey = "deps.serene_seasons",
+        loaders = setOf(Loader.FABRIC, Loader.NEOFORGE),
+        fabricEntrypoints = mapOf(
+            "thirstwastaken2:integration" to listOf("com.thirstwastaken2.sereneseasons.SereneSeasonsEntrypoint"),
+        ),
+        neoForgeDependencies = listOf("sereneseasons"),
     ),
 )
 

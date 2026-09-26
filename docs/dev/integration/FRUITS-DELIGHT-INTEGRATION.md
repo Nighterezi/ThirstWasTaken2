@@ -154,8 +154,9 @@ either way. Our config still wins over it. Not needed for anything above.
 ## 6. Docs (done)
 
 `CHANGELOG.md` (Unreleased), [the site's page](../../docs/integrations/farmers-delight/fruits-delight.md) and its sidebar
-entry, the NeoForge row in `docs/docs/installation.md`, and the Modrinth and CurseForge rows with
-`docs/public/screenshots/integrations/fruits-delight/fruits-orchard.png`, staged in a plains village.
+entry, the NeoForge row in `docs/docs/installation.md`, and a line under the Modrinth and CurseForge
+compatibility tables. A picture of an orange tree in a village was taken and later dropped as showing
+only the mod's own blocks, so neither the site nor the store pages have one.
 Step 4 added the root `AGENTS.md` integration row.
 
 ## 7. Optional seam (done)

@@ -84,9 +84,10 @@ final class ServerProbes {
          * and Fire Protection together, 1 being a plains biome at the default depletion. Read by
          * charging one point of exhaustion through the API from zero and putting the state back, on the
          * server's thread. The drain reuses a modifier for a second, so wait 25 ticks after a move.
+         * Without `player` it reads the only player online, whose name a 26.x dev client makes up.
          */
         dispatcher.register("server.thirst.modifier", (request, reply) -> {
-            ServerPlayer player = player(request, request.string("player"));
+            ServerPlayer player = request.has("player") ? player(request, request.string("player")) : onlyPlayer(request);
             float[] modifier = new float[1];
             onServer(server(), "server.thirst.modifier", () -> {
                 ThirstData before = ThirstManager.get(player);
@@ -262,6 +263,16 @@ final class ServerProbes {
         }
         throw new AgentException(request.command() + ": no player called '" + name + "' is online; "
                 + (online.isEmpty() ? "nobody is" : "online: " + String.join(", ", online)));
+    }
+
+    /** The one player online, for a probe asked without a name. */
+    private static ServerPlayer onlyPlayer(AgentRequest request) {
+        List<ServerPlayer> players = server().getPlayerList().getPlayers();
+        if (players.size() != 1) {
+            throw new AgentException(request.command() + ": no `player` given, and " + players.size()
+                    + " players are online rather than one");
+        }
+        return players.get(0);
     }
 
     /** Collects what a command says instead of letting it go to the log. */

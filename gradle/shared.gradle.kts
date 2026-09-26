@@ -353,9 +353,9 @@ fun summarise(file: File): ClassSummary = java.io.DataInputStream(file.inputStre
  * generic argument counts the same as an import.
  *
  * **What is always loaded**, the roots: every entrypoint in `fabric.mod.json`, every class carrying
- * `@Mod`, `@EventBusSubscriber` or Jade's `@WailaPlugin`, and every mixin config's plugin. A root may
- * name Minecraft, the JDK, the loaders, the libraries every game ships and this mod's own classes. An
- * entrypoint another mod reads, `jade` or `modmenu`, may also name that mod, since only it loads the
+ * `@Mod`, `@EventBusSubscriber`, this mod's `@IntegrationEntrypoint` or Jade's `@WailaPlugin`, and
+ * every mixin config's plugin. A root may name Minecraft, the JDK, the loaders, the libraries every
+ * game ships and this mod's own classes. An entrypoint another mod reads, `jade` or `modmenu`, may also name that mod, since only it loads the
  * class.
  *
  * **What a root must not do**, the two ways 1.0.9 could have happened:
@@ -430,7 +430,8 @@ tasks.register("checkOptionalSeam") {
         }
         summaries.values.forEach { summary ->
             val strings = summary.strings
-            if ("Lnet/neoforged/fml/common/Mod;" in strings || "Lnet/neoforged/fml/common/EventBusSubscriber;" in strings) {
+            if ("Lnet/neoforged/fml/common/Mod;" in strings || "Lnet/neoforged/fml/common/EventBusSubscriber;" in strings ||
+                "Lcom/thirstwastaken2/platform/IntegrationEntrypoint;" in strings) {
                 root(summary.name, null)
             }
             if ("Lsnownee/jade/api/WailaPlugin;" in strings) root(summary.name, "jade")

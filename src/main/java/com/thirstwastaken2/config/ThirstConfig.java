@@ -33,6 +33,9 @@ public final class ThirstConfig {
     public static final int MAX_EFFECT_SECONDS = 300;
     /** The longest a serving may be set to take to boil, in a pot or in hand. */
     public static final int MAX_BOIL_SECONDS = 60;
+    /** The range of a season's drain factor, which is also the config screen's slider range. */
+    public static final double MIN_SEASON_DRAIN = 0.25;
+    public static final double MAX_SEASON_DRAIN = 4.0;
 
     // ---- thirst depletion -------------------------------------------------
     public double thirstDepletionModifier = 1.2;
@@ -45,6 +48,16 @@ public final class ThirstConfig {
      * place of the biome's. Does nothing without it.
      */
     public boolean coldSweatClimate = true;
+    /**
+     * With Serene Seasons installed, the drain follows the season: the factors below, and a tropical
+     * biome's dry season counting as dry. Does nothing without it.
+     */
+    public boolean sereneSeasonsClimate = true;
+    /** The drain's factor at the middle of each season, blended from one season's middle to the next. */
+    public double seasonDrainSpring = 1.0;
+    public double seasonDrainSummer = 1.15;
+    public double seasonDrainAutumn = 1.0;
+    public double seasonDrainWinter = 0.9;
 
     // ---- AppleSkin (client side, and only while AppleSkin is installed) ----
     public QuenchedOverlay appleskinQuenchedOverlay = QuenchedOverlay.DIAMOND;
@@ -274,6 +287,10 @@ public final class ThirstConfig {
         // Gson reads a name it does not know, including a hand typo, as null.
         if (appleskinQuenchedOverlay == null) appleskinQuenchedOverlay = QuenchedOverlay.DIAMOND;
         thirstDepletionModifier = clamp(thirstDepletionModifier, 0.0, 10.0);
+        seasonDrainSpring = clamp(seasonDrainSpring, MIN_SEASON_DRAIN, MAX_SEASON_DRAIN);
+        seasonDrainSummer = clamp(seasonDrainSummer, MIN_SEASON_DRAIN, MAX_SEASON_DRAIN);
+        seasonDrainAutumn = clamp(seasonDrainAutumn, MIN_SEASON_DRAIN, MAX_SEASON_DRAIN);
+        seasonDrainWinter = clamp(seasonDrainWinter, MIN_SEASON_DRAIN, MAX_SEASON_DRAIN);
 
         keywordBlacklistPattern = compile(keywordBlacklist);
         drinkKeywordPattern = compile(drinkKeywords);

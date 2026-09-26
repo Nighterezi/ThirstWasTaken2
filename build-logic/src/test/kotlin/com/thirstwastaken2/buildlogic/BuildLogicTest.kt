@@ -40,11 +40,11 @@ class BuildLogicTest {
     @Test
     fun nodesGetOnlyWhatTheirLoaderCompiles() {
         val everything: (String) -> Boolean = { true }
-        assertEquals(listOf("createfly", "supplementaries", "kaleidoscope", "brewinandchewin"),
+        assertEquals(listOf("createfly", "supplementaries", "kaleidoscope", "brewinandchewin", "sereneseasons"),
             integrationsFor(Loader.FABRIC, everything).map { it.dir })
-        assertEquals(listOf("create", "sophisticated", "supplementaries", "kaleidoscope", "brewinandchewin", "coldsweat", "culturaldelights", "fruitsdelight"),
+        assertEquals(listOf("create", "sophisticated", "supplementaries", "kaleidoscope", "brewinandchewin", "coldsweat", "culturaldelights", "fruitsdelight", "sereneseasons"),
             integrationsFor(Loader.NEOFORGE, everything).map { it.dir })
-        assertEquals(listOf("supplementaries", "kaleidoscope", "brewinandchewin"), integrations.filter { it.loaderIndependent }.map { it.dir })
+        assertEquals(listOf("supplementaries", "kaleidoscope", "brewinandchewin", "sereneseasons"), integrations.filter { it.loaderIndependent }.map { it.dir })
     }
 
     @Test
@@ -69,6 +69,18 @@ class BuildLogicTest {
     }
 
     @Test
+    fun anIntegrationWithoutMixinsNamesOnlyItsDependency() {
+        assertEquals("""
+            |
+            |[[dependencies.thirstwastaken2]]
+            |modId = "sereneseasons"
+            |type = "optional"
+            |ordering = "NONE"
+            |side = "BOTH"
+            |""".trimMargin(), integration("sereneseasons").neoForgeManifest("thirstwastaken2"))
+    }
+
+    @Test
     fun fabricManifestKeepsCreateFlyAtIndexOneAndAppendsTheRest() {
         val json = mutableMapOf<String, Any?>(
             "mixins" to mutableListOf<Any?>("thirstwastaken2.mixins.json", "thirstwastaken2.client.mixins.json"),
@@ -83,6 +95,8 @@ class BuildLogicTest {
         assertEquals(listOf("a.Jade", "com.thirstwastaken2.client.supplementaries.SupplementariesJade",
             "com.thirstwastaken2.client.kaleidoscope.KaleidoscopeJade",
             "com.thirstwastaken2.client.brewinandchewin.BrewinAndChewinJade"), entrypoints["jade"])
-        assertEquals(listOf("jade", "thirstwastaken2:createfly", "thirstwastaken2:createfly_client"), entrypoints.keys.toList())
+        assertEquals(listOf("com.thirstwastaken2.sereneseasons.SereneSeasonsEntrypoint"), entrypoints["thirstwastaken2:integration"])
+        assertEquals(listOf("jade", "thirstwastaken2:createfly", "thirstwastaken2:createfly_client", "thirstwastaken2:integration"),
+            entrypoints.keys.toList())
     }
 }

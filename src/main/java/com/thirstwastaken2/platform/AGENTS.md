@@ -184,7 +184,10 @@ Rules:
   registers the config screen with the mods list, which Mod Menu's entrypoint does on Fabric. The
   NeoForge `Loader` finds the mod event bus itself, through `ModList`, so the mod class passes nothing
   in. So are the manifests (`fabric.mod.json`, `neoforge.mods.toml`) and anything written against a
-  loader-only mod, such as `ModMenuIntegration`.
+  loader-only mod, such as `ModMenuIntegration`. After `initialize`, both main entrypoints run the integrations both loaders compile:
+  Fabric the `thirstwastaken2:integration` entrypoints (`Runnable`), NeoForge every class its scan data
+  finds marked `@IntegrationEntrypoint`. The annotation is common code in this package, so an
+  integration names neither loader to be started.
 - **`checkLoaderSeam` fails on a loader import in `src/main/java` or `src/client/java`.** It reads
   imports, so it cannot see the methods Fabric API injects into vanilla classes
   (`getAttachedOrCreate`, `FabricItemStack` and friends). Those compile on Fabric and only fail on the

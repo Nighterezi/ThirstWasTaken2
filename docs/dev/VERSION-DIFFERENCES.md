@@ -127,6 +127,7 @@ versions write `recipe`. Nothing else in the generated files moved.
 | The main render target moved from the client onto its game renderer | `AgentClientVanilla.mainTarget`, for `screenshot` and `readFrame` |
 | Entity type constants moved from `EntityType` to `EntityTypes` | `TestFixtures.mountType`, `piglinType` |
 | Advancement trigger classes moved into `triggers` | replacement |
+| Serene Seasons' API says whether a dimension has seasons (`SeasonHelper.hasSeasons`); its builds for older versions keep that only in their internal config, whose class extends GlitchCore's and Night Config's, so the loader scripts compile against those two as well | `SeasonsPlatform.hasSeasons` in Serene Seasons' `platform/` |
 
 ### 26.1 (affects 1.21.11, 1.21.1)
 

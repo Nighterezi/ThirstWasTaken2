@@ -30,6 +30,11 @@ record ConfigSection(String key, List<ConfigEntry<?>> entries, BiConsumer<List<C
         return new ConfigSection(key, entries, NONE);
     }
 
+    /** Nothing to show: no settings left, and no rows of its own. */
+    boolean isEmpty() {
+        return entries.isEmpty() && trailingRows == NONE;
+    }
+
     Component title() {
         return Component.translatable("thirstwastaken2.config.group." + key);
     }

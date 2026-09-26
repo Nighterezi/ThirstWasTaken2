@@ -170,7 +170,7 @@
       Thirst follows the temperature Cold Sweat shows around you, hearths and shade included. Its Waterskin carries a purity grade and quenches thirst, and the Boiler purifies water.
     </td>
     <td width="45%">
-      <img alt="A lit Boiler on the snow between a campfire warming two Waterskins and a water cauldron" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/integrations/cold-sweat/cold-sweat-boiler.png" width="100%">
+      <img alt="Cold Sweat's body temperature gauge between the hearts and the thirst bar, over a snowy taiga" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/integrations/cold-sweat/cold-sweat-hud.png" width="100%">
     </td>
   </tr>
   <tr>
@@ -194,30 +194,16 @@
       <img alt="A Brewin' and Chewin' Keg beside barrels on a lakeshore, with Jade naming its water Dirty" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/integrations/brewin-and-chewin/brewin-keg.png" width="100%">
     </td>
   </tr>
-  <tr>
-    <td width="55%">
-      <b><a href="https://n1ght3r.github.io/ThirstWasTaken2/docs/integrations/farmers-delight/cultural-delights">Cultural Delights</a></b><br>
-      <i>NeoForge: <a href="https://modrinth.com/mod/cultural-delights">Cultural Delights</a> on 1.21.1</i><br><br>
-      Its drinks, cucumbers and salads restore thirst, less the stronger the drink. The Vat brews nothing from sea water.
-    </td>
-    <td width="45%">
-      <img alt="A Cultural Delights Vat between barrels and crates of cucumbers, corn and eggplants in a plains village" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/integrations/cultural-delights/cultural-vat.png" width="100%">
-    </td>
-  </tr>
-  <tr>
-    <td width="55%">
-      <b><a href="https://n1ght3r.github.io/ThirstWasTaken2/docs/integrations/farmers-delight/fruits-delight">Fruits Delight</a></b><br>
-      <i>NeoForge: <a href="https://modrinth.com/mod/fruits-delight">Fruits Delight</a> on 1.21.1</i><br><br>
-      Its juices, teas, jellos, popsicles and juicy fruits restore thirst. Sea water makes no juice.
-    </td>
-    <td width="45%">
-      <img alt="A fruiting orange tree from Fruits Delight beside a lemonade cauldron and crates of oranges, lemons and pears in a plains village" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/integrations/fruits-delight/fruits-orchard.png" width="100%">
-    </td>
-  </tr>
 </table>
 
+Also works with:
+
+- **[Cultural Delights](https://n1ght3r.github.io/ThirstWasTaken2/docs/integrations/farmers-delight/cultural-delights)**, NeoForge on 1.21.1: its drinks, cucumbers and salads restore thirst, and the Vat brews nothing from sea water.
+- **[Fruits Delight](https://n1ght3r.github.io/ThirstWasTaken2/docs/integrations/farmers-delight/fruits-delight)**, NeoForge on 1.21.1: its juices, teas, jellos, popsicles and juicy fruits restore thirst, and sea water makes no juice.
+- **[Serene Seasons](https://n1ght3r.github.io/ThirstWasTaken2/docs/integrations/serene-seasons)**, Fabric and NeoForge on every version: thirst drains faster in summer and slower in winter, and tropical biomes dry out in their dry season.
+
 ## Settings Screen
-Every setting can be changed in game, with a live preview of the thirst bar and its tooltips. Pages cover thirst, water, AppleSkin, what each item restores, which of the mod's items are enabled, and container sizes and boil times. Fabric requires <a href="https://modrinth.com/mod/modmenu">Mod Menu</a>; NeoForge uses the Config button in its Mods list.
+Change every setting in game, with a live preview of the thirst bar. Open it through <a href="https://modrinth.com/mod/modmenu">Mod Menu</a> on Fabric, or the Config button in NeoForge's Mods list.
 
 <p align="center">
   <img alt="The ThirstWasTaken2 settings screen: a slider and a switch on the Thirst page, the Water tabs, the AppleSkin preview changing outline and its tooltip droplets switched off and on, the item list scrolling to a modded group under its pinned heading, and the Containers page" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/config/config-showcase.gif" width="100%">
@@ -236,7 +222,7 @@ Every setting can be changed in game, with a live preview of the thirst bar and 
 
 ## For Developers
 
-**Data Packs:** Give any item a thirst value with one JSON file, no code needed. A mod can ship the same file, so its drinks work without depending on Thirst Was Taken 2. Put it under `data/<namespace>/thirstwastaken2/drinks/`:
+**Data Packs:** Give any item a thirst value with one JSON file in `data/<namespace>/thirstwastaken2/drinks/`, no dependency needed:
 
 ```json
 {
@@ -247,7 +233,7 @@ Every setting can be changed in game, with a live preview of the thirst bar and 
 }
 ```
 
-**Java API:** Read and change a player's thirst, react when a player drinks, and check water purity. The same API works on Fabric, NeoForge and every supported version.
+**Java API:** Read and change thirst, react to drinking and check water purity, on every loader and version:
 
 ```java
 // Salty snacks restore no thirst.
@@ -259,7 +245,7 @@ ThirstEvents.DRINK.register((player, stack, drink) -> {
 player.addItem(ThirstApi.waterBottle(ThirstApi.maxPurity()));
 ```
 
-Full details are in the [data pack guide](https://n1ght3r.github.io/ThirstWasTaken2/docs/developers/data-packs) and the [Java API guide](https://n1ght3r.github.io/ThirstWasTaken2/docs/developers/java-api).
+See the [data pack](https://n1ght3r.github.io/ThirstWasTaken2/docs/developers/data-packs) and [Java API](https://n1ght3r.github.io/ThirstWasTaken2/docs/developers/java-api) guides.
 
 ## Quick FAQ
 
@@ -267,7 +253,7 @@ Full details are in the [data pack guide](https://n1ght3r.github.io/ThirstWasTak
 No. There are no plans to support 1.20.1 or Forge.
 
 **Does it work in Peaceful mode?**  
-Yes. Thirst refills on its own, or drains as on Normal with [`thirstDepletionInPeaceful`](https://n1ght3r.github.io/ThirstWasTaken2/docs/configuration#thirstdepletioninpeaceful), which pairs well with [Peaceful Hunger](https://modrinth.com/mod/peaceful-hunger).
+Yes. Thirst refills on its own, unless [`thirstDepletionInPeaceful`](https://n1ght3r.github.io/ThirstWasTaken2/docs/configuration#thirstdepletioninpeaceful) is on. Pairs well with [Peaceful Hunger](https://modrinth.com/mod/peaceful-hunger).
 
 **Can I use this in a modpack?**  
 Yes. You are free to include Thirst Was Taken 2 in any public or private modpack.

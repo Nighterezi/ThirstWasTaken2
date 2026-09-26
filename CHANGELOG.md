@@ -4,11 +4,26 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- Compatibility with Serene Seasons on Fabric and NeoForge, every supported version:
+  - Thirst drains faster in summer and slower in winter, changing smoothly through the year.
+  - Tropical biomes such as jungles, savannas and deserts follow the wet and dry seasons instead: the
+    dry season drains thirst faster than the wet one.
+  - A Seasons tab on the Thirst settings page sets the speed for each season, or turns this off.
+
 ### Changed
 
 - In the settings screen's item list, an open mod group shows the thirst and quenched droplets above
   its two columns, and its heading stays at the top while its items scroll past.
 - The Cold Sweat Climate setting only appears in the settings screen when Cold Sweat is installed.
+- The Thirst settings page is split into Drain and Seasons tabs. The Seasons tab only appears with
+  Serene Seasons installed.
+
+### Notes
+
+- With both Cold Sweat and Serene Seasons on NeoForge 1.21.1, Cold Sweat's temperature already follows
+  the season, so the season speeds are not applied on top of it.
 
 ## [1.3.0] - 2026-09-26
 

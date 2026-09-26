@@ -149,6 +149,11 @@ MODRINTH_DEPS = [
     # uploads for different Minecraft versions put the version in the number in no fixed place.
     ModrinthDep("cultural_delights", "cultural-delights", by_id=True, mirrors=()),
     ModrinthDep("cooks_collection", "cooks-collection", by_id=True, mirrors=()),
+    # Serene Seasons, every node, and the GlitchCore it requires, runClient only. Both share version
+    # numbers across loaders and across Minecraft versions (Serene's 26.2 and 26.3 uploads are both
+    # 26.1.2.0.x), so both are pinned by id.
+    ModrinthDep("serene_seasons", "serene-seasons", by_id=True, mirrors=()),
+    ModrinthDep("glitchcore", "glitchcore", by_id=True, mirrors=()),
     # Fruits Delight, NeoForge 1.21.1 only and runClient only, pinned by id like the others printed on
     # no page.
     ModrinthDep("fruits_delight", "fruits-delight", by_id=True, mirrors=()),

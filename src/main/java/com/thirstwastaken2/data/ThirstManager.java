@@ -13,6 +13,7 @@ import com.thirstwastaken2.platform.Vanilla;
 import com.thirstwastaken2.purity.WaterPurity;
 import com.thirstwastaken2.purity.WaterQuality;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -86,6 +87,8 @@ public final class ThirstManager {
      * at init. Not API: no other mod may rely on it, and nothing but the main thread's init writes it.
      */
     private static ToDoubleFunction<Player> climateTemperature;
+    /** The season's part in the climate, or null without a seasons mod. Serene Seasons' sets it at init. */
+    private static SeasonalClimate seasonalClimate;
 
     private ThirstManager() { }
 
@@ -369,15 +372,29 @@ public final class ThirstManager {
         climateTemperature = source;
     }
 
+    /**
+     * Sets the season's part in the climate modifier, for an integration that keeps a calendar. Called
+     * once, at init.
+     */
+    public static void setSeasonalClimate(SeasonalClimate seasons) {
+        seasonalClimate = seasons;
+    }
+
     private static float climateModifier(Player player, ThirstConfig config) {
         BlockPos pos = player.blockPosition();
-        Biome biome = player.level().getBiome(pos).value();
+        Holder<Biome> holder = player.level().getBiome(pos);
+        Biome biome = holder.value();
+        SeasonalClimate seasons = config.sereneSeasonsClimate ? seasonalClimate : null;
 
         // The original used Biome#getDownfall, which no longer exists. hasPrecipitation reproduces
-        // the same dry/wet split within the original's effective 1.1 - 1.6 humidity range.
-        float humidity = biome.hasPrecipitation() ? 1.4F : 1.1F;
+        // the same dry/wet split within the original's effective 1.1 - 1.6 humidity range. Not in the
+        // original: a tropical biome's dry season counts as dry.
+        boolean wet = biome.hasPrecipitation();
+        if (seasons != null) wet = seasons.hasPrecipitation(player, holder, wet);
+        float humidity = wet ? 1.4F : 1.1F;
 
-        float temperature = climateTemperature(player, biome, config) + 0.2F;
+        float measured = measuredTemperature(player, config);
+        float temperature = (Float.isNaN(measured) ? biome.getBaseTemperature() : measured) + 0.2F;
         if (temperature <= 0.0F) {
             temperature = (float) Math.exp(temperature);
         } else if (temperature > 1.0F) {
@@ -386,19 +403,25 @@ public final class ThirstManager {
 
         // The config multiplier is applied before the harshness softening, as in the original.
         float modifier = (float) config.thirstDepletionModifier * (temperature / humidity);
-        return modifier < 1.0F ? 1.0F - (1.0F - modifier) * MODIFIER_HARSHNESS : modifier;
+        modifier = modifier < 1.0F ? 1.0F - (1.0F - modifier) * MODIFIER_HARSHNESS : modifier;
+
+        // Not in the original. The season is a factor after the curve rather than a temperature, since
+        // the curve halves anything above 1 and a warmer summer would drain less. Cold Sweat's world
+        // temperature already follows Serene Seasons, so a measured temperature takes no second season.
+        if (seasons != null && Float.isNaN(measured)) modifier *= seasons.drainMultiplier(player, holder);
+        return modifier;
     }
 
     /**
-     * The biome's base temperature, or what an integration measured in its place. Not in the original,
-     * which only knew the biome: a hearth in the tundra or a desert night now counts.
+     * What an integration measured in place of the biome's base temperature, or NaN where none did. Not
+     * in the original, which only knew the biome: a hearth in the tundra or a desert night now counts.
      */
-    private static float climateTemperature(Player player, Biome biome, ThirstConfig config) {
+    private static float measuredTemperature(Player player, ThirstConfig config) {
         ToDoubleFunction<Player> source = climateTemperature;
         if (source != null && config.coldSweatClimate) {
             double measured = source.applyAsDouble(player);
             if (Double.isFinite(measured)) return (float) measured;
         }
-        return biome.getBaseTemperature();
+        return Float.NaN;
     }
 }

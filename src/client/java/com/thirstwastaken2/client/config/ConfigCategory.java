@@ -11,7 +11,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /**
  * One page of the config screen: its icon in the sidebar, its settings, and any rows that are not a
@@ -23,19 +26,33 @@ import java.util.List;
  * reset from the footer, only one row at a time.
  */
 enum ConfigCategory {
-    THIRST("thirst", ThirstWasTaken2.id("textures/item/waterskin_3.png"), ConfigSection.whole(List.of(
-            ConfigEntry.percent("thirst_depletion_modifier", 0, 1000,
-                    config -> config.thirstDepletionModifier, (config, value) -> config.thirstDepletionModifier = value),
-            ConfigEntry.toggle("thirst_depletion_in_peaceful",
-                    config -> config.thirstDepletionInPeaceful, (config, value) -> config.thirstDepletionInPeaceful = value),
-            ConfigEntry.toggle("prevent_sprinting_when_thirsty",
-                    config -> config.preventSprintingWhenThirsty, (config, value) -> config.preventSprintingWhenThirsty = value),
-            ConfigEntry.toggle("dehydration_halts_health_regen",
-                    config -> config.dehydrationHaltsHealthRegen, (config, value) -> config.dehydrationHaltsHealthRegen = value),
-            // Only Cold Sweat measures the temperature this reads, so without it the switch is left off the page.
-            ConfigEntry.toggle("cold_sweat_climate",
-                    config -> config.coldSweatClimate, (config, value) -> config.coldSweatClimate = value)
-                    .requires("cold_sweat")))),
+    THIRST("thirst", ThirstWasTaken2.id("textures/item/waterskin_3.png"),
+            ConfigSection.of("thirst.drain", List.of(
+                    ConfigEntry.percent("thirst_depletion_modifier", 0, 1000,
+                            config -> config.thirstDepletionModifier, (config, value) -> config.thirstDepletionModifier = value),
+                    ConfigEntry.toggle("thirst_depletion_in_peaceful",
+                            config -> config.thirstDepletionInPeaceful, (config, value) -> config.thirstDepletionInPeaceful = value),
+                    ConfigEntry.toggle("prevent_sprinting_when_thirsty",
+                            config -> config.preventSprintingWhenThirsty, (config, value) -> config.preventSprintingWhenThirsty = value),
+                    ConfigEntry.toggle("dehydration_halts_health_regen",
+                            config -> config.dehydrationHaltsHealthRegen, (config, value) -> config.dehydrationHaltsHealthRegen = value),
+                    // Only Cold Sweat measures the temperature this reads, so without it the switch is left off the page.
+                    ConfigEntry.toggle("cold_sweat_climate",
+                            config -> config.coldSweatClimate, (config, value) -> config.coldSweatClimate = value)
+                            .requires("cold_sweat"))),
+            // Only Serene Seasons keeps the calendar these read, so without it the tab is left off the page.
+            ConfigSection.of("thirst.seasons", List.of(
+                    ConfigEntry.toggle("serene_seasons_climate",
+                            config -> config.sereneSeasonsClimate, (config, value) -> config.sereneSeasonsClimate = value)
+                            .requires("sereneseasons"),
+                    seasonDrain("season_drain_spring",
+                            config -> config.seasonDrainSpring, (config, value) -> config.seasonDrainSpring = value),
+                    seasonDrain("season_drain_summer",
+                            config -> config.seasonDrainSummer, (config, value) -> config.seasonDrainSummer = value),
+                    seasonDrain("season_drain_autumn",
+                            config -> config.seasonDrainAutumn, (config, value) -> config.seasonDrainAutumn = value),
+                    seasonDrain("season_drain_winter",
+                            config -> config.seasonDrainWinter, (config, value) -> config.seasonDrainWinter = value)))),
 
     WATER("water", ThirstWasTaken2.id("textures/item/terracotta_water_bowl_purity_3.png"),
             ConfigSection.of("water.drinking", List.of(
@@ -143,10 +160,18 @@ enum ConfigCategory {
     ConfigCategory(String key, Identifier icon, ConfigSection... sections) {
         this.key = key;
         this.icon = icon;
-        this.sections = List.of(sections);
+        // A tab whose every setting needs a missing mod is left off, as its settings are.
+        this.sections = Arrays.stream(sections).filter(section -> !section.isEmpty()).toList();
         List<ConfigEntry<?>> all = new ArrayList<>();
-        for (ConfigSection section : sections) all.addAll(section.entries());
+        for (ConfigSection section : this.sections) all.addAll(section.entries());
         this.entries = List.copyOf(all);
+    }
+
+    /** A season's factor on the drain, shown on the Seasons tab only while Serene Seasons is installed. */
+    private static ConfigEntry<Double> seasonDrain(String key, Function<ThirstConfig, Double> getter,
+                                                   BiConsumer<ThirstConfig, Double> setter) {
+        return ConfigEntry.percent(key, (int) Math.round(ThirstConfig.MIN_SEASON_DRAIN * 100),
+                (int) Math.round(ThirstConfig.MAX_SEASON_DRAIN * 100), getter, setter).requires("sereneseasons");
     }
 
     /** One grade's share of a drink's quenched. The value is an element of an array, so it is set in place. */

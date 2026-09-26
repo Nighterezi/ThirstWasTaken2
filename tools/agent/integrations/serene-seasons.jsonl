@@ -1,0 +1,79 @@
+// Serene Seasons in a real client: the thirst drain follows the season. A temperate biome drains by a
+// factor per season, blended from one season's middle to the next; a tropical biome's dry season
+// counts as dry and its wet season as wet; a desert or jungle never takes the factor. Runs on any node,
+// with Serene Seasons, which runClient does not load: uncomment its lines in build.gradle.kts or
+// build.neoforge.gradle.kts first, and comment them out again afterwards. Run it unattended in a
+// singleplayer world:
+//     ./gradlew ":26.3.x:runClient" -Pagent=tools/agent/integrations/serene-seasons.jsonl -Pquickplay=SereneSeasonsAgent
+// SereneSeasonsAgent is a throwaway world, made fresh for each run by
+//     python tools/agent/new_world.py 26.3.x SereneSeasonsAgent
+// Then check what it recorded:
+//     python tools/agent/drive.py run/26.3.x/agent/client tools/agent/integrations/serene-seasons.jsonl --verify --max-age 15
+//
+// The expected modifiers assume the default config: thirstDepletionModifier 1.2, sereneSeasonsClimate
+// on, and the season factors 1.0, 1.15, 1.0, 0.9. /season set puts the calendar at the first tick of a
+// sub-season, so mid summer is 1.125 (five sixths of the way from spring's middle to summer's), not
+// 1.15. Without Serene Seasons the modifiers are 0.9286 in plains, 0.5857 in snowy plains, 0.7464 in a
+// jungle and 1.2 in a desert, in every season.
+//
+// Serene Seasons' tropical calendar runs two sub-seasons behind: late summer is the middle of the dry
+// season, late winter the middle of the wet one.
+
+{"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "arrived", "command": "client.state"}
+{"id": "survival", "command": "server.command", "args": {"command": "gamemode survival @p"}}
+{"id": "alive", "command": "client.state", "expect": {"result.alive": true}}
+
+{"id": "forceload", "command": "server.command", "args": {"command": "forceload add -8 -8 120 8"}}
+{"id": "float", "command": "server.command", "args": {"command": "effect give @p minecraft:slow_falling 900 0 true"}}
+{"id": "safe", "command": "server.command", "args": {"command": "effect give @p minecraft:resistance 900 4 true"}}
+{"id": "view", "command": "server.command", "args": {"command": "tp @p 0.5 202 0.5 0 90"}}
+{"id": "chunks", "command": "wait", "args": {"ticks": 100}}
+{"id": "clearWeather", "command": "server.command", "args": {"command": "weather clear 100000"}}
+{"id": "air", "command": "server.command", "args": {"command": "fill -8 200 -8 120 208 8 minecraft:air"}}
+{"id": "floor", "command": "server.command", "args": {"command": "fill -8 199 -8 120 199 8 minecraft:stone"}}
+{"id": "plains", "command": "server.command", "args": {"command": "fillbiome -8 190 -8 15 215 8 minecraft:plains"}}
+{"id": "snowy", "command": "server.command", "args": {"command": "fillbiome 32 190 -8 51 215 8 minecraft:snowy_plains"}}
+{"id": "jungle", "command": "server.command", "args": {"command": "fillbiome 64 190 -8 83 215 8 minecraft:jungle"}}
+{"id": "desert", "command": "server.command", "args": {"command": "fillbiome 96 190 -8 115 215 8 minecraft:desert"}}
+{"id": "notThirsty", "command": "server.command", "args": {"command": "thirst set @p 20 20"}}
+
+// ---- Mid spring: close to spring's own factor --------------------------------------------------
+{"id": "midSpring", "command": "server.command", "args": {"command": "season set mid_spring"}}
+{"id": "toPlainsSpring", "command": "server.command", "args": {"command": "tp @p 0.5 200 0.5 0 0"}}
+{"id": "settlePlainsSpring", "command": "wait", "args": {"ticks": 30}}
+{"id": "plainsSpring", "command": "server.thirst.modifier", "checks": [{"left": "result.modifier", "op": "within", "value": 0.9131, "tolerance": 0.005}]}
+
+// ---- Mid summer: temperate biomes drain faster ---------------------------------------------------
+{"id": "midSummer", "command": "server.command", "args": {"command": "season set mid_summer"}}
+{"id": "settlePlainsSummer", "command": "wait", "args": {"ticks": 30}}
+{"id": "plainsSummer", "command": "server.thirst.modifier", "checks": [{"left": "result.modifier", "op": "within", "value": 1.0446, "tolerance": 0.005}]}
+{"id": "toSnowySummer", "command": "server.command", "args": {"command": "tp @p 40.5 200 0.5 0 0"}}
+{"id": "settleSnowySummer", "command": "wait", "args": {"ticks": 30}}
+{"id": "snowySummer", "command": "server.thirst.modifier", "checks": [{"left": "result.modifier", "op": "within", "value": 0.6589, "tolerance": 0.005}]}
+
+// ---- Late summer: the middle of the tropical dry season ----------------------------------------
+{"id": "lateSummer", "command": "server.command", "args": {"command": "season set late_summer"}}
+{"id": "toJungleDry", "command": "server.command", "args": {"command": "tp @p 72.5 200 0.5 0 0"}}
+{"id": "settleJungleDry", "command": "wait", "args": {"ticks": 30}}
+{"id": "jungleDry", "command": "server.thirst.modifier", "checks": [{"left": "result.modifier", "op": "within", "value": 0.8136, "tolerance": 0.005}]}
+{"id": "toDesertDry", "command": "server.command", "args": {"command": "tp @p 104.5 200 0.5 0 0"}}
+{"id": "settleDesertDry", "command": "wait", "args": {"ticks": 30}}
+{"id": "desertDry", "command": "server.thirst.modifier", "checks": [{"left": "result.modifier", "op": "within", "value": 1.2, "tolerance": 0.005}]}
+
+// ---- Mid winter: temperate biomes drain slower ---------------------------------------------------
+{"id": "midWinter", "command": "server.command", "args": {"command": "season set mid_winter"}}
+{"id": "toPlainsWinter", "command": "server.command", "args": {"command": "tp @p 0.5 200 0.5 0 0"}}
+{"id": "settlePlainsWinter", "command": "wait", "args": {"ticks": 30}}
+{"id": "plainsWinter", "command": "server.thirst.modifier", "checks": [{"left": "result.modifier", "op": "within", "value": 0.8512, "tolerance": 0.005}]}
+
+// ---- Late winter: the middle of the tropical wet season ------------------------------------------
+{"id": "lateWinter", "command": "server.command", "args": {"command": "season set late_winter"}}
+{"id": "toJungleWet", "command": "server.command", "args": {"command": "tp @p 72.5 200 0.5 0 0"}}
+{"id": "settleJungleWet", "command": "wait", "args": {"ticks": 30}}
+{"id": "jungleWet", "command": "server.thirst.modifier", "checks": [{"left": "result.modifier", "op": "within", "value": 0.7464, "tolerance": 0.005}]}
+{"id": "toDesertWet", "command": "server.command", "args": {"command": "tp @p 104.5 200 0.5 0 0"}}
+{"id": "settleDesertWet", "command": "wait", "args": {"ticks": 30}}
+{"id": "desertWet", "command": "server.thirst.modifier", "checks": [{"left": "result.modifier", "op": "within", "value": 0.9714, "tolerance": 0.005}]}
+
+{"id": "done", "command": "client.state", "expect": {"result.alive": true}}
