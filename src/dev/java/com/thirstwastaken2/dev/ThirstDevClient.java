@@ -1,6 +1,7 @@
 package com.thirstwastaken2.dev;
 
 import com.thirstwastaken2.dev.agent.thirst.ClientWindow;
+import com.thirstwastaken2.dev.agent.thirst.Recorder;
 import com.thirstwastaken2.dev.agent.thirst.ThirstAgent;
 import com.thirstwastaken2.dev.platform.DevClientLoader;
 import net.minecraft.client.Minecraft;
@@ -40,7 +41,8 @@ public final class ThirstDevClient {
             // Before the queue is polled: a script's first line waits for a world, and on a driven
             // client the prompt vanilla puts in front of one is nobody's to press.
             ClientWindow.passWorldPrompt(Minecraft.getInstance());
-            ThirstAgent.tick();
+            // Before the queue too, which waits while a recording's frame is due. See Recorder.
+            if (Recorder.clientTick(Minecraft.getInstance())) ThirstAgent.tick();
             ClientWindow.showStatus(Minecraft.getInstance(), ThirstAgent.status(), ++ticks);
         });
         DevClientLoader.onClientStopping(ThirstAgent::flush);

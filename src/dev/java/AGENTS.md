@@ -26,7 +26,8 @@ all behind, the harness they share, and the rules that hold for everything in th
 
 The split of the directory follows that. `benchmark/` is the first; `agent/core` and `agent/thirst`
 are the second; [`harness/`](#the-shared-harness) is the little both of them need; `mixin/` is how
-the agent reads the HUD's real draw calls and refuses the mouse grab; `ThirstDev` and `ThirstDevClient` are
+the agent reads the HUD's real draw calls, refuses the mouse grab, moves its virtual pointer and times
+a recording's frames; `ThirstDev` and `ThirstDevClient` are
 the two halves of the entrypoint, kept apart so that a dedicated server never loads a class naming
 `Minecraft`; `fabric/` and `neoforge/` hold each loader's entrypoints, the small
 `DevLoader`/`DevClientLoader` seam for the calls the mod's own `Loader` does not cover, and one copy

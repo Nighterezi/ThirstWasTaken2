@@ -1,0 +1,94 @@
+// A recording of the config screen for the docs and the mod pages: the virtual pointer drags a slider,
+// flips a toggle, walks the sidebar and a page's tabs, cycles AppleSkin's outline in its preview,
+// scrolls a long page and leaves with Cancel, so nothing it changed is saved. Evidence for a person,
+// not a check; nothing here is asserted but that each click landed.
+//
+//     python tools/agent/new_world.py 26.3.x ShowcaseAgent --from "New World"
+//     ./gradlew ":26.3.x:runClient" -Pagent=tools/agent/ui/config-showcase.jsonl -Pquickplay=ShowcaseAgent
+//     python tools/agent/make_gif.py run/26.3.x/agent/client/screenshots/config-showcase docs/public/screenshots/config/config-showcase.gif
+//
+// A frame every tick, 20 a second, which takes the recording three minutes or so; see "Recording a
+// screen" in the agent's AGENTS.md for why. The world behind the screen shows through it, so shoot in
+// real terrain, not on a test floor. The AppleSkin page starts from the shipped defaults, Diamond and
+// on, in run/26.3.x/config/thirstwastaken2.json.
+//
+// Coordinates are for a maximised window with a 512 x 298 GUI (2048 x 1191 at scale 4), the size
+// `window` answers; see config-screen.jsonl for how the screen is laid out. The sidebar is measured
+// from the corner, tab i centred on y = 49 + 24 i; the page from the top, x from the centre.
+
+{"id": "load", "command": "wait", "args": {"ticks": 300}}
+{"id": "joined", "command": "client.state", "expect": {"result.alive": true}}
+{"id": "window", "command": "client.info", "expect": {"result.guiWidth": 512}}
+{"id": "feedbackOff", "command": "client.command", "args": {"command": "gamerule send_command_feedback false"}}
+{"id": "noon", "command": "client.command", "args": {"command": "time set noon"}}
+{"id": "openConfig", "command": "client.screen", "args": {"open": "config"}, "expect": {"result.screen": "com.thirstwastaken2.client.config.ThirstConfigScreen"}}
+{"id": "openConfigDrawn", "command": "wait", "args": {"ticks": 20}}
+
+// The pointer starts over the empty panel below the Thirst page's settings.
+{"id": "pointer", "command": "client.mouse", "args": {"x": 40, "y": 220, "from": "top"}}
+{"id": "record", "command": "client.record", "args": {"action": "start", "name": "config-showcase", "every": 1}}
+{"id": "recordDrawn", "command": "wait", "args": {"ticks": 9}}
+
+// Depletion Speed: drag the slider up and let the value settle.
+{"id": "toSlider", "command": "client.mouse", "args": {"x": 78, "y": 82, "from": "top", "ticks": 8}}
+{"id": "drag", "command": "client.mouse", "args": {"x": 104, "y": 82, "from": "top", "ticks": 12, "drag": true}}
+{"id": "dragDrawn", "command": "wait", "args": {"ticks": 10}}
+
+// No Sprinting When Thirsty: off.
+{"id": "toToggle", "command": "client.mouse", "args": {"x": 128, "y": 130, "from": "top", "ticks": 7}}
+{"id": "toggle", "command": "client.click", "expect": {"result.taken": true}}
+{"id": "toggleDrawn", "command": "wait", "args": {"ticks": 12}}
+
+// Water, then two of its tabs.
+{"id": "toWater", "command": "client.mouse", "args": {"x": 40, "y": 73, "from": "corner", "ticks": 8}}
+{"id": "water", "command": "client.click", "expect": {"result.taken": true}}
+{"id": "waterDrawn", "command": "wait", "args": {"ticks": 12}}
+{"id": "toQuenched", "command": "client.mouse", "args": {"x": -27, "y": 78, "from": "top", "ticks": 7}}
+{"id": "quenched", "command": "client.click", "expect": {"result.taken": true}}
+{"id": "quenchedDrawn", "command": "wait", "args": {"ticks": 12}}
+{"id": "toSeaWater", "command": "client.mouse", "args": {"x": 55, "y": 78, "from": "top", "ticks": 5}}
+{"id": "seaWater", "command": "client.click", "expect": {"result.taken": true}}
+{"id": "seaWaterDrawn", "command": "wait", "args": {"ticks": 12}}
+
+// AppleSkin: the Quenched Outline through Ice, Gold and AppleSkin's own, the preview redrawing each,
+// then the tooltip droplets off.
+{"id": "toAppleSkin", "command": "client.mouse", "args": {"x": 40, "y": 97, "from": "corner", "ticks": 6}}
+{"id": "appleSkin", "command": "client.click", "expect": {"result.taken": true}}
+{"id": "appleSkinDrawn", "command": "wait", "args": {"ticks": 12}}
+{"id": "toOutline", "command": "client.mouse", "args": {"x": 172, "y": 145, "from": "top", "ticks": 7}}
+{"id": "outlineIce", "command": "client.click", "expect": {"result.taken": true}}
+{"id": "outlineIceDrawn", "command": "wait", "args": {"ticks": 14}}
+{"id": "outlineGold", "command": "client.click", "expect": {"result.taken": true}}
+{"id": "outlineGoldDrawn", "command": "wait", "args": {"ticks": 14}}
+{"id": "outlineAppleSkin", "command": "client.click", "expect": {"result.taken": true}}
+{"id": "outlineAppleSkinDrawn", "command": "wait", "args": {"ticks": 14}}
+{"id": "toDroplets", "command": "client.mouse", "args": {"x": 172, "y": 169, "from": "top", "ticks": 5}}
+{"id": "droplets", "command": "client.click", "expect": {"result.taken": true}}
+{"id": "dropletsDrawn", "command": "wait", "args": {"ticks": 14}}
+
+// Item Values, and down its list a notch at a time.
+{"id": "toItems", "command": "client.mouse", "args": {"x": 40, "y": 121, "from": "corner", "ticks": 8}}
+{"id": "items", "command": "client.click", "expect": {"result.taken": true}}
+{"id": "itemsDrawn", "command": "wait", "args": {"ticks": 9}}
+{"id": "toList", "command": "client.mouse", "args": {"x": 60, "y": 170, "from": "top", "ticks": 6}}
+{"id": "scroll1", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "scroll1Drawn", "command": "wait", "args": {"ticks": 4}}
+{"id": "scroll2", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "scroll2Drawn", "command": "wait", "args": {"ticks": 4}}
+{"id": "scroll3", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "scroll3Drawn", "command": "wait", "args": {"ticks": 4}}
+{"id": "scroll4", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "scroll4Drawn", "command": "wait", "args": {"ticks": 12}}
+
+// Containers.
+{"id": "toContainers", "command": "client.mouse", "args": {"x": 40, "y": 169, "from": "corner", "ticks": 8}}
+{"id": "containers", "command": "client.click", "expect": {"result.taken": true}}
+{"id": "containersDrawn", "command": "wait", "args": {"ticks": 18}}
+
+// Cancel, so the slider and the toggle are not saved. The recording stops in the same tick, so it ends
+// on the screen rather than on the game behind it.
+{"id": "toCancel", "command": "client.mouse", "args": {"x": 109, "y": -16, "from": "bottom", "ticks": 8}}
+{"id": "cancel", "command": "client.click", "expect": {"result.taken": true}}
+{"id": "stopRecording", "command": "client.record", "args": {"action": "stop"}, "expect": {"result.failed": 0}}
+{"id": "hide", "command": "client.mouse", "args": {"hide": true}}
+{"id": "closed", "command": "client.info", "expect": {"result.screen": null}}

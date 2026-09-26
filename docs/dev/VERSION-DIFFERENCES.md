@@ -110,6 +110,7 @@ never see it.
 | Opening a path in the file manager moved off `Util.OS` onto `Blaze3D` | `ClientVanilla.openPath` |
 | The game moved from GLFW to SDL, so the window handle is an SDL one | the agent client's `ClientWindow` |
 | SDL numbers the mouse buttons from one, so left is 1 and right 3 where GLFW had 0 and 1, and a widget only takes the new left | the agent client's `AgentClientVanilla.click`, which reads the numbers out of `InputConstants` so that `client.click` means the same button on every node |
+| `MouseHandler#onMove` takes two more arguments with SDL | none: the agent client's `MouseMoveMixin` matches it by name and takes none of them |
 | A gametest's `TestData` names the dimension it runs in | NeoForge `ThirstWasTaken2GameTests` |
 | `ResourceManager#listResources` filters with a `ResourceManager.Selector` rather than a `Predicate` | none needed: `DataPackDrinks` lists its files through `FileToIdConverter#listMatchingResources`, the same on every version |
 
@@ -123,7 +124,7 @@ versions write `recipe`. Nothing else in the generated files moved.
 | Whether the HUD is hidden (F1) moved from the options into the HUD object | `ClientVanilla.isHudHidden`; the agent client's `AgentClientVanilla.toggleHud` flips the same state |
 | Opening a screen moved from the client onto the GUI | `ClientVanilla.setScreen`, `AgentClientVanilla.screen` |
 | The right-hand status bar stack heights moved from `Gui` to `Hud` | NeoForge `ClientLoader.addRightStatusBar` |
-| The main render target moved from the client onto its game renderer | `AgentClientVanilla.screenshot` |
+| The main render target moved from the client onto its game renderer | `AgentClientVanilla.mainTarget`, for `screenshot` and `readFrame` |
 | Entity type constants moved from `EntityType` to `EntityTypes` | `TestFixtures.mountType`, `piglinType` |
 | Advancement trigger classes moved into `triggers` | replacement |
 
@@ -159,12 +160,14 @@ already has by default. The stack the furnace hands out is the same; see
 | Command permission levels became permission sets | `Vanilla.isGameMaster`, `Vanilla.isOwner` |
 | The window handle accessor was renamed from `getWindow` to `handle` | `AgentClientVanilla.windowHandle` (written `>1.21.1`) |
 | A connection's send listener became Netty's own | NeoForge `CapturingConnection` (written `>1.21.1`) |
+| A screenshot is read back from the GPU asynchronously and handed to a callback, takes a downscale factor, and `NativeImage` answers ARGB rather than ABGR | `AgentClientVanilla.screenshot`, `AgentClientVanilla.readFrame` (written `>1.21.1`, since no node sits between) |
 
 ### 1.21.9 (affects 1.21.1)
 
 | Difference | Code |
 |---|---|
 | A block item's block entity data became `TypedEntityData`, naming its type rather than keeping it under `id` | `Vanilla.putBlockEntityInt`, which a Kaleidoscope Cookery teapot item scooping water calls |
+| A screen's mouse handlers take one `MouseButtonEvent` rather than a position and a button | the agent client's `AgentClientVanilla.press`, `release` and `drag` (written `>1.21.1`) |
 | Fabric API's v1 resource loader replaced `ResourceManagerHelper`, which is gone by 1.21.11, and a reload listener no longer names itself | Fabric `Loader.onServerDataReload`, written `>=1.21.11` since no node sits between |
 | Fonts are named through `FontDescription` | `Vanilla.dropletFont` |
 | The chain became the iron chain, item and texture | `ThirstRecipeProvider`, `HangingPotModels` |

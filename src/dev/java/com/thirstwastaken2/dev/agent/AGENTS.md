@@ -28,7 +28,7 @@ exchange is still on disk to read afterwards.
         in.jsonl      the agent appends one request a line
         out.jsonl     the game appends one reply a line
         previous-*    the run before this one, kept rather than overwritten
-        screenshots/  what client.capture wrote
+        screenshots/  what client.capture wrote, and a folder per client.record recording
 
 `<name>` is `server` or `client` by default and `A` or `B` on the two extra clients, so a server and
 a client of the same node never share a file. One queue per process: a client with an integrated
@@ -216,8 +216,10 @@ a client answers all three.
 | `client.key` | `key`, `down` | after setting one key's state and leaving it there |
 | `client.screen` | `open` (`none`, `config`, `inventory`) | which screen is open now |
 | `client.tooltip` | `item`, `count`, `slot`, `advanced` | the tooltip lines that item produced, as text, with their colours. `slot` reads the stack the player holds (`mainhand`, `offhand` or an inventory index) instead of building one from an id, which is the only way to ask about a stack's components |
-| `client.click` | `x`, `y`, `button`, `from` (`centre`, `corner`, `top`, `bottom`) | after pressing and releasing a mouse button on the open screen: which child was under the point and whether the press was taken |
+| `client.click` | `x`, `y`, `button`, `from` (`centre`, `corner`, `top`, `bottom`) | after pressing and releasing a mouse button on the open screen: which child was under the point and whether the press was taken. Without `x` and `y`, where the virtual pointer is |
 | `client.scroll` | `x`, `y`, `from` as `client.click`, `amount` (wheel notches, positive down the page) | after turning the wheel over the open screen: whether the screen took it. The config screen's pages scroll one row a notch |
+| `client.mouse` | `x`, `y`, `from` as `client.click`, `ticks`, `drag`, `hide` | after showing the virtual pointer and gliding it there over `ticks`, dragging with the left button held when `drag` is true: where it is and which child is under it. See [Recording](#recording-a-screen) |
+| `client.record` | `action` (`start`, `stop`), `name`, `every` (ticks a frame, 2), `downscale` (2) | `start` at once; `stop` once every frame is on disk, with the frame count and how many `failed` |
 | `client.slots` | | the open menu's slots that hold something, with their class and player inventory index, and what the cursor carries |
 | `client.slot` | `slot` or `inventory`, `button`, `action` (`pickup`, `quick_move`, …) | the same, a few ticks after clicking that slot through the game mode |
 | `client.language` | `code` | the language now selected, after loading its translations again |
@@ -247,6 +249,44 @@ and measure y from that edge, which is what makes a script for the config screen
 window sizes. `button` is 0 left, 1 right and 2 middle everywhere: 26.3 moved the client from GLFW to
 SDL, which numbers the buttons from one, and `AgentClientVanilla.click` turns the number back so that
 a file written on one node presses the same button on another.
+
+## Recording a screen
+
+`client.record` and `client.mouse` turn a script into a GIF: a showcase of a screen, with a cursor that
+moves, hovers, drags and clicks. [tools/agent/ui/config-showcase.jsonl](../../../../../../../tools/agent/ui/config-showcase.jsonl)
+is the config screen's, and its header has the three commands that make the GIF.
+
+- **The virtual pointer.** `client.click` presses a control without the mouse ever being over it, which
+  is right for a check and looks like nothing happened in a video. `client.mouse` shows a pointer the
+  game believes is the mouse (`Pointer`, written into `MouseHandler` through `MouseHandlerAccessor`),
+  so a screen draws its hover states and tooltips under it, and glides it from where it is over
+  `ticks`. Once it is shown, `client.click` and `client.scroll` without a point land where it is, and a
+  click with one moves it there first. While it is shown the real mouse is ignored (`MouseMoveMixin`),
+  so a hand passing over the window changes nothing. `{"hide": true}` gives the real mouse back.
+- **Frames.** `client.record` writes `screenshots/<name>/frame-00001.png` onward, `every` ticks apart,
+  and `frames.jsonl` beside them: the pointer's place in frame pixels, and whether a button is down,
+  for each. The framebuffer never holds a cursor, since the system draws the real one, so
+  [tools/agent/make_gif.py](../../../../../../../tools/agent/make_gif.py) draws one there. A frame is taken at the
+  start of a pass of the game loop (`FrameStartMixin`), when the target still holds the last frame
+  drawn and the pointer has not moved since, so the cursor and the screen under it always agree.
+- **Lockstep.** Reading a maximised window back costs vanilla over a hundred milliseconds, pixel by
+  pixel on the render thread, so a recording holds the game to a few frames a second. Rather than drop
+  frames, the queue waits while a frame is due: a `wait` or a glide in the script spans exactly the
+  frames its ticks call for, and the GIF plays at the speed the script was written for however long
+  the recording took. The config showcase's 270 frames take about three minutes to record.
+- **The clock.** Whatever reads the clock rather than counting ticks (the config preview's rising and
+  falling droplets, a tooltip's fade) would still run at real time, three times too fast once each
+  frame plays in 50 ms. So while a recording runs, `RecordingClock` holds the game's clock still
+  (`Util.timeSource`, which vanilla keeps swappable for tests) and moves it on one tick's worth a pass
+  until the next frame is due: the game sees 50 ms pass a frame, and runs one tick and draws once
+  between two frames. On stop the real clock comes back less the time spent frozen, so it never jumps.
+  The frame limiter and the agent's stall checks read `System.nanoTime` and are left alone.
+- **Size.** Frames are kept at every `downscale`th pixel, half the window each way by default, and
+  written on a thread of the recorder's own. A GUI drawn at a scale `downscale` divides loses
+  nothing. Vanilla's own downscale is not used: it refuses a window whose height it does not divide,
+  and a maximised one here is 1191 high.
+
+A recording is evidence for a person, like `client.capture`; nothing is asserted on its pixels.
 
 `client.slot` takes a player inventory index as `inventory`, the `container.N` of `/item replace`,
 and finds that slot in whatever menu is open. `client.language` loads only the translations again: a full resource reload in a world freed a font atlas that Jade's

@@ -296,15 +296,16 @@ final class ClientProbes {
             Minecraft minecraft = client();
             Screen screen = AgentClientVanilla.screen(minecraft);
             if (screen == null) throw new AgentException("client.click: no screen is open");
-            String from = request.choice("from", "centre", "centre", "corner", "top", "bottom");
-            double x = request.decimal("x", 0.0F) + (from.equals("corner") ? 0.0 : screen.width / 2.0);
-            double y = request.decimal("y", 0.0F) + switch (from) {
-                case "centre" -> screen.height / 2.0;
-                case "bottom" -> screen.height;
-                default -> 0.0;
-            };
+            double[] point = point(request, minecraft);
+            double x = point[0];
+            double y = point[1];
             int button = request.has("button") ? request.integer("button", 0, 2) : 0;
             String target = screen.getChildAt(x, y).map(child -> child.getClass().getName()).orElse(null);
+            // With the virtual pointer shown, the click is made where the pointer is, and a recording sees it.
+            if (Pointer.shown()) {
+                Pointer.place(minecraft, x, y);
+                Pointer.clicked();
+            }
             boolean taken = AgentClientVanilla.click(screen, x, y, button);
             JsonObject result = new JsonObject();
             result.addProperty("screen", screen.getClass().getName());
@@ -325,13 +326,10 @@ final class ClientProbes {
             Minecraft minecraft = client();
             Screen screen = AgentClientVanilla.screen(minecraft);
             if (screen == null) throw new AgentException("client.scroll: no screen is open");
-            String from = request.choice("from", "centre", "centre", "corner", "top", "bottom");
-            double x = request.decimal("x", 0.0F) + (from.equals("corner") ? 0.0 : screen.width / 2.0);
-            double y = request.decimal("y", 0.0F) + switch (from) {
-                case "centre" -> screen.height / 2.0;
-                case "bottom" -> screen.height;
-                default -> 0.0;
-            };
+            double[] point = point(request, minecraft);
+            double x = point[0];
+            double y = point[1];
+            if (Pointer.shown()) Pointer.place(minecraft, x, y);
             int amount = request.integer("amount", -100, 100);
             // One event a notch, as a real wheel sends them: a screen may move one row per event whatever
             // its size, as the config screen does. The game's wheel is positive upwards.
@@ -345,6 +343,62 @@ final class ClientProbes {
             result.addProperty("amount", amount);
             result.addProperty("taken", taken);
             reply.ok(result);
+        });
+
+        /*
+         * Shows the virtual pointer and moves it, for a recording: hover states and tooltips are drawn
+         * under it as under a real mouse, and client.click and client.scroll without a point of their
+         * own land where it is. The point is placed as client.click places one. Over `ticks` it glides
+         * there along a minimum-jerk curve, one step a tick; with `drag` the left button is pressed where it
+         * starts, held while it moves and released where it stops, which is how a slider is dragged.
+         * `hide` hands the position back to the real mouse.
+         */
+        dispatcher.register("client.mouse", (request, reply) -> {
+            Minecraft minecraft = client();
+            if (request.flag("hide", false)) {
+                Pointer.hide();
+                JsonObject result = new JsonObject();
+                result.addProperty("shown", false);
+                reply.ok(result);
+                return;
+            }
+            double[] point = point(request, minecraft);
+            int ticks = request.has("ticks") ? request.integer("ticks", 0, 20 * 60) : 0;
+            boolean drag = request.flag("drag", false);
+            Screen screen = AgentClientVanilla.screen(minecraft);
+            if (drag && screen == null) throw new AgentException("client.mouse: a drag needs an open screen");
+            double startX = Pointer.shown() ? Pointer.x() : point[0];
+            double startY = Pointer.shown() ? Pointer.y() : point[1];
+            Pointer.place(minecraft, startX, startY);
+            if (drag) {
+                AgentClientVanilla.press(screen, startX, startY, 0);
+                Pointer.hold(true);
+            }
+            glide(dispatcher, reply, minecraft, drag ? screen : null, startX, startY, point[0], point[1], ticks, 1);
+        });
+
+        /*
+         * Starts or stops a recording: a capture every `every` ticks into screenshots/<name>/, `downscale`
+         * times smaller than the window on each side (2 by default), with the virtual pointer beside each
+         * frame in frames.jsonl. `stop` answers once every frame is on disk.
+         * tools/agent/make_gif.py turns the folder into a GIF.
+         */
+        dispatcher.register("client.record", (request, reply) -> {
+            Minecraft minecraft = client();
+            String action = request.choice("action", "start", "start", "stop");
+            if (action.equals("start")) {
+                int every = request.has("every") ? request.integer("every", 1, 20) : 2;
+                int downscale = request.has("downscale") ? request.integer("downscale", 1, 8) : 2;
+                String name = request.string("name", "recording");
+                Recorder.start(dispatcher.queue().directory(), name, every, downscale);
+                JsonObject result = new JsonObject();
+                result.addProperty("recording", name);
+                result.addProperty("every", every);
+                result.addProperty("downscale", downscale);
+                reply.ok(result);
+                return;
+            }
+            whenRecorded(dispatcher, reply, Recorder.stop(minecraft), CAPTURE_ATTEMPTS * 4);
         });
 
         /* The open container's slots that hold something, by the index client.slot takes. */
@@ -460,6 +514,77 @@ final class ClientProbes {
     }
 
     /** Waits for a capture to reach disk, then runs {@code ready}. */
+    /**
+     * The point a request names, in GUI pixels: `x` and `y` measured `from` the centre (the default),
+     * the corner, or the top or bottom edge with x still from the centre. Without `x` and `y`, where the
+     * virtual pointer is, when it is shown. Measured against the open screen, or the window without one.
+     */
+    private static double[] point(AgentRequest request, Minecraft minecraft) {
+        if (!request.has("x") && !request.has("y") && Pointer.shown()) {
+            return new double[] {Pointer.x(), Pointer.y()};
+        }
+        Screen screen = AgentClientVanilla.screen(minecraft);
+        double width = screen != null ? screen.width : minecraft.getWindow().getGuiScaledWidth();
+        double height = screen != null ? screen.height : minecraft.getWindow().getGuiScaledHeight();
+        String from = request.choice("from", "centre", "centre", "corner", "top", "bottom");
+        double x = request.decimal("x", 0.0F) + (from.equals("corner") ? 0.0 : width / 2.0);
+        double y = request.decimal("y", 0.0F) + switch (from) {
+            case "centre" -> height / 2.0;
+            case "bottom" -> height;
+            default -> 0.0;
+        };
+        return new double[] {x, y};
+    }
+
+    /** One tick of client.mouse's glide: step {@code step} of {@code ticks}, answering after the last. */
+    private static void glide(AgentDispatcher dispatcher, AgentReply reply, Minecraft minecraft, Screen dragged,
+                              double fromX, double fromY, double toX, double toY, int ticks, int step) {
+        double lastX = Pointer.x();
+        double lastY = Pointer.y();
+        double t = ticks == 0 ? 1.0 : (double) step / ticks;
+        // Minimum jerk, the profile a hand pointing at something follows: it speeds up and slows down
+        // smoothly, with no jolt at either end.
+        double eased = t * t * t * (10.0 - 15.0 * t + 6.0 * t * t);
+        double x = fromX + (toX - fromX) * eased;
+        double y = fromY + (toY - fromY) * eased;
+        Pointer.place(minecraft, x, y);
+        if (dragged != null) AgentClientVanilla.drag(dragged, x, y, 0, x - lastX, y - lastY);
+        if (step < ticks) {
+            dispatcher.defer(1, reply, () ->
+                    glide(dispatcher, reply, minecraft, dragged, fromX, fromY, toX, toY, ticks, step + 1));
+            return;
+        }
+        if (dragged != null) {
+            AgentClientVanilla.release(dragged, x, y, 0);
+            Pointer.hold(false);
+        }
+        Screen screen = AgentClientVanilla.screen(minecraft);
+        JsonObject result = new JsonObject();
+        result.addProperty("x", x);
+        result.addProperty("y", y);
+        result.addProperty("ticks", ticks);
+        result.addProperty("dragged", dragged != null);
+        result.addProperty("target", screen == null ? null
+                : screen.getChildAt(x, y).map(child -> child.getClass().getName()).orElse(null));
+        reply.ok(result);
+    }
+
+    /** Answers client.record's stop once every capture it started has reached disk. */
+    private static void whenRecorded(AgentDispatcher dispatcher, AgentReply reply, JsonObject result,
+                                     int attemptsLeft) {
+        dispatcher.defer(CAPTURE_POLL_TICKS, reply, () -> {
+            if (Recorder.finished()) {
+                result.addProperty("failed", Recorder.failed());
+                result.addProperty("firstFailure", Recorder.firstFailure());
+                reply.ok(result);
+            } else if (attemptsLeft <= 1) {
+                reply.fail("the recording's last frames did not reach disk in time");
+            } else {
+                whenRecorded(dispatcher, reply, result, attemptsLeft - 1);
+            }
+        });
+    }
+
     private static void whenCaptured(AgentDispatcher dispatcher, AgentReply reply, Frames.Capture capture,
                                      Runnable ready) {
         waitForCapture(dispatcher, reply, capture, CAPTURE_ATTEMPTS, ready);

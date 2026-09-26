@@ -57,22 +57,50 @@ final class AgentClientVanilla {
 
     /**
      * Presses and releases a mouse button over {@code screen} at GUI coordinates, the two calls the
-     * mouse handler makes, and answers whether the press was taken. 1.21.9 wrapped the position and
-     * the button into one event.
+     * mouse handler makes, and answers whether the press was taken.
      */
     static boolean click(Screen screen, double x, double y, int button) {
-        int code = mouseButton(button);
-        //? if >1.21.1 {
-        net.minecraft.client.input.MouseButtonEvent event = new net.minecraft.client.input.MouseButtonEvent(x, y,
-                new net.minecraft.client.input.MouseButtonInfo(code, 0));
-        boolean taken = screen.mouseClicked(event, false);
-        screen.mouseReleased(event);
-        //?} else {
-        /*boolean taken = screen.mouseClicked(x, y, code);
-        screen.mouseReleased(x, y, code);
-        *///?}
+        boolean taken = press(screen, x, y, button);
+        release(screen, x, y, button);
         return taken;
     }
+
+    /**
+     * Presses a mouse button over {@code screen} and leaves it down, for a drag. 1.21.9 wrapped the
+     * position and the button into one event.
+     */
+    static boolean press(Screen screen, double x, double y, int button) {
+        //? if >1.21.1 {
+        return screen.mouseClicked(event(x, y, button), false);
+        //?} else {
+        /*return screen.mouseClicked(x, y, mouseButton(button));
+        *///?}
+    }
+
+    /** Releases a button {@link #press} left down. */
+    static void release(Screen screen, double x, double y, int button) {
+        //? if >1.21.1 {
+        screen.mouseReleased(event(x, y, button));
+        //?} else {
+        /*screen.mouseReleased(x, y, mouseButton(button));
+        *///?}
+    }
+
+    /** Moves the pointer by {@code dx}, {@code dy} to {@code x}, {@code y} with a button held, as a drag. */
+    static void drag(Screen screen, double x, double y, int button, double dx, double dy) {
+        //? if >1.21.1 {
+        screen.mouseDragged(event(x, y, button), dx, dy);
+        //?} else {
+        /*screen.mouseDragged(x, y, mouseButton(button), dx, dy);
+        *///?}
+    }
+
+    //? if >1.21.1 {
+    private static net.minecraft.client.input.MouseButtonEvent event(double x, double y, int button) {
+        return new net.minecraft.client.input.MouseButtonEvent(x, y,
+                new net.minecraft.client.input.MouseButtonInfo(mouseButton(button), 0));
+    }
+    //?}
 
     /**
      * The game's number for a mouse button, from the 0 left, 1 right, 2 middle a script writes.
@@ -128,17 +156,52 @@ final class AgentClientVanilla {
      * them, and the same file is the evidence a person looks at afterwards.
      */
     static void screenshot(Minecraft minecraft, File directory, String name, Consumer<Component> done) {
-        // 26.2 moved the main render target from the client onto its game renderer.
-        //? if >=26.2 {
-        RenderTarget target = minecraft.gameRenderer.mainRenderTarget();
-        //?} else {
-        /*RenderTarget target = minecraft.getMainRenderTarget();
-        *///?}
+        RenderTarget target = mainTarget(minecraft);
         // 1.21.11 added the downscale factor; 1 is the framebuffer's own size on every version.
         //? if >1.21.1 {
         Screenshot.grab(directory, name, target, 1, done);
         //?} else {
         /*Screenshot.grab(directory, name, target, done);
+        *///?}
+    }
+
+    /** What {@link #readFrame} hands over: the frame's pixels as ARGB, top row first. */
+    interface FramePixels {
+        void accept(int width, int height, int[] argb);
+    }
+
+    /**
+     * Reads the main target back and hands its pixels to {@code done}, on the render thread, without
+     * writing a file: a recording writes its many frames itself, smaller, on a thread of its own.
+     * From 1.21.11 the readback is asynchronous and {@code done} runs a frame or so later; on 1.21.1
+     * it runs before this returns. 1.21.2 turned {@code NativeImage}'s pixels from ABGR into ARGB.
+     */
+    static void readFrame(Minecraft minecraft, FramePixels done) {
+        RenderTarget target = mainTarget(minecraft);
+        //? if >1.21.1 {
+        Screenshot.takeScreenshot(target, image -> {
+            try (image) {
+                done.accept(image.getWidth(), image.getHeight(), image.getPixels());
+            }
+        });
+        //?} else {
+        /*try (com.mojang.blaze3d.platform.NativeImage image = Screenshot.takeScreenshot(target)) {
+            int[] pixels = image.getPixelsRGBA();
+            for (int i = 0; i < pixels.length; i++) {
+                int abgr = pixels[i];
+                pixels[i] = (abgr & 0xFF00FF00) | (abgr & 0xFF) << 16 | (abgr >> 16 & 0xFF);
+            }
+            done.accept(image.getWidth(), image.getHeight(), pixels);
+        }
+        *///?}
+    }
+
+    /** The target the world and the GUI are drawn into. 26.2 moved it from the client onto its game renderer. */
+    private static RenderTarget mainTarget(Minecraft minecraft) {
+        //? if >=26.2 {
+        return minecraft.gameRenderer.mainRenderTarget();
+        //?} else {
+        /*return minecraft.getMainRenderTarget();
         *///?}
     }
 }

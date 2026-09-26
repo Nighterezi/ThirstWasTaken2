@@ -3,8 +3,11 @@
   "package": "com.thirstwastaken2.dev.mixin",
   "compatibilityLevel": "${java}",
   "client": [
+    "FrameStartMixin",
     "GuiDrawMixin",
     "MouseGrabMixin",
+    "MouseHandlerAccessor",
+    "MouseMoveMixin",
     "ThirstHudMixin"
   ],
   "injectors": { "defaultRequire": 1 }

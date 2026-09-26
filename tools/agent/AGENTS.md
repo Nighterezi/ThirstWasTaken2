@@ -21,9 +21,10 @@ world it needs and how to read the result; read it before running one.
 | Folder | What is in it |
 |---|---|
 | `drive.py` | Sends a file or standard input to a queue, waits for the answers, and `--verify`s a finished run |
+| `make_gif.py` | Turns a `client.record` folder into a GIF or WebP, drawing the virtual pointer as a cursor. Options in its docstring |
 | `new_world.py`, `nbt.py` | Makes the throwaway world a script runs in. See [A world for a script](#a-world-for-a-script) |
 | `smoke/` | Checks with no gameplay: `boot.jsonl` (a client comes up and stays up, with `-PwithoutOptional`) and `server-probe.jsonl` (a dedicated server's queue answers with nobody online) |
-| `ui/` | The client's own drawing and screens: `hud-layout.jsonl` (thirst against food and air), `hud-hidden.jsonl` (F1), `hud-death-screen.jsonl`, `config-screen.jsonl` |
+| `ui/` | The client's own drawing and screens: `hud-layout.jsonl` (thirst against food and air), `hud-hidden.jsonl` (F1), `hud-death-screen.jsonl`, `config-screen.jsonl`, and `config-showcase.jsonl`, which records the config screen for a GIF rather than checking it |
 | `gameplay/` | The mod's own mechanics in a real client: `client-sync.jsonl`, `parched.jsonl`, `loot-and-boil.jsonl`, `waterskin-stack.jsonl`, `hanging-pot.jsonl`, `canteen.jsonl` |
 | `integrations/` | One script per optional mod: `create-water.jsonl`, `createfly-waterskin.jsonl`, `farmers-delight.jsonl`, `kaleidoscope-cookery.jsonl`, `supplementaries.jsonl`, `brewin-and-chewin.jsonl`, `cold-sweat.jsonl`, `cultural-delights.jsonl`, `fruits-delight.jsonl` |
 | `integrations/sophisticated/` | Sophisticated Backpacks and Storage, one script per upgrade, and `sophisticated-pack/`, the data pack of backpack templates those scripts give out |
