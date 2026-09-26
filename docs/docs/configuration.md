@@ -41,6 +41,8 @@ the player, hearths and shade included, instead of the biome's. Does nothing wit
 
 ## Water
 
+![The Water page scrolled down to the new settings: quenched by grade, sea water, rain and dripstone](/screenshots/config/config-water.png)
+
 ### sicknessPreset
 
 Default `REALISTIC`. How bad water makes players ill.
@@ -148,6 +150,8 @@ Words that stop a guess, so `melon_seed` is not treated as fruit. Only applies t
 
 ## Mod items
 
+![The Mod Items page: one switch per item, under a note that changes apply after /reload](/screenshots/config/config-mod-items.png)
+
 For a modpack that brings its own canteen or pot. A switch that is off stops the item being crafted
 and hides it from the creative tab. Items that already exist keep working, and the item stays in the
 game, so worlds that hold one still load.
@@ -178,6 +182,8 @@ Default `true`. The Iron Flask, and cleaning its water in a furnace.
 Default `true`. The Copper Hanging Pot and the Iron Hanging Pot, one switch each.
 
 ## Containers
+
+![The Containers page: canteen and flask capacity, boiling in hand, and boil times](/screenshots/config/config-containers.png)
 
 ### copperCanteenCapacity and ironFlaskCapacity
 
