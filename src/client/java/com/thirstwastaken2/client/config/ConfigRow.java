@@ -11,7 +11,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.IntConsumer;
 
 /**
  * One row of the settings list: a page heading, a setting, a note, the preview or a button. A row owns
@@ -24,6 +26,7 @@ abstract class ConfigRow {
     static final int RESET_WIDTH = 20;
     static final int GAP = 4;
     static final int PADDING = 6;
+    static final int TAB_HEIGHT = 18;
 
     private final List<AbstractWidget> widgets;
 
@@ -79,6 +82,58 @@ abstract class ConfigRow {
             void place(int x, int y, int width) {
                 canvas.setPosition(x, y);
                 canvas.setWidth(width);
+            }
+        };
+    }
+
+    /**
+     * The tabs of a page split into sections, below its heading, the shown one lit. Each tab is as wide
+     * as its name and the spare width is shared out; when the names do not fit, every tab shrinks in
+     * proportion and a cut name shows in full on hover.
+     */
+    static ConfigRow tabs(List<Component> titles, int selected, IntConsumer onSelect) {
+        List<AbstractWidget> tabs = new ArrayList<>();
+        for (int i = 0; i < titles.size(); i++) {
+            int index = i;
+            Component title = titles.get(i);
+            tabs.add(ClientVanilla.button(0, TAB_HEIGHT, title, () -> onSelect.accept(index), (graphics, widget, mouseX, mouseY) -> {
+                int x = widget.getX();
+                int y = widget.getY();
+                int right = x + widget.getWidth();
+                int bottom = y + widget.getHeight();
+                boolean current = index == selected;
+                boolean lit = current || widget.isHoveredOrFocused();
+                graphics.fill(x, y, right, bottom, current ? ConfigTheme.SELECTED : lit ? ConfigTheme.ROW_HOVER : ConfigTheme.ROW);
+                if (current) graphics.fill(x, bottom - 2, right, bottom, ConfigTheme.ACCENT);
+                int textWidth = Math.min(font().width(title), widget.getWidth() - PADDING);
+                ConfigTheme.clippedText(graphics, font(), title, x + (widget.getWidth() - textWidth) / 2,
+                        y + (widget.getHeight() - 8) / 2, textWidth, lit ? ConfigTheme.TEXT : ConfigTheme.MUTED);
+            }));
+        }
+        return new ConfigRow(tabs) {
+            @Override
+            int height(int width) {
+                return TAB_HEIGHT;
+            }
+
+            @Override
+            void place(int x, int y, int width) {
+                int gaps = GAP * (tabs.size() - 1);
+                int natural = 0;
+                for (Component title : titles) natural += font().width(title) + PADDING * 2;
+                int spare = width - gaps - natural;
+                int tabX = x;
+                for (int i = 0; i < tabs.size(); i++) {
+                    AbstractWidget tab = tabs.get(i);
+                    int own = font().width(titles.get(i)) + PADDING * 2;
+                    int tabWidth = spare >= 0 ? own + spare / tabs.size() : (width - gaps) * own / natural;
+                    // The last tab takes what rounding left over, so the strip ends flush with the rows.
+                    if (i == tabs.size() - 1) tabWidth = x + width - tabX;
+                    tab.setPosition(tabX, y);
+                    tab.setWidth(tabWidth);
+                    tab.setTooltip(font().width(titles.get(i)) > tabWidth - PADDING ? Tooltip.create(titles.get(i)) : null);
+                    tabX += tabWidth + GAP;
+                }
             }
         };
     }

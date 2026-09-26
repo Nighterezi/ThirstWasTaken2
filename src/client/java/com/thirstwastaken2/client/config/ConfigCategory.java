@@ -10,17 +10,19 @@ import com.thirstwastaken2.item.WaterskinItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * One page of the config screen: its icon in the sidebar, its settings, and any rows that are not a
- * setting. Every scalar in {@link ThirstConfig} belongs to exactly one page. The per-item values are
+ * setting. Every scalar in {@link ThirstConfig} belongs to exactly one page. A page with more settings
+ * than a small screen shows at once is split into {@link ConfigSection} tabs, each short enough to fit. The per-item values are
  * edited item by item on Item Values ({@link ItemValueRows}); the keyword patterns stay in the file,
  * which Item Values opens. Reset puts back exactly the page's entries, so the item values are never
  * reset from the footer, only one row at a time.
  */
 enum ConfigCategory {
-    THIRST("thirst", ThirstWasTaken2.id("textures/item/waterskin_3.png"), List.of(
+    THIRST("thirst", ThirstWasTaken2.id("textures/item/waterskin_3.png"), ConfigSection.whole(List.of(
             ConfigEntry.percent("thirst_depletion_modifier", 0, 1000,
                     config -> config.thirstDepletionModifier, (config, value) -> config.thirstDepletionModifier = value),
             ConfigEntry.toggle("thirst_depletion_in_peaceful",
@@ -30,37 +32,41 @@ enum ConfigCategory {
             ConfigEntry.toggle("dehydration_halts_health_regen",
                     config -> config.dehydrationHaltsHealthRegen, (config, value) -> config.dehydrationHaltsHealthRegen = value),
             ConfigEntry.toggle("cold_sweat_climate",
-                    config -> config.coldSweatClimate, (config, value) -> config.coldSweatClimate = value))),
+                    config -> config.coldSweatClimate, (config, value) -> config.coldSweatClimate = value)))),
 
-    WATER("water", ThirstWasTaken2.id("textures/item/terracotta_water_bowl_purity_3.png"), List.of(
-            ConfigEntry.choice("sickness_preset", SicknessPreset.values(),
-                    config -> config.sicknessPreset, (config, value) -> config.sicknessPreset = value),
-            ConfigEntry.grade("default_purity",
-                    config -> config.defaultPurity, (config, value) -> config.defaultPurity = value),
-            ConfigEntry.toggle("can_drink_by_hand",
-                    config -> config.canDrinkByHand, (config, value) -> config.canDrinkByHand = value),
-            quenchedPercent("quenched_percent_dirty", 0),
-            quenchedPercent("quenched_percent_murky", 1),
-            quenchedPercent("quenched_percent_clean", 2),
-            quenchedPercent("quenched_percent_pure", 3),
-            ConfigEntry.toggle("enable_sea_water",
-                    config -> config.enableSeaWater, (config, value) -> config.enableSeaWater = value),
-            ConfigEntry.number("sea_water_nausea_seconds", 0, ThirstConfig.MAX_EFFECT_SECONDS, ConfigEntry::seconds,
-                    config -> config.seaWaterNauseaSeconds, (config, value) -> config.seaWaterNauseaSeconds = value),
-            ConfigEntry.number("sea_water_parched_seconds", 0, ThirstConfig.MAX_EFFECT_SECONDS, ConfigEntry::seconds,
-                    config -> config.seaWaterParchedSeconds, (config, value) -> config.seaWaterParchedSeconds = value),
-            ConfigEntry.toggle("enable_rain_collection",
-                    config -> config.enableRainCollection, (config, value) -> config.enableRainCollection = value),
-            ConfigEntry.grade("rainwater_purity",
-                    config -> config.rainwaterPurity, (config, value) -> config.rainwaterPurity = value),
-            ConfigEntry.grade("dripstone_purity",
-                    config -> config.dripstonePurity, (config, value) -> config.dripstonePurity = value))),
+    WATER("water", ThirstWasTaken2.id("textures/item/terracotta_water_bowl_purity_3.png"),
+            ConfigSection.of("water.drinking", List.of(
+                    ConfigEntry.choice("sickness_preset", SicknessPreset.values(),
+                            config -> config.sicknessPreset, (config, value) -> config.sicknessPreset = value),
+                    ConfigEntry.grade("default_purity",
+                            config -> config.defaultPurity, (config, value) -> config.defaultPurity = value),
+                    ConfigEntry.toggle("can_drink_by_hand",
+                            config -> config.canDrinkByHand, (config, value) -> config.canDrinkByHand = value))),
+            ConfigSection.of("water.quenched", List.of(
+                    quenchedPercent("quenched_percent_dirty", 0),
+                    quenchedPercent("quenched_percent_murky", 1),
+                    quenchedPercent("quenched_percent_clean", 2),
+                    quenchedPercent("quenched_percent_pure", 3))),
+            ConfigSection.of("water.sea_water", List.of(
+                    ConfigEntry.toggle("enable_sea_water",
+                            config -> config.enableSeaWater, (config, value) -> config.enableSeaWater = value),
+                    ConfigEntry.number("sea_water_nausea_seconds", 0, ThirstConfig.MAX_EFFECT_SECONDS, ConfigEntry::seconds,
+                            config -> config.seaWaterNauseaSeconds, (config, value) -> config.seaWaterNauseaSeconds = value),
+                    ConfigEntry.number("sea_water_parched_seconds", 0, ThirstConfig.MAX_EFFECT_SECONDS, ConfigEntry::seconds,
+                            config -> config.seaWaterParchedSeconds, (config, value) -> config.seaWaterParchedSeconds = value))),
+            ConfigSection.of("water.collected", List.of(
+                    ConfigEntry.toggle("enable_rain_collection",
+                            config -> config.enableRainCollection, (config, value) -> config.enableRainCollection = value),
+                    ConfigEntry.grade("rainwater_purity",
+                            config -> config.rainwaterPurity, (config, value) -> config.rainwaterPurity = value),
+                    ConfigEntry.grade("dripstone_purity",
+                            config -> config.dripstonePurity, (config, value) -> config.dripstonePurity = value)))),
 
-    APPLESKIN("appleskin", Identifier.withDefaultNamespace("textures/item/apple.png"), List.of(
+    APPLESKIN("appleskin", Identifier.withDefaultNamespace("textures/item/apple.png"), ConfigSection.whole(List.of(
             ConfigEntry.choice("appleskin_quenched_overlay", QuenchedOverlay.values(),
                     config -> config.appleskinQuenchedOverlay, (config, value) -> config.appleskinQuenchedOverlay = value),
             ConfigEntry.toggle("appleskin_tooltip_droplets",
-                    config -> config.appleskinTooltipDroplets, (config, value) -> config.appleskinTooltipDroplets = value))) {
+                    config -> config.appleskinTooltipDroplets, (config, value) -> config.appleskinTooltipDroplets = value)))) {
         @Override
         void addLeadingRows(List<ConfigRow> rows) {
             rows.add(ConfigRow.preview());
@@ -70,34 +76,34 @@ enum ConfigCategory {
         }
     },
 
-    ITEMS("items", Identifier.withDefaultNamespace("textures/item/honey_bottle.png"), List.of(
-            ConfigEntry.toggle("enable_drink_tag_matching",
-                    config -> config.enableDrinkTagMatching, (config, value) -> config.enableDrinkTagMatching = value),
-            ConfigEntry.toggle("enable_keyword_matching",
-                    config -> config.enableKeywordMatching, (config, value) -> config.enableKeywordMatching = value))) {
-        @Override
-        void addTrailingRows(List<ConfigRow> rows, Runnable refresh) {
-            rows.add(ConfigRow.action(Component.translatable("thirstwastaken2.config.open_file"),
-                    Component.translatable("thirstwastaken2.config.open_file.tooltip"),
-                    Component.translatable("thirstwastaken2.config.open_file.button"),
-                    () -> ClientVanilla.openPath(ThirstConfig.path())));
-            ItemValueRows.addPage(rows, refresh);
-        }
-    },
+    // The item list is long by nature, so it gets a tab of its own and the switches stay one click away.
+    ITEMS("items", Identifier.withDefaultNamespace("textures/item/honey_bottle.png"),
+            new ConfigSection("items.list", List.of(), ItemValueRows::addPage),
+            new ConfigSection("items.matching", List.of(
+                    ConfigEntry.toggle("enable_drink_tag_matching",
+                            config -> config.enableDrinkTagMatching, (config, value) -> config.enableDrinkTagMatching = value),
+                    ConfigEntry.toggle("enable_keyword_matching",
+                            config -> config.enableKeywordMatching, (config, value) -> config.enableKeywordMatching = value)),
+                    (rows, refresh) -> rows.add(ConfigRow.action(Component.translatable("thirstwastaken2.config.open_file"),
+                            Component.translatable("thirstwastaken2.config.open_file.tooltip"),
+                            Component.translatable("thirstwastaken2.config.open_file.button"),
+                            () -> ClientVanilla.openPath(ThirstConfig.path()))))),
 
-    MOD_ITEMS("mod_items", Identifier.withDefaultNamespace("textures/block/crafting_table_front.png"), List.of(
-            ConfigEntry.toggle("enable_bowls",
-                    config -> config.enableBowls, (config, value) -> config.enableBowls = value),
-            ConfigEntry.toggle("enable_waterskin",
-                    config -> config.enableWaterskin, (config, value) -> config.enableWaterskin = value),
-            ConfigEntry.toggle("enable_copper_canteen",
-                    config -> config.enableCopperCanteen, (config, value) -> config.enableCopperCanteen = value),
-            ConfigEntry.toggle("enable_iron_flask",
-                    config -> config.enableIronFlask, (config, value) -> config.enableIronFlask = value),
-            ConfigEntry.toggle("enable_copper_hanging_pot",
-                    config -> config.enableCopperHangingPot, (config, value) -> config.enableCopperHangingPot = value),
-            ConfigEntry.toggle("enable_iron_hanging_pot",
-                    config -> config.enableIronHangingPot, (config, value) -> config.enableIronHangingPot = value))) {
+    MOD_ITEMS("mod_items", Identifier.withDefaultNamespace("textures/block/crafting_table_front.png"),
+            ConfigSection.of("mod_items.items", List.of(
+                    ConfigEntry.toggle("enable_bowls",
+                            config -> config.enableBowls, (config, value) -> config.enableBowls = value),
+                    ConfigEntry.toggle("enable_waterskin",
+                            config -> config.enableWaterskin, (config, value) -> config.enableWaterskin = value),
+                    ConfigEntry.toggle("enable_copper_canteen",
+                            config -> config.enableCopperCanteen, (config, value) -> config.enableCopperCanteen = value),
+                    ConfigEntry.toggle("enable_iron_flask",
+                            config -> config.enableIronFlask, (config, value) -> config.enableIronFlask = value))),
+            ConfigSection.of("mod_items.blocks", List.of(
+                    ConfigEntry.toggle("enable_copper_hanging_pot",
+                            config -> config.enableCopperHangingPot, (config, value) -> config.enableCopperHangingPot = value),
+                    ConfigEntry.toggle("enable_iron_hanging_pot",
+                            config -> config.enableIronHangingPot, (config, value) -> config.enableIronHangingPot = value)))) {
         @Override
         void addLeadingRows(List<ConfigRow> rows) {
             // Recipes are only read as data loads, so a switch here does nothing until the next load.
@@ -105,32 +111,39 @@ enum ConfigCategory {
         }
     },
 
-    CONTAINERS("containers", ThirstWasTaken2.id("textures/item/iron_flask.png"), List.of(
-            ConfigEntry.number("copper_canteen_capacity", 1, WaterskinItem.MAX_CAPACITY, ConfigEntry::servings,
-                    config -> config.copperCanteenCapacity, (config, value) -> config.copperCanteenCapacity = value),
-            ConfigEntry.number("iron_flask_capacity", 1, WaterskinItem.MAX_CAPACITY, ConfigEntry::servings,
-                    config -> config.ironFlaskCapacity, (config, value) -> config.ironFlaskCapacity = value),
-            ConfigEntry.toggle("enable_boiling_in_hand",
-                    config -> config.enableBoilingInHand, (config, value) -> config.enableBoilingInHand = value),
-            ConfigEntry.number("copper_canteen_boil_seconds", 1, ThirstConfig.MAX_BOIL_SECONDS, ConfigEntry::seconds,
-                    config -> config.copperCanteenBoilSeconds, (config, value) -> config.copperCanteenBoilSeconds = value),
-            ConfigEntry.number("iron_flask_boil_seconds", 1, ThirstConfig.MAX_BOIL_SECONDS, ConfigEntry::seconds,
-                    config -> config.ironFlaskBoilSeconds, (config, value) -> config.ironFlaskBoilSeconds = value),
-            ConfigEntry.number("copper_hanging_pot_boil_seconds", 1, ThirstConfig.MAX_BOIL_SECONDS, ConfigEntry::seconds,
-                    config -> config.copperHangingPotBoilSeconds,
-                    (config, value) -> config.copperHangingPotBoilSeconds = value),
-            ConfigEntry.number("iron_hanging_pot_boil_seconds", 1, ThirstConfig.MAX_BOIL_SECONDS, ConfigEntry::seconds,
-                    config -> config.ironHangingPotBoilSeconds,
-                    (config, value) -> config.ironHangingPotBoilSeconds = value)));
+    CONTAINERS("containers", ThirstWasTaken2.id("textures/item/iron_flask.png"),
+            ConfigSection.of("containers.capacity", List.of(
+                    ConfigEntry.number("copper_canteen_capacity", 1, WaterskinItem.MAX_CAPACITY, ConfigEntry::servings,
+                            config -> config.copperCanteenCapacity, (config, value) -> config.copperCanteenCapacity = value),
+                    ConfigEntry.number("iron_flask_capacity", 1, WaterskinItem.MAX_CAPACITY, ConfigEntry::servings,
+                            config -> config.ironFlaskCapacity, (config, value) -> config.ironFlaskCapacity = value))),
+            ConfigSection.of("containers.boiling", List.of(
+                    ConfigEntry.toggle("enable_boiling_in_hand",
+                            config -> config.enableBoilingInHand, (config, value) -> config.enableBoilingInHand = value),
+                    ConfigEntry.number("copper_canteen_boil_seconds", 1, ThirstConfig.MAX_BOIL_SECONDS, ConfigEntry::seconds,
+                            config -> config.copperCanteenBoilSeconds, (config, value) -> config.copperCanteenBoilSeconds = value),
+                    ConfigEntry.number("iron_flask_boil_seconds", 1, ThirstConfig.MAX_BOIL_SECONDS, ConfigEntry::seconds,
+                            config -> config.ironFlaskBoilSeconds, (config, value) -> config.ironFlaskBoilSeconds = value))),
+            ConfigSection.of("containers.hanging_pots", List.of(
+                    ConfigEntry.number("copper_hanging_pot_boil_seconds", 1, ThirstConfig.MAX_BOIL_SECONDS, ConfigEntry::seconds,
+                            config -> config.copperHangingPotBoilSeconds,
+                            (config, value) -> config.copperHangingPotBoilSeconds = value),
+                    ConfigEntry.number("iron_hanging_pot_boil_seconds", 1, ThirstConfig.MAX_BOIL_SECONDS, ConfigEntry::seconds,
+                            config -> config.ironHangingPotBoilSeconds,
+                            (config, value) -> config.ironHangingPotBoilSeconds = value))));
 
     private final String key;
     private final Identifier icon;
+    private final List<ConfigSection> sections;
     private final List<ConfigEntry<?>> entries;
 
-    ConfigCategory(String key, Identifier icon, List<ConfigEntry<?>> entries) {
+    ConfigCategory(String key, Identifier icon, ConfigSection... sections) {
         this.key = key;
         this.icon = icon;
-        this.entries = entries;
+        this.sections = List.of(sections);
+        List<ConfigEntry<?>> all = new ArrayList<>();
+        for (ConfigSection section : sections) all.addAll(section.entries());
+        this.entries = List.copyOf(all);
     }
 
     /** One grade's share of a drink's quenched. The value is an element of an array, so it is set in place. */
@@ -152,13 +165,16 @@ enum ConfigCategory {
         return icon;
     }
 
+    /** Every setting on the page, across its sections, for the search and the footer's Reset. */
     List<ConfigEntry<?>> entries() {
         return entries;
     }
 
-    /** Rows placed between the page heading and its settings. */
-    void addLeadingRows(List<ConfigRow> rows) { }
+    /** The page's tabs, in order; one section means the page shows no tabs. */
+    List<ConfigSection> sections() {
+        return sections;
+    }
 
-    /** Rows placed after the page's settings. {@code refresh} rebuilds the page, for a row that adds or removes rows. */
-    void addTrailingRows(List<ConfigRow> rows, Runnable refresh) { }
+    /** Rows placed between the page heading, or its tabs, and its settings, on every tab. */
+    void addLeadingRows(List<ConfigRow> rows) { }
 }

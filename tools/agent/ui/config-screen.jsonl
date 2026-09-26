@@ -1,4 +1,4 @@
-// The config screen: the sidebar switching pages, the Item Values page's "Open" button, and Done and
+// The config screen: the sidebar switching pages, a page's tabs, the Item Values page's "Open" button, and Done and
 // Cancel closing the screen. 26.3 moved the call that button makes onto Blaze3D.openPath, so pressing
 // it is the check: an action that failed to link would take the client down with it, and the requests
 // after it would go unanswered.
@@ -10,8 +10,10 @@
 //
 // The sidebar is anchored to the top-left corner, so its tabs are clicked from the corner: tab i spans
 // y = 38 + 24 i to 60 + 24 i, x = 4 to 92 at least. The list is at most 360 wide and, on a GUI 483 px
-// or wider, its right edge sits 224 px right of the centre, under a 32 px header; the Open button is
-// the last 80 px of the fourth row (heading 30, two settings 22 each, 2 between rows). The footer's
+// or wider, its right edge sits 224 px right of the centre, under a 32 px header. Under the page
+// heading (30) sits the strip of tabs (18); Item Values has two, Item List and Matching, each half
+// the list. The Open button is the last 80 px of the row after Matching's two settings (22 each, 2
+// between rows), so its middle is 40 + 32 + 20 + 48 + 11 = 151 down. The footer's
 // Cancel and Done are right-aligned, so their offset from the centre follows the window: the numbers
 // below are for a 512 px wide GUI, a maximised 2048 px window at scale 4, which `window` reports.
 
@@ -30,9 +32,14 @@
 {"id": "onItems", "command": "client.info", "expect": {"result.screen": "com.thirstwastaken2.client.config.ThirstConfigScreen"}}
 {"id": "itemsShot", "command": "client.capture", "args": {"name": "config-item-values"}}
 
-// The Open button of the fourth row. This opens the file. Everything after it is the proof that the
+// Matching, the second tab: the right half of the strip.
+{"id": "matching", "command": "client.click", "args": {"x": 136, "y": 81, "button": 0, "from": "top"}, "expect": {"result.taken": true}}
+{"id": "matchingDrawn", "command": "wait", "args": {"ticks": 10}}
+{"id": "matchingShot", "command": "client.capture", "args": {"name": "config-item-matching"}}
+
+// The Open button, below Matching's two settings. This opens the file. Everything after it is the proof that the
 // call returned.
-{"id": "openFile", "command": "client.click", "args": {"x": 183, "y": 131, "button": 0, "from": "top"}, "expect": {"result.taken": true}}
+{"id": "openFile", "command": "client.click", "args": {"x": 183, "y": 151, "button": 0, "from": "top"}, "expect": {"result.taken": true}}
 {"id": "opened", "command": "wait", "args": {"ticks": 20}}
 {"id": "aliveAfterOpen", "command": "client.info", "expect": {"result.screen": "com.thirstwastaken2.client.config.ThirstConfigScreen"}}
 {"id": "stateAfterOpen", "command": "client.state"}

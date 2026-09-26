@@ -113,11 +113,10 @@ final class ItemValueRows {
     private ItemValueRows() { }
 
     /**
-     * The page's editor: its heading, the row that adds an item, then the installed items grouped by
+     * The Item List tab: the row that adds an item, then the installed items grouped by
      * the mod that adds them, each group under a heading that opens and closes it.
      */
     static void addPage(List<ConfigRow> rows, Runnable refresh) {
-        rows.add(ConfigRow.subheading(Component.translatable(PREFIX + "item_values"), Identifier.withDefaultNamespace("textures/item/melon_slice.png")));
         rows.add(addRow(refresh));
         Map<String, List<String>> groups = new LinkedHashMap<>();
         int hidden = 0;

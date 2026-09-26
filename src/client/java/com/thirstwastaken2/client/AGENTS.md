@@ -14,9 +14,10 @@ alone (`ThirstData.STORAGE`), and only the config screen's AppleSkin settings ar
 | `ThirstHud` | drawing the bar |
 | `HandDrinking` | hand drinking from water the crosshair misses: picks again with fluids and sends vanilla's use-on-block packet on the water |
 | `config/ThirstConfigScreen` | the whole options screen: header with search, a sidebar tab per page, the scrolling rows, Reset, Cancel and Done |
-| `config/ConfigCategory` | every page: its icon, its `ConfigEntry` list and any extra rows (preview, note, open-file button) |
+| `config/ConfigCategory` | every page: its icon, its `ConfigSection` tabs and any rows above them (preview, note) |
+| `config/ConfigSection` | one tab of a page: its `ConfigEntry` list and any rows after it (open-file button, the item list) |
 | `config/ConfigEntry` | one setting: getter/setter on the live config, its default, its control (`toggle`, `choice`, `grade`, `percent`, `number`) and its lang keys |
-| `config/ConfigRow` | one row of the list: heading, setting, note, preview or action button |
+| `config/ConfigRow` | one row of the list: heading, tab strip, setting, note, preview or action button |
 | `config/ItemValueRows` | the per-item thirst values on the Item Values page: one row per listed item, and the row that adds one |
 | `config/ConfigTheme` | the screen's colours and small drawing helpers |
 | `config/ConfigPreview` | the live thirst bar, food bar and tooltip on the AppleSkin page |
@@ -106,7 +107,14 @@ fill thresholds change here, change them there too.
 from vanilla widgets and plain fills only, no config library: a header with the mod's name and a search
 box, a sidebar with a tab per `ConfigCategory`, the page's rows, and Reset / Cancel / Done. Typing in
 the search box lists matching settings from every page, grouped by page. Below 380 GUI pixels wide the
-sidebar shows icons only. The HUD position is fixed to vanilla's right-hand status-bar stack; there is
+sidebar shows icons only.
+
+A page with more settings than fit on a small screen is split into `ConfigSection`s, shown as a strip
+of tabs under its heading; the list holds only the chosen tab's rows. The heading and the strip are
+pinned, and only the rows below them scroll. Size a tab so it fits without scrolling on a 480x270 GUI
+(1080p at scale 4): heading and strip take 52 px, a setting 24. A page of one section shows no strip.
+The tab shown is kept per page while the screen is open. Reset in the footer still acts on the whole
+page. A section's title is `thirstwastaken2.config.group.<page>.<section>`, in all nine lang files. The HUD position is fixed to vanilla's right-hand status-bar stack; there is
 no offset setting because the preview cannot show screen position.
 
 A setting row is its name (amber, with an amber bar, when it differs from the default), its control,
@@ -128,8 +136,9 @@ item maps are never reset from the footer, only one item row at a time.
 
 ### Item values
 
-`ItemValueRows` puts the `drinks`, `foods` and `itemBlacklist` entries on the Item Values page, below its
-two switches and the Open button, which is now only for the keyword patterns. One row per id, sorted, so
+`ItemValueRows` puts the `drinks`, `foods` and `itemBlacklist` entries on the Item Values page's Item List
+tab. Its two switches and the Open button, which is now only for the keyword patterns, are on the
+Matching tab. One row per id, sorted, so
 one mod's items sit together: icon and name, a thirst and a quenched box (0 to `ThirstData.MAX`), a
 switch that adds or removes the id from `itemBlacklist`, and reset. Reset puts back the mod's value for
 an id `new ThirstConfig()` lists, and takes the line out for any other; a default id is never removed,
@@ -164,8 +173,8 @@ per sweep, drawn separately from the bar so the droplets never show a drain: the
 `hud-appleskin.gif`, which `tools/generate_docs_images.py` draws. Keep the two in step. The tooltip
 and the bar block are each centred in the preview box.
 
-Adding a setting means: field in `ThirstConfig`, clamp in `sanitize()`, a `ConfigEntry` in its
-`ConfigCategory`, and `thirstwastaken2.config.<key>` plus `thirstwastaken2.config.<key>.tooltip` in
+Adding a setting means: field in `ThirstConfig`, clamp in `sanitize()`, a `ConfigEntry` in a section of
+its `ConfigCategory`, and `thirstwastaken2.config.<key>` plus `thirstwastaken2.config.<key>.tooltip` in
 all nine lang files (`checkLang` fails on a missing one). The key is the Java field name
 in snake_case. A new page also needs `section.<key>`, its tooltip and a 16x16 icon texture. Enums use
 `choice`, labelled by `<key>.<value in lower case>`, so each value needs its own lang key. Doubles are

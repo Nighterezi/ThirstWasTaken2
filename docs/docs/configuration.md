@@ -10,6 +10,7 @@ game: through Mod Menu on Fabric, or the Mods list on NeoForge.
 ![The config screen, with a tab for each group of settings on the left](/screenshots/config/config-screen.png)
 
 - Pick a group from the tabs on the left, or type in the search box to find a setting on any page.
+  A longer page is split into smaller tabs along its top.
 - A setting you have changed is shown in amber. The arrow button next to it puts it back.
 - **Reset to Defaults** resets the whole page, **Done** saves, **Cancel** discards.
 - A file edited by hand is read on the next start.
@@ -41,7 +42,7 @@ the player, hearths and shade included, instead of the biome's. Does nothing wit
 
 ## Water
 
-![The Water page scrolled down to the new settings: quenched by grade, sea water, rain and dripstone](/screenshots/config/config-water.png)
+![The Water page, split into Drinking, Quenched, Sea Water and Rain and Dripstone tabs](/screenshots/config/config-water.png)
 
 ### sicknessPreset
 
@@ -150,7 +151,7 @@ Words that stop a guess, so `melon_seed` is not treated as fruit. Only applies t
 
 ## Mod items
 
-![The Mod Items page: one switch per item, under a note that changes apply after /reload](/screenshots/config/config-mod-items.png)
+![The Mod Items page on its Items tab: one switch per item, under a note that changes apply after /reload](/screenshots/config/config-mod-items.png)
 
 For a modpack that brings its own canteen or pot. A switch that is off stops the item being crafted
 and hides it from the creative tab. Items that already exist keep working, and the item stays in the
@@ -183,7 +184,7 @@ Default `true`. The Copper Hanging Pot and the Iron Hanging Pot, one switch each
 
 ## Containers
 
-![The Containers page: canteen and flask capacity, boiling in hand, and boil times](/screenshots/config/config-containers.png)
+![The Containers page on its Boil in Hand tab, beside the Capacity and Hanging Pots tabs](/screenshots/config/config-containers.png)
 
 ### copperCanteenCapacity and ironFlaskCapacity
 

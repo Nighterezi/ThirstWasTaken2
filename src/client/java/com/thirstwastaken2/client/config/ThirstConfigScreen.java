@@ -15,14 +15,18 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * The editor for {@code config/thirstwastaken2.json}, opened from Mod Menu on Fabric and the mods list
  * on NeoForge. A header with the mod's name and a search box, a sidebar with one tab per
  * {@link ConfigCategory}, the selected page's settings as a scrolling list of rows, and Reset, Cancel
- * and Done below. Typing in the search box lists matching settings from every page instead.
+ * and Done below. A page split into sections shows a strip of tabs under its heading, and the list
+ * holds only the chosen tab's rows. Typing in the search box lists matching settings from every page
+ * instead.
  *
  * <p>Everything is built from vanilla widgets and plain fills, so it looks at home next to the vanilla
  * options screens on every supported version. Controls write straight into the live config, so the
@@ -50,6 +54,10 @@ public final class ThirstConfigScreen extends Screen {
     private final ThirstConfig snapshot = ThirstConfig.snapshot();
     private final List<ConfigRow> rows = new ArrayList<>();
     private ConfigCategory selected = ConfigCategory.values()[0];
+    /** The tab shown on each split page, kept while the screen is open so returning to a page finds it as left. */
+    private final Map<ConfigCategory, Integer> sectionShown = new EnumMap<>(ConfigCategory.class);
+    /** How many rows at the top, the heading and any tabs, stay in place while the rest scroll. */
+    private int pinned;
     private String query = "";
     private int scroll;
 
@@ -169,10 +177,12 @@ public final class ThirstConfigScreen extends Screen {
         int maxScroll = maxScroll();
         if (maxScroll > 0) {
             int trackX = listX + listWidth + 4;
-            int trackHeight = listBottom - listTop;
-            int thumbHeight = Math.max(16, trackHeight * (rows.size() - maxScroll) / rows.size());
-            int thumbY = listTop + (trackHeight - thumbHeight) * scroll / maxScroll;
-            graphics.fill(trackX, listTop, trackX + SCROLLBAR_WIDTH, listBottom, ConfigTheme.ROW);
+            int trackTop = scrollTop();
+            int trackHeight = listBottom - trackTop;
+            int scrolling = rows.size() - pinned;
+            int thumbHeight = Math.max(16, trackHeight * (scrolling - maxScroll) / scrolling);
+            int thumbY = trackTop + (trackHeight - thumbHeight) * scroll / maxScroll;
+            graphics.fill(trackX, trackTop, trackX + SCROLLBAR_WIDTH, listBottom, ConfigTheme.ROW);
             graphics.fill(trackX, thumbY, trackX + SCROLLBAR_WIDTH, thumbY + thumbHeight, ConfigTheme.MUTED);
         }
     }
@@ -189,9 +199,17 @@ public final class ThirstConfigScreen extends Screen {
         int controlWidth = Math.clamp(listWidth * 2 / 5, 80, 140);
         if (query.isEmpty()) {
             rows.add(ConfigRow.heading(selected.title(), selected.description(), selected.icon()));
+            List<ConfigSection> sections = selected.sections();
+            ConfigSection section = sections.get(Math.min(sectionShown.getOrDefault(selected, 0), sections.size() - 1));
+            if (sections.size() > 1) {
+                List<Component> titles = new ArrayList<>();
+                for (ConfigSection each : sections) titles.add(each.title());
+                rows.add(ConfigRow.tabs(titles, sections.indexOf(section), this::selectSection));
+            }
+            pinned = rows.size();
             selected.addLeadingRows(rows);
-            for (ConfigEntry<?> entry : selected.entries()) rows.add(ConfigRow.option(entry, controlWidth, this::refreshRows));
-            selected.addTrailingRows(rows, this::refreshRows);
+            for (ConfigEntry<?> entry : section.entries()) rows.add(ConfigRow.option(entry, controlWidth, this::refreshRows));
+            section.trailingRows().accept(rows, this::refreshRows);
         } else {
             List<ConfigRow> results = new ArrayList<>();
             int count = 0;
@@ -213,6 +231,7 @@ public final class ThirstConfigScreen extends Screen {
             }
             rows.add(ConfigRow.heading(Component.translatable("thirstwastaken2.config.search_results"),
                     Component.translatable("thirstwastaken2.config.search_results.count", count), null));
+            pinned = 1;
             if (count == 0) rows.add(ConfigRow.note(Component.translatable("thirstwastaken2.config.no_results", search.getValue())));
             rows.addAll(results);
         }
@@ -239,7 +258,10 @@ public final class ThirstConfigScreen extends Screen {
         return all;
     }
 
-    /** Shows the rows from {@link #scroll} on that fit between the header and footer, and hides the rest. */
+    /**
+     * Shows the pinned rows, then the rows {@link #scroll} past them that fit between the header and
+     * footer, and hides the rest.
+     */
     private void layoutRows() {
         scroll = Math.clamp(scroll, 0, maxScroll());
         int y = listTop;
@@ -247,8 +269,9 @@ public final class ThirstConfigScreen extends Screen {
         for (int i = 0; i < rows.size(); i++) {
             ConfigRow row = rows.get(i);
             int rowHeight = row.height(listWidth);
-            boolean shown = i >= scroll && !full && y + rowHeight <= listBottom;
-            if (i >= scroll && !shown) full = true;
+            boolean inView = i < pinned || i - pinned >= scroll;
+            boolean shown = inView && !full && y + rowHeight <= listBottom;
+            if (inView && !shown) full = true;
             if (shown) {
                 row.place(listX, y, listWidth);
                 y += rowHeight + ROW_GAP;
@@ -257,15 +280,22 @@ public final class ThirstConfigScreen extends Screen {
         }
     }
 
-    /** The first row index from which every remaining row fits in the list. */
+    /** How many rows past the pinned ones to skip before every remaining row fits below them. */
     private int maxScroll() {
-        int space = listBottom - listTop + ROW_GAP;
+        int space = listBottom - scrollTop() + ROW_GAP;
         int used = 0;
-        for (int i = rows.size() - 1; i >= 0; i--) {
+        for (int i = rows.size() - 1; i >= pinned; i--) {
             used += rows.get(i).height(listWidth) + ROW_GAP;
-            if (used > space) return i + 1;
+            if (used > space) return i + 1 - pinned;
         }
         return 0;
+    }
+
+    /** Where the scrolling rows start, below the pinned ones. */
+    private int scrollTop() {
+        int y = listTop;
+        for (int i = 0; i < pinned && i < rows.size(); i++) y += rows.get(i).height(listWidth) + ROW_GAP;
+        return y;
     }
 
     @Override
@@ -294,6 +324,12 @@ public final class ThirstConfigScreen extends Screen {
         // Clearing the search runs onSearch, which rebuilds the rows itself.
         if (!query.isEmpty()) search.setValue("");
         else refreshRows();
+    }
+
+    private void selectSection(int index) {
+        sectionShown.put(selected, index);
+        scroll = 0;
+        refreshRows();
     }
 
     private void onSearch(String value) {

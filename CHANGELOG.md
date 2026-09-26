@@ -6,6 +6,15 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 
 ### Added
 
+- The settings screen can now edit what each item restores. Items are listed by mod, each with its
+  thirst and quenched, a switch that turns it off, and a box to add another item.
+- A Mod Items page switches off the bowls, the Waterskin, the Copper Canteen, the Iron Flask or either
+  Hanging Pot, for a modpack that brings its own. A switched-off item can no longer be crafted and
+  leaves the creative tab.
+- New Water settings: how much each grade quenches, how long sea water's effects last, and the grade
+  of rain and dripstone water. Sea water and rain collection can each be switched off.
+- A Containers page sets the canteen and flask capacity and every boil time, and can switch off
+  boiling in hand.
 - Compatibility with Cold Sweat on NeoForge 1.21.1:
   - Thirst drains by the temperature Cold Sweat shows around the player instead of the biome's, so
     Hearths, shade, night and altitude count. `coldSweatClimate` turns it off.
@@ -25,10 +34,30 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 
 ### Changed
 
+- Longer pages of the settings screen are split into tabs along the top, so their settings fit on one
+  screen.
 - Every language now has a translation for every line of the settings screen.
 
 - Water in a Hanging Pot now looks like water in a cauldron. Each water grade and sea water keeps
   its own colour.
+
+### Notes
+
+- Recipe viewers such as JEI and EMI still list a switched-off item.
+
+<details>
+<summary>Configuration file details</summary>
+
+- New keys, all defaulting to the old behaviour: `quenchedPercent`, `enableSeaWater`,
+  `seaWaterNauseaSeconds`, `seaWaterParchedSeconds`, `enableRainCollection`, `rainwaterPurity`,
+  `dripstonePurity`, `copperCanteenCapacity`, `ironFlaskCapacity`, `enableBoilingInHand`,
+  `copperCanteenBoilSeconds`, `ironFlaskBoilSeconds`, `copperHangingPotBoilSeconds`,
+  `ironHangingPotBoilSeconds`, `enableBowls`, `enableWaterskin`, `enableCopperCanteen`,
+  `enableIronFlask`, `enableCopperHangingPot` and `enableIronHangingPot`.
+- Values in `drinks` and `foods` are now kept between 0 and 20, and an entry without exactly two
+  numbers is dropped.
+
+</details>
 
 ## [1.2.1] - 2026-09-25
 
