@@ -145,6 +145,10 @@ MODRINTH_DEPS = [
     ModrinthDep("brewin_and_chewin", "brewin-and-chewin", by_id=True, mirrors=()),
     # Cold Sweat, NeoForge 1.21.1 only. Pinned by id like the others printed on no page.
     ModrinthDep("cold_sweat", "cold-sweat", by_id=True, mirrors=()),
+    # Cultural Delights and the Cook's Collection it requires, NeoForge 1.21.1 only, pinned by id. Its
+    # uploads for different Minecraft versions put the version in the number in no fixed place.
+    ModrinthDep("cultural_delights", "cultural-delights", by_id=True, mirrors=()),
+    ModrinthDep("cooks_collection", "cooks-collection", by_id=True, mirrors=()),
 ]
 
 

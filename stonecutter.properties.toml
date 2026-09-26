@@ -95,6 +95,14 @@ deps.brewin_and_chewin = "MbcR48Ou"
 # only, and nothing past 1.21.1, so no other table sets it. See src/main/coldsweat/AGENTS.md.
 # 2.4.3.1, the NeoForge upload.
 deps.cold_sweat = "r2cD4Llq"
+# Cultural Delights, whose vat brews no drink from sea water. NeoForge only: the vat and the drinks are
+# 0.18, and the Fabric port stopped at 0.17, so no Fabric table sets it.
+# See src/main/culturaldelights/AGENTS.md.
+# 0.18.1-1.21.1, the NeoForge upload.
+deps.cultural_delights = "jL5hP1qm"
+# Cook's Collection, which Cultural Delights 0.18 requires, only on the runClient classpath.
+# 0.6.1-1.21.1, the NeoForge upload.
+deps.cooks_collection = "z1YUDQXH"
 
 ["1.21.11"]
 mod.mc_releases = ["1.21.11"]

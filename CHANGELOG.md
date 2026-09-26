@@ -14,6 +14,11 @@ All notable changes to ThirstWasTaken2 are documented in this file.
   - The Boiler purifies any water container a grade at a time, up to Pure. The Waterskin also purifies
     on a campfire, in a furnace and in a smoker. Sea water stays salty.
   - Hot Cocoa from Farmer's Delight and the hot teas from Kaleidoscope Cookery warm the player a little.
+- Compatibility with Cultural Delights on NeoForge 1.21.1:
+  - Its drinks, cucumbers and salads restore thirst. The stronger a drink, the less it restores, and
+    spirits restore none.
+  - The Vat brews nothing while it holds a bucket of sea water. Drinks brewed from fresh water are safe
+    whatever its grade.
 
 ### Changed
 

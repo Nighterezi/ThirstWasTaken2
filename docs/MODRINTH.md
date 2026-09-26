@@ -196,6 +196,16 @@
   </tr>
   <tr>
     <td width="55%">
+      <b><a href="https://n1ght3r.github.io/ThirstWasTaken2/docs/features/cultural-delights">Cultural Delights</a></b><br>
+      <i>NeoForge: <a href="https://modrinth.com/mod/cultural-delights">Cultural Delights</a> on 1.21.1</i><br><br>
+      Its drinks, cucumbers and salads restore thirst, less the stronger the drink. The Vat brews nothing from sea water.
+    </td>
+    <td width="45%">
+      <img alt="A Cultural Delights Vat between barrels and crates of cucumbers, corn and eggplants in a plains village" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/integrations/cultural-delights/cultural-vat.png" width="100%">
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
       <b><a href="https://n1ght3r.github.io/ThirstWasTaken2/docs/configuration">Settings screen</a></b><br>
       <i>Fabric and NeoForge</i><br><br>
       Configure the mod in game with a live HUD preview. Fabric requires <a href="https://modrinth.com/mod/modmenu">Mod Menu</a>; NeoForge uses the Config button in its Mods list.

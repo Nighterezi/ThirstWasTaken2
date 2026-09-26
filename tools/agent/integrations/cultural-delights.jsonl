@@ -1,0 +1,44 @@
+// Cultural Delights in a real client: its vat brews beer from a plain water bucket and from a Dirty one,
+// and nothing from a sea water bucket, which stays in its slot. Runs on 1.21.1-neoforge, the one node
+// with the integration: the vat is Cultural Delights 0.18, which has no Fabric build. Run it unattended
+// in a singleplayer world:
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/integrations/cultural-delights.jsonl -Pquickplay=CulturalAgent
+// CulturalAgent is a throwaway world, made fresh for each run by
+//     python tools/agent/new_world.py 1.21.1-neoforge CulturalAgent
+// Then check what it recorded:
+//     python tools/agent/drive.py run/1.21.1-neoforge/agent/client tools/agent/integrations/cultural-delights.jsonl --verify --max-age 15
+//
+// The vat holds items, not fluid: slots 0 to 5 are ingredients, 6 the container (a glass bottle for
+// beer), 7 the output, saved as an ItemStackHandler under "inventory". So each vat is placed already
+// loaded, and read back with "data get". Beer takes 200 ticks at no particular temperature; the stone
+// floor is neither hot nor cold.
+
+{"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "arrived", "command": "client.state"}
+{"id": "alive", "command": "client.state", "expect": {"result.alive": true}}
+
+{"id": "forceload", "command": "server.command", "args": {"command": "forceload add -8 -8 8 8"}}
+{"id": "float", "command": "server.command", "args": {"command": "effect give @p minecraft:slow_falling 600 0 true"}}
+{"id": "view", "command": "server.command", "args": {"command": "tp @p 0.5 203 -3.5 0 30"}}
+{"id": "chunks", "command": "wait", "args": {"ticks": 100}}
+{"id": "air", "command": "server.command", "args": {"command": "fill -8 200 -8 8 208 8 minecraft:air"}}
+{"id": "floor", "command": "server.command", "args": {"command": "fill -8 199 -8 8 199 8 minecraft:stone"}}
+
+// Three vats with beer's ingredients, one bucket each: plain, Dirty, sea water.
+{"id": "vatPlain", "command": "server.command", "args": {"command": "setblock -2 200 0 culturaldelights:vat{inventory:{Size:8,Items:[{Slot:0,id:\"minecraft:water_bucket\",count:1},{Slot:1,id:\"minecraft:wheat\",count:1},{Slot:2,id:\"minecraft:wheat\",count:1},{Slot:3,id:\"minecraft:sugar\",count:1},{Slot:4,id:\"minecraft:brown_mushroom\",count:1},{Slot:6,id:\"minecraft:glass_bottle\",count:1}]}}"}}
+{"id": "vatDirty", "command": "server.command", "args": {"command": "setblock 0 200 0 culturaldelights:vat{inventory:{Size:8,Items:[{Slot:0,id:\"minecraft:water_bucket\",count:1,components:{\"thirstwastaken2:water_purity\":0,\"thirstwastaken2:water_salty\":false}},{Slot:1,id:\"minecraft:wheat\",count:1},{Slot:2,id:\"minecraft:wheat\",count:1},{Slot:3,id:\"minecraft:sugar\",count:1},{Slot:4,id:\"minecraft:brown_mushroom\",count:1},{Slot:6,id:\"minecraft:glass_bottle\",count:1}]}}"}}
+{"id": "vatSalty", "command": "server.command", "args": {"command": "setblock 2 200 0 culturaldelights:vat{inventory:{Size:8,Items:[{Slot:0,id:\"minecraft:water_bucket\",count:1,components:{\"thirstwastaken2:water_salty\":true}},{Slot:1,id:\"minecraft:wheat\",count:1},{Slot:2,id:\"minecraft:wheat\",count:1},{Slot:3,id:\"minecraft:sugar\",count:1},{Slot:4,id:\"minecraft:brown_mushroom\",count:1},{Slot:6,id:\"minecraft:glass_bottle\",count:1}]}}"}}
+{"id": "brew", "command": "wait", "args": {"ticks": 300}}
+{"id": "shot", "command": "client.capture", "args": {"name": "cultural-delights-vats"}}
+
+{"id": "plainBrewed", "command": "server.command", "args": {"command": "execute if data block -2 200 0 inventory.Items[{id:\"culturaldelights:beer\"}]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "dirtyBrewed", "command": "server.command", "args": {"command": "execute if data block 0 200 0 inventory.Items[{id:\"culturaldelights:beer\"}]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+// A brewed drink carries no grade: the drink is its own item, safe whatever water went in.
+{"id": "dirtyBeerPlain", "command": "server.command", "args": {"command": "execute unless data block 0 200 0 inventory.Items[{id:\"culturaldelights:beer\",components:{\"thirstwastaken2:water_purity\":0}}]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "saltyNotBrewed", "command": "server.command", "args": {"command": "execute unless data block 2 200 0 inventory.Items[{id:\"culturaldelights:beer\"}]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "saltyBucketKept", "command": "server.command", "args": {"command": "data get block 2 200 0 inventory.Items[0]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "water_salty\": 1b"}]}
+
+// Taking the sea water bucket out and putting a plain one in lets the same vat brew.
+{"id": "swap", "command": "server.command", "args": {"command": "data modify block 2 200 0 inventory.Items[0] set value {Slot:0,id:\"minecraft:water_bucket\",count:1}"}}
+{"id": "brewAgain", "command": "wait", "args": {"ticks": 300}}
+{"id": "swappedBrewed", "command": "server.command", "args": {"command": "execute if data block 2 200 0 inventory.Items[{id:\"culturaldelights:beer\"}]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}

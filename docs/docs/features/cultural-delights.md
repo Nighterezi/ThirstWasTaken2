@@ -1,0 +1,36 @@
+# Cultural Delights
+
+With Cultural Delights installed, its drinks and watery foods restore thirst, and its Vat brews nothing
+from sea water.
+
+::: warning Supported versions
+Everything on this page works on NeoForge, Minecraft 1.21.1, with
+[Cultural Delights](https://modrinth.com/mod/cultural-delights) 0.18.1. Its Fabric build has not been
+updated since 0.17, so it has no Vat and no drinks. Its cucumbers and salad still restore thirst there.
+:::
+
+![A Cultural Delights Vat between barrels and crates of cucumbers, corn and eggplants in a plains village](/screenshots/integrations/cultural-delights/cultural-vat.png)
+
+## Drinks and foods
+
+| Item | Thirst | Quenched |
+|---|---|---|
+| Cola | 6 | 8 |
+| Ginger Beer, Butterbeer, Beer, Mead, Apple Cider | 5 | 6 |
+| Bloody Mary, Mojito, Margarita | 4 | 5 |
+| Wine, Glow Wine | 3 | 4 |
+| Lemon Liqueur | 2 | 2 |
+| Hearty Salad | 4 | 5 |
+| Cucumber | 3 | 4 |
+| Creamed Corn, Poached Eggplants | 2 | 3 |
+| Cut Cucumber | 1 | 2 |
+
+The stronger a drink, the less it restores. Tequila, Gin, Brandy, Vodka, Whiskey, Rum, Vinegar and
+Acid restore none. Pickles are salty and restore none either. Every value can be changed in the
+[config](/docs/configuration#drinks-and-foods).
+
+## Water in the Vat
+
+- A drink brewed from fresh water is safe whatever its grade.
+- The Vat brews nothing while any of its slots holds a bucket of sea water. A brew from it would come
+  out safe, which would make the sea drinkable. Take the bucket out and the Vat starts again.

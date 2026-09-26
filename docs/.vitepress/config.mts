@@ -30,7 +30,8 @@ const manualSidebar = [
       { text: 'Supplementaries', link: '/docs/features/supplementaries' },
       { text: 'Kaleidoscope Cookery', link: '/docs/features/kaleidoscope-cookery' },
       { text: "Brewin' and Chewin'", link: '/docs/features/brewin-and-chewin' },
-      { text: 'Cold Sweat', link: '/docs/features/cold-sweat' }
+      { text: 'Cold Sweat', link: '/docs/features/cold-sweat' },
+      { text: 'Cultural Delights', link: '/docs/features/cultural-delights' }
     ]
   },
   {

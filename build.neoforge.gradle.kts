@@ -169,6 +169,9 @@ val brewinAndChewinVersion = findProperty("deps.brewin_and_chewin") as String?
 /** Cold Sweat's Modrinth version id, on `1.21.1-neoforge` only. See src/main/coldsweat/AGENTS.md. */
 val coldSweatVersion = findProperty("deps.cold_sweat") as String?
 
+/** Cultural Delights' Modrinth version id, on `1.21.1-neoforge` only. See src/main/culturaldelights/AGENTS.md. */
+val culturalDelightsVersion = findProperty("deps.cultural_delights") as String?
+
 /*
  * The same gametests the Fabric nodes run, as their own small mod, so none of it reaches the jar.
  * `src/gametest/neoforge` holds the harness that finds and registers them, in place of Fabric API's;
@@ -441,6 +444,16 @@ dependencies {
         // Test the climate, the waterskin and the Boiler in runClient. The gametests and runServer run
         // without it, which is what proves the mod is unchanged when it is absent.
         runClientMod(listOf("cold-sweat", "cold_sweat"), "maven.modrinth:cold-sweat:$coldSweatVersion") { isTransitive = false }
+    }
+
+    if (culturalDelightsVersion != null) {
+        compileOnly("maven.modrinth:cultural-delights:$culturalDelightsVersion") { isTransitive = false }
+        // Test the vat in runClient. The gametests and runServer run without it, which is what proves the
+        // mod is unchanged when it is absent. It requires Cook's Collection; Farmer's Delight is above.
+        runClientMod(listOf("cultural-delights", "culturaldelights"),
+            "maven.modrinth:cultural-delights:$culturalDelightsVersion") { isTransitive = false }
+        runClientMod(listOf("cooks-collection", "cookscollection", "cultural-delights", "culturaldelights"),
+            "maven.modrinth:cooks-collection:${property("deps.cooks_collection")}") { isTransitive = false }
     }
 
     // A name no node loads is refused in stonecutter.gradle.kts, once every node has said what it takes.

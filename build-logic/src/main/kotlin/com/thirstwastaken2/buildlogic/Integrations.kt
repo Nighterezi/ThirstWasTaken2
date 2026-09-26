@@ -172,6 +172,16 @@ val integrations: List<Integration> = listOf(
         mixinConfig = "thirstwastaken2.coldsweat.mixins.json",
         neoForgeDependencies = listOf("cold_sweat"),
     ),
+    // NeoForge only: the vat and its drinks are 0.18, which has no Fabric build; the Fabric port stopped
+    // at 0.17 and is not built against. Only `1.21.1-neoforge` sets the key.
+    // See src/main/culturaldelights/AGENTS.md.
+    Integration(
+        dir = "culturaldelights",
+        depsKey = "deps.cultural_delights",
+        loaders = setOf(Loader.NEOFORGE),
+        mixinConfig = "thirstwastaken2.culturaldelights.mixins.json",
+        neoForgeDependencies = listOf("culturaldelights"),
+    ),
 )
 
 /**

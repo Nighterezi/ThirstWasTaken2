@@ -254,6 +254,54 @@ public final class ThirstApiGameTest {
         helper.succeed();
     }
 
+    /** Cultural Delights is never installed here either; see the Kaleidoscope Cookery test above. */
+    @GameTest
+    public void culturalDelightsDrinksAreMergedIntoAnOlderConfig(GameTestHelper helper) {
+        ThirstConfig defaults = new ThirstConfig();
+        String[] drinks = {"cola", "beer", "apple_cider", "mojito", "wine", "lemon_liqueur", "vodka"};
+        String[] foods = {"cucumber", "hearty_salad", "creamed_corn"};
+        for (String drink : drinks) {
+            TestFixtures.check(helper, defaults.drinks.containsKey("culturaldelights:" + drink),
+                    "the default drinks should list culturaldelights:" + drink);
+        }
+        for (String food : foods) {
+            TestFixtures.check(helper, defaults.foods.containsKey("culturaldelights:" + food),
+                    "the default foods should list culturaldelights:" + food);
+        }
+        for (String spirit : new String[]{"vodka", "rum", "acid", "vinegar"}) {
+            TestFixtures.check(helper, Arrays.equals(defaults.drinks.get("culturaldelights:" + spirit), new int[]{0, 0}),
+                    "culturaldelights:" + spirit + " restores no thirst and should be listed as zero, so no tag gives it one");
+        }
+        TestFixtures.check(helper, !defaults.foods.containsKey("culturaldelights:pickle"),
+                "culturaldelights:pickle is salty and should not be listed");
+
+        TestFixtures.withConfig(config -> {
+            for (String drink : drinks) config.drinks.remove("culturaldelights:" + drink);
+            for (String food : foods) config.foods.remove("culturaldelights:" + food);
+            // A player's own value, which merging must leave alone.
+            config.drinks.put("culturaldelights:beer", new int[]{1, 1});
+        }, () -> {
+            ThirstConfig config = ThirstConfig.get();
+            for (String drink : drinks) {
+                if (drink.equals("beer")) continue;
+                String id = "culturaldelights:" + drink;
+                TestFixtures.check(helper, Arrays.equals(config.drinks.get(id), defaults.drinks.get(id)),
+                        id + " should be merged back as " + Arrays.toString(defaults.drinks.get(id))
+                                + ", got " + Arrays.toString(config.drinks.get(id)));
+            }
+            for (String food : foods) {
+                String id = "culturaldelights:" + food;
+                TestFixtures.check(helper, Arrays.equals(config.foods.get(id), defaults.foods.get(id)),
+                        id + " should be merged back as " + Arrays.toString(defaults.foods.get(id))
+                                + ", got " + Arrays.toString(config.foods.get(id)));
+            }
+            TestFixtures.check(helper, Arrays.equals(config.drinks.get("culturaldelights:beer"), new int[]{1, 1}),
+                    "a value the player set should survive the merge, got "
+                            + Arrays.toString(config.drinks.get("culturaldelights:beer")));
+        });
+        helper.succeed();
+    }
+
     @GameTest
     public void aBrokenKeywordPatternIsIgnoredRatherThanFatal(GameTestHelper helper) {
         TestFixtures.withConfig(config -> {

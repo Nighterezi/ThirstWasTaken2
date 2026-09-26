@@ -180,6 +180,9 @@ public final class ThirstConfig {
         brewinAndChewinFoods(foods);
         // And for Cold Sweat's waterskin, added after that.
         coldSweatDrinks(drinks);
+        // And for Cultural Delights, added after that.
+        culturalDelightsDrinks(drinks);
+        culturalDelightsFoods(foods);
         if (itemBlacklist == null) itemBlacklist = new LinkedHashSet<>();
         if (sicknessPreset == null) sicknessPreset = SicknessPreset.REALISTIC;
         if (drinkTagValue == null || drinkTagValue.length != 2) drinkTagValue = new int[]{6, 8};
@@ -225,6 +228,7 @@ public final class ThirstConfig {
         kaleidoscopeCookeryDrinks(values);
         brewinAndChewinDrinks(values);
         coldSweatDrinks(values);
+        culturalDelightsDrinks(values);
         return values;
     }
 
@@ -243,6 +247,7 @@ public final class ThirstConfig {
         put(values, 4, 5, "farmersdelight:tomato_sauce", "farmersdelight:mixed_salad", "farmersdelight:beef_stew", "farmersdelight:chicken_soup", "farmersdelight:vegetable_soup", "farmersdelight:fish_stew", "farmersdelight:pumpkin_soup", "farmersdelight:baked_cod_stew", "farmersdelight:noodle_soup", "farmersdelight:onion_soup");
         kaleidoscopeCookeryFoods(values);
         brewinAndChewinFoods(values);
+        culturalDelightsFoods(values);
         return values;
     }
 
@@ -320,6 +325,40 @@ public final class ThirstConfig {
      */
     private static void coldSweatDrinks(Map<String, int[]> drinks) {
         putMissing(drinks, 6, 8, "cold_sweat:filled_waterskin");
+    }
+
+    /**
+     * Cultural Delights' drinks, by id alone like the other mods': brewed in its vat since 0.18, a glass
+     * bottle each, one drink per bottle. On Brewin' and Chewin's scale: the soft ones about a bottle of
+     * water, light brews a little under, wine a third, a liqueur less. The spirits and the two that are
+     * not drinks at all are listed as zero rather than left out: the mod tags its alcohol
+     * {@code c:drinks/alcohol}, and a zero keeps the {@code c:drinks} tag value off them should a pack
+     * fold that tag in. Brewed drinks are safe whatever water went into the vat, as tea is; sea water
+     * brews nothing (see {@code src/main/culturaldelights}).
+     */
+    private static void culturalDelightsDrinks(Map<String, int[]> drinks) {
+        putMissing(drinks, 6, 8, "culturaldelights:cola");
+        putMissing(drinks, 5, 6, "culturaldelights:ginger_beer", "culturaldelights:butterbeer",
+                "culturaldelights:beer", "culturaldelights:mead", "culturaldelights:apple_cider");
+        putMissing(drinks, 4, 5, "culturaldelights:bloody_mary", "culturaldelights:mojito",
+                "culturaldelights:margarita");
+        putMissing(drinks, 3, 4, "culturaldelights:wine", "culturaldelights:glow_wine");
+        putMissing(drinks, 2, 2, "culturaldelights:lemon_liqueur");
+        putMissing(drinks, 0, 0, "culturaldelights:tequila", "culturaldelights:gin", "culturaldelights:brandy",
+                "culturaldelights:vodka", "culturaldelights:whiskey", "culturaldelights:rum",
+                "culturaldelights:acid", "culturaldelights:vinegar");
+    }
+
+    /**
+     * Cultural Delights' watery foods; see {@link #culturalDelightsDrinks}. A cucumber is most of a melon
+     * slice, the salad and the soft corn and eggplant dishes are Farmer's Delight's. Pickles are salty and
+     * the rest is dry, so neither is here.
+     */
+    private static void culturalDelightsFoods(Map<String, int[]> foods) {
+        putMissing(foods, 3, 4, "culturaldelights:cucumber");
+        putMissing(foods, 1, 2, "culturaldelights:cut_cucumber");
+        putMissing(foods, 4, 5, "culturaldelights:hearty_salad");
+        putMissing(foods, 2, 3, "culturaldelights:creamed_corn", "culturaldelights:poached_eggplants");
     }
 
     private static void put(Map<String, int[]> values, int thirst, int quenched, String... ids) {
