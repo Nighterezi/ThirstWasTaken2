@@ -165,7 +165,7 @@
       Teas, milk tea and soups restore thirst. Water keeps its purity grade in the Stockpot and the Teapot, and the Teapot brews nothing from sea water.
     </td>
     <td width="45%">
-      <img alt="A Teapot on a lit Stove among teacups in a cherry grove, with Jade naming its water Clean" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/integrations/kaleidoscope-cookery/kaleidoscope-teapot.png" width="100%"><br><img alt="Kaleidoscope Cookery teas in the hotbar, with the Sakura Fubuki tooltip showing its thirst and quenched droplets" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/integrations/kaleidoscope-cookery/kaleidoscope-teas.png" width="100%">
+      <img alt="A Teapot on a lit Stove among teacups in a cherry grove, with Jade naming its water Clean" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/integrations/kaleidoscope-cookery/kaleidoscope-teapot.png" width="100%">
     </td>
   </tr>
   <tr>
@@ -175,7 +175,7 @@
       Brews and soups restore thirst, less the stronger the drink. Water keeps its purity grade in the Keg, and nothing ferments from sea water.
     </td>
     <td width="45%">
-      <img alt="A Brewin' and Chewin' Keg beside barrels on a lakeshore, with Jade naming its water Dirty" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/integrations/brewin-and-chewin/brewin-keg.png" width="100%"><br><img alt="Brewin' and Chewin' brews in the hotbar, with the Beer tooltip showing its thirst and quenched droplets" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/integrations/brewin-and-chewin/brewin-drinks.png" width="100%">
+      <img alt="A Brewin' and Chewin' Keg beside barrels on a lakeshore, with Jade naming its water Dirty" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/integrations/brewin-and-chewin/brewin-keg.png" width="100%">
     </td>
   </tr>
   <tr>
@@ -185,7 +185,7 @@
       Thirst follows the temperature Cold Sweat shows around you, hearths and shade included. Its Waterskin carries a purity grade and quenches thirst, and the Boiler purifies water.
     </td>
     <td width="45%">
-      <img alt="A snowy taiga by a frozen river and ice spikes, with Cold Sweat's body temperature gauge between the hearts and the thirst bar" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/integrations/cold-sweat/cold-sweat-hud.png" width="100%"><br><img alt="A lit Boiler on the snow between a campfire warming two Waterskins and a water cauldron" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/integrations/cold-sweat/cold-sweat-boiler.png" width="100%">
+      <img alt="A lit Boiler on the snow between a campfire warming two Waterskins and a water cauldron" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/integrations/cold-sweat/cold-sweat-boiler.png" width="100%">
     </td>
   </tr>
   <tr>
