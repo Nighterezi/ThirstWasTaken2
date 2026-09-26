@@ -45,7 +45,8 @@ const manualSidebar = [
         items: [
           { text: "Brewin' and Chewin'", link: '/docs/integrations/farmers-delight/brewin-and-chewin' },
           { text: 'Cultural Delights', link: '/docs/integrations/farmers-delight/cultural-delights' },
-          { text: 'Fruits Delight', link: '/docs/integrations/farmers-delight/fruits-delight' }
+          { text: 'Fruits Delight', link: '/docs/integrations/farmers-delight/fruits-delight' },
+          { text: "Ocean's Delight", link: '/docs/integrations/farmers-delight/oceans-delight' }
         ]
       }
     ]

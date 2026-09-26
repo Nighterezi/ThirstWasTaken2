@@ -260,6 +260,8 @@ public final class ThirstConfig {
         // And for Fruits Delight, added after that.
         fruitsDelightDrinks(drinks);
         fruitsDelightFoods(foods);
+        // And for Ocean's Delight, added after that.
+        oceansDelightFoods(foods);
         clampValues(drinks);
         clampValues(foods);
         if (itemBlacklist == null) itemBlacklist = new LinkedHashSet<>();
@@ -347,7 +349,10 @@ public final class ThirstConfig {
 
     private static Map<String, int[]> defaultFoods() {
         Map<String, int[]> values = new LinkedHashMap<>();
-        put(values, 2, 3, "minecraft:apple", "minecraft:golden_apple", "minecraft:enchanted_golden_apple", "minecraft:mushroom_stew", "minecraft:rabbit_stew");
+        put(values, 2, 3, "minecraft:apple", "minecraft:golden_apple", "minecraft:enchanted_golden_apple");
+        // Upstream gives the two stews an apple's 2, 3. Every other stew here, Farmer's Delight's and the
+        // keyword value for soups included, is 4, 5, so these match them.
+        put(values, 4, 5, "minecraft:mushroom_stew", "minecraft:rabbit_stew");
         put(values, 4, 5, "minecraft:melon_slice");
         put(values, 1, 2, "minecraft:carrot", "minecraft:beetroot", "minecraft:sweet_berries", "minecraft:glow_berries", "minecraft:golden_carrot");
         put(values, 5, 7, "minecraft:beetroot_soup");
@@ -362,6 +367,7 @@ public final class ThirstConfig {
         brewinAndChewinFoods(values);
         culturalDelightsFoods(values);
         fruitsDelightFoods(values);
+        oceansDelightFoods(values);
         return values;
     }
 
@@ -514,6 +520,18 @@ public final class ThirstConfig {
         putMissing(foods, 6, 8, "fruitsdelight:pear_with_rock_sugar");
         putMissing(foods, 4, 5, "fruitsdelight:fig_chicken_stew", "fruitsdelight:mango_salad");
         putMissing(foods, 2, 3, "fruitsdelight:blueberry_custard");
+    }
+
+    /**
+     * Ocean's Delight's soup and bowls, by id alone: the mod has no drinks and uses no water, and its
+     * Fabric and NeoForge builds share one mod id, so an id reaches every node and matches nothing where
+     * the mod is absent. The Guardian Soup is a broth, the braised sea pickle a stew and the seagrass
+     * salad a light bowl. The fried, baked and rolled seafood is left out.
+     */
+    private static void oceansDelightFoods(Map<String, int[]> foods) {
+        putMissing(foods, 5, 7, "oceansdelight:bowl_of_guardian_soup");
+        putMissing(foods, 4, 5, "oceansdelight:braised_sea_pickle");
+        putMissing(foods, 2, 3, "oceansdelight:seagrass_salad");
     }
 
     private static void put(Map<String, int[]> values, int thirst, int quenched, String... ids) {

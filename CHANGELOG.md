@@ -11,9 +11,13 @@ All notable changes to ThirstWasTaken2 are documented in this file.
   - Tropical biomes such as jungles, savannas and deserts follow the wet and dry seasons instead: the
     dry season drains thirst faster than the wet one.
   - A Seasons tab on the Thirst settings page sets the speed for each season, or turns this off.
+- Compatibility with Ocean's Delight on Fabric and NeoForge 1.21.1:
+  - Its Guardian Soup, Braised Sea Pickle and Seagrass Salad restore thirst.
 
 ### Changed
 
+- Mushroom stew and rabbit stew restore 4 thirst and 5 quenched, as much as the other stews. Existing
+  config files keep their old values.
 - In the settings screen's item list, an open mod group shows the thirst and quenched droplets above
   its two columns, and its heading stays at the top while its items scroll past.
 - The Cold Sweat Climate setting only appears in the settings screen when Cold Sweat is installed.

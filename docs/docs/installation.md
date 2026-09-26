@@ -62,6 +62,7 @@ All optional except Fabric API. Versions are listed in the order 26.3, 26.2, 26.
 | [Serene Seasons](https://modrinth.com/mod/serene-seasons) | 26.1.2.0.7, 26.1.2.0.6, 21.11.0.4, 10.1.0.9 | Thirst that [follows the season](/docs/integrations/serene-seasons). Needs GlitchCore. |
 | [Farmer's Delight Refabricated](https://modrinth.com/mod/farmers-delight-refabricated) | 26.3-3.6.27, 26.2-3.6.26, 26.1-3.6.26, 1.21.11-3.6.16, 1.21.1-3.3.6 | Thirst from its [drinks and meals](/docs/integrations/farmers-delight/), Pure water from the Cooking Pot, and no drain under Nourishment. |
 | [Brewin' and Chewin'](https://modrinth.com/mod/brewin-and-chewin) | v4.5.0+1.21.1-fabric | Thirst from its [brews and soups](/docs/integrations/farmers-delight/brewin-and-chewin), and water that keeps its grade in the Keg. 1.21.1 only. |
+| [Ocean's Delight](https://modrinth.com/mod/oceans-delight) | 1.0.3+fabric.1.21.1 | Thirst from its [Guardian Soup and bowls](/docs/integrations/farmers-delight/oceans-delight). 1.21.1 only. |
 
 ### NeoForge
 
@@ -82,6 +83,7 @@ The settings screen opens from the Config button in NeoForge's Mods list, with n
 | [Brewin' and Chewin'](https://modrinth.com/mod/brewin-and-chewin) | v4.5.0+1.21.1-neoforge | The same as on Fabric. 1.21.1 only. |
 | [Cultural Delights](https://modrinth.com/mod/cultural-delights) | 0.18.1-1.21.1 | Thirst from its [drinks and watery foods](/docs/integrations/farmers-delight/cultural-delights), and a Vat that brews nothing from sea water. 1.21.1 only. |
 | [Fruits Delight](https://modrinth.com/mod/fruits-delight) | 1.2.14 | Thirst from its [juices, teas and fruit](/docs/integrations/farmers-delight/fruits-delight). 1.21.1 only. |
+| [Ocean's Delight](https://modrinth.com/mod/oceans-delight) | 1.0.4 | The same as on Fabric. 1.21.1 only. |
 
 Other food mods usually work as they are. Drinks their mod marks as drinks restore thirst, and any
 item can be given a value in [Configuration](/docs/configuration).

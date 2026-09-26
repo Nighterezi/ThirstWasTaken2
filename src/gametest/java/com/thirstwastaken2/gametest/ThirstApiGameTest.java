@@ -349,6 +349,41 @@ public final class ThirstApiGameTest {
         helper.succeed();
     }
 
+    /** Ocean's Delight is never installed here either; see the Kaleidoscope Cookery test above. */
+    @GameTest
+    public void oceansDelightFoodsAreMergedIntoAnOlderConfig(GameTestHelper helper) {
+        ThirstConfig defaults = new ThirstConfig();
+        String[] foods = {"bowl_of_guardian_soup", "braised_sea_pickle", "seagrass_salad"};
+        for (String food : foods) {
+            TestFixtures.check(helper, defaults.foods.containsKey("oceansdelight:" + food),
+                    "the default foods should list oceansdelight:" + food);
+        }
+        for (String dry : new String[]{"squid_rings", "fugu_roll", "honey_fried_kelp"}) {
+            TestFixtures.check(helper, !defaults.foods.containsKey("oceansdelight:" + dry)
+                            && !defaults.drinks.containsKey("oceansdelight:" + dry),
+                    "oceansdelight:" + dry + " restores no thirst and should not be listed");
+        }
+
+        TestFixtures.withConfig(config -> {
+            for (String food : foods) config.foods.remove("oceansdelight:" + food);
+            // A player's own value, which merging must leave alone.
+            config.foods.put("oceansdelight:seagrass_salad", new int[]{1, 1});
+        }, () -> {
+            ThirstConfig config = ThirstConfig.get();
+            for (String food : foods) {
+                if (food.equals("seagrass_salad")) continue;
+                String id = "oceansdelight:" + food;
+                TestFixtures.check(helper, Arrays.equals(config.foods.get(id), defaults.foods.get(id)),
+                        id + " should be merged back as " + Arrays.toString(defaults.foods.get(id))
+                                + ", got " + Arrays.toString(config.foods.get(id)));
+            }
+            TestFixtures.check(helper, Arrays.equals(config.foods.get("oceansdelight:seagrass_salad"), new int[]{1, 1}),
+                    "a value the player set should survive the merge, got "
+                            + Arrays.toString(config.foods.get("oceansdelight:seagrass_salad")));
+        });
+        helper.succeed();
+    }
+
     @GameTest
     public void aBrokenKeywordPatternIsIgnoredRatherThanFatal(GameTestHelper helper) {
         TestFixtures.withConfig(config -> {

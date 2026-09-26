@@ -8,10 +8,10 @@
 | Milk bucket | 6 | 8 |
 | Beetroot soup | 5 | 7 |
 | Honey bottle | 4 | 6 |
-| Melon slice | 4 | 5 |
+| Melon slice, mushroom stew, rabbit stew | 4 | 5 |
 | Terracotta water bowl | 4 | 5 |
 | Waterskin, Copper Canteen or Iron Flask, per drink | 4 | 5 |
-| Apple, golden apple, enchanted golden apple, mushroom stew, rabbit stew | 2 | 3 |
+| Apple, golden apple, enchanted golden apple | 2 | 3 |
 | Carrot, golden carrot, beetroot, sweet berries, glow berries | 1 | 2 |
 
 - Thirst past a full bar becomes quenched.
