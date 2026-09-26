@@ -12,7 +12,7 @@ Other versions ignore Create.
 
 ## Sand Filter
 
-![Engineer's Goggles showing Murky water entering the Sand Filter and Clean water leaving it](/screenshots/create-sand-filter-goggles.png)
+![Engineer's Goggles showing Murky water entering the Sand Filter and Clean water leaving it](/screenshots/integrations/create/create-sand-filter-goggles.png)
 
 Water pumped into the top comes out of the bottom one grade cleaner. Pure stays Pure.
 
@@ -23,7 +23,7 @@ Water pumped into the top comes out of the bottom one grade cleaner. Pure stays 
 - A comparator reads how full the bottom is.
 - Engineer's Goggles show both sides and their grades.
 
-![Sand, a Nozzle and a Fluid Tank in a column make a Sand Filter](/screenshots/sand-filter-recipe.png)
+![Sand, a Nozzle and a Fluid Tank in a column make a Sand Filter](/screenshots/integrations/create/sand-filter-recipe.png)
 
 The recipe unlocks once a Nozzle is picked up.
 

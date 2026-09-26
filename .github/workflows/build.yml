@@ -137,8 +137,9 @@ jobs:
         # installed names that mod, which is how 1.0.9 crashed every NeoForge client without
         # Sophisticated Core; it reads the compiled classes, so it needs no mod on the classpath.
         # checkApiSurface fails when a public signature in com.thirstwastaken2.api names an internal
-        # type, which would make that type part of the API other mods compile against.
-        run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:devClasses" ":${{ matrix.version }}:checkAgentCore" ":${{ matrix.version }}:checkLoaderSeam" ":${{ matrix.version }}:checkVersionSeam" ":${{ matrix.version }}:checkOptionalSeam" ":${{ matrix.version }}:checkApiSurface" --stacktrace
+        # type, which would make that type part of the API other mods compile against. checkLang fails
+        # when one of the nine lang files lacks a key en_us has.
+        run: ./gradlew ":${{ matrix.version }}:buildAndCollect" ":${{ matrix.version }}:devClasses" ":${{ matrix.version }}:checkLang" ":${{ matrix.version }}:checkAgentCore" ":${{ matrix.version }}:checkLoaderSeam" ":${{ matrix.version }}:checkVersionSeam" ":${{ matrix.version }}:checkOptionalSeam" ":${{ matrix.version }}:checkApiSurface" --stacktrace
 
       # The NeoForge node has the dev tools too, both the agent and the benchmark, and no
       # generators of its own; it reads what the Fabric node of the same Minecraft version

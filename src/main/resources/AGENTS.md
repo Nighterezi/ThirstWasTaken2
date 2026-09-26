@@ -160,9 +160,13 @@ frame model that fills `#chain` with the chain texture of its version, and a fla
 fill level and quality, which both pots share. The frame keeps `"render_type": "minecraft:cutout"` for NeoForge before 26.1; the
 other loaders ignore the key.
 
-The water surfaces use `textures/block/copper_hanging_pot_water_<grade>.png`, animated strips drawn by
-`tools/generate_pot_water.py` in the filled bowl's palette. The pot is not tinted at runtime, which is
-what spares it a colour handler per loader and version. Rerun the script after changing a palette.
+The water surfaces use `textures/block/copper_hanging_pot_water_<grade>.png`: vanilla's
+`water_still.png` strip and animation, multiplied by a tint per quality by `tools/generate_pot_water.py`,
+so the pot looks like a cauldron's water. Clean water uses vanilla's default water colour, the others
+the filled bowl's colours. The tint is baked in rather than applied at runtime, which is what spares
+the pot a colour handler per loader and version, so it does not follow the biome. The pot renders as
+cutout, so the surfaces are opaque where a cauldron's are translucent. Rerun the script after
+changing a tint.
 
 ## The mod icon
 
@@ -198,8 +202,9 @@ effect's dry tongue.
 ## Lang
 
 Nine locales: `en_us`, `fr_fr`, `ja_jp`, `ko_kr`, `pl_pl`, `ru_ru`, `vi_vn`, `zh_cn`, `zh_tw`.
-`en_us` and `vi_vn` are the maintained pair — a new key must land in both; the rest are best-effort
-and may lag.
+All nine are maintained: a key added to `en_us` lands in every one in the same change, and
+`./gradlew ":<node>:checkLang"` (run by CI) fails when a file lacks a key `en_us` has or keeps one it
+dropped. A missing key shows its raw id to that player.
 
 Key families, and who reads them:
 

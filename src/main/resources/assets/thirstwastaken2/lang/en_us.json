@@ -85,6 +85,8 @@
   "thirstwastaken2.config.thirst_depletion_in_peaceful.tooltip": "When off, thirst slowly refills instead of draining on Peaceful difficulty.",
   "thirstwastaken2.config.dehydration_halts_health_regen": "Dehydration Stops Regen",
   "thirstwastaken2.config.dehydration_halts_health_regen.tooltip": "Blocks natural health regeneration while thirst is not full.",
+  "thirstwastaken2.config.cold_sweat_climate": "Cold Sweat Climate",
+  "thirstwastaken2.config.cold_sweat_climate.tooltip": "With Cold Sweat installed, thirst drains by the temperature it measures around you, hearths and shade included, instead of the biome's. Does nothing without Cold Sweat.",
   "thirstwastaken2.config.prevent_sprinting_when_thirsty": "No Sprinting When Thirsty",
   "thirstwastaken2.config.prevent_sprinting_when_thirsty.tooltip": "Stops sprinting once thirst drops to 6 or below.",
   "thirstwastaken2.config.can_drink_by_hand": "Drink by Hand",

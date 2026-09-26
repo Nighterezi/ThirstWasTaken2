@@ -3,7 +3,7 @@
 Fresh water has a grade, from Dirty to Pure. Sea water is Salty, has no grade, and never quenches
 thirst. Every container shows which one it holds in its tooltip.
 
-![A water bottle tooltip stepping through Dirty, Murky, Clean, Pure and Salty](/screenshots/water-tooltips.gif)
+![A water bottle tooltip stepping through Dirty, Murky, Clean, Pure and Salty](/screenshots/water/water-tooltips.gif)
 
 ## The four grades
 
@@ -28,7 +28,7 @@ uses [defaultPurity](/docs/configuration#defaultpurity).
 
 ## Checking water with Jade
 
-![Jade showing Murky for the river water under the crosshair](/screenshots/jade-water.png)
+![Jade showing Murky for the river water under the crosshair](/screenshots/water/jade-water.png)
 
 With [Jade](https://modrinth.com/mod/jade) installed, looking at water, a waterlogged block, a water
 cauldron or a hanging pot shows its grade, or Salty. It can be turned off in Jade's plugin settings.
@@ -49,7 +49,7 @@ Oceans and beaches give salt water. It has its own icon and tooltip line. On Min
 Parched makes thirst drain faster, the way Hunger does for food, and turns the thirst bar the colour
 of dry sand.
 
-![The thirst bar in dry sand colours while Parched](/screenshots/parched-hud.png)
+![The thirst bar in dry sand colours while Parched](/screenshots/hud/parched-hud.png)
 
 ## Mixing and cauldrons
 
@@ -102,7 +102,7 @@ The common one. It never hurts on its own.
 
 It lasts 45 seconds on Easy, 60 on Normal and 90 on Hard.
 
-![The thirst bar in green while the player has Upset Stomach](/screenshots/upset-stomach-hud.png)
+![The thirst bar in green while the player has Upset Stomach](/screenshots/hud/upset-stomach-hud.png)
 
 ### Poisoning
 
@@ -118,7 +118,7 @@ Poison stops at half a heart, so Poisoning never kills.
 
 Put a water bottle, terracotta water bowl or water bucket in a furnace, a smoker or on a campfire.
 
-![A dirty water bottle comes out of the furnace clean](/screenshots/furnace-clean-water.png)
+![A dirty water bottle comes out of the furnace clean](/screenshots/water/furnace-clean-water.png)
 
 | In | Out |
 |---|---|
@@ -153,12 +153,12 @@ Pure.
 
 ## Copper Hanging Pot
 
-![A Copper Hanging Pot of water boiling over a campfire](/screenshots/copper-hanging-pot.png)
+![A Copper Hanging Pot of water boiling over a campfire](/screenshots/water/copper-hanging-pot.png)
 
 Placed on a lit campfire or soul campfire, it boils water into Pure water. It can also stand on any
 solid block, but only boils over a fire.
 
-![Two sticks and a chain across the top, five copper ingots in a U below, make a Copper Hanging Pot](/screenshots/copper-hanging-pot-recipe.png)
+![Two sticks and a chain across the top, five copper ingots in a U below, make a Copper Hanging Pot](/screenshots/recipes/copper-hanging-pot-recipe.png)
 
 On Minecraft 1.21 and 1.21.1 the recipe uses a chain instead of an iron chain.
 
@@ -175,8 +175,8 @@ On Minecraft 1.21 and 1.21.1 the recipe uses a chain instead of an iron chain.
 
 ### Iron Hanging Pot
 
-![An Iron Hanging Pot of water boiling over a campfire](/screenshots/iron-hanging-pot.png)
+![An Iron Hanging Pot of water boiling over a campfire](/screenshots/water/iron-hanging-pot.png)
 
 Works like the Copper Hanging Pot but boils slower: 6 seconds a serving.
 
-![Two sticks and a chain across the top, five iron ingots in a U below, make an Iron Hanging Pot](/screenshots/iron-hanging-pot-recipe.png)
+![Two sticks and a chain across the top, five iron ingots in a U below, make an Iron Hanging Pot](/screenshots/recipes/iron-hanging-pot-recipe.png)

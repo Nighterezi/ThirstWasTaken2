@@ -4,9 +4,9 @@ import { withBase } from 'vitepress'
 
 // The home page's hero image: a few in-game shots that cycle on their own.
 const slides = [
-  { src: '/screenshots/iron-hanging-pot.png', alt: 'An Iron Hanging Pot of water boiling over a campfire', label: 'Hanging Pots' },
-  { src: '/screenshots/jade-water.png', alt: 'Jade showing the grade of the water under the crosshair', label: 'Water grades with Jade' },
-  { src: '/screenshots/create-sand-filter-goggles.png', alt: "Engineer's Goggles showing Murky water entering the Sand Filter and Clean water leaving it", label: 'Create Sand Filter' }
+  { src: '/screenshots/water/iron-hanging-pot.png', alt: 'An Iron Hanging Pot of water boiling over a campfire', label: 'Hanging Pots' },
+  { src: '/screenshots/water/jade-water.png', alt: 'Jade showing the grade of the water under the crosshair', label: 'Water grades with Jade' },
+  { src: '/screenshots/integrations/create/create-sand-filter-goggles.png', alt: "Engineer's Goggles showing Murky water entering the Sand Filter and Clean water leaving it", label: 'Create Sand Filter' }
 ]
 
 const INTERVAL_MS = 3000

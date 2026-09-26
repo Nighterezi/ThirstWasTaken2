@@ -9,7 +9,7 @@ Minecraft 1.21.1 only.
 
 ## Drinks and meals
 
-![Farmer's Delight drinks and bone broth in the hotbar, with the bone broth tooltip showing thirst and hunger](/screenshots/farmers-delight-drinks.png)
+![Farmer's Delight drinks and bone broth in the hotbar, with the bone broth tooltip showing thirst and hunger](/screenshots/integrations/farmers-delight/farmers-delight-drinks.png)
 
 | Item | Thirst | Quenched |
 |---|---|---|
@@ -26,7 +26,7 @@ Every value can be changed in the [config](/docs/configuration#drinks-and-foods)
 
 ## Boiling water in the Cooking Pot
 
-![A murky water bowl cooking in the Cooking Pot, with a pure water bowl ready to serve](/screenshots/farmers-delight-cooking-pot.png)
+![A murky water bowl cooking in the Cooking Pot, with a pure water bowl ready to serve](/screenshots/integrations/farmers-delight/farmers-delight-cooking-pot.png)
 
 A heated Cooking Pot turns a water bottle or terracotta water bowl into Pure water in ten seconds,
 whatever its grade.

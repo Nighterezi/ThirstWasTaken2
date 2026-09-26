@@ -217,7 +217,7 @@ sends the `FluidTank` with its components, so the client's keg has the grade. Th
 
 **Checked:** the agent script's last case pours a Dirty bucket into a keg and captures Jade over it and
 over the sea water keg: "Dirty" and "Salty". Those captures sit on the script's test floor, so the
-docs image `docs/public/screenshots/brewin-keg.png` was staged again on a lakeshore (see the
+docs image `docs/public/screenshots/integrations/brewin-and-chewin/brewin-keg.png` was staged again on a lakeshore (see the
 `capture-screenshots` skill).
 
 ## 9. Docs (done)

@@ -1,6 +1,6 @@
 # Thirst and Quenched
 
-![The thirst bar above the food bar, part drained](/screenshots/thirst-food-bars.png)
+![The thirst bar above the food bar, part drained](/screenshots/hud/thirst-food-bars.png)
 
 ## The two numbers
 
@@ -13,7 +13,7 @@ The droplets shake when the reserve is empty, like the hunger bar.
 With AppleSkin installed, quenched shows as an outline over the droplets. The colour can be changed
 or turned off in [Configuration](/docs/configuration#appleskinquenchedoverlay).
 
-![The thirst bar with AppleSkin, cycling through the Diamond, Ice, Gold, AppleSkin and Legacy quenched outlines](/screenshots/hud-appleskin.gif)
+![The thirst bar with AppleSkin, cycling through the Diamond, Ice, Gold, AppleSkin and Legacy quenched outlines](/screenshots/hud/hud-appleskin.gif)
 
 ## What drains it
 
@@ -32,6 +32,8 @@ Riding a horse, boat or minecart costs nothing. Creative and spectator players a
 | Cold or rainy biome | Drains slower |
 | The Nether, or any dimension where water evaporates | Drains much faster |
 
+- With [Cold Sweat](/docs/features/cold-sweat#climate) installed (NeoForge 1.21.1), hot and cold
+  follow the temperature Cold Sweat shows around the player instead of the biome's.
 - Fire Resistance halves the drain. Fire Protection slows it further, down to a quarter.
 - Nausea adds extra drain while it lasts.
 - Parched adds extra drain while it lasts, and the droplets turn sandy. Sea water causes it.

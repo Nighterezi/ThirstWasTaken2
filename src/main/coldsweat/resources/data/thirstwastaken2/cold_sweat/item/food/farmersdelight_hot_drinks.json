@@ -1,0 +1,12 @@
+{
+  "required_mods": [
+    "farmersdelight"
+  ],
+  "item": {
+    "items": [
+      "farmersdelight:hot_cocoa"
+    ]
+  },
+  "temperature": 10,
+  "duration": 1200
+}

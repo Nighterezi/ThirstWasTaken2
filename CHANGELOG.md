@@ -2,6 +2,26 @@
 
 All notable changes to ThirstWasTaken2 are documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- Compatibility with Cold Sweat on NeoForge 1.21.1:
+  - Thirst drains by the temperature Cold Sweat shows around the player instead of the biome's, so
+    Hearths, shade, night and altitude count. `coldSweatClimate` turns it off.
+  - Its Waterskin takes the grade of the water it is filled with, and a sip restores thirst like a
+    bottle of water. Pouring it over the player restores none.
+  - The Boiler purifies any water container a grade at a time, up to Pure. The Waterskin also purifies
+    on a campfire, in a furnace and in a smoker. Sea water stays salty.
+  - Hot Cocoa from Farmer's Delight and the hot teas from Kaleidoscope Cookery warm the player a little.
+
+### Changed
+
+- Every language now has a translation for every line of the settings screen.
+
+- Water in a Hanging Pot now looks like water in a cauldron. Each water grade and sea water keeps
+  its own colour.
+
 ## [1.2.1] - 2026-09-25
 
 ### Added

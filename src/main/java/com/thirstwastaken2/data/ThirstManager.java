@@ -32,6 +32,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.BlockHitResult;
 
+import java.util.function.ToDoubleFunction;
+
 public final class ThirstManager {
     /** Matches the original mod's syncTimer cadence for peaceful regeneration. */
     private static final int SLOW_TICK_INTERVAL = 11;
@@ -78,6 +80,12 @@ public final class ThirstManager {
     private static final float SCORCHING_MODIFIER = 3.0F;
     /** Fire Resistance halves dehydration, as the original's default did. */
     private static final float FIRE_RESISTANCE_MODIFIER = 0.5F;
+    /**
+     * Where the climate's temperature comes from when an integration knows it better than the biome
+     * does, in the biome's units, or NaN where it does not know. Null without one. Cold Sweat's sets it
+     * at init. Not API: no other mod may rely on it, and nothing but the main thread's init writes it.
+     */
+    private static ToDoubleFunction<Player> climateTemperature;
 
     private ThirstManager() { }
 
@@ -352,6 +360,15 @@ public final class ThirstManager {
         return modifier;
     }
 
+    /**
+     * Replaces the biome's base temperature in the climate modifier, for an integration that measures
+     * the player's surroundings. The source answers NaN for a player it cannot measure, who then drains
+     * by the biome. Called once, at init.
+     */
+    public static void setClimateTemperature(ToDoubleFunction<Player> source) {
+        climateTemperature = source;
+    }
+
     private static float climateModifier(Player player, ThirstConfig config) {
         BlockPos pos = player.blockPosition();
         Biome biome = player.level().getBiome(pos).value();
@@ -360,7 +377,7 @@ public final class ThirstManager {
         // the same dry/wet split within the original's effective 1.1 - 1.6 humidity range.
         float humidity = biome.hasPrecipitation() ? 1.4F : 1.1F;
 
-        float temperature = biome.getBaseTemperature() + 0.2F;
+        float temperature = climateTemperature(player, biome, config) + 0.2F;
         if (temperature <= 0.0F) {
             temperature = (float) Math.exp(temperature);
         } else if (temperature > 1.0F) {
@@ -370,5 +387,18 @@ public final class ThirstManager {
         // The config multiplier is applied before the harshness softening, as in the original.
         float modifier = (float) config.thirstDepletionModifier * (temperature / humidity);
         return modifier < 1.0F ? 1.0F - (1.0F - modifier) * MODIFIER_HARSHNESS : modifier;
+    }
+
+    /**
+     * The biome's base temperature, or what an integration measured in its place. Not in the original,
+     * which only knew the biome: a hearth in the tundra or a desert night now counts.
+     */
+    private static float climateTemperature(Player player, Biome biome, ThirstConfig config) {
+        ToDoubleFunction<Player> source = climateTemperature;
+        if (source != null && config.coldSweatClimate) {
+            double measured = source.applyAsDouble(player);
+            if (Double.isFinite(measured)) return (float) measured;
+        }
+        return biome.getBaseTemperature();
     }
 }

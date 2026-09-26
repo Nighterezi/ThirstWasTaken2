@@ -328,7 +328,7 @@ kept as a record.
 
 - **Teapot**: recommend **refusing** a salty bucket in `addTeaFluid` (`@Inject(HEAD)`, cancellable,
   return false), with a message in the action bar using the mod's own lang key
-  (`thirstwastaken2.message.salt_water_refused`, with `en_us` and `vi_vn`). The Cooking Pot refuses salt
+  (`thirstwastaken2.message.salt_water_refused`, in all nine lang files). The Cooking Pot refuses salt
   water too, and tea made from sea water that comes out safe is a free way to purify it.
 - **Stockpot**: recommend **letting it through** (a salted soup is reasonable), keeping the flag when
   the bucket comes back out. The soup is not affected.

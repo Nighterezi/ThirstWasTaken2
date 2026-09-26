@@ -18,11 +18,11 @@
 
 | Thirst bar | Water grades |
 |---|---|
-| ![The thirst bar above the hunger bar](docs/public/screenshots/thirst-food-bars.png) | ![A water bottle tooltip stepping through every grade](docs/public/screenshots/water-tooltips.gif) |
+| ![The thirst bar above the hunger bar](docs/public/screenshots/hud/thirst-food-bars.png) | ![A water bottle tooltip stepping through every grade](docs/public/screenshots/water/water-tooltips.gif) |
 
 | Iron Hanging Pot | Config screen |
 |---|---|
-| ![An Iron Hanging Pot boiling water over a campfire](docs/public/screenshots/iron-hanging-pot.png) | ![The config screen with its live preview](docs/public/screenshots/config-screen.png) |
+| ![An Iron Hanging Pot boiling water over a campfire](docs/public/screenshots/water/iron-hanging-pot.png) | ![The config screen with its live preview](docs/public/screenshots/config/config-screen.png) |
 
 Every feature is explained on the [documentation site](https://n1ght3r.github.io/ThirstWasTaken2/).
 

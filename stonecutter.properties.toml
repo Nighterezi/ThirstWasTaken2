@@ -91,6 +91,10 @@ deps.kaleidoscope_cookery = "7vH6mhde"
 # Brewin' and Chewin', the same integration the Fabric table builds; see there.
 # v4.5.0+1.21.1-neoforge, the NeoForge upload.
 deps.brewin_and_chewin = "MbcR48Ou"
+# Cold Sweat, whose temperature drives the thirst drain and whose waterskin carries a grade. NeoForge
+# only, and nothing past 1.21.1, so no other table sets it. See src/main/coldsweat/AGENTS.md.
+# 2.4.3.1, the NeoForge upload.
+deps.cold_sweat = "r2cD4Llq"
 
 ["1.21.11"]
 mod.mc_releases = ["1.21.11"]

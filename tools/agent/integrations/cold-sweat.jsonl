@@ -1,0 +1,260 @@
+// Cold Sweat in a real client: the thirst drain follows the world temperature Cold Sweat measures, and
+// its waterskin carries a grade, filled from a source, sea water, a cauldron (including its last layer),
+// poured into a cauldron, drunk and poured over the player. It runs on 1.21.1-neoforge only, the one
+// node with the integration. Run it unattended in a singleplayer world:
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/integrations/cold-sweat.jsonl -Pquickplay=ColdSweatAgent
+// ColdSweatAgent is a throwaway world, made fresh for each run by
+//     python tools/agent/new_world.py 1.21.1-neoforge ColdSweatAgent
+// Then check what it recorded:
+//     python tools/agent/drive.py run/1.21.1-neoforge/agent/client tools/agent/integrations/cold-sweat.jsonl --verify --max-age 15
+//
+// The climate cases have no expect: what Cold Sweat measures depends on its config, and the numbers are
+// read by hand. Each `*Modifier` answer's `modifier` is what the drain multiplies exhaustion by, and the
+// `*Temp` answer beside it is Cold Sweat's own `/temp get` for the same spot. Without Cold Sweat the
+// modifiers would be about 0.93 in plains, 0.59 in snowy plains and 1.2 in a desert, day or night, at the
+// default thirstDepletionModifier of 1.2. With `coldSweatClimate` false in
+// run/1.21.1-neoforge/config/thirstwastaken2.json they are those again.
+//
+// The platform is at y 200, where Cold Sweat's altitude makes every biome a little colder than at sea
+// level. Each strip of it is given its biome with fillbiome.
+
+{"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "arrived", "command": "client.state"}
+{"id": "survival", "command": "server.command", "args": {"command": "gamemode survival @p"}}
+{"id": "alive", "command": "client.state", "expect": {"result.alive": true}}
+
+{"id": "forceload", "command": "server.command", "args": {"command": "forceload add -8 -8 88 8"}}
+{"id": "float", "command": "server.command", "args": {"command": "effect give @p minecraft:slow_falling 900 0 true"}}
+{"id": "safe", "command": "server.command", "args": {"command": "effect give @p minecraft:resistance 900 4 true"}}
+{"id": "view", "command": "server.command", "args": {"command": "tp @p 0.5 202 0.5 0 90"}}
+{"id": "chunks", "command": "wait", "args": {"ticks": 100}}
+{"id": "day", "command": "server.command", "args": {"command": "time set noon"}}
+{"id": "clearWeather", "command": "server.command", "args": {"command": "weather clear 100000"}}
+{"id": "air", "command": "server.command", "args": {"command": "fill -8 200 -8 88 208 8 minecraft:air"}}
+{"id": "floor", "command": "server.command", "args": {"command": "fill -8 199 -8 88 199 8 minecraft:stone"}}
+{"id": "plains", "command": "server.command", "args": {"command": "fillbiome -8 190 -8 15 215 8 minecraft:plains"}}
+{"id": "ocean", "command": "server.command", "args": {"command": "fillbiome 16 190 -8 27 215 8 minecraft:ocean"}}
+{"id": "snowy", "command": "server.command", "args": {"command": "fillbiome 32 190 -8 51 215 8 minecraft:snowy_plains"}}
+{"id": "desert", "command": "server.command", "args": {"command": "fillbiome 64 190 -8 83 215 8 minecraft:desert"}}
+{"id": "notThirsty", "command": "server.command", "args": {"command": "thirst set @p 20 20"}}
+
+// ---- Climate -------------------------------------------------------------------------------------
+{"id": "toPlains", "command": "server.command", "args": {"command": "tp @p 0.5 200 0.5 0 0"}}
+{"id": "settlePlains", "command": "wait", "args": {"ticks": 80}}
+{"id": "plainsModifier", "command": "server.thirst.modifier", "args": {"player": "Dev"}}
+{"id": "plainsTemp", "command": "server.command", "args": {"command": "temp get @p world"}}
+{"id": "toSnowy", "command": "server.command", "args": {"command": "tp @p 40.5 200 0.5 0 0"}}
+{"id": "settleSnowy", "command": "wait", "args": {"ticks": 80}}
+{"id": "snowyModifier", "command": "server.thirst.modifier", "args": {"player": "Dev"}}
+{"id": "snowyTemp", "command": "server.command", "args": {"command": "temp get @p world"}}
+{"id": "toDesert", "command": "server.command", "args": {"command": "tp @p 72.5 200 0.5 0 0"}}
+{"id": "settleDesert", "command": "wait", "args": {"ticks": 80}}
+{"id": "desertModifier", "command": "server.thirst.modifier", "args": {"player": "Dev"}}
+{"id": "desertTemp", "command": "server.command", "args": {"command": "temp get @p world"}}
+{"id": "night", "command": "server.command", "args": {"command": "time set midnight"}}
+{"id": "settleNight", "command": "wait", "args": {"ticks": 80}}
+{"id": "desertNightModifier", "command": "server.thirst.modifier", "args": {"player": "Dev"}}
+{"id": "desertNightTemp", "command": "server.command", "args": {"command": "temp get @p world"}}
+{"id": "dayAgain", "command": "server.command", "args": {"command": "time set noon"}}
+
+// ---- Filling the waterskin -----------------------------------------------------------------------
+// A source in the plains strip, looked at from the stone beside it. The skin fills with a grade and
+// water_salty false, where without the integration it carried Cold Sweat's water_temperature only.
+{"id": "sourcePlains", "command": "server.command", "args": {"command": "setblock 2 199 3 minecraft:water"}}
+{"id": "atSource", "command": "server.command", "args": {"command": "tp @p 2.5 200 2.5 0 60"}}
+{"id": "emptySkin", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with cold_sweat:waterskin"}}
+{"id": "settleSource", "command": "wait", "args": {"ticks": 20}}
+{"id": "fillSource", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "filledSource", "command": "wait", "args": {"ticks": 10}}
+{"id": "sourceGraded", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand cold_sweat:filled_waterskin[thirstwastaken2:water_purity,thirstwastaken2:water_salty=false]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "sourceSkin", "command": "server.command", "args": {"command": "data get entity @p SelectedItem.components"}}
+{"id": "sourceTooltip", "command": "client.tooltip", "args": {"slot": "mainhand"}}
+
+// Sea water, from a source in the ocean strip.
+{"id": "sourceSea", "command": "server.command", "args": {"command": "setblock 20 199 3 minecraft:water"}}
+{"id": "atSea", "command": "server.command", "args": {"command": "tp @p 20.5 200 2.5 0 60"}}
+{"id": "emptySkinSea", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with cold_sweat:waterskin"}}
+{"id": "settleSea", "command": "wait", "args": {"ticks": 20}}
+{"id": "fillSea", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "filledSea", "command": "wait", "args": {"ticks": 10}}
+{"id": "seaSalty", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand cold_sweat:filled_waterskin[thirstwastaken2:water_salty=true]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "seaTooltip", "command": "client.tooltip", "args": {"slot": "mainhand"}}
+
+// A Dirty cauldron of three layers: the skin is Dirty and one layer is gone.
+{"id": "cauldronDirty", "command": "server.command", "args": {"command": "setblock 6 200 3 minecraft:water_cauldron[level=3,purity=1]"}}
+{"id": "atCauldron", "command": "server.command", "args": {"command": "tp @p 6.5 200 1.5 0 25"}}
+{"id": "emptySkinCauldron", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with cold_sweat:waterskin"}}
+{"id": "settleCauldron", "command": "wait", "args": {"ticks": 20}}
+{"id": "fillCauldron", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "filledCauldron", "command": "wait", "args": {"ticks": 10}}
+{"id": "cauldronSkinDirty", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand cold_sweat:filled_waterskin[thirstwastaken2:water_purity=0]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "cauldronLowered", "command": "server.command", "args": {"command": "execute if block 6 200 3 minecraft:water_cauldron[level=2,purity=1]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+
+// The last layer of a Pure cauldron: Cold Sweat lowers the cauldron to empty before it fills the skin,
+// so the grade has to be read first. The skin is Pure, not defaultPurity.
+{"id": "cauldronPure", "command": "server.command", "args": {"command": "setblock 6 200 3 minecraft:water_cauldron[level=1,purity=4]"}}
+{"id": "emptySkinLast", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with cold_sweat:waterskin"}}
+{"id": "settleLast", "command": "wait", "args": {"ticks": 20}}
+{"id": "fillLast", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "filledLast", "command": "wait", "args": {"ticks": 10}}
+{"id": "lastSkinPure", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand cold_sweat:filled_waterskin[thirstwastaken2:water_purity=3]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "cauldronEmptied", "command": "server.command", "args": {"command": "execute if block 6 200 3 minecraft:cauldron"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+
+// ---- Pouring into a cauldron ---------------------------------------------------------------------
+// A Dirty skin into the empty cauldron stores Dirty; a Pure one on top keeps the worse, as every pour.
+// The skin left behind is empty and carries no grade.
+{"id": "dirtySkin", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with cold_sweat:filled_waterskin[thirstwastaken2:water_purity=0,thirstwastaken2:water_salty=false]"}}
+{"id": "settlePour", "command": "wait", "args": {"ticks": 20}}
+{"id": "pourDirty", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "pouredDirty", "command": "wait", "args": {"ticks": 10}}
+{"id": "cauldronStoredDirty", "command": "server.command", "args": {"command": "execute if block 6 200 3 minecraft:water_cauldron[level=1,purity=1]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "pourLeftPlainSkin", "command": "server.command", "args": {"command": "execute if items entity @p container.* cold_sweat:waterskin[!thirstwastaken2:water_purity,!thirstwastaken2:water_salty]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "pureSkin", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with cold_sweat:filled_waterskin[thirstwastaken2:water_purity=3,thirstwastaken2:water_salty=false]"}}
+{"id": "settlePourPure", "command": "wait", "args": {"ticks": 20}}
+{"id": "pourPure", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "pouredPure", "command": "wait", "args": {"ticks": 10}}
+{"id": "cauldronKeptWorse", "command": "server.command", "args": {"command": "execute if block 6 200 3 minecraft:water_cauldron[level=2,purity=1]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+
+// ---- Drinking ------------------------------------------------------------------------------------
+// A crouched use drinks (Cold Sweat's default secondary action). A Pure sip is a bottle of water:
+// 6 thirst and 8 quenched. The dev clients have toggleCrouch on, so sneak is pressed once to crouch and
+// once more to stand, as in parched.jsonl.
+{"id": "clearAll", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "lookUp", "command": "server.command", "args": {"command": "tp @p 0.5 200 -3.5 0 -90"}}
+{"id": "thirstyPure", "command": "server.command", "args": {"command": "thirst set @p 4 0"}}
+{"id": "pureDrink", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with cold_sweat:filled_waterskin[thirstwastaken2:water_purity=3,thirstwastaken2:water_salty=false]"}}
+{"id": "crouch", "command": "client.key", "args": {"key": "sneak", "down": true}}
+{"id": "crouched", "command": "wait", "args": {"ticks": 20}}
+{"id": "drinkPure", "command": "client.hold", "args": {"keys": ["use"], "ticks": 45}}
+{"id": "drankPure", "command": "wait", "args": {"ticks": 10}}
+{"id": "afterPure", "command": "client.state", "expect": {"result.thirst": 10, "result.quenched": 8}}
+{"id": "drinkLeftPlainSkin", "command": "server.command", "args": {"command": "execute if items entity @p container.* cold_sweat:waterskin[!thirstwastaken2:water_purity,!thirstwastaken2:water_salty]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+
+// Sea water from the skin: nothing restored, Parched II, as a salty bottle. Salt spends exhaustion at
+// once, so thirst drops rather than stays.
+{"id": "clearSalt", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "thirstySalt", "command": "server.command", "args": {"command": "thirst set @p 4 0"}}
+{"id": "saltDrink", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with cold_sweat:filled_waterskin[thirstwastaken2:water_salty=true]"}}
+{"id": "settleSalt", "command": "wait", "args": {"ticks": 20}}
+{"id": "drinkSalt", "command": "client.hold", "args": {"keys": ["use"], "ticks": 45}}
+{"id": "drankSalt", "command": "wait", "args": {"ticks": 10}}
+{"id": "afterSalt", "command": "client.state", "checks": [{"left": "result.thirst", "op": "lt", "value": 4}]}
+{"id": "saltParched", "command": "server.command", "args": {"command": "execute if entity @p[nbt={active_effects:[{id:\"thirstwastaken2:parched\",amplifier:1b}]}]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "crouchKeyUp", "command": "client.key", "args": {"key": "sneak", "down": false}}
+{"id": "standDown", "command": "client.key", "args": {"key": "sneak", "down": true}}
+{"id": "standWait", "command": "wait", "args": {"ticks": 2}}
+{"id": "standUp", "command": "client.key", "args": {"key": "sneak", "down": false}}
+{"id": "stood", "command": "wait", "args": {"ticks": 10}}
+
+// ---- Pouring over the player ---------------------------------------------------------------------
+// Standing, a use pours the skin over the player (Cold Sweat's default primary action): no thirst.
+{"id": "cured", "command": "server.command", "args": {"command": "effect clear @p minecraft:nausea"}}
+{"id": "curedParched", "command": "server.command", "args": {"command": "effect clear @p thirstwastaken2:parched"}}
+{"id": "clearPour", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "thirstyPour", "command": "server.command", "args": {"command": "thirst set @p 4 0"}}
+{"id": "pourSkin", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with cold_sweat:filled_waterskin[thirstwastaken2:water_purity=3,thirstwastaken2:water_salty=false]"}}
+{"id": "settlePourSelf", "command": "wait", "args": {"ticks": 20}}
+{"id": "notCrouching", "command": "client.state", "expect": {"result.sneaking": false}}
+{"id": "pourSelf", "command": "client.hold", "args": {"keys": ["use"], "ticks": 3}}
+{"id": "pouredSelf", "command": "wait", "args": {"ticks": 10}}
+{"id": "afterPourSelf", "command": "client.state", "expect": {"result.thirst": 4}}
+{"id": "pourSelfLeftPlainSkin", "command": "server.command", "args": {"command": "execute if items entity @p container.* cold_sweat:waterskin[!thirstwastaken2:water_purity,!thirstwastaken2:water_salty]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+
+// ---- The Boiler ----------------------------------------------------------------------------------
+// Graded water goes in through a hopper on top, which is canPlaceItemThroughFace; without the
+// integration the Boiler's tag let in Cold Sweat's own skins only, and the hopper kept the rest. With
+// coal in its fuel slot, every 200 ticks it raises each by a grade, so 700 ticks take anything to Pure.
+// Sea water stays salty.
+{"id": "noPlayerItems", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "boiler", "command": "server.command", "args": {"command": "setblock 10 200 -5 cold_sweat:boiler"}}
+{"id": "boilerFuel", "command": "server.command", "args": {"command": "item replace block 10 200 -5 container.0 with minecraft:coal_block 4"}}
+{"id": "boilerHopper", "command": "server.command", "args": {"command": "setblock 10 201 -5 minecraft:hopper[facing=down]{Items:[{Slot:0b,id:\"minecraft:potion\",count:1,components:{\"minecraft:potion_contents\":{potion:\"minecraft:water\"},\"thirstwastaken2:water_purity\":0,\"thirstwastaken2:water_salty\":false}},{Slot:1b,id:\"cold_sweat:filled_waterskin\",count:1,components:{\"thirstwastaken2:water_purity\":1,\"thirstwastaken2:water_salty\":false}},{Slot:2b,id:\"minecraft:water_bucket\",count:1,components:{\"thirstwastaken2:water_salty\":true}}]}"}}
+{"id": "boilerFed", "command": "wait", "args": {"ticks": 40}}
+{"id": "hopperEmptied", "command": "server.command", "args": {"command": "execute unless items block 10 201 -5 container.* *"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "boilerContents", "command": "server.command", "args": {"command": "data get block 10 200 -5 Items"}}
+{"id": "boiling", "command": "server.sprint", "args": {"ticks": 700}}
+{"id": "boiledBottle", "command": "server.command", "args": {"command": "execute if items block 10 200 -5 container.* minecraft:potion[thirstwastaken2:water_purity=3,thirstwastaken2:water_salty=false]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "boiledSkin", "command": "server.command", "args": {"command": "execute if items block 10 200 -5 container.* cold_sweat:filled_waterskin[thirstwastaken2:water_purity=3]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "boiledSea", "command": "server.command", "args": {"command": "execute if items block 10 200 -5 container.* minecraft:water_bucket[thirstwastaken2:water_salty=true,!thirstwastaken2:water_purity]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "boilerAfter", "command": "server.command", "args": {"command": "data get block 10 200 -5 Items"}}
+
+// ---- The Hearth ----------------------------------------------------------------------------------
+// Cold Sweat 2.4.3.1 takes no water as Hearth fuel, graded or not; lava is. A hopper beside each keeps
+// the water bucket and gives up the lava.
+{"id": "hearthWater", "command": "server.command", "args": {"command": "setblock 14 200 -5 cold_sweat:hearth_bottom"}}
+{"id": "hopperWater", "command": "server.command", "args": {"command": "setblock 13 200 -5 minecraft:hopper[facing=east]{Items:[{Slot:0b,id:\"minecraft:water_bucket\",count:1,components:{\"thirstwastaken2:water_purity\":0,\"thirstwastaken2:water_salty\":false}}]}"}}
+{"id": "hearthLava", "command": "server.command", "args": {"command": "setblock 14 200 -2 cold_sweat:hearth_bottom"}}
+{"id": "hopperLava", "command": "server.command", "args": {"command": "setblock 13 200 -2 minecraft:hopper[facing=east]{Items:[{Slot:0b,id:\"minecraft:lava_bucket\",count:1}]}"}}
+{"id": "hearthsFed", "command": "wait", "args": {"ticks": 40}}
+{"id": "waterNotFuel", "command": "server.command", "args": {"command": "execute if items block 13 200 -5 container.0 minecraft:water_bucket"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "lavaIsFuel", "command": "server.command", "args": {"command": "execute unless items block 13 200 -2 container.0 minecraft:lava_bucket"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+
+// ---- Cold Sweat's waterskin on a campfire and in a furnace ---------------------------------------
+// Cold Sweat's own campfire recipe takes any filled skin; the one that comes off keeps its water,
+// boiled as a bottle is: Dirty to Clean, Murky to Pure, sea water still salty. The campfire is handed
+// each skin a few ticks from done.
+{"id": "noItems", "command": "server.command", "args": {"command": "kill @e[type=item]"}}
+{"id": "campfireSkins", "command": "server.command", "args": {"command": "setblock 10 200 5 minecraft:campfire[lit=true]{Items:[{Slot:0b,id:\"cold_sweat:filled_waterskin\",count:1,components:{\"thirstwastaken2:water_purity\":0,\"thirstwastaken2:water_salty\":false}},{Slot:1b,id:\"cold_sweat:filled_waterskin\",count:1,components:{\"thirstwastaken2:water_salty\":true}},{Slot:2b,id:\"cold_sweat:filled_waterskin\",count:1,components:{\"thirstwastaken2:water_purity\":1,\"thirstwastaken2:water_salty\":false}}],CookingTimes:[I;1190,1190,1190,0],CookingTotalTimes:[I;1200,1200,1200,1200]}"}}
+{"id": "campfireCooked", "command": "wait", "args": {"ticks": 40}}
+{"id": "campfireDrops", "command": "server.command", "args": {"command": "execute as @e[type=item] run data get entity @s Item"}}
+{"id": "campfireClean", "command": "server.command", "args": {"command": "execute if entity @e[type=item,nbt={Item:{id:\"cold_sweat:filled_waterskin\",components:{\"thirstwastaken2:water_purity\":2}}}]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "campfirePure", "command": "server.command", "args": {"command": "execute if entity @e[type=item,nbt={Item:{id:\"cold_sweat:filled_waterskin\",components:{\"thirstwastaken2:water_purity\":3}}}]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "campfireSalty", "command": "server.command", "args": {"command": "execute if entity @e[type=item,nbt={Item:{id:\"cold_sweat:filled_waterskin\",components:{\"thirstwastaken2:water_salty\":1b}}}]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "campfireGone", "command": "server.command", "args": {"command": "setblock 10 200 5 minecraft:air"}}
+{"id": "noItemsAgain", "command": "server.command", "args": {"command": "kill @e[type=item]"}}
+// The furnace recipes of this integration, the bottle's: a Dirty skin smelts Clean.
+{"id": "furnace", "command": "server.command", "args": {"command": "setblock 12 200 5 minecraft:furnace{Items:[{Slot:0b,id:\"cold_sweat:filled_waterskin\",count:1,components:{\"thirstwastaken2:water_purity\":0,\"thirstwastaken2:water_salty\":false}},{Slot:1b,id:\"minecraft:coal\",count:1}],CookTimeTotal:200s}"}}
+{"id": "smelting", "command": "server.sprint", "args": {"ticks": 260}}
+{"id": "smelted", "command": "server.command", "args": {"command": "execute if items block 12 200 5 container.2 cold_sweat:filled_waterskin[thirstwastaken2:water_purity=2,thirstwastaken2:water_salty=false]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+
+// ---- The canteen boiled in hand beside Cold Sweat's campfire mixin -------------------------------
+// Cold Sweat changes the campfire block entity; the canteen boils through the item, so two Dirty
+// servings still come out Pure in 2 x 3 s, as in gameplay/canteen.jsonl.
+{"id": "fireForCanteen", "command": "server.command", "args": {"command": "setblock 0 200 5 minecraft:campfire"}}
+{"id": "standCanteen", "command": "server.command", "args": {"command": "tp @p 0.5 200 3.5 0 40"}}
+{"id": "canteen", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with thirstwastaken2:copper_canteen[thirstwastaken2:water_servings=2,thirstwastaken2:water_purity=0,thirstwastaken2:water_salty=false]"}}
+{"id": "settleCanteen", "command": "wait", "args": {"ticks": 30}}
+{"id": "boilCanteen", "command": "client.hold", "args": {"keys": ["use"], "ticks": 140}}
+{"id": "canteenPure", "command": "server.command", "args": {"command": "execute if items entity @p weapon.mainhand thirstwastaken2:copper_canteen[thirstwastaken2:water_purity=3,thirstwastaken2:water_servings=2]"}, "checks": [{"left": "result.messages.0", "op": "contains", "value": "Test passed"}]}
+{"id": "fireOut", "command": "server.command", "args": {"command": "setblock 0 200 5 minecraft:air"}}
+
+// ---- Regeneration --------------------------------------------------------------------------------
+// Both mods hook FoodData.tick, on different calls. Low thirst stops healing (this mod); full thirst
+// heals. The last case freezes the player through Cold Sweat and is read by hand: Cold Sweat freezes
+// part of the hearts, so health should stop short of full while thirst is full.
+{"id": "regenClear", "command": "server.command", "args": {"command": "clear @p"}}
+{"id": "regenNoResistance", "command": "server.command", "args": {"command": "effect clear @p minecraft:resistance"}}
+{"id": "regenFed", "command": "server.command", "args": {"command": "effect give @p minecraft:saturation 1 20 true"}}
+{"id": "regenAt", "command": "server.command", "args": {"command": "tp @p 0.5 200 -3.5 0 0"}}
+{"id": "regenThirsty", "command": "server.command", "args": {"command": "thirst set @p 10 0"}}
+{"id": "regenHurt", "command": "server.command", "args": {"command": "damage @p 8 minecraft:generic"}}
+{"id": "regenHurtState", "command": "client.state"}
+{"id": "regenWaitThirsty", "command": "wait", "args": {"ticks": 200}}
+{"id": "regenThirstyState", "command": "client.state", "checks": [{"left": "result.health", "op": "le", "value": 12}]}
+{"id": "regenQuenched", "command": "server.command", "args": {"command": "thirst set @p 20 20"}}
+{"id": "regenWaitQuenched", "command": "wait", "args": {"ticks": 200}}
+{"id": "regenQuenchedState", "command": "client.state", "checks": [{"left": "result.health", "op": "gt", "value": 12}]}
+{"id": "regenFreeze", "command": "server.command", "args": {"command": "temp set @p -90"}}
+{"id": "regenHurtCold", "command": "server.command", "args": {"command": "damage @p 8 minecraft:generic"}}
+{"id": "regenWaitCold", "command": "wait", "args": {"ticks": 300}}
+{"id": "regenColdState", "command": "client.state"}
+{"id": "regenColdBody", "command": "server.command", "args": {"command": "temp get @p body"}}
+{"id": "regenWarm", "command": "server.command", "args": {"command": "temp set @p 0"}}
+{"id": "regenSafe", "command": "server.command", "args": {"command": "effect give @p minecraft:resistance 600 4 true"}}
+
+// ---- Hot drinks warm (step 7) --------------------------------------------------------------------
+// Farmer's Delight's hot cocoa, which Cold Sweat lists nothing for, raises the base temperature by 10
+// for a minute through this integration's food data. Read by hand: base after is 10 above before.
+{"id": "cocoaThirsty", "command": "server.command", "args": {"command": "thirst set @p 4 0"}}
+{"id": "cocoa", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with farmersdelight:hot_cocoa"}}
+{"id": "baseBefore", "command": "server.command", "args": {"command": "temp get @p base"}}
+{"id": "settleCocoa", "command": "wait", "args": {"ticks": 20}}
+{"id": "drinkCocoa", "command": "client.hold", "args": {"keys": ["use"], "ticks": 50}}
+{"id": "drankCocoa", "command": "wait", "args": {"ticks": 10}}
+{"id": "baseAfter", "command": "server.command", "args": {"command": "temp get @p base"}}
+{"id": "cocoaQuenched", "command": "client.state", "checks": [{"left": "result.thirst", "op": "gt", "value": 4}]}
+
+// The HUD beside Cold Sweat's body temperature gauge, at the configured hudPosition, to look at.
+{"id": "hudSkin", "command": "server.command", "args": {"command": "item replace entity @p weapon.mainhand with cold_sweat:filled_waterskin[thirstwastaken2:water_purity=2,thirstwastaken2:water_salty=false]"}}
+{"id": "settleHud", "command": "wait", "args": {"ticks": 20}}
+{"id": "hud", "command": "client.capture", "args": {"name": "cold-sweat-hud"}}

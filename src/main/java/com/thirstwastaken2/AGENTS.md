@@ -155,8 +155,8 @@ matter how many lines it grows.
   and returns, because droplet rows under it would promise thirst it does not restore.
 - **Lines are rebuilt every frame a stack is hovered.** Build a constant once and hand out `copy()`,
   as `CLAY_BOWL_HINT` and the droplet rows do; other mods are free to restyle a line they receive.
-- **A new line means a new `tooltip.thirstwastaken2.*` key in all nine lang files.** `en_us` and
-  `vi_vn` are mandatory; see `src/main/resources/AGENTS.md`.
+- **A new line means a new `tooltip.thirstwastaken2.*` key in all nine lang files.** Every one is
+  required, and `checkLang` fails on a missing one; see `src/main/resources/AGENTS.md`.
 
 ## Divergences from upstream live as comments
 

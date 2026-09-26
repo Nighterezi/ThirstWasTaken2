@@ -24,6 +24,8 @@ servings, the same rate a cauldron uses.
 | **Copper Canteen, held on a campfire** | **3 s a serving, 12 s full** | **4** | **Pure** | no | the player holds use the whole time; `COPPER_CANTEEN_BOIL_TICKS` |
 | **Iron Flask, held on a campfire** | **4 s a serving, 24 s full** | **6** | **Pure** | no | the same; `IRON_FLASK_BOIL_TICKS` |
 | **Iron Flask, furnace** | 10 s | 1 to 6 | up two grades | yes | one recipe per fill level; the canteen has none |
+| Boiler (Cold Sweat) | 10 s a grade, 30 s Dirty to Pure | up to 27 (nine buckets) | up one grade a pass, to Pure | yes | only with Cold Sweat; every 200 ticks at its default temperature rate. Slower than a furnace per grade but nine slots, and it keeps going to Pure on its own; fair for a block that costs fuel and a crafted Boiler |
+| Campfire, Cold Sweat's Waterskin | 60 s | 1 | up two grades | no | Cold Sweat's own recipe, 1200 ticks; the grade follows the bottle's campfire rule |
 
 "Up two grades" follows `PURIFY_TABLE`: dirty becomes clean, murky and clean become Pure. Salt water
 is never purified by any of them; that is distillation, on the [roadmap](ROADMAP.md).

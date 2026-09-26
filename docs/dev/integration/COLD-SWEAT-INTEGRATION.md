@@ -12,8 +12,9 @@ Written on 2026-09-25 from:
 - the Modrinth project `cold-sweat`, whose newest 1.21.1 upload is `2.4.3.1` (`r2cD4Llq`,
   2026-09-15). It has **no required dependency**.
 
-Nothing below has been run yet. Every "it does X" about Cold Sweat is read from the source, and step 3
-exists to confirm it in a game.
+Every step is done (2026-09-26), each with the recommended option (2a, 6a, 7a, 8a); how the code
+works is in [src/main/coldsweat/AGENTS.md](../../../src/main/coldsweat/AGENTS.md), and what was found in
+game is under each step. Where the work parted from the plan below, the step says so.
 
 ## Which build for which node
 
@@ -55,7 +56,7 @@ component from `thirst:purity`.
 | **Waterskin** (`cold_sweat:waterskin` → `cold_sweat:filled_waterskin`) | filled from water in the world; carries `cold_sweat:water_temperature` (-50..50) set from the world temperature where it was filled; used by **pouring** on yourself (default use) or **drinking** (crouch, per player `Preference`), both change body temperature; has durability = sips; can fill a cauldron by one layer | a second "waterskin" in the game next to ours. Drinking it restores no thirst today; its water has no grade |
 | **Boiler** | heats filled waterskins in slots 1-9 up to 50 | the natural place to purify water, as Cold Sweat meant it |
 | **Icebox** | cools filled waterskins down to -50 | nothing about grade |
-| **Hearth** | takes water (bucket or fluid capability) as cooling fuel, lava as heating fuel | a graded bucket is still `minecraft:water_bucket`; to confirm in step 3 that the fuel check does not compare components |
+| **Hearth** | takes water (bucket or fluid capability) as cooling fuel, lava as heating fuel | no water is fuel in 2.4.3.1 (step 3), so nothing to do |
 | **Temperature API** (`api.util.Temperature`) | `Temperature.get(entity, Trait.WORLD)` ambient temperature at the player in MC units (biome, time, hearths, shade, elevation); `Trait.BODY` -150..150, damage at ±100 | the climate input step 2 wants |
 | **Food temperatures** (`data/<ns>/cold_sweat/item/food/*.json`, registry `cold_sweat:item/food`, `FoodData` codec) | an item consumed changes body temperature, optionally for a duration | data only, no class reference: our drinks can warm or cool (step 7) |
 
@@ -74,16 +75,16 @@ Mixins that meet ours:
 
 | # | Item | Kind | Nodes | Status |
 |---|---|---|---|---|
-| 1 | Build dependency and gate | build | `1.21.1-neoforge` | Planned |
-| 2 | Climate: Cold Sweat's temperature drives the thirst drain | feature | one | Planned, decision 2a |
-| 3 | What actually happens today: waterskin, boiler, hearth, mixins, HUD | investigation | one | Planned |
-| 4 | Cold Sweat's waterskin carries our grade: filled, drunk, poured, crafted | feature | one | Planned |
-| 5 | Drinking Cold Sweat's waterskin restores thirst | feature | one | Planned |
-| 6 | The Boiler purifies | feature | one | Planned, decision 6a |
-| 7 | Our drinks change body temperature | data | one | Planned, decision 7a |
-| 8 | Thirst and heat: does being parched hurt heat tolerance? | decision | one | Planned |
-| 9 | Changelog and player docs | docs | — | Planned |
-| 10 | Nothing crashes without the mod: `checkOptionalSeam`, `-PwithoutOptional`, `boot.jsonl` | test | all | Planned, again after every step |
+| 1 | Build dependency and gate | build | `1.21.1-neoforge` | Done |
+| 2 | Climate: Cold Sweat's temperature drives the thirst drain | feature | one | Done, 2a |
+| 3 | What actually happens today: waterskin, boiler, hearth, mixins, HUD | investigation | one | Done |
+| 4 | Cold Sweat's waterskin carries our grade: filled, drunk, poured, crafted | feature | one | Done |
+| 5 | Drinking Cold Sweat's waterskin restores thirst | feature | one | Done |
+| 6 | The Boiler purifies | feature | one | Done, 6a |
+| 7 | Our drinks change body temperature | data | one | Done, 7a |
+| 8 | Thirst and heat: does being parched hurt heat tolerance? | decision | one | Decided, 8a: nothing |
+| 9 | Changelog and player docs | docs | — | Done |
+| 10 | Nothing crashes without the mod: `checkOptionalSeam`, `-PwithoutOptional`, `boot.jsonl` | test | all | Done |
 
 ## 1. Build dependency and gate
 
@@ -132,7 +133,7 @@ and would stack on top of the biome instead of replacing it.
   ticks (`MODIFIER_REFRESH_TICKS`), so this adds one read a second per player. `runBenchmark` on this
   node before and after.
 - A config toggle `coldSweatClimate` (default true): field, `sanitize()`, widget and reset line in
-  `ConfigCategory`, lang in `en_us` and `vi_vn`. It shows on every node but does nothing without the
+  `ConfigCategory`, lang in all nine files. It shows on every node but does nothing without the
   mod; the tooltip says so.
 
 **Check:** an agent script (`tools/agent/integrations/cold-sweat.jsonl`) reads the modifier in a
@@ -155,6 +156,26 @@ Brewin' and Chewin' plan did, in a table:
 | Our canteen boiled over a campfire | still Pure after 3 s a serving |
 | Regeneration with low thirst in a hot biome | both mods' limits apply |
 | HUD at each `hudPosition` | overlap with the temperature gauge |
+
+Found on 2026-09-26, with the integration already in, by
+[tools/agent/integrations/cold-sweat.jsonl](../../../tools/agent/integrations/cold-sweat.jsonl):
+
+- Cold Sweat's `Waterskin Uses` defaults to **1** and the skin holds 250 mB, so one sip is one bottle
+  and step 5 keeps a bottle's values, 6 and 8.
+- A cauldron is lowered before `getFilledItem` runs, so the last layer's grade has to be read first.
+- Salt water from the skin costs thirst, as a salty bottle does, and gives Parched II.
+- The HUD does not meet the gauge, which sits between the hearts and the thirst bar. There is no
+  `hudPosition` setting, so that one place is the only one to check.
+- The **Hearth** in 2.4.3.1 takes no water as fuel at all, graded or not; its fuel list is items like
+  coal, lava and ice. A hopper keeps a water bucket and hands over a lava bucket. Nothing to do.
+- The **Boiler** refused this mod's containers (its tag names only Cold Sweat's skins) until step 6.
+- **Campfire:** the canteen still boils Pure in hand next to Cold Sweat's campfire mixin. Cold Sweat
+  has its own campfire recipe for any filled skin, which hands back a new skin without a grade; see
+  step 6.
+- **Regeneration:** at thirst 10 health stays put, at full thirst it heals: this mod's limit holds with
+  Cold Sweat's redirect on the same method. Frozen to a body temperature of -117 for 15 s, health
+  still rose from 12 to 19.5, so Cold Sweat's frozen hearts had not set in by then; this mod does not
+  touch the call they hang on (`GameRules.getBoolean`).
 
 ## 4. Cold Sweat's waterskin carries our grade
 
@@ -209,6 +230,20 @@ our components, hand-written in the integration's resources with `neoforge:condi
 `mod_loaded cold_sweat`. Datagen is Fabric only and this node's mod is NeoForge only, so they cannot be
 generated; `checkNeoForgeResources` must still pass.
 
+**Done**, with two changes from the plan:
+
+- The Boiler takes graded water through a mixin on its two checks (`canPlaceItemThroughFace` and its
+  menu slot) rather than a tag file: the tag works per item, and would have let every potion in to
+  take in one water bottle.
+- No campfire recipe. Cold Sweat's own campfire recipe takes any filled skin, and two recipes for one
+  input leave the choice to load order. Instead the skin that comes off a campfire keeps its water,
+  boiled by the bottle's campfire rule (`CampfireWaterskinMixin`). The furnace and smoker recipes are
+  the bottle's, in `src/main/coldsweat/resources/data/thirstwastaken2/recipe/cold_sweat/`, and reset the
+  skin's temperature and sips as Cold Sweat's own compat recipes do.
+
+Checked in game: a Dirty bottle, a Murky skin and a salty bucket fed by hopper reach Pure, Pure and
+salty; campfire skins come off Clean, Pure and salty; a Dirty skin smelts Clean.
+
 ## 7. Our drinks change body temperature
 
 Data only: `FoodData` files under `src/main/coldsweat/resources/data/thirstwastaken2/cold_sweat/item/food/`,
@@ -223,6 +258,11 @@ no class reference. Options:
 cooling source on every bottle would make water a heat cure. The exact `FoodData` fields to confirm
 against the 2.4.3.1 jar before writing any.
 
+**Done**: +10 base temperature for 1200 ticks, the shape of Cold Sweat's Soul Sprout (-20 for 1200),
+on Farmer's Delight's hot cocoa and the seven hot Kaleidoscope Cookery teas (Sakura Fubuki and Mystery
+Tea left out). Cold Sweat's default food list names neither. Each file carries `required_mods`, so it
+loads nothing where its mod is absent. Checked in game: base 0.0 before a cocoa, 10.0 after.
+
 ## 8. Decision: thirst and heat
 
 Should a parched player tolerate heat worse, as in Tough As Nails?
@@ -233,14 +273,23 @@ Should a parched player tolerate heat worse, as in Tough As Nails?
 
 **Recommended (a)** for the first release; (b) is a gameplay change worth its own playtest.
 
+**Decided (a).** Nothing is built; each mod keeps its own penalties.
+
 ## 9. Changelog and player docs
 
 A CHANGELOG entry and the supported mods page, through the `write-docs` skill: water from Cold
 Sweat's waterskin is graded, drinking it quenches, the Boiler purifies, and thirst follows the
 temperature Cold Sweat shows. A line in [MANUAL-TESTING.md](../MANUAL-TESTING.md) for the HUD overlap.
 
+**Done**: the CHANGELOG, `docs/docs/features/cold-sweat.md`, the installation table, the Modrinth and
+CurseForge pages, and the manual check.
+
 ## 10. Nothing crashes without the mod
 
 After every step: `checkOptionalSeam`, `checkLoaderSeam`, `checkVersionSeam`, `runGametest` on
 `1.21.1-neoforge`, and `boot.jsonl` with `-PwithoutOptional=cold_sweat`. The core seam of step 2 must
 compile and run on all ten nodes; build the others once when it lands.
+
+**Done** on 2026-09-26: the seam checks, `checkLang`, gametests on `1.21.1-neoforge`, `boot.jsonl` with
+`-PwithoutOptional=cold_sweat`, all ten nodes built. With `coldSweatClimate` false the modifiers are
+the biome's exactly (0.929, 0.586, 1.2).

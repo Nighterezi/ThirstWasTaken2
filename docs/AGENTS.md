@@ -19,7 +19,7 @@ npm run docs:build    # must pass before you call a docs change done
 | `docs/developers/` | For mod and data pack authors: the data pack format and the Java API. |
 | `.vitepress/config.mts` | Nav, sidebar and the GitHub, Modrinth and CurseForge icons. |
 | `.vitepress/theme/` | Default theme plus `custom.css` for the brand colour. |
-| `public/` | `logo.png` for the navbar and favicon, and `screenshots/`. The home hero is a slideshow of three screenshots, in `.vitepress/theme/HeroSlideshow.vue`. |
+| `public/` | `logo.png` for the navbar and favicon, and `screenshots/`, by subject: `hud/`, `water/`, `recipes/`, `config/`, and `integrations/<mod>/` for each optional mod. A new image goes in the folder of what it shows. The home hero is a slideshow of three screenshots, in `.vitepress/theme/HeroSlideshow.vue`. |
 
 `docs/` contains all player and server documentation. Pages describing gameplay belong in
 `docs/features/`; pages listing config keys belong directly in `docs/`.

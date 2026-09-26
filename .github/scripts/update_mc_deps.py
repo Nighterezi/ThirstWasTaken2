@@ -143,6 +143,8 @@ MODRINTH_DEPS = [
     # Brewin' and Chewin' shares one version number between its Fabric and NeoForge uploads, so it is
     # pinned by id. Both 1.21.1 nodes only; its Greenhouse Config is nested in its jar.
     ModrinthDep("brewin_and_chewin", "brewin-and-chewin", by_id=True, mirrors=()),
+    # Cold Sweat, NeoForge 1.21.1 only. Pinned by id like the others printed on no page.
+    ModrinthDep("cold_sweat", "cold-sweat", by_id=True, mirrors=()),
 ]
 
 

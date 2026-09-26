@@ -77,6 +77,7 @@ The settings screen opens from the Config button in NeoForge's Mods list, with n
 | [Supplementaries](https://modrinth.com/mod/supplementaries) | 1.21.1-3.9.9 | The same as on Fabric. 1.21.1 only. |
 | [Kaleidoscope Cookery](https://modrinth.com/mod/kaleidoscope-cookery) | 1.5.1-neoforge+mc1.21.1 | Thirst from its [teas and soups](/docs/features/kaleidoscope-cookery), and water that keeps its grade in the Stockpot and the Teapot. 1.21.1 only. |
 | [Brewin' and Chewin'](https://modrinth.com/mod/brewin-and-chewin) | v4.5.0+1.21.1-neoforge | The same as on Fabric. 1.21.1 only. |
+| [Cold Sweat](https://modrinth.com/mod/cold-sweat) | 2.4.3.1 | Thirst that follows [its temperature](/docs/features/cold-sweat), a graded Waterskin, and a Boiler that purifies water. 1.21.1 only. |
 
 Other food mods usually work as they are. Drinks their mod marks as drinks restore thirst, and any
 item can be given a value in [Configuration](/docs/configuration).
@@ -91,7 +92,7 @@ not see the bar.
 The mod follows each player's game language. Nine are included: English, French, Japanese, Korean,
 Polish, Russian, Vietnamese, Simplified Chinese and Traditional Chinese.
 
-![Item tooltips with the game set to Simplified Chinese](/screenshots/chinese-tooltips.png)
+![Item tooltips with the game set to Simplified Chinese](/screenshots/water/chinese-tooltips.png)
 
 ## First run
 

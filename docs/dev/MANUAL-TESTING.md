@@ -317,6 +317,9 @@ released before the server sees the player crouch.
       `run/<node>/mods`, and loads the mod's Jade plugin.
 - [x] On `1.21.1-neoforge`, the purification recipes show in the recipe book: their JSON is
       translated differently there (`type` and `items`).
+- [ ] On `1.21.1-neoforge`, run `integrations/cold-sweat.jsonl` and look at its
+      `cold-sweat-hud.png`: the thirst bar and Cold Sweat's body temperature gauge do not overlap. Then
+      put a Dirty water bottle in a Boiler by hand, through its screen, and see it rise to Pure.
 
 ## When this file changes
 

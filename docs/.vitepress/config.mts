@@ -29,7 +29,8 @@ const manualSidebar = [
       { text: 'Sophisticated Backpacks', link: '/docs/features/sophisticated-backpacks' },
       { text: 'Supplementaries', link: '/docs/features/supplementaries' },
       { text: 'Kaleidoscope Cookery', link: '/docs/features/kaleidoscope-cookery' },
-      { text: "Brewin' and Chewin'", link: '/docs/features/brewin-and-chewin' }
+      { text: "Brewin' and Chewin'", link: '/docs/features/brewin-and-chewin' },
+      { text: 'Cold Sweat', link: '/docs/features/cold-sweat' }
     ]
   },
   {

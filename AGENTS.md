@@ -30,6 +30,7 @@ One source tree, one jar per node. Nodes are the Gradle subprojects in `settings
 | `./gradlew ":<node>:runServer" -Pagent=<file>.jsonl` | Script a running game and read numbers back. See [agent/AGENTS.md](src/dev/java/com/thirstwastaken2/dev/agent/AGENTS.md) |
 | `./gradlew ":<node>:runClient" -Pagent=tools/agent/smoke/boot.jsonl -PwithoutOptional=<name,...>\|all` | A dev client without those optional mods comes up and stays up. The check 1.0.9 lacked |
 | `./gradlew ":<node>:checkOptionalSeam"` | Fails when a class loaded without an optional mod names that mod. CI runs it |
+| `./gradlew ":<node>:checkLang"` | Fails when one of the nine lang files lacks a key `en_us` has, or has one it lacks. CI runs it |
 | `./gradlew ":<node>:checkApiSurface"` | Fails when a public signature in `com.thirstwastaken2.api` names an internal type. CI runs it |
 | `python tools/release/publish.py --dry-run` | Release to Modrinth, then `publish_curseforge.py --no-build`. Checklist and flags in the scripts' docstrings |
 
@@ -66,14 +67,14 @@ One source tree, one jar per node. Nodes are the Gradle subprojects in `settings
   enforces it; 1.0.9 crashed every NeoForge client without Sophisticated Core for want of it.
 - **Mixins**: in `com.thirstwastaken2.mixin`, package-private, `abstract`, every injected member
   prefixed `thirst$`, listed in `thirstwastaken2.mixins.json` or they silently do nothing. Client,
-  Fabric-client, dev, Create, Create Fly, Sophisticated, Supplementaries, Kaleidoscope Cookery and Brewin' and Chewin' mixins
+  Fabric-client, dev, Create, Create Fly, Sophisticated, Supplementaries, Kaleidoscope Cookery, Brewin' and Chewin' and Cold Sweat mixins
   have their own configs next to their sources. A new core config goes in both loader manifests; an
   integration's goes in its row of the integration table.
 - **Player state** is the immutable record `ThirstData`. Derive a new one and write through
   `ThirstManager.set` only when it changed; every write is a sync packet.
 - **Config** is the Gson POJO `ThirstConfig`. A new field: add it, clamp it in `sanitize()`, and if
-  user-facing add a widget and reset line in `client/config/ConfigCategory` plus lang keys (`en_us`
-  and `vi_vn` mandatory).
+  user-facing add a widget and reset line in `client/config/ConfigCategory` plus lang keys in all nine
+  lang files (`checkLang` fails otherwise).
 - **`com.thirstwastaken2.api` is public API** for other mods: `ThirstApi`, `ThirstEvents`. A signature
   there changes only after a deprecation, its public signatures name only Minecraft, JDK and `api` types
   (`checkApiSurface`), and it holds no `//?`. An addition bumps `ThirstApi.API_VERSION`. See
@@ -175,6 +176,7 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | Supplementaries and Moonlight Lib | `deps.supplementaries`: both 1.21.1 nodes | [src/main/supplementaries/AGENTS.md](src/main/supplementaries/AGENTS.md) |
 | Kaleidoscope Cookery | `deps.kaleidoscope_cookery`: `1.21.1-neoforge` and every Fabric node (Refabricated) | [src/main/kaleidoscope/AGENTS.md](src/main/kaleidoscope/AGENTS.md) |
 | Brewin' and Chewin' | `deps.brewin_and_chewin`: both 1.21.1 nodes | [src/main/brewinandchewin/AGENTS.md](src/main/brewinandchewin/AGENTS.md) |
+| Cold Sweat | `deps.cold_sweat`: `1.21.1-neoforge` | [src/main/coldsweat/AGENTS.md](src/main/coldsweat/AGENTS.md) |
 
 ### Adding an integration
 
@@ -212,7 +214,7 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | Supplementaries work still to do | [docs/dev/integration/SUPPLEMENTARIES-INTEGRATION.md](docs/dev/integration/SUPPLEMENTARIES-INTEGRATION.md) |
 | Kaleidoscope Cookery work still to do | [docs/dev/integration/KALEIDOSCOPE-COOKERY-INTEGRATION.md](docs/dev/integration/KALEIDOSCOPE-COOKERY-INTEGRATION.md) |
 | Brewin' and Chewin' work still to do | [docs/dev/integration/BREWIN-AND-CHEWIN-INTEGRATION.md](docs/dev/integration/BREWIN-AND-CHEWIN-INTEGRATION.md) |
-| Cold Sweat integration plan (1.21.1 NeoForge) | [docs/dev/integration/COLD-SWEAT-INTEGRATION.md](docs/dev/integration/COLD-SWEAT-INTEGRATION.md) |
+| Cold Sweat: the plan, its decisions and what was found in game (1.21.1 NeoForge) | [docs/dev/integration/COLD-SWEAT-INTEGRATION.md](docs/dev/integration/COLD-SWEAT-INTEGRATION.md) |
 | Bad-water sickness rework: the design | [docs/dev/mechanics/WATER-SICKNESS.md](docs/dev/mechanics/WATER-SICKNESS.md) |
 | Bad-water sickness rework: where the code goes, step by step | [docs/dev/mechanics/WATER-SICKNESS-IMPLEMENTATION.md](docs/dev/mechanics/WATER-SICKNESS-IMPLEMENTATION.md) |
 | Copper Canteen and Iron Flask: capacity, boiling in hand, the flask's furnace recipes | [docs/dev/mechanics/CANTEEN-AND-FLASK.md](docs/dev/mechanics/CANTEEN-AND-FLASK.md) |

@@ -12,7 +12,7 @@ Fabric version ignores Sophisticated mods.
 
 ## Drinking Upgrade
 
-![A backpack of water bottles, a waterskin, water bowls and honey bottles, with the Advanced Drinking Upgrade's settings open](/screenshots/sophisticated-drinking-upgrade.png)
+![A backpack of water bottles, a waterskin, water bowls and honey bottles, with the Advanced Drinking Upgrade's settings open](/screenshots/integrations/sophisticated/sophisticated-drinking-upgrade.png)
 
 Drinks from the backpack when the thirst bar is low, the way the Feeding Upgrade eats.
 
@@ -24,7 +24,7 @@ Drinks from the backpack when the thirst bar is low, the way the Feeding Upgrade
 - The filter slots limit which items it drinks.
 - In a placed Sophisticated Storage block, it serves players within three blocks.
 
-![A waterskin, two glass bottles, an Upgrade Base and an Ender Pearl make a Drinking Upgrade](/screenshots/drinking-upgrade-recipe.png)
+![A waterskin, two glass bottles, an Upgrade Base and an Ender Pearl make a Drinking Upgrade](/screenshots/integrations/sophisticated/drinking-upgrade-recipe.png)
 
 The Upgrade Base of Sophisticated Storage works too. The recipe unlocks once an Upgrade Base is picked
 up.
@@ -41,7 +41,7 @@ and two buttons:
 
 The basic upgrade drinks once half the drink fits, and only Clean water or better.
 
-![A Drinking Upgrade, a diamond, two gold ingots and three redstone make an Advanced Drinking Upgrade](/screenshots/advanced-drinking-upgrade-recipe.png)
+![A Drinking Upgrade, a diamond, two gold ingots and three redstone make an Advanced Drinking Upgrade](/screenshots/integrations/sophisticated/advanced-drinking-upgrade-recipe.png)
 
 ## Water grades in upgrades
 

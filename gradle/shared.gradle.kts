@@ -197,6 +197,44 @@ tasks.register("checkVersionSeam") {
 }
 
 /**
+ * Fails when a lang file lacks a key `en_us.json` has, or has one it lacks. Every one of the nine locales
+ * is kept complete: a key added to `en_us` lands in all of them in the same change, since a missing key
+ * shows the raw key to that player. It reads every hand-written `assets/<namespace>/lang` directory under
+ * `src/main`, the core resources and each integration's.
+ */
+tasks.register("checkLang") {
+    group = "verification"
+    description = "Fails when a lang file does not have exactly the keys en_us.json has"
+
+    val langDirs = rootProject.file("src/main").walk()
+        .onEnter { it.name != "generated" && it.name != "java" }
+        .filter { it.isDirectory && it.name == "lang" && it.parentFile.parentFile.name == "assets" }
+        .toList()
+    inputs.files(langDirs.map { fileTree(it) { include("*.json") } })
+
+    doLast {
+        @Suppress("UNCHECKED_CAST")
+        fun keys(file: File): Set<String> =
+            (groovy.json.JsonSlurper().parse(file) as Map<String, Any?>).keys
+        val problems = langDirs.flatMap { dir ->
+            val english = dir.resolve("en_us.json")
+            if (!english.isFile) return@flatMap emptyList<String>()
+            val expected = keys(english)
+            dir.listFiles().orEmpty().filter { it.extension == "json" && it.name != "en_us.json" }.sortedBy { it.name }
+                .flatMap { file ->
+                    val actual = keys(file)
+                    val path = file.relativeTo(rootProject.projectDir).invariantSeparatorsPath
+                    (expected - actual).map { "$path: missing $it" } + (actual - expected).map { "$path: not in en_us: $it" }
+                }
+        }
+        check(problems.isEmpty()) {
+            "Every lang file must have exactly the keys en_us.json has. Translate the missing ones:\n" +
+                problems.joinToString("\n")
+        }
+    }
+}
+
+/**
  * Fails when the agent's loader independent half stops being loader independent.
  *
  * `dev/agent/core` is the queue, the envelope and the dispatch loop: plain Java and Gson, and nothing

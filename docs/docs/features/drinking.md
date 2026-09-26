@@ -32,16 +32,16 @@ Every item the mod adds is in its own creative tab, and every recipe shows in th
 2. Smelt a clay bowl into a **terracotta bowl**.
 3. Use the terracotta bowl on water to fill it. Flowing water works too.
 
-![Three clay balls in a bowl shape make four clay bowls](/screenshots/clay-bowl-recipe.png)
+![Three clay balls in a bowl shape make four clay bowls](/screenshots/recipes/clay-bowl-recipe.png)
 
-![A clay bowl firing into a terracotta bowl in a furnace](/screenshots/furnace-terracotta-bowl.png)
+![A clay bowl firing into a terracotta bowl in a furnace](/screenshots/recipes/furnace-terracotta-bowl.png)
 
 Drinking gives the empty bowl back. A terracotta bowl and a water bucket also craft a water bowl,
 but that water is always Dirty.
 
 ## Waterskin
 
-![The waterskin recipe uses three leather and one string](/screenshots/waterskin-recipe.png)
+![The waterskin recipe uses three leather and one string](/screenshots/recipes/waterskin-recipe.png)
 
 - Holds three drinks. Each restores 4 thirst and 5 quenched.
 - Use it on water to fill it in one go. From a water cauldron it takes as many drinks as the
@@ -62,9 +62,9 @@ the waterskin, and a bar under the icon shows how full they are.
 | Copper Canteen | 4 drinks |
 | Iron Flask | 6 drinks |
 
-![Leather on top and five copper ingots in a U below make a Copper Canteen](/screenshots/copper-canteen-recipe.png)
+![Leather on top and five copper ingots in a U below make a Copper Canteen](/screenshots/recipes/copper-canteen-recipe.png)
 
-![An iron nugget on top and five iron ingots in a U below make an Iron Flask](/screenshots/iron-flask-recipe.png)
+![An iron nugget on top and five iron ingots in a U below make an Iron Flask](/screenshots/recipes/iron-flask-recipe.png)
 
 Hold use on a lit campfire to boil the water inside Pure. The Iron Flask can also go in a furnace.
 Times are on the [water purity page](/docs/features/water-purity#boiling-in-a-canteen-or-flask).

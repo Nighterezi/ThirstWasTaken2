@@ -408,6 +408,11 @@ public final class WaterPurity {
             boolean container = path.equals("melon_juice") || path.equals("apple_cider");
             return new ItemInfo(container, false, 3);
         }
+        if (namespace.equals("cold_sweat")) {
+            // Cold Sweat's filled waterskin, graded when it is filled. Not plain water: its default use
+            // pours it over the player and a sip also warms or cools, so a full thirst bar stops neither.
+            return path.equals("filled_waterskin") ? new ItemInfo(true, false, PURITY_FROM_CONFIG) : NOT_A_CONTAINER;
+        }
         return NOT_A_CONTAINER;
     }
 }

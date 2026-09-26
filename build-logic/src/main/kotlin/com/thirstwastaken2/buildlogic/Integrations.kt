@@ -163,6 +163,15 @@ val integrations: List<Integration> = listOf(
         mixinConfig = "thirstwastaken2.brewinandchewin.mixins.json",
         neoForgeDependencies = listOf("brewinandchewin"),
     ),
+    // NeoForge only: Cold Sweat has no Fabric build and nothing past 1.21.1, so only `1.21.1-neoforge`
+    // sets the key. See src/main/coldsweat/AGENTS.md.
+    Integration(
+        dir = "coldsweat",
+        depsKey = "deps.cold_sweat",
+        loaders = setOf(Loader.NEOFORGE),
+        mixinConfig = "thirstwastaken2.coldsweat.mixins.json",
+        neoForgeDependencies = listOf("cold_sweat"),
+    ),
 )
 
 /**

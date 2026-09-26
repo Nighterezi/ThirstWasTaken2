@@ -166,6 +166,9 @@ val kaleidoscopeCookeryVersion = findProperty("deps.kaleidoscope_cookery") as St
  */
 val brewinAndChewinVersion = findProperty("deps.brewin_and_chewin") as String?
 
+/** Cold Sweat's Modrinth version id, on `1.21.1-neoforge` only. See src/main/coldsweat/AGENTS.md. */
+val coldSweatVersion = findProperty("deps.cold_sweat") as String?
+
 /*
  * The same gametests the Fabric nodes run, as their own small mod, so none of it reaches the jar.
  * `src/gametest/neoforge` holds the harness that finds and registers them, in place of Fabric API's;
@@ -431,6 +434,13 @@ dependencies {
         // Farmer's Delight is already above.
         runClientMod(listOf("brewin-and-chewin", "brewinandchewin"),
             "maven.modrinth:brewin-and-chewin:$brewinAndChewinVersion") { isTransitive = false }
+    }
+
+    if (coldSweatVersion != null) {
+        compileOnly("maven.modrinth:cold-sweat:$coldSweatVersion") { isTransitive = false }
+        // Test the climate, the waterskin and the Boiler in runClient. The gametests and runServer run
+        // without it, which is what proves the mod is unchanged when it is absent.
+        runClientMod(listOf("cold-sweat", "cold_sweat"), "maven.modrinth:cold-sweat:$coldSweatVersion") { isTransitive = false }
     }
 
     // A name no node loads is refused in stonecutter.gradle.kts, once every node has said what it takes.

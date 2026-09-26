@@ -11,11 +11,11 @@ supported Minecraft version, with
 official Fabric build stopped at 1.0.1 and has no Teapot: with it, only the teas and soups count.
 :::
 
-![A Teapot on a lit Stove among teacups in a cherry grove, with Jade naming its water Clean](/screenshots/kaleidoscope-teapot.png)
+![A Teapot on a lit Stove among teacups in a cherry grove, with Jade naming its water Clean](/screenshots/integrations/kaleidoscope-cookery/kaleidoscope-teapot.png)
 
 ## Teas and soups
 
-![Kaleidoscope Cookery teas in the hotbar, with the Sakura Fubuki tooltip showing its thirst and quenched droplets](/screenshots/kaleidoscope-teas.png)
+![Kaleidoscope Cookery teas in the hotbar, with the Sakura Fubuki tooltip showing its thirst and quenched droplets](/screenshots/integrations/kaleidoscope-cookery/kaleidoscope-teas.png)
 
 | Item | Thirst | Quenched |
 |---|---|---|

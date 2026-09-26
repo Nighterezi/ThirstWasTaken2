@@ -132,7 +132,7 @@ and the bar block are each centred in the preview box.
 
 Adding a setting means: field in `ThirstConfig`, clamp in `sanitize()`, a `ConfigEntry` in its
 `ConfigCategory`, and `thirstwastaken2.config.<key>` plus `thirstwastaken2.config.<key>.tooltip` in
-`en_us.json` and `vi_vn.json` (the other seven locales are best-effort). The key is the Java field name
+all nine lang files (`checkLang` fails on a missing one). The key is the Java field name
 in snake_case. A new page also needs `section.<key>`, its tooltip and a 16x16 icon texture. Enums use
 `choice`, labelled by `<key>.<value in lower case>`, so each value needs its own lang key. Doubles are
 edited as integer percentages (`percent`) because the slider steps in whole numbers. The AppleSkin page

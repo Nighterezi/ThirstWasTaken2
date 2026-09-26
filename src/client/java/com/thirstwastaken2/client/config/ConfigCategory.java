@@ -26,7 +26,9 @@ enum ConfigCategory {
             ConfigEntry.toggle("prevent_sprinting_when_thirsty",
                     config -> config.preventSprintingWhenThirsty, (config, value) -> config.preventSprintingWhenThirsty = value),
             ConfigEntry.toggle("dehydration_halts_health_regen",
-                    config -> config.dehydrationHaltsHealthRegen, (config, value) -> config.dehydrationHaltsHealthRegen = value))),
+                    config -> config.dehydrationHaltsHealthRegen, (config, value) -> config.dehydrationHaltsHealthRegen = value),
+            ConfigEntry.toggle("cold_sweat_climate",
+                    config -> config.coldSweatClimate, (config, value) -> config.coldSweatClimate = value))),
 
     WATER("water", ThirstWasTaken2.id("textures/item/terracotta_water_bowl_purity_3.png"), List.of(
             ConfigEntry.choice("sickness_preset", SicknessPreset.values(),

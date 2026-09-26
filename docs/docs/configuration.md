@@ -7,7 +7,7 @@ outline: [2, 3]
 Settings live in `config/thirstwastaken2.json`, written on first launch. They can also be changed in
 game: through Mod Menu on Fabric, or the Mods list on NeoForge.
 
-![The config screen, with a tab for each group of settings on the left](/screenshots/config-screen.png)
+![The config screen, with a tab for each group of settings on the left](/screenshots/config/config-screen.png)
 
 - Pick a group from the tabs on the left, or type in the search box to find a setting on any page.
 - A setting you have changed is shown in amber. The arrow button next to it puts it back.
@@ -32,6 +32,12 @@ Default `true`. Stops sprinting at 6 thirst or below.
 
 Default `true`. Stops natural healing until thirst is nearly full. See
 [Running low](/docs/features/thirst-and-quenched#running-low).
+
+### coldSweatClimate
+
+Default `true`. With Cold Sweat installed, the drain follows the temperature Cold Sweat measures around
+the player, hearths and shade included, instead of the biome's. Does nothing without Cold Sweat. See
+[Cold Sweat](/docs/features/cold-sweat#climate).
 
 ## Water
 
@@ -62,7 +68,7 @@ Default `true`. Sneak and use an empty hand on water to drink.
 These settings are client-side and only used while AppleSkin is installed. The exhaustion strip
 follows AppleSkin's **Food Exhaustion HUD Underlay** setting.
 
-![The AppleSkin page, with a live preview of the thirst bar and a drink's tooltip](/screenshots/config-appleskin.png)
+![The AppleSkin page, with a live preview of the thirst bar and a drink's tooltip](/screenshots/config/config-appleskin.png)
 
 ### appleskinQuenchedOverlay
 

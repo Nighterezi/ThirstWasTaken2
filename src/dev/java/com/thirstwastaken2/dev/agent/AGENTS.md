@@ -201,6 +201,7 @@ a client answers all three.
 | `server.players` | | every online player's thirst, position, health, food and flags |
 | `server.thirst.get` | `player` | the same, for one player |
 | `server.thirst.set` | `player`, `thirst`, `quenched`, `exhaustion`, `enabled` | what it was and what it is now. Writes the state directly, not through `/thirst set` |
+| `server.thirst.modifier` | `player` | the same, plus `modifier`: what the drain multiplies exhaustion by for them now (climate, Fire Resistance, Fire Protection). Reused for a second, so `wait` 25 ticks after a move |
 | `server.command` | `command`, `as` | what the command returned and what it said, collected rather than logged |
 | `server.sprint` | `ticks` | after `/tick sprint <ticks>` has run every tick: `ran`, the wall-clock `seconds` it took. For what only time does, a keg fermenting or a crop growing; the same ticks run the same code, without the sleep. Use it rather than a sprint and a fixed `wait`, which waits the full time anyway since the client ticks at 20 a second |
 | `client.info` | | window and GUI size, GUI scale, fps, screen, server, player, key names, `toggleCrouch`, `toggleSprint`, and whether this client is `driven` and `mouseGrabbed` |

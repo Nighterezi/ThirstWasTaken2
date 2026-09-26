@@ -2,6 +2,7 @@ package com.thirstwastaken2.dev.agent.thirst;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.thirstwastaken2.api.ThirstApi;
 import com.thirstwastaken2.data.ThirstData;
 import com.thirstwastaken2.data.ThirstManager;
 import com.thirstwastaken2.dev.agent.core.AgentDispatcher;
@@ -75,6 +76,27 @@ final class ServerProbes {
             JsonObject result = new JsonObject();
             result.add("before", state(before));
             result.add("after", describe(player));
+            reply.ok(result);
+        });
+
+        /*
+         * The exhaustion modifier the drain applies to this player right now: climate, Fire Resistance
+         * and Fire Protection together, 1 being a plains biome at the default depletion. Read by
+         * charging one point of exhaustion through the API from zero and putting the state back, on the
+         * server's thread. The drain reuses a modifier for a second, so wait 25 ticks after a move.
+         */
+        dispatcher.register("server.thirst.modifier", (request, reply) -> {
+            ServerPlayer player = player(request, request.string("player"));
+            float[] modifier = new float[1];
+            onServer(server(), "server.thirst.modifier", () -> {
+                ThirstData before = ThirstManager.get(player);
+                ThirstManager.set(player, new ThirstData(before.thirst(), before.quenched(), 0.0F, before.enabled()));
+                ThirstApi.addExhaustion(player, 1.0F);
+                modifier[0] = ThirstManager.get(player).exhaustion();
+                ThirstManager.set(player, before);
+            });
+            JsonObject result = describe(player);
+            result.addProperty("modifier", round(modifier[0]));
             reply.ok(result);
         });
 
@@ -173,6 +195,21 @@ final class ServerProbes {
         JsonArray messages = new JsonArray();
         feedback.messages.forEach(messages::add);
         return messages;
+    }
+
+    /** Runs {@code run} on the server's own thread and waits for it, as {@link #perform} does a command. */
+    private static void onServer(MinecraftServer server, String what, Runnable run) {
+        if (server.isSameThread()) {
+            run.run();
+            return;
+        }
+        try {
+            server.submit(run).get(30, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            throw new AgentException(what + ": the server did not answer within 30 seconds; is the world paused?");
+        } catch (InterruptedException | ExecutionException e) {
+            throw new AgentException(what + " failed: " + e);
+        }
     }
 
     /** The whole of a player's thirst plus the server-side state a check might read beside it. */

@@ -34,6 +34,11 @@ public final class ThirstConfig {
     public boolean preventSprintingWhenThirsty = true;
     public boolean canDrinkByHand = true;
     public boolean dehydrationHaltsHealthRegen = true;
+    /**
+     * With Cold Sweat installed, the drain follows the temperature it measures around the player in
+     * place of the biome's. Does nothing without it.
+     */
+    public boolean coldSweatClimate = true;
 
     // ---- AppleSkin (client side, and only while AppleSkin is installed) ----
     public QuenchedOverlay appleskinQuenchedOverlay = QuenchedOverlay.DIAMOND;
@@ -173,6 +178,8 @@ public final class ThirstConfig {
         // And for Brewin' and Chewin', added after that.
         brewinAndChewinDrinks(drinks);
         brewinAndChewinFoods(foods);
+        // And for Cold Sweat's waterskin, added after that.
+        coldSweatDrinks(drinks);
         if (itemBlacklist == null) itemBlacklist = new LinkedHashSet<>();
         if (sicknessPreset == null) sicknessPreset = SicknessPreset.REALISTIC;
         if (drinkTagValue == null || drinkTagValue.length != 2) drinkTagValue = new int[]{6, 8};
@@ -217,6 +224,7 @@ public final class ThirstConfig {
         put(values, 6, 8, "farmersdelight:milk_bottle");
         kaleidoscopeCookeryDrinks(values);
         brewinAndChewinDrinks(values);
+        coldSweatDrinks(values);
         return values;
     }
 
@@ -303,6 +311,15 @@ public final class ThirstConfig {
         putMissing(foods, 4, 5, "brewinandchewin:creamy_onion_soup");
         putMissing(foods, 2, 3, "brewinandchewin:fiery_fondue", "brewinandchewin:grits",
                 "brewinandchewin:chopped_liver");
+    }
+
+    /**
+     * Cold Sweat's filled waterskin, by id alone like the other mods' drinks. It holds 250 mB, a bottle,
+     * and by default one sip empties it, so a sip is a bottle of water's worth. A server that gives it
+     * more sips in Cold Sweat's config gets a bottle's worth from each.
+     */
+    private static void coldSweatDrinks(Map<String, int[]> drinks) {
+        putMissing(drinks, 6, 8, "cold_sweat:filled_waterskin");
     }
 
     private static void put(Map<String, int[]> values, int thirst, int quenched, String... ids) {

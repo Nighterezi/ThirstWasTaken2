@@ -8,7 +8,7 @@ Fabric and NeoForge, Minecraft 1.21.1: [Supplementaries](https://modrinth.com/mo
 1.21.1-3.9.9. Other Minecraft versions ignore Supplementaries, which has no build for them.
 :::
 
-![Five jars of water on a lakeshore, brown, grey, blue, cyan and turquoise, with Jade naming the middle one Clean](/screenshots/supplementaries-jars.png)
+![Five jars of water on a lakeshore, brown, grey, blue, cyan and turquoise, with Jade naming the middle one Clean](/screenshots/integrations/supplementaries/supplementaries-jars.png)
 
 ## Water grades
 
@@ -33,7 +33,7 @@ Supplementaries' own settings still decide whether a Jar or a Goblet can be used
 
 ## Faucets
 
-![A Faucet pouring from a cauldron into a Copper Hanging Pot, with Jade naming the pot's water Murky](/screenshots/supplementaries-faucet.png)
+![A Faucet pouring from a cauldron into a Copper Hanging Pot, with Jade naming the pot's water Murky](/screenshots/integrations/supplementaries/supplementaries-faucet.png)
 
 - A Faucet keeps the grade of the water it moves, into and out of a cauldron. A cauldron poured into
   keeps the worse of the two grades, the same as pouring a container in by hand.

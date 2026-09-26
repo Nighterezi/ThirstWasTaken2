@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "com.thirstwastaken2.coldsweat.mixin",
+  "plugin": "com.thirstwastaken2.coldsweat.ColdSweatMixinPlugin",
+  "compatibilityLevel": "${java}",
+  "mixins": [
+    "BoilerBlockEntityMixin",
+    "BoilerSlotMixin",
+    "CampfireWaterskinMixin",
+    "FilledWaterskinItemMixin",
+    "WaterskinItemMixin"
+  ],
+  "injectors": { "defaultRequire": 1 }
+}
