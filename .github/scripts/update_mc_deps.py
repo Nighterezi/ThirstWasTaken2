@@ -157,6 +157,9 @@ MODRINTH_DEPS = [
     # Fruits Delight, NeoForge 1.21.1 only and runClient only, pinned by id like the others printed on
     # no page.
     ModrinthDep("fruits_delight", "fruits-delight", by_id=True, mirrors=()),
+    # Expanded Delight, NeoForge 1.21.1 only and runClient only, pinned by id like the others printed on
+    # no page.
+    ModrinthDep("expanded_delight", "expanded-delight", by_id=True, mirrors=()),
 ]
 
 

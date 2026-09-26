@@ -1,0 +1,52 @@
+// Expanded Delight in a real client: every id ThirstConfig lists for the mod exists, a heated Cooking
+// Pot cooks Asparagus Soup from a bucket of fresh water, and refuses a bucket of sea water. Runs on
+// 1.21.1-neoforge, the mod's only build. Run it unattended in a singleplayer world:
+//     ./gradlew ":1.21.1-neoforge:runClient" -Pagent=tools/agent/integrations/expanded-delight.jsonl -Pquickplay=ExpandedAgent -PwithoutOptional=cold-sweat
+// ExpandedAgent is a throwaway world, made fresh for each run by
+//     python tools/agent/new_world.py 1.21.1-neoforge ExpandedAgent
+// drive.py's expectations and checks are not evaluated under -Pagent, so read
+// run/1.21.1-neoforge/agent/client/out.jsonl: every "Gave 1" and "execute if" line has to pass.
+//
+// Asparagus Soup is a water bucket, asparagus and a leafy green. A Cooking Pot holds its six
+// ingredients in slots 0 to 5 and shows the finished meal in slot 6 until a bowl takes it.
+
+{"id": "load", "command": "wait", "args": {"ticks": 400}}
+{"id": "joined", "command": "client.state"}
+{"id": "float", "command": "server.command", "args": {"command": "effect give @p minecraft:slow_falling 120 0 true"}}
+{"id": "view", "command": "server.command", "args": {"command": "tp @p 0.5 200 -3.5 0 25"}}
+{"id": "chunks", "command": "wait", "args": {"ticks": 100}}
+{"id": "day", "command": "server.command", "args": {"command": "time set noon"}}
+{"id": "clear", "command": "server.command", "args": {"command": "weather clear 100000"}}
+{"id": "air", "command": "server.command", "args": {"command": "fill -6 200 -6 6 206 6 minecraft:air"}}
+
+// Every id ThirstConfig lists for the mod exists: /give refuses an unknown item.
+{"id": "id_apple_juice", "command": "server.command", "args": {"command": "give @p expandeddelight:apple_juice"}}
+{"id": "id_sweet_berry_juice", "command": "server.command", "args": {"command": "give @p expandeddelight:sweet_berry_juice"}}
+{"id": "id_glow_berry_juice", "command": "server.command", "args": {"command": "give @p expandeddelight:glow_berry_juice"}}
+{"id": "id_cranberry_juice", "command": "server.command", "args": {"command": "give @p expandeddelight:cranberry_juice"}}
+{"id": "id_goat_milk_bottle", "command": "server.command", "args": {"command": "give @p expandeddelight:goat_milk_bottle"}}
+{"id": "id_goat_milk_bucket", "command": "server.command", "args": {"command": "give @p expandeddelight:goat_milk_bucket"}}
+{"id": "id_asparagus_soup", "command": "server.command", "args": {"command": "give @p expandeddelight:asparagus_soup"}}
+{"id": "id_asparagus_soup_creamy", "command": "server.command", "args": {"command": "give @p expandeddelight:asparagus_soup_creamy"}}
+{"id": "id_peanut_honey_soup", "command": "server.command", "args": {"command": "give @p expandeddelight:peanut_honey_soup"}}
+{"id": "id_cinnamon_apples", "command": "server.command", "args": {"command": "give @p expandeddelight:cinnamon_apples"}}
+{"id": "id_peanut_salad", "command": "server.command", "args": {"command": "give @p expandeddelight:peanut_salad"}}
+{"id": "id_sweet_potato_salad", "command": "server.command", "args": {"command": "give @p expandeddelight:sweet_potato_salad"}}
+{"id": "id_goat_cheese_beetroot_salad", "command": "server.command", "args": {"command": "give @p expandeddelight:goat_cheese_beetroot_salad"}}
+{"id": "id_cranberries", "command": "server.command", "args": {"command": "give @p expandeddelight:cranberries"}}
+{"id": "clearInv", "command": "server.command", "args": {"command": "clear @p"}}
+
+// Two heated pots: fresh water cooks, sea water does not.
+{"id": "freshFire", "command": "server.command", "args": {"command": "setblock 0 200 0 minecraft:campfire"}}
+{"id": "freshPot", "command": "server.command", "args": {"command": "setblock 0 201 0 farmersdelight:cooking_pot"}}
+{"id": "saltFire", "command": "server.command", "args": {"command": "setblock 2 200 0 minecraft:campfire"}}
+{"id": "saltPot", "command": "server.command", "args": {"command": "setblock 2 201 0 farmersdelight:cooking_pot"}}
+{"id": "fresh", "command": "server.command", "args": {"command": "data merge block 0 201 0 {Inventory:{Size:9,Items:[{Slot:0b,id:\"minecraft:water_bucket\",count:1,components:{\"thirstwastaken2:water_purity\":1,\"thirstwastaken2:water_salty\":false}},{Slot:1b,id:\"expandeddelight:asparagus\",count:1},{Slot:2b,id:\"farmersdelight:cabbage_leaf\",count:1}]}}"}}
+{"id": "salty", "command": "server.command", "args": {"command": "data merge block 2 201 0 {Inventory:{Size:9,Items:[{Slot:0b,id:\"minecraft:water_bucket\",count:1,components:{\"thirstwastaken2:water_salty\":true}},{Slot:1b,id:\"expandeddelight:asparagus\",count:1},{Slot:2b,id:\"farmersdelight:cabbage_leaf\",count:1}]}}"}}
+{"id": "cook", "command": "wait", "args": {"ticks": 500}}
+{"id": "freshAfter", "command": "server.command", "args": {"command": "data get block 0 201 0 Inventory"}}
+{"id": "freshCooked", "command": "server.command", "args": {"command": "execute if data block 0 201 0 Inventory.Items[{Slot:6,id:\"expandeddelight:asparagus_soup\"}]"}}
+{"id": "saltAfter", "command": "server.command", "args": {"command": "data get block 2 201 0 Inventory"}}
+{"id": "saltNotCooked", "command": "server.command", "args": {"command": "execute unless data block 2 201 0 Inventory.Items[{Slot:6}]"}}
+{"id": "saltStays", "command": "server.command", "args": {"command": "execute if data block 2 201 0 Inventory.Items[{Slot:0,components:{\"thirstwastaken2:water_salty\":true}}]"}}
+{"id": "potsAfter", "command": "client.capture", "args": {"name": "expanded-delight-pots"}}

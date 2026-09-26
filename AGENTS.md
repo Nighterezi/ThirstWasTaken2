@@ -67,7 +67,7 @@ One source tree, one jar per node. Nodes are the Gradle subprojects in `settings
   enforces it; 1.0.9 crashed every NeoForge client without Sophisticated Core for want of it.
 - **Mixins**: in `com.thirstwastaken2.mixin`, package-private, `abstract`, every injected member
   prefixed `thirst$`, listed in `thirstwastaken2.mixins.json` or they silently do nothing. Client,
-  Fabric-client, dev, Create, Create Fly, Sophisticated, Supplementaries, Kaleidoscope Cookery, Brewin' and Chewin', Cold Sweat, Cultural Delights and Fruits Delight mixins
+  Fabric-client, dev, Create, Create Fly, Sophisticated, Supplementaries, Kaleidoscope Cookery, Brewin' and Chewin', Cold Sweat, Cultural Delights, Fruits Delight and Expanded Delight mixins
   have their own configs next to their sources. A new core config goes in both loader manifests; an
   integration's goes in its row of the integration table.
 - **Player state** is the immutable record `ThirstData`. Derive a new one and write through
@@ -179,6 +179,7 @@ water is collected, drunk or looked at with Jade, never on a tick or tooltip pat
 | Brewin' and Chewin' | `deps.brewin_and_chewin`: both 1.21.1 nodes | [src/main/brewinandchewin/AGENTS.md](src/main/brewinandchewin/AGENTS.md) |
 | Cold Sweat | `deps.cold_sweat`: `1.21.1-neoforge` | [src/main/coldsweat/AGENTS.md](src/main/coldsweat/AGENTS.md) |
 | Fruits Delight | `deps.fruits_delight`: `1.21.1-neoforge` | [src/main/fruitsdelight/AGENTS.md](src/main/fruitsdelight/AGENTS.md) |
+| Expanded Delight | `deps.expanded_delight`: `1.21.1-neoforge` | [src/main/expandeddelight/AGENTS.md](src/main/expandeddelight/AGENTS.md) |
 | Cultural Delights | `deps.cultural_delights`: `1.21.1-neoforge` (the Fabric port stopped at 0.17 and is not built against) | [src/main/culturaldelights/AGENTS.md](src/main/culturaldelights/AGENTS.md) |
 | Serene Seasons | `deps.serene_seasons`: every node, both loaders | [src/main/sereneseasons/AGENTS.md](src/main/sereneseasons/AGENTS.md) |
 

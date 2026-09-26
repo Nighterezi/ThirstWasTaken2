@@ -1,0 +1,30 @@
+# Expanded Delight
+
+With Expanded Delight installed, its juices, goat milk, soups and salads restore thirst, and the Cooking
+Pot cooks nothing from sea water.
+
+::: warning Supported versions
+Everything on this page works on NeoForge, Minecraft 1.21.1, with
+[Expanded Delight](https://modrinth.com/mod/expanded-delight) 0.1.4. The mod has no Fabric build and no
+build for a newer Minecraft version.
+:::
+
+## Drinks and foods
+
+| Item | Thirst | Quenched |
+|---|---|---|
+| Apple, Sweet Berry, Glow Berry and Cranberry Juice | 8 | 13 |
+| Goat Milk Bottle, Goat Milk Bucket | 6 | 8 |
+| Asparagus Soup, Creamy Asparagus Soup, Honey Peanut Soup, Cinnamon Apples | 4 | 5 |
+| Peanut Salad, Sweet Potato Salad, Goat Cheese Beetroot Salad | 4 | 5 |
+| Cranberries | 1 | 2 |
+
+Jellies, cheese, sandwiches, Mac and Cheese and the other dry foods restore none. Every value can be
+changed in the [config](/docs/configuration#drinks-and-foods).
+
+## Water in the Cooking Pot
+
+- Asparagus Soup and Cinnamon Apples cook from a bucket of fresh water of any grade. The dish is safe
+  whatever went into it.
+- The Cooking Pot cooks nothing while one of its ingredients is sea water. The soup would come out
+  safe, which would make the sea drinkable. Take the bucket out and the pot starts again.

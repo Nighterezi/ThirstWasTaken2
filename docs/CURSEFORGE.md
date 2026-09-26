@@ -195,6 +195,8 @@ Also works with:
 - **[Cultural Delights](https://n1ght3r.github.io/ThirstWasTaken2/docs/integrations/farmers-delight/cultural-delights)**, NeoForge on 1.21.1: its drinks, cucumbers and salads restore thirst, and the Vat brews nothing from sea water.
 - **[Fruits Delight](https://n1ght3r.github.io/ThirstWasTaken2/docs/integrations/farmers-delight/fruits-delight)**, NeoForge on 1.21.1: its juices, teas, jellos, popsicles and juicy fruits restore thirst, and sea water makes no juice.
 - **[Ocean's Delight](https://n1ght3r.github.io/ThirstWasTaken2/docs/integrations/farmers-delight/oceans-delight)**, Fabric and NeoForge on 1.21.1: its Guardian Soup, braised sea pickle and seagrass salad restore thirst.
+- **[Expanded Delight](https://n1ght3r.github.io/ThirstWasTaken2/docs/integrations/farmers-delight/expanded-delight)**, NeoForge on 1.21.1: its juices, goat milk, soups and salads restore thirst, and the Cooking Pot cooks nothing from sea water.
+- **[Rustic Delight](https://n1ght3r.github.io/ThirstWasTaken2/docs/integrations/farmers-delight/rustic-delight)**, Fabric on every version and NeoForge on 1.21.1: its coffees, soups and bell peppers restore thirst.
 - **[Serene Seasons](https://n1ght3r.github.io/ThirstWasTaken2/docs/integrations/serene-seasons)**, Fabric and NeoForge on every version: thirst drains faster in summer and slower in winter, and tropical biomes dry out in their dry season.
 
 ## Settings Screen

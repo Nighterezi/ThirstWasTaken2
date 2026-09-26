@@ -117,6 +117,11 @@ deps.cooks_collection = "z1YUDQXH"
 # See src/main/fruitsdelight/AGENTS.md.
 # 1.2.14, the NeoForge upload.
 deps.fruits_delight = "TWbuEFZt"
+# Expanded Delight, whose Cooking Pot soups take no sea water. Only on the runClient classpath: its one
+# mixin names its target by string. NeoForge 1.21.1 is its only build.
+# See src/main/expandeddelight/AGENTS.md.
+# 0.1.4-neoforge, the NeoForge upload.
+deps.expanded_delight = "RTRYPIJp"
 # Serene Seasons and GlitchCore, the same integration the Fabric table builds; see there.
 # 10.1.0.9, the NeoForge upload.
 deps.serene_seasons = "pHEgQQUE"

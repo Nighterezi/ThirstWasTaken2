@@ -194,6 +194,16 @@ val integrations: List<Integration> = listOf(
         mixinConfig = "thirstwastaken2.fruitsdelight.mixins.json",
         neoForgeDependencies = listOf("fruitsdelight"),
     ),
+    // NeoForge only: the mod has no Fabric build and nothing past 1.21.1. Its one mixin is on Farmer's
+    // Delight's Cooking Pot recipe, named by string, so nothing compiles against either.
+    // See src/main/expandeddelight/AGENTS.md.
+    Integration(
+        dir = "expandeddelight",
+        depsKey = "deps.expanded_delight",
+        loaders = setOf(Loader.NEOFORGE),
+        mixinConfig = "thirstwastaken2.expandeddelight.mixins.json",
+        neoForgeDependencies = listOf("expandeddelight"),
+    ),
     // Both loaders and every node: Serene Seasons ships them all. No mixins; the calendar is read
     // through its API when the drain recomputes, and the entrypoint hands the drain a SeasonalClimate.
     // Fabric finds the entrypoint through `thirstwastaken2:integration`, NeoForge by its annotation.

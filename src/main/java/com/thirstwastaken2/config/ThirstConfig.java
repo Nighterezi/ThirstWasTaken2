@@ -262,6 +262,11 @@ public final class ThirstConfig {
         fruitsDelightFoods(foods);
         // And for Ocean's Delight, added after that.
         oceansDelightFoods(foods);
+        // And for Expanded Delight and Rustic Delight, added after that.
+        expandedDelightDrinks(drinks);
+        expandedDelightFoods(foods);
+        rusticDelightDrinks(drinks);
+        rusticDelightFoods(foods);
         clampValues(drinks);
         clampValues(foods);
         if (itemBlacklist == null) itemBlacklist = new LinkedHashSet<>();
@@ -344,6 +349,8 @@ public final class ThirstConfig {
         coldSweatDrinks(values);
         culturalDelightsDrinks(values);
         fruitsDelightDrinks(values);
+        expandedDelightDrinks(values);
+        rusticDelightDrinks(values);
         return values;
     }
 
@@ -368,6 +375,8 @@ public final class ThirstConfig {
         culturalDelightsFoods(values);
         fruitsDelightFoods(values);
         oceansDelightFoods(values);
+        expandedDelightFoods(values);
+        rusticDelightFoods(values);
         return values;
     }
 
@@ -532,6 +541,67 @@ public final class ThirstConfig {
         putMissing(foods, 5, 7, "oceansdelight:bowl_of_guardian_soup");
         putMissing(foods, 4, 5, "oceansdelight:braised_sea_pickle");
         putMissing(foods, 2, 3, "oceansdelight:seagrass_salad");
+    }
+
+    /**
+     * Expanded Delight's juices and goat milk, by id alone like the other mods'. None is tagged
+     * {@code c:drinks}. The juices are Farmer's Delight's juice value, the goat milk its milk's. NeoForge
+     * 1.21.1 is the mod's only build for a version this mod supports, so these match nothing elsewhere.
+     */
+    private static void expandedDelightDrinks(Map<String, int[]> drinks) {
+        putMissing(drinks, 8, 13, "expandeddelight:apple_juice", "expandeddelight:sweet_berry_juice",
+                "expandeddelight:glow_berry_juice", "expandeddelight:cranberry_juice");
+        putMissing(drinks, 6, 8, "expandeddelight:goat_milk_bottle", "expandeddelight:goat_milk_bucket");
+    }
+
+    /**
+     * Expanded Delight's soups and salads; see {@link #expandedDelightDrinks}. Each is Farmer's Delight's
+     * stew or mixed salad. Two of them cook from a water bucket, which takes no sea water (see
+     * {@code src/main/expandeddelight}). The jellies are jam in a jar, and mac and cheese and the rest are
+     * dry, so they are left out.
+     */
+    private static void expandedDelightFoods(Map<String, int[]> foods) {
+        putMissing(foods, 4, 5, "expandeddelight:asparagus_soup", "expandeddelight:asparagus_soup_creamy",
+                "expandeddelight:peanut_honey_soup", "expandeddelight:cinnamon_apples",
+                "expandeddelight:peanut_salad", "expandeddelight:sweet_potato_salad",
+                "expandeddelight:goat_cheese_beetroot_salad");
+        putMissing(foods, 1, 2, "expandeddelight:cranberries");
+    }
+
+    /**
+     * Rustic Delight's coffees and syrup, by id alone like the other mods'; its builds share one mod id
+     * on every version, both loaders. The mod ships thirst values of its own, but only for the original
+     * Thirst Was Taken, whose mod id is not ours. The drinks keep them: plain coffee a little under a
+     * bottle of water, dark coffee less, the sweetened ones more. Its cooking oil is left out.
+     */
+    private static void rusticDelightDrinks(Map<String, int[]> drinks) {
+        putMissing(drinks, 5, 8, "rusticdelight:coffee");
+        putMissing(drinks, 4, 6, "rusticdelight:dark_coffee");
+        putMissing(drinks, 6, 10, "rusticdelight:milk_coffee");
+        putMissing(drinks, 8, 11, "rusticdelight:syrup_coffee", "rusticdelight:chocolate_coffee",
+                "rusticdelight:honey_coffee", "rusticdelight:pumpkin_coffee", "rusticdelight:cherry_blossom_coffee");
+        putMissing(drinks, 2, 3, "rusticdelight:syrup");
+    }
+
+    /**
+     * Rustic Delight's soups, sweet salad and raw bell peppers; see {@link #rusticDelightDrinks}. Its own
+     * food values are close to ours, so these follow Farmer's Delight's: a soup is a stew, a pepper a
+     * tomato, a slice a cabbage leaf. Roasted, rolled and stuffed peppers, the potato salad and the
+     * batter are left out.
+     */
+    private static void rusticDelightFoods(Map<String, int[]> foods) {
+        putMissing(foods, 4, 5, "rusticdelight:bell_pepper_soup", "rusticdelight:calamari_soup",
+                "rusticdelight:sweet_salad");
+        putMissing(foods, 2, 3, "rusticdelight:bell_pepper_green", "rusticdelight:bell_pepper_yellow",
+                "rusticdelight:bell_pepper_red", "rusticdelight:bell_pepper_orange",
+                "rusticdelight:bell_pepper_white", "rusticdelight:bell_pepper_pink",
+                "rusticdelight:bell_pepper_blue", "rusticdelight:bell_pepper_purple",
+                "rusticdelight:bell_pepper_black");
+        putMissing(foods, 1, 2, "rusticdelight:bell_pepper_slice_green", "rusticdelight:bell_pepper_slice_yellow",
+                "rusticdelight:bell_pepper_slice_red", "rusticdelight:bell_pepper_slice_orange",
+                "rusticdelight:bell_pepper_slice_white", "rusticdelight:bell_pepper_slice_pink",
+                "rusticdelight:bell_pepper_slice_blue", "rusticdelight:bell_pepper_slice_purple",
+                "rusticdelight:bell_pepper_slice_black");
     }
 
     private static void put(Map<String, int[]> values, int thirst, int quenched, String... ids) {

@@ -1,0 +1,10 @@
+{
+  "required": true,
+  "package": "com.thirstwastaken2.expandeddelight.mixin",
+  "plugin": "com.thirstwastaken2.expandeddelight.ExpandedDelightMixinPlugin",
+  "compatibilityLevel": "${java}",
+  "mixins": [
+    "CookingPotSeaWaterMixin"
+  ],
+  "injectors": { "defaultRequire": 1 }
+}

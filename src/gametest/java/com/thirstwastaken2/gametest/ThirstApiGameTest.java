@@ -384,6 +384,100 @@ public final class ThirstApiGameTest {
         helper.succeed();
     }
 
+    /** Expanded Delight is never installed here either; see the Kaleidoscope Cookery test above. */
+    @GameTest
+    public void expandedDelightDrinksAreMergedIntoAnOlderConfig(GameTestHelper helper) {
+        ThirstConfig defaults = new ThirstConfig();
+        String[] drinks = {"apple_juice", "cranberry_juice", "goat_milk_bottle"};
+        String[] foods = {"asparagus_soup", "cinnamon_apples", "peanut_salad", "cranberries"};
+        for (String drink : drinks) {
+            TestFixtures.check(helper, defaults.drinks.containsKey("expandeddelight:" + drink),
+                    "the default drinks should list expandeddelight:" + drink);
+        }
+        for (String food : foods) {
+            TestFixtures.check(helper, defaults.foods.containsKey("expandeddelight:" + food),
+                    "the default foods should list expandeddelight:" + food);
+        }
+        for (String dry : new String[]{"mac_and_cheese", "sweet_berry_jelly", "grilled_cheese"}) {
+            TestFixtures.check(helper, !defaults.foods.containsKey("expandeddelight:" + dry)
+                            && !defaults.drinks.containsKey("expandeddelight:" + dry),
+                    "expandeddelight:" + dry + " restores no thirst and should not be listed");
+        }
+
+        TestFixtures.withConfig(config -> {
+            for (String drink : drinks) config.drinks.remove("expandeddelight:" + drink);
+            for (String food : foods) config.foods.remove("expandeddelight:" + food);
+            // A player's own value, which merging must leave alone.
+            config.drinks.put("expandeddelight:apple_juice", new int[]{1, 1});
+        }, () -> {
+            ThirstConfig config = ThirstConfig.get();
+            for (String drink : drinks) {
+                if (drink.equals("apple_juice")) continue;
+                String id = "expandeddelight:" + drink;
+                TestFixtures.check(helper, Arrays.equals(config.drinks.get(id), defaults.drinks.get(id)),
+                        id + " should be merged back as " + Arrays.toString(defaults.drinks.get(id))
+                                + ", got " + Arrays.toString(config.drinks.get(id)));
+            }
+            for (String food : foods) {
+                String id = "expandeddelight:" + food;
+                TestFixtures.check(helper, Arrays.equals(config.foods.get(id), defaults.foods.get(id)),
+                        id + " should be merged back as " + Arrays.toString(defaults.foods.get(id))
+                                + ", got " + Arrays.toString(config.foods.get(id)));
+            }
+            TestFixtures.check(helper, Arrays.equals(config.drinks.get("expandeddelight:apple_juice"), new int[]{1, 1}),
+                    "a value the player set should survive the merge, got "
+                            + Arrays.toString(config.drinks.get("expandeddelight:apple_juice")));
+        });
+        helper.succeed();
+    }
+
+    /** Rustic Delight is never installed here either; see the Kaleidoscope Cookery test above. */
+    @GameTest
+    public void rusticDelightDrinksAreMergedIntoAnOlderConfig(GameTestHelper helper) {
+        ThirstConfig defaults = new ThirstConfig();
+        String[] drinks = {"coffee", "dark_coffee", "milk_coffee", "honey_coffee", "syrup"};
+        String[] foods = {"bell_pepper_soup", "calamari_soup", "sweet_salad", "bell_pepper_red", "bell_pepper_slice_black"};
+        for (String drink : drinks) {
+            TestFixtures.check(helper, defaults.drinks.containsKey("rusticdelight:" + drink),
+                    "the default drinks should list rusticdelight:" + drink);
+        }
+        for (String food : foods) {
+            TestFixtures.check(helper, defaults.foods.containsKey("rusticdelight:" + food),
+                    "the default foods should list rusticdelight:" + food);
+        }
+        for (String dry : new String[]{"cooking_oil", "batter", "roasted_bell_pepper_red", "stuffed_bell_pepper_green", "potato_salad"}) {
+            TestFixtures.check(helper, !defaults.foods.containsKey("rusticdelight:" + dry)
+                            && !defaults.drinks.containsKey("rusticdelight:" + dry),
+                    "rusticdelight:" + dry + " restores no thirst and should not be listed");
+        }
+
+        TestFixtures.withConfig(config -> {
+            for (String drink : drinks) config.drinks.remove("rusticdelight:" + drink);
+            for (String food : foods) config.foods.remove("rusticdelight:" + food);
+            // A player's own value, which merging must leave alone.
+            config.drinks.put("rusticdelight:coffee", new int[]{1, 1});
+        }, () -> {
+            ThirstConfig config = ThirstConfig.get();
+            for (String drink : drinks) {
+                if (drink.equals("coffee")) continue;
+                String id = "rusticdelight:" + drink;
+                TestFixtures.check(helper, Arrays.equals(config.drinks.get(id), defaults.drinks.get(id)),
+                        id + " should be merged back as " + Arrays.toString(defaults.drinks.get(id))
+                                + ", got " + Arrays.toString(config.drinks.get(id)));
+            }
+            for (String food : foods) {
+                String id = "rusticdelight:" + food;
+                TestFixtures.check(helper, Arrays.equals(config.foods.get(id), defaults.foods.get(id)),
+                        id + " should be merged back as " + Arrays.toString(defaults.foods.get(id))
+                                + ", got " + Arrays.toString(config.foods.get(id)));
+            }
+            TestFixtures.check(helper, Arrays.equals(config.drinks.get("rusticdelight:coffee"), new int[]{1, 1}),
+                    "a value the player set should survive the merge, got "
+                            + Arrays.toString(config.drinks.get("rusticdelight:coffee")));
+        });
+        helper.succeed();
+    }
+
     @GameTest
     public void aBrokenKeywordPatternIsIgnoredRatherThanFatal(GameTestHelper helper) {
         TestFixtures.withConfig(config -> {

@@ -398,6 +398,12 @@ dependencies {
         runClientMod(listOf("fruits-delight", "fruitsdelight"), "maven.modrinth:fruits-delight:$it") { isTransitive = false }
     }
 
+    // Expanded Delight, on the node that sets it. Nothing compiles against it: its foods are reached by
+    // registry id, and src/main/expandeddelight's mixin names its target by string. Only here to test it.
+    findProperty("deps.expanded_delight")?.let {
+        runClientMod(listOf("expanded-delight", "expandeddelight"), "maven.modrinth:expanded-delight:$it") { isTransitive = false }
+    }
+
     if (createVersion != null && createLibraries != null) {
         compileOnly("maven.modrinth:create:$createVersion") { isTransitive = false }
         compileOnly(files(createLibraries.map { it.destinationDir.listFiles().orEmpty().toList() })

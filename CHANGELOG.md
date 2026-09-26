@@ -13,6 +13,11 @@ All notable changes to ThirstWasTaken2 are documented in this file.
   - A Seasons tab on the Thirst settings page sets the speed for each season, or turns this off.
 - Compatibility with Ocean's Delight on Fabric and NeoForge 1.21.1:
   - Its Guardian Soup, Braised Sea Pickle and Seagrass Salad restore thirst.
+- Compatibility with Expanded Delight on NeoForge 1.21.1:
+  - Its juices, goat milk, soups and salads restore thirst.
+  - The Cooking Pot cooks nothing from a bucket of sea water, so the sea cannot be cooked into soup.
+- Compatibility with Rustic Delight on Fabric, every supported version, and NeoForge 1.21.1:
+  - Its coffees, soups, sweet salad and raw bell peppers restore thirst.
 
 ### Changed
 

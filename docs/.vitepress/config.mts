@@ -46,7 +46,9 @@ const manualSidebar = [
           { text: "Brewin' and Chewin'", link: '/docs/integrations/farmers-delight/brewin-and-chewin' },
           { text: 'Cultural Delights', link: '/docs/integrations/farmers-delight/cultural-delights' },
           { text: 'Fruits Delight', link: '/docs/integrations/farmers-delight/fruits-delight' },
-          { text: "Ocean's Delight", link: '/docs/integrations/farmers-delight/oceans-delight' }
+          { text: "Ocean's Delight", link: '/docs/integrations/farmers-delight/oceans-delight' },
+          { text: 'Expanded Delight', link: '/docs/integrations/farmers-delight/expanded-delight' },
+          { text: 'Rustic Delight', link: '/docs/integrations/farmers-delight/rustic-delight' }
         ]
       }
     ]
