@@ -15,8 +15,9 @@ import java.util.List;
 
 /**
  * One page of the config screen: its icon in the sidebar, its settings, and any rows that are not a
- * setting. Every scalar in {@link ThirstConfig} belongs to exactly one page. A page with more settings
- * than a small screen shows at once is split into {@link ConfigSection} tabs, each short enough to fit. The per-item values are
+ * setting. Every scalar in {@link ThirstConfig} belongs to exactly one page. A page that covers several
+ * topics is split into {@link ConfigSection} tabs, one per topic; a new setting goes in the tab of its
+ * topic, and length alone is never a reason to split or merge one. The per-item values are
  * edited item by item on Item Values ({@link ItemValueRows}); the keyword patterns stay in the file,
  * which Item Values opens. Reset puts back exactly the page's entries, so the item values are never
  * reset from the footer, only one row at a time.

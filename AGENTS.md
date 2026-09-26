@@ -73,8 +73,9 @@ One source tree, one jar per node. Nodes are the Gradle subprojects in `settings
 - **Player state** is the immutable record `ThirstData`. Derive a new one and write through
   `ThirstManager.set` only when it changed; every write is a sync packet.
 - **Config** is the Gson POJO `ThirstConfig`. A new field: add it, clamp it in `sanitize()`, and if
-  user-facing add a widget and reset line in `client/config/ConfigCategory` plus lang keys in all nine
-  lang files (`checkLang` fails otherwise).
+  user-facing add a widget and reset line in `client/config/ConfigCategory`, in the page and tab of its
+  topic, plus lang keys in all nine lang files (`checkLang` fails otherwise). Pages and tabs are cut by
+  topic, not by length; see "Grouping settings" in [client/AGENTS.md](src/client/java/com/thirstwastaken2/client/AGENTS.md).
 - **`com.thirstwastaken2.api` is public API** for other mods: `ThirstApi`, `ThirstEvents`. A signature
   there changes only after a deprecation, its public signatures name only Minecraft, JDK and `api` types
   (`checkApiSurface`), and it holds no `//?`. An addition bumps `ThirstApi.API_VERSION`. See

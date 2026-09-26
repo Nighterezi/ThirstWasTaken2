@@ -107,15 +107,27 @@ fill thresholds change here, change them there too.
 from vanilla widgets and plain fills only, no config library: a header with the mod's name and a search
 box, a sidebar with a tab per `ConfigCategory`, the page's rows, and Reset / Cancel / Done. Typing in
 the search box lists matching settings from every page, grouped by page. Below 380 GUI pixels wide the
-sidebar shows icons only.
-
-A page with more settings than fit on a small screen is split into `ConfigSection`s, shown as a strip
-of tabs under its heading; the list holds only the chosen tab's rows. The heading and the strip are
-pinned, and only the rows below them scroll. Size a tab so it fits without scrolling on a 480x270 GUI
-(1080p at scale 4): heading and strip take 52 px, a setting 24. A page of one section shows no strip.
-The tab shown is kept per page while the screen is open. Reset in the footer still acts on the whole
-page. A section's title is `thirstwastaken2.config.group.<page>.<section>`, in all nine lang files. The HUD position is fixed to vanilla's right-hand status-bar stack; there is
+sidebar shows icons only. The HUD position is fixed to vanilla's right-hand status-bar stack; there is
 no offset setting because the preview cannot show screen position.
+
+### Grouping settings
+
+**Settings are grouped by topic, not by how many fit on screen.** A page is one subject (Thirst,
+Water, Containers). A page that covers several distinct things is split into `ConfigSection`s, shown
+as a strip of tabs under its heading, one tab per thing: Water is Drinking, Quenched, Sea Water, and
+Rain and Dripstone. Scrolling is fine; the Item List tab is long and stays one tab. So:
+
+- A new setting goes in the section whose topic it is, never the nearest one with room.
+- If no section fits, add one, or a page if it is a subject of its own. Do not widen a section's
+  meaning to take it in.
+- Do not split a page that is one topic just because it is long, and do not merge two topics because
+  each is short.
+- A page of one section shows no strip. Once a page gains a second topic, split it, and give the
+  settings already there a section named for their own topic.
+
+The heading and the strip are pinned, and only the rows below them scroll. The tab shown is kept per
+page while the screen is open. Reset in the footer still acts on the whole page. A section's title
+is `thirstwastaken2.config.group.<page>.<section>`, in all nine lang files.
 
 A setting row is its name (amber, with an amber bar, when it differs from the default), its control,
 and a reset button beside it; the row's tooltip is the description. Rows scroll a whole row at a time,
@@ -173,8 +185,8 @@ per sweep, drawn separately from the bar so the droplets never show a drain: the
 `hud-appleskin.gif`, which `tools/generate_docs_images.py` draws. Keep the two in step. The tooltip
 and the bar block are each centred in the preview box.
 
-Adding a setting means: field in `ThirstConfig`, clamp in `sanitize()`, a `ConfigEntry` in a section of
-its `ConfigCategory`, and `thirstwastaken2.config.<key>` plus `thirstwastaken2.config.<key>.tooltip` in
+Adding a setting means: field in `ThirstConfig`, clamp in `sanitize()`, a `ConfigEntry` in the section
+of its topic (see "Grouping settings"), and `thirstwastaken2.config.<key>` plus `thirstwastaken2.config.<key>.tooltip` in
 all nine lang files (`checkLang` fails on a missing one). The key is the Java field name
 in snake_case. A new page also needs `section.<key>`, its tooltip and a 16x16 icon texture. Enums use
 `choice`, labelled by `<key>.<value in lower case>`, so each value needs its own lang key. Doubles are

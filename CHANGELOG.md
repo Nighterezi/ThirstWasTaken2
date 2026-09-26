@@ -34,8 +34,7 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 
 ### Changed
 
-- Longer pages of the settings screen are split into tabs along the top, so their settings fit on one
-  screen.
+- Settings screen pages that cover several topics are split into tabs along the top, one per topic.
 - Every language now has a translation for every line of the settings screen.
 
 - Water in a Hanging Pot now looks like water in a cauldron. Each water grade and sea water keeps
