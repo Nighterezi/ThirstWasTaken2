@@ -70,7 +70,7 @@
   "thirstwastaken2.config.section.mod_items": "模组物品",
   "thirstwastaken2.config.section.mod_items.tooltip": "为自带同类物品的整合包关闭本模组的物品。",
   "thirstwastaken2.config.section.containers": "容器",
-  "thirstwastaken2.config.section.containers.tooltip": "水壶和酒壶能装多少，以及水煮沸要多久。",
+  "thirstwastaken2.config.section.containers.tooltip": "水壶和酒壶的容量与煮沸时间。",
   "thirstwastaken2.config.reset": "恢复默认",
   "thirstwastaken2.config.reset.tooltip": "将此界面上的所有设置恢复默认。点击完成前不会保存。",
   "thirstwastaken2.config.preview": "预览",

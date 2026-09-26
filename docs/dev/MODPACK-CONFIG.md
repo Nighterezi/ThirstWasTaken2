@@ -65,7 +65,7 @@ Built as planned:
   `enableWaterskin`, `enableCopperCanteen`, `enableIronFlask`, `enableCopperHangingPot`,
   `enableIronHangingPot`. `ThirstConfig.isItemEnabled(String id)` maps an item id to its field, `true`
   for any other id.
-- A **Mod Items** page (`mod_items`, icon `copper_canteen.png`) with the six switches, under a note that
+- A **Mod Items** page (`mod_items`, icon the crafting table's front) with the six switches, under a note that
   a change needs `/reload` or rejoining, and a restart on a dedicated server. Lang keys in all nine files.
 - The load condition `thirstwastaken2:item_enabled {"item": id}`, registered through
   `Loader.registerResourceConditions()`: `platform/ItemEnabledCondition` on Fabric (forked on `test`'s

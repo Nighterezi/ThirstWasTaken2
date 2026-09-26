@@ -70,7 +70,7 @@
   "thirstwastaken2.config.section.mod_items": "Предметы мода",
   "thirstwastaken2.config.section.mod_items.tooltip": "Отключает предметы этого мода для сборки, где есть свои.",
   "thirstwastaken2.config.section.containers": "Ёмкости",
-  "thirstwastaken2.config.section.containers.tooltip": "Сколько вмещают фляга и фляжка и сколько кипятится вода.",
+  "thirstwastaken2.config.section.containers.tooltip": "Объём фляг и время кипячения.",
   "thirstwastaken2.config.reset": "Сбросить",
   "thirstwastaken2.config.reset.tooltip": "Возвращает все настройки на этом экране к значениям по умолчанию. Ничего не сохраняется до нажатия «Готово».",
   "thirstwastaken2.config.preview": "Предпросмотр",

@@ -70,7 +70,7 @@
   "thirstwastaken2.config.section.mod_items": "Przedmioty moda",
   "thirstwastaken2.config.section.mod_items.tooltip": "Wyłącza przedmioty tego moda, dla paczki, która ma własne.",
   "thirstwastaken2.config.section.containers": "Pojemniki",
-  "thirstwastaken2.config.section.containers.tooltip": "Ile mieszczą manierka i piersiówka oraz jak długo gotuje się woda.",
+  "thirstwastaken2.config.section.containers.tooltip": "Pojemność manierki i piersiówki, czas gotowania.",
   "thirstwastaken2.config.reset": "Przywróć domyślne",
   "thirstwastaken2.config.reset.tooltip": "Przywraca domyślne wartości wszystkich ustawień na tym ekranie. Nic nie zostanie zapisane przed Gotowe.",
   "thirstwastaken2.config.preview": "Podgląd",

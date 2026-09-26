@@ -317,6 +317,36 @@ final class ClientProbes {
             reply.ok(result);
         });
 
+        /*
+         * Turns the mouse wheel over the open screen at a point, placed as client.click places one, for a
+         * list longer than the screen. `amount` is wheel notches, positive scrolling down the page.
+         */
+        dispatcher.register("client.scroll", (request, reply) -> {
+            Minecraft minecraft = client();
+            Screen screen = AgentClientVanilla.screen(minecraft);
+            if (screen == null) throw new AgentException("client.scroll: no screen is open");
+            String from = request.choice("from", "centre", "centre", "corner", "top", "bottom");
+            double x = request.decimal("x", 0.0F) + (from.equals("corner") ? 0.0 : screen.width / 2.0);
+            double y = request.decimal("y", 0.0F) + switch (from) {
+                case "centre" -> screen.height / 2.0;
+                case "bottom" -> screen.height;
+                default -> 0.0;
+            };
+            int amount = request.integer("amount", -100, 100);
+            // One event a notch, as a real wheel sends them: a screen may move one row per event whatever
+            // its size, as the config screen does. The game's wheel is positive upwards.
+            boolean taken = false;
+            for (int notch = 0; notch < Math.abs(amount); notch++) {
+                taken |= screen.mouseScrolled(x, y, 0.0, -Math.signum(amount));
+            }
+            JsonObject result = new JsonObject();
+            result.addProperty("x", x);
+            result.addProperty("y", y);
+            result.addProperty("amount", amount);
+            result.addProperty("taken", taken);
+            reply.ok(result);
+        });
+
         /* The open container's slots that hold something, by the index client.slot takes. */
         dispatcher.register("client.slots", (request, reply) -> reply.ok(slots(player(client()))));
 

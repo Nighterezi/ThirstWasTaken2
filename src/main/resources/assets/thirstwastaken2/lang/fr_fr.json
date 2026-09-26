@@ -70,7 +70,7 @@
   "thirstwastaken2.config.section.mod_items": "Objets du mod",
   "thirstwastaken2.config.section.mod_items.tooltip": "Désactive les objets de ce mod, pour un modpack qui fournit les siens.",
   "thirstwastaken2.config.section.containers": "Récipients",
-  "thirstwastaken2.config.section.containers.tooltip": "Ce que contiennent la gourde et la flasque, et le temps pour faire bouillir l'eau.",
+  "thirstwastaken2.config.section.containers.tooltip": "Contenance de la gourde et de la flasque, temps d'ébullition.",
   "thirstwastaken2.config.reset": "Réinitialiser",
   "thirstwastaken2.config.reset.tooltip": "Remet tous les réglages de cet écran par défaut. Rien n'est enregistré avant Terminé.",
   "thirstwastaken2.config.preview": "Aperçu",

@@ -70,7 +70,7 @@
   "thirstwastaken2.config.section.mod_items": "Modのアイテム",
   "thirstwastaken2.config.section.mod_items.tooltip": "独自のアイテムを持つModパック向けに、このModのアイテムを無効にします。",
   "thirstwastaken2.config.section.containers": "容器",
-  "thirstwastaken2.config.section.containers.tooltip": "水筒とフラスクの容量と、水が沸くまでの時間。",
+  "thirstwastaken2.config.section.containers.tooltip": "水筒とフラスクの容量と煮沸時間。",
   "thirstwastaken2.config.reset": "初期設定に戻す",
   "thirstwastaken2.config.reset.tooltip": "この画面の設定をすべて初期値に戻します。完了を押すまで保存されません。",
   "thirstwastaken2.config.preview": "プレビュー",

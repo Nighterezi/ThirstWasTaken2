@@ -70,7 +70,7 @@
   "thirstwastaken2.config.section.mod_items": "Mod Items",
   "thirstwastaken2.config.section.mod_items.tooltip": "Switch off this mod's items, for a pack that brings its own.",
   "thirstwastaken2.config.section.containers": "Containers",
-  "thirstwastaken2.config.section.containers.tooltip": "How much the canteen and flask hold, and how long water takes to boil.",
+  "thirstwastaken2.config.section.containers.tooltip": "Canteen and flask capacity, and boil times.",
   "thirstwastaken2.config.reset": "Reset to Defaults",
   "thirstwastaken2.config.reset.tooltip": "Puts the settings on this page, or those the search found, back to their defaults. Nothing is saved until Done.",
   "thirstwastaken2.config.preview": "Preview",

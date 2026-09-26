@@ -85,7 +85,7 @@ enum ConfigCategory {
         }
     },
 
-    MOD_ITEMS("mod_items", ThirstWasTaken2.id("textures/item/copper_canteen.png"), List.of(
+    MOD_ITEMS("mod_items", Identifier.withDefaultNamespace("textures/block/crafting_table_front.png"), List.of(
             ConfigEntry.toggle("enable_bowls",
                     config -> config.enableBowls, (config, value) -> config.enableBowls = value),
             ConfigEntry.toggle("enable_waterskin",

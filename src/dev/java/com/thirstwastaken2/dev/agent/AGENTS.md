@@ -217,6 +217,7 @@ a client answers all three.
 | `client.screen` | `open` (`none`, `config`, `inventory`) | which screen is open now |
 | `client.tooltip` | `item`, `count`, `slot`, `advanced` | the tooltip lines that item produced, as text, with their colours. `slot` reads the stack the player holds (`mainhand`, `offhand` or an inventory index) instead of building one from an id, which is the only way to ask about a stack's components |
 | `client.click` | `x`, `y`, `button`, `from` (`centre`, `corner`, `top`, `bottom`) | after pressing and releasing a mouse button on the open screen: which child was under the point and whether the press was taken |
+| `client.scroll` | `x`, `y`, `from` as `client.click`, `amount` (wheel notches, positive down the page) | after turning the wheel over the open screen: whether the screen took it. The config screen's pages scroll one row a notch |
 | `client.slots` | | the open menu's slots that hold something, with their class and player inventory index, and what the cursor carries |
 | `client.slot` | `slot` or `inventory`, `button`, `action` (`pickup`, `quick_move`, …) | the same, a few ticks after clicking that slot through the game mode |
 | `client.language` | `code` | the language now selected, after loading its translations again |

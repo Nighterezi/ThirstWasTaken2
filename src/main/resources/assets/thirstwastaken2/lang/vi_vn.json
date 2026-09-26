@@ -70,7 +70,7 @@
   "thirstwastaken2.config.section.mod_items": "Vật phẩm của mod",
   "thirstwastaken2.config.section.mod_items.tooltip": "Tắt vật phẩm của mod này, cho modpack đã có vật phẩm riêng.",
   "thirstwastaken2.config.section.containers": "Vật chứa",
-  "thirstwastaken2.config.section.containers.tooltip": "Bi đông và bình nước chứa được bao nhiêu, và nước đun sôi mất bao lâu.",
+  "thirstwastaken2.config.section.containers.tooltip": "Sức chứa bi đông, bình nước và thời gian đun.",
   "thirstwastaken2.config.reset": "Đặt lại mặc định",
   "thirstwastaken2.config.reset.tooltip": "Đưa các cài đặt trên trang này, hoặc các cài đặt tìm được, về mặc định. Chưa lưu cho đến khi bấm Xong.",
   "thirstwastaken2.config.preview": "Xem trước",
