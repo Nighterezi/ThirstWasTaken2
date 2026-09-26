@@ -255,7 +255,7 @@ deps.kaleidoscope_cookery = "gxwav1I9"
 mod.mc_compat = "[26.3,26.4)"
 
 # NeoForge has published only betas for 26.3. This is the newest, and the lower bound players need.
-deps.neoforge = "26.3.0.16-beta"
+deps.neoforge = "26.3.0.22-beta"
 # 3.0.10+mc26.3, the NeoForge upload. Pinned by Modrinth version id for the reason the 26.2 table gives.
 deps.appleskin = "6vok7cLb"
 deps.jade = "26.3.1+neoforge"

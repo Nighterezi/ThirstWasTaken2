@@ -27,7 +27,7 @@ Fabric API is required and must match the Minecraft version.
 
 | Minecraft | File suffix | NeoForge | Java |
 |---|---|---|---|
-| 26.3 | `+26.3-neoforge` | 26.3.0.16-beta or newer | 25 |
+| 26.3 | `+26.3-neoforge` | 26.3.0.22-beta or newer | 25 |
 | 26.2 | `+26.2-neoforge` | 26.2.0.88 or newer | 25 |
 | 26.1, 26.1.1, 26.1.2 | `+26.1.2-neoforge` | 26.1.2.109 or newer | 25 |
 | 1.21.11 | `+1.21.11-neoforge` | 21.11.45 or newer | 21 |
