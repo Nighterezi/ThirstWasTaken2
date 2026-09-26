@@ -1,12 +1,12 @@
 package com.thirstwastaken2.client.config;
 
-import com.thirstwastaken2.ThirstWasTaken2;
 import com.thirstwastaken2.client.platform.ClientVanilla;
+import com.thirstwastaken2.compat.AppleSkin;
 import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.data.ThirstData;
 import com.thirstwastaken2.platform.Loader;
+import com.thirstwastaken2.tooltip.ThirstTooltip;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -50,11 +50,9 @@ import java.util.TreeSet;
 final class ItemValueRows {
     private static final int VALUE_WIDTH = 26;
     private static final int ADD_WIDTH = 60;
-    private static final int HEADER_HEIGHT = 14;
     private static final String PREFIX = "thirstwastaken2.config.";
-
-    private static final Identifier THIRST_ICONS = ThirstWasTaken2.id("textures/gui/thirst_icons.png");
-    private static final Identifier QUENCHED_ICONS = ThirstWasTaken2.id("textures/gui/quenched_overlay.png");
+    /** Units that fill one droplet, the size of the droplets over the value columns. */
+    private static final int ONE_DROPLET = 2;
 
     private static final String[] ON_ICON = {
             "........",
@@ -124,16 +122,16 @@ final class ItemValueRows {
             if (installed(id) == null) hidden++;
             else groups.computeIfAbsent(namespace(id), key -> new ArrayList<>()).add(id);
         }
-        if (!groups.isEmpty()) rows.add(columns());
         for (String namespace : sortedGroups(groups)) {
             List<String> ids = groups.get(namespace);
             boolean open = EXPANDED.contains(namespace);
-            rows.add(groupRow(namespace, ids, open, () -> {
+            ConfigRow heading = groupRow(namespace, ids, open, () -> {
                 if (!EXPANDED.remove(namespace)) EXPANDED.add(namespace);
                 refresh.run();
-            }));
+            });
+            rows.add(heading);
             if (open) {
-                for (String id : ids) rows.add(itemRow(id, installed(id), refresh));
+                for (String id : ids) rows.add(itemRow(id, installed(id), refresh).under(heading));
             }
         }
         if (hidden > 0) rows.add(ConfigRow.note(Component.translatable(PREFIX + "item_values.hidden", hidden)));
@@ -159,8 +157,9 @@ final class ItemValueRows {
                 }
             }
             if (hits.isEmpty()) continue;
-            rows.add(groupRow(namespace, hits, true, null));
-            for (String id : hits) rows.add(itemRow(id, installed(id), refresh));
+            ConfigRow heading = groupRow(namespace, hits, true, null);
+            rows.add(heading);
+            for (String id : hits) rows.add(itemRow(id, installed(id), refresh).under(heading));
             count += hits.size();
         }
         return count;
@@ -262,8 +261,11 @@ final class ItemValueRows {
 
     /**
      * The heading of one mod's items: an arrow, the mod's name and how many of its items are listed,
-     * with the amber bar while any of them differs from the mod's own value. Clicking it opens or
-     * closes the group; in search results, where {@code onToggle} is {@code null}, it is only a label.
+     * with the amber bar while any of them differs from the mod's own value, and, while the group is
+     * open, the thirst and quenched droplets above those two columns, drawn as the item tooltip draws
+     * them. It stays at the top while its items scroll under it.
+     * Clicking it opens or closes the group; in search results, where {@code onToggle} is {@code null},
+     * it is only a label.
      */
     private static ConfigRow groupRow(String namespace, List<String> ids, boolean open, Runnable onToggle) {
         Component title = Component.literal(modName(namespace));
@@ -289,13 +291,30 @@ final class ItemValueRows {
                 ConfigTheme.item(graphics, icon[0], textX, y + (height - 16) / 2);
                 textX += 20;
             }
-            ClientVanilla.text(graphics, ConfigRow.font(), title, textX, y + (height - 8) / 2, ConfigTheme.TEXT);
-            ClientVanilla.text(graphics, ConfigRow.font(), count, textX + ConfigRow.font().width(title), y + (height - 8) / 2, ConfigTheme.MUTED);
+            int[] columns = columnsFrom(x + widget.getWidth());
+            int countWidth = ConfigRow.font().width(count);
+            int titleWidth = Math.min(ConfigRow.font().width(title), columns[0] - ConfigRow.GAP - countWidth - textX);
+            ConfigTheme.clippedText(graphics, ConfigRow.font(), title, textX, y + (height - 8) / 2, titleWidth, ConfigTheme.TEXT);
+            ClientVanilla.text(graphics, ConfigRow.font(), count, textX + titleWidth, y + (height - 8) / 2, ConfigTheme.MUTED);
+            if (open) {
+                // Read each frame, so the outline follows the quenched overlay setting as it changes.
+                Component thirst = ThirstTooltip.thirst(ONE_DROPLET);
+                Component quenched = ThirstTooltip.quenched(ONE_DROPLET, AppleSkin.quenchedOverlay());
+                int textY = y + (height - 8) / 2;
+                ClientVanilla.text(graphics, ConfigRow.font(), thirst,
+                        columns[0] + (VALUE_WIDTH - ConfigRow.font().width(thirst)) / 2, textY, ConfigTheme.TEXT);
+                ClientVanilla.text(graphics, ConfigRow.font(), quenched,
+                        columns[1] + (VALUE_WIDTH - ConfigRow.font().width(quenched)) / 2, textY, ConfigTheme.TEXT);
+            }
         };
         AbstractWidget widget = onToggle != null
                 ? ClientVanilla.button(0, ConfigRow.OPTION_HEIGHT, title, onToggle, painter)
                 : ClientVanilla.canvas(0, ConfigRow.OPTION_HEIGHT, title, painter);
-        widget.setTooltip(Tooltip.create(Component.literal(namespace)));
+        // An open group names its two columns by their droplets; a closed one shows no droplets to name.
+        widget.setTooltip(Tooltip.create(open ? Component.literal(namespace)
+                .append("\n").append(legend(ThirstTooltip.thirst(ONE_DROPLET), "item_values.thirst"))
+                .append("\n").append(legend(ThirstTooltip.quenched(ONE_DROPLET, AppleSkin.quenchedOverlay()), "item_values.quenched"))
+                : Component.literal(namespace)));
         return new ConfigRow(List.of(widget)) {
             @Override
             int height(int width) {
@@ -342,40 +361,14 @@ final class ItemValueRows {
         return Integer.parseInt(text) <= ThirstData.MAX;
     }
 
-    /** The droplet above the thirst column and the outlined droplet above quenched, named on hover. */
-    private static ConfigRow columns() {
-        Component description = Component.translatable(PREFIX + "item_values.columns");
-        AbstractWidget canvas = ClientVanilla.canvas(0, HEADER_HEIGHT, description, (graphics, widget, mouseX, mouseY) -> {
-            int[] columns = columnsFrom(widget.getX() + widget.getWidth());
-            int y = widget.getY() + 2;
-            droplet(graphics, columns[0] + (VALUE_WIDTH - 9) / 2, y, false);
-            droplet(graphics, columns[1] + (VALUE_WIDTH - 9) / 2, y, true);
-        });
-        canvas.setTooltip(Tooltip.create(description));
-        return new ConfigRow(List.of(canvas)) {
-            @Override
-            int height(int width) {
-                return HEADER_HEIGHT;
-            }
-
-            @Override
-            void place(int x, int y, int width) {
-                canvas.setPosition(x, y);
-                canvas.setWidth(width);
-            }
-        };
-    }
-
-    /** The full droplet of the thirst bar, with the quenched outline over it when {@code quenched}. */
-    private static void droplet(GuiGraphicsExtractor graphics, int x, int y, boolean quenched) {
-        ClientVanilla.blit(graphics, THIRST_ICONS, x, y, 32, 0, 9, 9, 41, 9, 0xFFFFFFFF);
-        // The full quarter of the first outline row, the Diamond one.
-        if (quenched) ClientVanilla.blit(graphics, QUENCHED_ICONS, x, y, 27, 0, 9, 9, 36, 45, 0xFFFFFFFF);
+    /** One line of a heading's tooltip: a droplet as its column shows it, then what the column holds. */
+    private static Component legend(Component droplet, String key) {
+        return Component.empty().append(droplet).append(" ").append(Component.translatable(PREFIX + key));
     }
 
     /**
      * The left edge of each control column, right to left from {@code right}: thirst, quenched, the
-     * switch and reset. Shared by the rows and the column heading so they line up.
+     * switch and reset. Shared by the item rows and the group headings so they line up.
      */
     private static int[] columnsFrom(int right) {
         int reset = right - ConfigRow.RESET_WIDTH;

@@ -214,7 +214,7 @@
 Every setting can be changed in game, with a live preview of the thirst bar and its tooltips. Pages cover thirst, water, AppleSkin, what each item restores, which of the mod's items are enabled, and container sizes and boil times. Fabric requires <a href="https://www.curseforge.com/minecraft/mc-mods/modmenu">Mod Menu</a>; NeoForge uses the Config button in its Mods list.
 
 <p align="center">
-  <img alt="The ThirstWasTaken2 settings screen: a slider and a switch on the Thirst page, the Water tabs, the AppleSkin preview changing outline, the item list scrolling, and the Containers page" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/config/config-showcase.gif" width="100%">
+  <img alt="The ThirstWasTaken2 settings screen: a slider and a switch on the Thirst page, the Water tabs, the AppleSkin preview changing outline and its tooltip droplets switched off and on, the item list scrolling to a modded group under its pinned heading, and the Containers page" src="https://raw.githubusercontent.com/n1ght3r/ThirstWasTaken2/main/docs/public/screenshots/config/config-showcase.gif" width="100%">
 </p>
 
 ## Version Support

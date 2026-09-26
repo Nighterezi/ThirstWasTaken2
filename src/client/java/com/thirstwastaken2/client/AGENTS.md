@@ -129,6 +129,10 @@ The heading and the strip are pinned, and only the rows below them scroll. The t
 page while the screen is open. Reset in the footer still acts on the whole page. A section's title
 is `thirstwastaken2.config.group.<page>.<section>`, in all nine lang files.
 
+A setting that does nothing without another mod is built `.requires("<mod id>")` and left off the
+page, the search and Reset while that mod is missing; its value stays in the file. Cold Sweat Climate
+is one.
+
 A setting row is its name (amber, with an amber bar, when it differs from the default), its control,
 and a reset button beside it; the row's tooltip is the description. Rows scroll a whole row at a time,
 so a row is either fully shown or hidden and nothing needs clipping. Tab painting and the reset button
@@ -159,6 +163,11 @@ page, with a note counting them, and stay in the file.
 
 Rows are grouped by namespace under a heading named by `Loader.modName` (the mod's own name, or the
 namespace when no mod has that id): vanilla first, then by name. A heading opens and closes its group.
+While open it carries the thirst and quenched droplets over those two columns, the same font glyphs
+the item tooltip draws (`ThirstTooltip.thirst` and `quenched`, so the outline follows the quenched
+overlay setting), and names them on hover. It stays at the top of the list
+while its items scroll under it, until the next heading reaches the top: an item row is built
+`.under(heading)`, and the screen shows that heading above the first scrolled row it sits under.
 Only `minecraft` starts open. The open set is a static field, kept for the session, and adding an item
 opens its group. The search box finds item rows by id or name, and every item of a mod whose name or
 namespace matches, under their headings, always open.

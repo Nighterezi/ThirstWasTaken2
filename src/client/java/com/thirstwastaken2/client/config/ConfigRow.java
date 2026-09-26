@@ -29,9 +29,21 @@ abstract class ConfigRow {
     static final int TAB_HEIGHT = 18;
 
     private final List<AbstractWidget> widgets;
+    /** The heading this row is listed under, kept at the top while the row scrolls past it; null for none. */
+    private ConfigRow heading;
 
     ConfigRow(List<AbstractWidget> widgets) {
         this.widgets = widgets;
+    }
+
+    /** Lists this row under {@code heading}, which stays in view above it once scrolled past. */
+    final ConfigRow under(ConfigRow heading) {
+        this.heading = heading;
+        return this;
+    }
+
+    final ConfigRow heading() {
+        return heading;
     }
 
     /** The height of this row at {@code width}; only a note wraps, so only a note depends on it. */

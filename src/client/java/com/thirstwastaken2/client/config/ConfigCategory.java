@@ -32,8 +32,10 @@ enum ConfigCategory {
                     config -> config.preventSprintingWhenThirsty, (config, value) -> config.preventSprintingWhenThirsty = value),
             ConfigEntry.toggle("dehydration_halts_health_regen",
                     config -> config.dehydrationHaltsHealthRegen, (config, value) -> config.dehydrationHaltsHealthRegen = value),
+            // Only Cold Sweat measures the temperature this reads, so without it the switch is left off the page.
             ConfigEntry.toggle("cold_sweat_climate",
-                    config -> config.coldSweatClimate, (config, value) -> config.coldSweatClimate = value)))),
+                    config -> config.coldSweatClimate, (config, value) -> config.coldSweatClimate = value)
+                    .requires("cold_sweat")))),
 
     WATER("water", ThirstWasTaken2.id("textures/item/terracotta_water_bowl_purity_3.png"),
             ConfigSection.of("water.drinking", List.of(

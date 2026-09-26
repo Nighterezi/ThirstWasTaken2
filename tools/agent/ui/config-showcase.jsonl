@@ -1,6 +1,7 @@
 // A recording of the config screen for the docs and the mod pages: the virtual pointer drags a slider,
-// flips a toggle, walks the sidebar and a page's tabs, cycles AppleSkin's outline in its preview,
-// scrolls a long page and leaves with Cancel, so nothing it changed is saved. Evidence for a person,
+// flips a toggle, walks the sidebar and a page's tabs, cycles AppleSkin's outline in its preview and
+// switches its tooltip droplets off and on again, scrolls the item list to its end, opens a mod's
+// group and scrolls on under its pinned heading, and leaves with Cancel, so nothing it changed is saved. Evidence for a person,
 // not a check; nothing here is asserted but that each click landed.
 //
 //     python tools/agent/new_world.py 26.3.x ShowcaseAgent --from "New World"
@@ -51,7 +52,7 @@
 {"id": "seaWaterDrawn", "command": "wait", "args": {"ticks": 12}}
 
 // AppleSkin: the Quenched Outline through Ice, Gold and AppleSkin's own, the preview redrawing each,
-// then the tooltip droplets off.
+// then the tooltip droplets off and back on.
 {"id": "toAppleSkin", "command": "client.mouse", "args": {"x": 40, "y": 97, "from": "corner", "ticks": 6}}
 {"id": "appleSkin", "command": "client.click", "expect": {"result.taken": true}}
 {"id": "appleSkinDrawn", "command": "wait", "args": {"ticks": 12}}
@@ -64,21 +65,69 @@
 {"id": "outlineAppleSkinDrawn", "command": "wait", "args": {"ticks": 14}}
 {"id": "toDroplets", "command": "client.mouse", "args": {"x": 172, "y": 169, "from": "top", "ticks": 5}}
 {"id": "droplets", "command": "client.click", "expect": {"result.taken": true}}
-{"id": "dropletsDrawn", "command": "wait", "args": {"ticks": 14}}
+{"id": "dropletsDrawn", "command": "wait", "args": {"ticks": 20}}
+{"id": "dropletsOn", "command": "client.click", "expect": {"result.taken": true}}
+{"id": "dropletsOnDrawn", "command": "wait", "args": {"ticks": 20}}
 
-// Item Values, and down its list a notch at a time.
+// Item Values, and down its list a notch at a time to the end, past vanilla's items to the closed
+// groups of the other mods, Minecraft's heading staying pinned over its items. Then Farmer's Delight,
+// the first of them, opens, and the list scrolls on until its heading takes the top. The group stays
+// open for the rest of the session only; nothing records which groups are open.
 {"id": "toItems", "command": "client.mouse", "args": {"x": 40, "y": 121, "from": "corner", "ticks": 8}}
 {"id": "items", "command": "client.click", "expect": {"result.taken": true}}
 {"id": "itemsDrawn", "command": "wait", "args": {"ticks": 9}}
-{"id": "toList", "command": "client.mouse", "args": {"x": 60, "y": 170, "from": "top", "ticks": 6}}
+{"id": "toList", "command": "client.mouse", "args": {"x": -40, "y": 150, "from": "top", "ticks": 6}}
 {"id": "scroll1", "command": "client.scroll", "args": {"amount": 1}}
-{"id": "scroll1Drawn", "command": "wait", "args": {"ticks": 4}}
+{"id": "scroll1Drawn", "command": "wait", "args": {"ticks": 3}}
 {"id": "scroll2", "command": "client.scroll", "args": {"amount": 1}}
-{"id": "scroll2Drawn", "command": "wait", "args": {"ticks": 4}}
+{"id": "scroll2Drawn", "command": "wait", "args": {"ticks": 3}}
 {"id": "scroll3", "command": "client.scroll", "args": {"amount": 1}}
-{"id": "scroll3Drawn", "command": "wait", "args": {"ticks": 4}}
+{"id": "scroll3Drawn", "command": "wait", "args": {"ticks": 3}}
 {"id": "scroll4", "command": "client.scroll", "args": {"amount": 1}}
-{"id": "scroll4Drawn", "command": "wait", "args": {"ticks": 12}}
+{"id": "scroll4Drawn", "command": "wait", "args": {"ticks": 3}}
+{"id": "scroll5", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "scroll5Drawn", "command": "wait", "args": {"ticks": 3}}
+{"id": "scroll6", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "scroll6Drawn", "command": "wait", "args": {"ticks": 3}}
+{"id": "scroll7", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "scroll7Drawn", "command": "wait", "args": {"ticks": 3}}
+{"id": "scroll8", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "scroll8Drawn", "command": "wait", "args": {"ticks": 3}}
+{"id": "scroll9", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "scroll9Drawn", "command": "wait", "args": {"ticks": 3}}
+{"id": "scroll10", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "scroll10Drawn", "command": "wait", "args": {"ticks": 3}}
+{"id": "scroll11", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "scroll11Drawn", "command": "wait", "args": {"ticks": 3}}
+{"id": "scroll12", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "scroll12Drawn", "command": "wait", "args": {"ticks": 3}}
+{"id": "scroll13", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "scroll13Drawn", "command": "wait", "args": {"ticks": 3}}
+{"id": "scroll14", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "scroll14Drawn", "command": "wait", "args": {"ticks": 3}}
+{"id": "scroll15", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "scroll15Drawn", "command": "wait", "args": {"ticks": 3}}
+{"id": "scroll16", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "scroll16Drawn", "command": "wait", "args": {"ticks": 12}}
+// At the end the list is Minecraft's pinned heading, its last item, then Farmer's Delight on y = 150.
+{"id": "openFarmersDelight", "command": "client.click", "expect": {"result.taken": true}}
+{"id": "openFarmersDelightDrawn", "command": "wait", "args": {"ticks": 12}}
+{"id": "modScroll1", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "modScroll1Drawn", "command": "wait", "args": {"ticks": 3}}
+{"id": "modScroll2", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "modScroll2Drawn", "command": "wait", "args": {"ticks": 3}}
+{"id": "modScroll3", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "modScroll3Drawn", "command": "wait", "args": {"ticks": 3}}
+{"id": "modScroll4", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "modScroll4Drawn", "command": "wait", "args": {"ticks": 3}}
+{"id": "modScroll5", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "modScroll5Drawn", "command": "wait", "args": {"ticks": 3}}
+{"id": "modScroll6", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "modScroll6Drawn", "command": "wait", "args": {"ticks": 3}}
+{"id": "modScroll7", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "modScroll7Drawn", "command": "wait", "args": {"ticks": 3}}
+{"id": "modScroll8", "command": "client.scroll", "args": {"amount": 1}}
+{"id": "modScroll8Drawn", "command": "wait", "args": {"ticks": 14}}
 
 // Containers.
 {"id": "toContainers", "command": "client.mouse", "args": {"x": 40, "y": 169, "from": "corner", "ticks": 8}}

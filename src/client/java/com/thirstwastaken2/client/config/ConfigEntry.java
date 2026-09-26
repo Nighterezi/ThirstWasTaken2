@@ -1,6 +1,7 @@
 package com.thirstwastaken2.client.config;
 
 import com.thirstwastaken2.config.ThirstConfig;
+import com.thirstwastaken2.platform.Loader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -34,6 +35,8 @@ abstract class ConfigEntry<T> {
     private final String key;
     private final Function<ThirstConfig, T> getter;
     private final BiConsumer<ThirstConfig, T> setter;
+    /** The mod this setting does nothing without, or {@code null} when it always applies. */
+    private String requiredMod;
 
     private ConfigEntry(String key, Function<ThirstConfig, T> getter, BiConsumer<ThirstConfig, T> setter) {
         this.key = key;
@@ -127,6 +130,20 @@ abstract class ConfigEntry<T> {
 
     String key() {
         return key;
+    }
+
+    /**
+     * Shows this setting only while {@code modId} is installed, for a setting that does nothing
+     * without that mod. The value stays in the file either way.
+     */
+    ConfigEntry<T> requires(String modId) {
+        requiredMod = modId;
+        return this;
+    }
+
+    /** Whether the screen lists this setting: always, unless the mod it needs is missing. */
+    boolean isShown() {
+        return requiredMod == null || Loader.isModLoaded(requiredMod);
     }
 
     Component label() {

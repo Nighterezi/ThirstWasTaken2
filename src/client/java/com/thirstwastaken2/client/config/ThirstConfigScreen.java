@@ -260,16 +260,19 @@ public final class ThirstConfigScreen extends Screen {
 
     /**
      * Shows the pinned rows, then the rows {@link #scroll} past them that fit between the header and
-     * footer, and hides the rest.
+     * footer, and hides the rest. When the first of those sits under a heading that has scrolled off,
+     * such as an item under its mod's name, that heading is shown above it, so it stays at the top
+     * until the next heading takes its place.
      */
     private void layoutRows() {
         scroll = Math.clamp(scroll, 0, maxScroll());
+        ConfigRow sticky = stickyAt(pinned + scroll);
         int y = listTop;
         boolean full = false;
         for (int i = 0; i < rows.size(); i++) {
             ConfigRow row = rows.get(i);
             int rowHeight = row.height(listWidth);
-            boolean inView = i < pinned || i - pinned >= scroll;
+            boolean inView = i < pinned || i - pinned >= scroll || row == sticky;
             boolean shown = inView && !full && y + rowHeight <= listBottom;
             if (inView && !shown) full = true;
             if (shown) {
@@ -280,13 +283,23 @@ public final class ThirstConfigScreen extends Screen {
         }
     }
 
-    /** How many rows past the pinned ones to skip before every remaining row fits below them. */
+    /** The heading kept in view when the scrolling rows start at {@code first}, or null. */
+    private ConfigRow stickyAt(int first) {
+        return first < rows.size() ? rows.get(first).heading() : null;
+    }
+
+    /**
+     * How many rows past the pinned ones to skip before every remaining row fits below them, with the
+     * heading the first of them is kept under.
+     */
     private int maxScroll() {
         int space = listBottom - scrollTop() + ROW_GAP;
         int used = 0;
         for (int i = rows.size() - 1; i >= pinned; i--) {
             used += rows.get(i).height(listWidth) + ROW_GAP;
-            if (used > space) return i + 1 - pinned;
+            ConfigRow sticky = stickyAt(i);
+            int needed = used + (sticky == null ? 0 : sticky.height(listWidth) + ROW_GAP);
+            if (needed > space) return i + 1 - pinned;
         }
         return 0;
     }

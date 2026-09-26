@@ -2,6 +2,14 @@
 
 All notable changes to ThirstWasTaken2 are documented in this file.
 
+## [Unreleased]
+
+### Changed
+
+- In the settings screen's item list, an open mod group shows the thirst and quenched droplets above
+  its two columns, and its heading stays at the top while its items scroll past.
+- The Cold Sweat Climate setting only appears in the settings screen when Cold Sweat is installed.
+
 ## [1.3.0] - 2026-09-26
 
 ### Added
