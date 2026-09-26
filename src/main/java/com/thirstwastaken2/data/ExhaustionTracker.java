@@ -19,6 +19,8 @@ public final class ExhaustionTracker {
      * step since the last write. Lost when the player leaves, which is less than one step.
      */
     float unsynced;
+    /** Ticks since the last heal quenched paid for, counted like vanilla's saturation heal timer. */
+    int quenchedHealTimer;
     float modifier;
     int modifierExpiresAt;
     int modifierGeneration;

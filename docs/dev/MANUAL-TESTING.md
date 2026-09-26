@@ -83,8 +83,8 @@ click reaches the world.
 ### HUD
 
 - [x] `/thirst set @s 13 0`: six and a half droplets, the half droplet on the left end.
-- [x] With quenched at 0, sprinting makes the next droplet drain through the quarter and three-quarter
-      frames before a point is spent, and the bar shakes the way hunger does at zero saturation.
+- [ ] With quenched at 0, sprinting leaves the droplets whole until a point is spent, as vanilla's
+      food bar does, and the bar shakes the way hunger does at zero saturation.
 - [x] `/thirst set @s 20 20`: the quenched outline is drawn over every droplet, cyan by default.
 - [x] Mod Menu → ThirstWasTaken2 → AppleSkin: Quenched Outline reads "Quenched Outline: Diamond"
       (the name once) and cycles Diamond, Ice, Gold, AppleSkin, Legacy and Off. The preview and the real

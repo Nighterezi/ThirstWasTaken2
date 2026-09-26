@@ -94,29 +94,21 @@ public final class ThirstHud {
         if (exhaustionStrip) renderExhaustion(graphics, right, top, exhaustion);
         Identifier icons = upsetStomach ? UPSET_STOMACH_ICONS : parched ? PARCHED_ICONS : ICONS;
 
-        float level = thirst - drainedFraction(quenched, exhaustion);
+        // Whole points only, as vanilla draws food: exhaustion toward the next point is not shown, so a
+        // full bar never looks short of full while drinking is still refused at the maximum.
         for (int i = 0; i < 10; i++) {
             int x = right - i * 8 - ICON_SIZE;
             int y = top;
             if (shake) y += RANDOM.nextInt(3) - 1;
 
             icon(graphics, icons, x, y, U_EMPTY);
-            int fill = fillFrame(level - i * 2);
+            int fill = fillFrame(thirst - i * 2);
             if (fill >= 0) {
                 icon(graphics, icons, x, y, fill);
             }
 
             renderQuenched(graphics, overlay, x, y, quenched / 2.0F - i);
         }
-    }
-
-    /**
-     * How much of the next thirst point has already been eaten by exhaustion, as a 0..1 fraction.
-     * Exhaustion only reaches thirst once quenched is gone, so a quenched player never drains.
-     */
-    private static float drainedFraction(int quenched, float exhaustion) {
-        if (quenched > 0) return 0.0F;
-        return Math.min(Math.max(exhaustion, 0.0F), MAX_EXHAUSTION) / MAX_EXHAUSTION;
     }
 
     /** Texture u of the wettest frame this droplet has earned, or -1 when it is dry. */

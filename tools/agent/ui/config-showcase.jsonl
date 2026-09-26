@@ -1,7 +1,8 @@
 // A recording of the config screen for the docs and the mod pages: the virtual pointer drags a slider,
 // flips a toggle, walks the sidebar and a page's tabs, cycles AppleSkin's outline in its preview and
 // switches its tooltip droplets off and on again, scrolls the item list to its end, opens a mod's
-// group and scrolls on under its pinned heading, and leaves with Cancel, so nothing it changed is saved. Evidence for a person,
+// group and scrolls on under its pinned heading, and ends resting on Done. Cancel is pressed after the
+// recording stops, so nothing it changed is saved. Evidence for a person,
 // not a check; nothing here is asserted but that each click landed.
 //
 //     python tools/agent/new_world.py 26.3.x ShowcaseAgent --from "New World"
@@ -22,6 +23,9 @@
 {"id": "window", "command": "client.info", "expect": {"result.guiWidth": 512}}
 {"id": "feedbackOff", "command": "client.command", "args": {"command": "gamerule send_command_feedback false"}}
 {"id": "noon", "command": "client.command", "args": {"command": "time set noon"}}
+// A command's error reaches chat even with feedback off, and chat draws behind the screen until its
+// lines fade, ten seconds after they came.
+{"id": "chatFaded", "command": "wait", "args": {"ticks": 220}}
 {"id": "openConfig", "command": "client.screen", "args": {"open": "config"}, "expect": {"result.screen": "com.thirstwastaken2.client.config.ThirstConfigScreen"}}
 {"id": "openConfigDrawn", "command": "wait", "args": {"ticks": 20}}
 
@@ -134,10 +138,11 @@
 {"id": "containers", "command": "client.click", "expect": {"result.taken": true}}
 {"id": "containersDrawn", "command": "wait", "args": {"ticks": 18}}
 
-// Cancel, so the slider and the toggle are not saved. The recording stops in the same tick, so it ends
-// on the screen rather than on the game behind it.
-{"id": "toCancel", "command": "client.mouse", "args": {"x": 109, "y": -16, "from": "bottom", "ticks": 8}}
-{"id": "cancel", "command": "client.click", "expect": {"result.taken": true}}
+// The pointer comes to rest on Done, the way a player leaves, and the recording stops there. Cancel is
+// pressed after it, off the recording, so the slider and the toggle are not saved.
+{"id": "toDone", "command": "client.mouse", "args": {"x": 203, "y": -16, "from": "bottom", "ticks": 8}}
+{"id": "doneDrawn", "command": "wait", "args": {"ticks": 16}}
 {"id": "stopRecording", "command": "client.record", "args": {"action": "stop"}, "expect": {"result.failed": 0}}
+{"id": "cancel", "command": "client.click", "args": {"x": 109, "y": -16, "button": 0, "from": "bottom"}, "expect": {"result.taken": true}}
 {"id": "hide", "command": "client.mouse", "args": {"hide": true}}
 {"id": "closed", "command": "client.info", "expect": {"result.screen": null}}

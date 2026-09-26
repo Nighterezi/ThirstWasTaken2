@@ -43,6 +43,13 @@ Riding a horse, boat or minecart costs nothing. Creative and spectator players a
 
 Every rate is a setting. See [Configuration](/docs/configuration#thirst-depletion).
 
+## Healing
+
+While thirst is full, quenched heals you the way saturation does, at half the speed, and
+spends quenched to do it. It stacks with healing from food, so with both bars full you heal faster.
+It needs at least 5 food shanks, and follows the `naturalRegeneration` game rule. The speed and
+the food it needs are settings, see [Configuration](/docs/configuration#quenchedhealthregen).
+
 ## Running low
 
 - At 6 or below, players cannot start sprinting.

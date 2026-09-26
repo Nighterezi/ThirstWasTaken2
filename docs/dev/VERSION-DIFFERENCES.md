@@ -159,6 +159,7 @@ already has by default. The stack the furnace hands out is the same; see
 | `ResourceLocation` became `Identifier`, `ResourceKey#location` became `#identifier`, `Util` moved package | replacement |
 | The advancement criterion package lost its `critereon` spelling | replacement, chosen inside the 26.2 rule because replacements do not chain |
 | Command permission levels became permission sets | `Vanilla.isGameMaster`, `Vanilla.isOwner` |
+| Game rules became typed values in their own package, `naturalRegeneration` renamed `NATURAL_HEALTH_REGENERATION` | `Vanilla.naturalRegeneration` |
 | The window handle accessor was renamed from `getWindow` to `handle` | `AgentClientVanilla.windowHandle` (written `>1.21.1`) |
 | A connection's send listener became Netty's own | NeoForge `CapturingConnection` (written `>1.21.1`) |
 | A screenshot is read back from the GPU asynchronously and handed to a callback, takes a downscale factor, and `NativeImage` answers ARGB rather than ABGR | `AgentClientVanilla.screenshot`, `AgentClientVanilla.readFrame` (written `>1.21.1`, since no node sits between) |

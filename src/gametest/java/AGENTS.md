@@ -121,7 +121,7 @@ cauldron bottle draw.
 | `WaterEffectsGameTest` | salt water, the taste dirty water always leaves and that it still quenches, quenched cut by grade and by Upset Stomach, purified water, milk and honey, boiling not desalinating |
 | `WaterSicknessGameTest` | the one roll per drink, forced into every range of each difficulty's table: exactly Poisoning's effects with Upset Stomach, Upset Stomach alone, or only the taste; Peaceful giving only the taste, Pure giving nothing on Hard, drinking again (extend, I to II, twice the time at most, a milder illness changing nothing) and the classic preset |
 | `UpsetStomachGameTest` | Upset Stomach draining faster than nothing and faster at II, Nausea costing nothing on top of it, the saturation it cuts at I and II, and that it never hurts on its own |
-| `HealthRegenGameTest` | dehydration halting regeneration and the food refund that has to accompany it |
+| `HealthRegenGameTest` | dehydration halting regeneration and the food refund that has to accompany it; quenched healing at the configured share of saturation's and what it costs, and not healing short of full thirst, under `quenchedHealMinFood` or at 0% |
 | `WaterskinGameTest` | mixing, salinity, capacity, emptying |
 | `CanteenGameTest` | the copper canteen and iron flask: capacity, one sprite, boiling on a campfire through the real use path (complete, one step short, kept and restarted progress, soul campfire), salt, unlit and the waterskin not boiling, only the flask in a furnace at every fill level, no campfire recipe, both crafting recipes |
 | `TooltipGameTest` | the lines the mod adds to a tooltip, droplet row arithmetic, that the rows need AppleSkin, and that cached lines are handed out as copies |

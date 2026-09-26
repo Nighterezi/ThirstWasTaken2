@@ -1,6 +1,8 @@
 package com.thirstwastaken2.gametest;
 
+import com.thirstwastaken2.config.ThirstConfig;
 import com.thirstwastaken2.data.HealthRegen;
+import com.thirstwastaken2.data.ThirstData;
 import com.thirstwastaken2.data.ThirstManager;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -20,6 +22,8 @@ public final class HealthRegenGameTest {
     /** Enough ticks for vanilla's ten-tick regeneration timer to fire several times. */
     private static final int TICKS = 40;
     private static final float START_HEALTH = 10.0F;
+    /** Exactly one of quenched's heals, which keep vanilla's ten-tick beat. */
+    private static final int QUENCHED_HEAL_TICKS = 10;
 
     @GameTest
     public void dehydrationBlocksTheSaturationHeal(GameTestHelper helper) {
@@ -96,6 +100,57 @@ public final class HealthRegenGameTest {
                 "a hydrated player with full food must still regenerate, health stayed at "
                         + player.getHealth());
         helper.succeed();
+    }
+
+    @GameTest
+    public void fullThirstHealsFromQuenchedAtTheConfiguredShare(GameTestHelper helper) {
+        ServerPlayer player = hurtWithQuenched(helper, ThirstData.MAX, ThirstConfig.get().quenchedHealMinFood);
+
+        for (int i = 0; i < QUENCHED_HEAL_TICKS; i++) ThirstManager.tickPlayer(player);
+
+        // One heal of the full six, at the configured share of vanilla's saturation heal.
+        float share = (float) ThirstConfig.get().quenchedHealthRegen;
+        TestFixtures.check(helper, share > 0.0F, "quenched healing should be on by default");
+        TestFixtures.check(helper, Math.abs(player.getHealth() - (START_HEALTH + share)) < 1.0E-4F,
+                "one quenched heal should restore " + share + ", health went to " + player.getHealth());
+        TestFixtures.check(helper, Math.abs(ThirstManager.get(player).exhaustion() - 6.0F * share) < 1.0E-4F,
+                "the heal should cost " + 6.0F * share + " exhaustion, got " + ThirstManager.get(player));
+        helper.succeed();
+    }
+
+    @GameTest
+    public void quenchedDoesNotHealWithoutFullThirstEnoughFoodOrTheSetting(GameTestHelper helper) {
+        int minFood = ThirstConfig.get().quenchedHealMinFood;
+        TestFixtures.check(helper, minFood > 0, "quenched healing should need some food by default");
+        ServerPlayer thirsty = hurtWithQuenched(helper, ThirstData.MAX - 1, minFood);
+        ServerPlayer hungry = hurtWithQuenched(helper, ThirstData.MAX, minFood - 1);
+        for (int i = 0; i < QUENCHED_HEAL_TICKS; i++) {
+            ThirstManager.tickPlayer(thirsty);
+            ThirstManager.tickPlayer(hungry);
+        }
+        TestFixtures.check(helper, thirsty.getHealth() == START_HEALTH,
+                "thirst short of full should not heal from quenched, health went to " + thirsty.getHealth());
+        TestFixtures.check(helper, hungry.getHealth() == START_HEALTH,
+                "food under " + minFood + " should not heal from quenched, health went to " + hungry.getHealth());
+
+        TestFixtures.withConfig(config -> config.quenchedHealthRegen = 0.0, () -> {
+            ServerPlayer off = hurtWithQuenched(helper, ThirstData.MAX, 20);
+            for (int i = 0; i < QUENCHED_HEAL_TICKS; i++) ThirstManager.tickPlayer(off);
+            TestFixtures.check(helper, off.getHealth() == START_HEALTH,
+                    "0% should turn quenched healing off, health went to " + off.getHealth());
+        });
+        helper.succeed();
+    }
+
+    /** A hurt player with a full reserve of quenched, nothing vanilla would heal from, and no exhaustion. */
+    private static ServerPlayer hurtWithQuenched(GameTestHelper helper, int thirst, int food) {
+        // The thirst tick skips an invulnerable player, and a plain mock player is creative.
+        ServerPlayer player = TestFixtures.survivalPlayer(helper);
+        player.setHealth(START_HEALTH);
+        player.getFoodData().setFoodLevel(food);
+        player.getFoodData().setSaturation(0.0F);
+        ThirstManager.set(player, new ThirstData(thirst, thirst, 0.0F, true));
+        return player;
     }
 
     /** A hurt player with enough food and saturation for vanilla's saturated regeneration branch. */

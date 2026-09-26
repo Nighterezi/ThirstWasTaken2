@@ -92,14 +92,17 @@ public final class UpsetStomachGameTest {
     /** A full bar and the worst level, rolled as often as the tick allows: health must not move. */
     @GameTest
     public void upsetStomachNeverHurts(GameTestHelper helper) {
-        ServerPlayer player = TestFixtures.survivalPlayer(helper);
-        player.setHealth(HURT_HEALTH);
-        player.addEffect(new MobEffectInstance(ThirstEffects.UPSET_STOMACH, HEALTH_TICKS * 2, 1));
+        // A full bar heals from quenched, which would hide a loss of health, so that heal is off here.
+        TestFixtures.withConfig(config -> config.quenchedHealthRegen = 0.0, () -> {
+            ServerPlayer player = TestFixtures.survivalPlayer(helper);
+            player.setHealth(HURT_HEALTH);
+            player.addEffect(new MobEffectInstance(ThirstEffects.UPSET_STOMACH, HEALTH_TICKS * 2, 1));
 
-        for (int i = 0; i < HEALTH_TICKS; i++) ThirstManager.tickPlayer(player);
+            for (int i = 0; i < HEALTH_TICKS; i++) ThirstManager.tickPlayer(player);
 
-        TestFixtures.check(helper, player.getHealth() == HURT_HEALTH,
-                "Upset Stomach must never hurt on its own, health went to " + player.getHealth());
+            TestFixtures.check(helper, player.getHealth() == HURT_HEALTH,
+                    "Upset Stomach must never hurt on its own, health went to " + player.getHealth());
+        });
         helper.succeed();
     }
 

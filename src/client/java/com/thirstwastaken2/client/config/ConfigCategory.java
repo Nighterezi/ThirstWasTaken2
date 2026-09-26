@@ -36,6 +36,10 @@ enum ConfigCategory {
                             config -> config.preventSprintingWhenThirsty, (config, value) -> config.preventSprintingWhenThirsty = value),
                     ConfigEntry.toggle("dehydration_halts_health_regen",
                             config -> config.dehydrationHaltsHealthRegen, (config, value) -> config.dehydrationHaltsHealthRegen = value),
+                    ConfigEntry.percent("quenched_health_regen", 0, 100,
+                            config -> config.quenchedHealthRegen, (config, value) -> config.quenchedHealthRegen = value),
+                    ConfigEntry.number("quenched_heal_min_food", 0, 20, food -> Component.literal(Integer.toString(food)),
+                            config -> config.quenchedHealMinFood, (config, value) -> config.quenchedHealMinFood = value),
                     // Only Cold Sweat measures the temperature this reads, so without it the switch is left off the page.
                     ConfigEntry.toggle("cold_sweat_climate",
                             config -> config.coldSweatClimate, (config, value) -> config.coldSweatClimate = value)

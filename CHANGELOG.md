@@ -2,10 +2,13 @@
 
 All notable changes to ThirstWasTaken2 are documented in this file.
 
-## [Unreleased]
+## [1.4.0] - 2026-09-27
 
 ### Added
 
+- Quenched now heals like saturation, at half the speed, while thirst is full and food is at least 5
+  shanks. It stacks with healing from food. The speed and the food it needs are settings on the
+  Thirst page.
 - Compatibility with Serene Seasons on Fabric and NeoForge, every supported version:
   - Thirst drains faster in summer and slower in winter, changing smoothly through the year.
   - Tropical biomes such as jungles, savannas and deserts follow the wet and dry seasons instead: the
@@ -23,6 +26,8 @@ All notable changes to ThirstWasTaken2 are documented in this file.
 
 - Mushroom stew and rabbit stew restore 4 thirst and 5 quenched, as much as the other stews. Existing
   config files keep their old values.
+- The thirst bar shows whole points only, like the food bar. It no longer empties the last droplet a
+  little ahead of time, which made a full bar look short of full while drinking was still refused.
 - In the settings screen's item list, an open mod group shows the thirst and quenched droplets above
   its two columns, and its heading stays at the top while its items scroll past.
 - The Cold Sweat Climate setting only appears in the settings screen when Cold Sweat is installed.

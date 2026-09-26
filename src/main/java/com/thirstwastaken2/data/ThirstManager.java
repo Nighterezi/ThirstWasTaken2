@@ -233,11 +233,14 @@ public final class ThirstManager {
         }
 
         // On peaceful, exhaustion never reaches thirst, so once quenched is empty it has nothing left to
-        // spend and is dropped. Kept, it would sit below a point forever, and the HUD draws that against
-        // the last droplet as a drain the refill can never top up, so the bar looks stuck short of full.
+        // spend and is dropped. Kept, it would sit below a point forever, a drain the refill can never
+        // top up, and AppleSkin's exhaustion strip would stay stuck part way.
         boolean discards = peaceful && data.quenched() == 0;
+        // What a heal from quenched costs is its own price, like vanilla's heal cost to food, so the
+        // climate does not scale it and a listener does not see it as something the player did.
+        float healCost = HealthRegen.healWithQuenched(player, data, tracker);
         float added = discards ? -data.exhaustion()
-                : unsynced + (raw == 0.0F ? 0.0F : raw * exhaustionModifier(player));
+                : unsynced + healCost + (raw == 0.0F ? 0.0F : raw * exhaustionModifier(player));
         boolean regenerates = peaceful && slowTick && data.thirst() < ThirstData.MAX;
         // The same clamp ThirstData#addExhaustion applies.
         float exhaustion = Math.max(0.0F, data.exhaustion() + added);

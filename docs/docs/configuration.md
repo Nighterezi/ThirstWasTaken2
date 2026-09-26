@@ -34,6 +34,17 @@ Default `true`. Stops sprinting at 6 thirst or below.
 Default `true`. Stops natural healing until thirst is nearly full. See
 [Running low](/docs/features/thirst-and-quenched#running-low).
 
+### quenchedHealthRegen
+
+Default `0.5`. How fast quenched heals while thirst is full, as a share of how fast saturation
+heals: `1.0` is as fast, `0` turns it off. See
+[Healing](/docs/features/thirst-and-quenched#healing).
+
+### quenchedHealMinFood
+
+Default `10`. The food level, in half shanks, quenched needs before it heals. `10` is five shanks,
+`0` lets it heal even while starving.
+
 ### coldSweatClimate
 
 Default `true`. With Cold Sweat installed, the drain follows the temperature Cold Sweat measures around

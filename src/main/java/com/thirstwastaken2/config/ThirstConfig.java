@@ -44,6 +44,16 @@ public final class ThirstConfig {
     public boolean canDrinkByHand = true;
     public boolean dehydrationHaltsHealthRegen = true;
     /**
+     * How fast quenched heals, as a share of vanilla's saturation heal, while thirst is full: 0.5 heals
+     * half as fast for half the quenched, 0 turns it off. Not in the original, where quenched never healed.
+     */
+    public double quenchedHealthRegen = 0.5;
+    /**
+     * The food level, in half shanks, below which quenched stops healing, so a player cannot drink their
+     * way past starving. 0 to 20.
+     */
+    public int quenchedHealMinFood = 10;
+    /**
      * With Cold Sweat installed, the drain follows the temperature it measures around the player in
      * place of the biome's. Does nothing without it.
      */
@@ -294,6 +304,8 @@ public final class ThirstConfig {
         // Gson reads a name it does not know, including a hand typo, as null.
         if (appleskinQuenchedOverlay == null) appleskinQuenchedOverlay = QuenchedOverlay.DIAMOND;
         thirstDepletionModifier = clamp(thirstDepletionModifier, 0.0, 10.0);
+        quenchedHealthRegen = clamp(quenchedHealthRegen, 0.0, 1.0);
+        quenchedHealMinFood = clamp(quenchedHealMinFood, 0, 20);
         seasonDrainSpring = clamp(seasonDrainSpring, MIN_SEASON_DRAIN, MAX_SEASON_DRAIN);
         seasonDrainSummer = clamp(seasonDrainSummer, MIN_SEASON_DRAIN, MAX_SEASON_DRAIN);
         seasonDrainAutumn = clamp(seasonDrainAutumn, MIN_SEASON_DRAIN, MAX_SEASON_DRAIN);

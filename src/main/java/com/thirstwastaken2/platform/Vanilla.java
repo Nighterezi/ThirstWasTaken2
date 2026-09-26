@@ -179,6 +179,14 @@ public final class Vanilla {
         /*return player.serverLevel();*/
     }
 
+    /** Whether the naturalRegeneration game rule is on in the player's level. 1.21.11 made game rules typed values. */
+    public static boolean naturalRegeneration(ServerPlayer player) {
+        //? if >=1.21.11 {
+        return level(player).getGameRules().get(net.minecraft.world.level.gamerules.GameRules.NATURAL_HEALTH_REGENERATION);
+        //?} else
+        /*return level(player).getGameRules().getBoolean(net.minecraft.world.level.GameRules.RULE_NATURAL_REGENERATION);*/
+    }
+
     /** Damages a player from the server. 1.21.2 split a server-only {@code hurtServer} out of {@code hurt}. */
     public static void hurt(ServerPlayer player, DamageSource source, float amount) {
         //? if >=1.21.2 {

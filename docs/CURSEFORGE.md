@@ -4,9 +4,9 @@
 
 ## Thirst and Quenched
 * **Thirst Bar:** Depletes as you run, jump, mine, and fight.
-* **Quenched Buffer:** Works like saturation, and drains first before your thirst bar drops.
-* **Environment:** Hot biomes like deserts and the Nether deplete thirst faster. Fire Resistance and Fire Protection reduce heat drain.
+* **Quenched Buffer:** Works like saturation. It drains first, and [heals](https://n1ght3r.github.io/ThirstWasTaken2/docs/configuration#quenchedhealthregen) you while thirst is full.
 * **Dehydration:** Low thirst prevents sprinting and natural health regeneration. Empty thirst causes steady damage.
+* **Environment:** Hot biomes like deserts and the Nether deplete thirst faster. Fire Resistance and Fire Protection reduce heat drain.
 
 <div align="center">
 <table>
